@@ -1,93 +1,23 @@
 {
-  "$schema": "https://marketplace.claude.ai/schemas/listing.v1.json",
-  "id": "golden-armada",
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-orchestration",
   "version": "4.0.0",
-
-  "listing": {
-    "title": "Golden Armada - Enterprise Multi-Agent Orchestration System",
-    "tagline": "100+ specialized agents with mandatory orchestration protocol for professional software development",
-    "description": "Golden Armada is a comprehensive multi-LLM agent orchestration system designed for enterprise software development. It provides 100+ pre-built agents, 31 skills, 44 commands, and 21 workflows with a mandatory 6-phase protocol ensuring consistent, high-quality results.",
-
-    "longDescription": "## Why Golden Armada?\n\n**Professional Multi-Agent Orchestration**\n- Mandatory 6-phase protocol: EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT\n- 3-13 sub-agents per task with intelligent coordination\n- Built-in context preservation across phases\n- Automatic checkpointing and state recovery\n\n**100+ Specialized Agents**\n- **Core**: coder, tester, reviewer, planner, debugger, researcher\n- **DevOps**: k8s-deployer, docker-builder, cicd-engineer, sre-engineer\n- **Security**: security-auditor, penetration-tester, secrets-manager\n- **Data/AI**: ml-engineer, rag-specialist, llm-engineer, data-analyst\n- **Lobbi Platform**: multi-tenant, stripe, keycloak, membership specialists\n\n**31 Auto-Activated Skills**\n- Infrastructure: kubernetes, helm, docker, terraform\n- Development: react, nextjs, fastapi, graphql, rest-api\n- Cloud: aws, gcp, authentication\n- Data: mongodb-atlas, redis, vector-db, database\n- Project Management: jira, confluence, scrum, kanban\n\n**44 Slash Commands**\n- `/deploy` - Full deployment pipeline\n- `/test` - Comprehensive test suite execution\n- `/review` - AI-powered code review\n- `/security-scan` - Security audit\n- `/jira-create` - Jira issue management\n- `/sprint-plan` - Sprint planning automation\n\n**21 Pre-Built Workflows**\n- Feature development lifecycle\n- CI/CD pipeline automation\n- Incident response procedures\n- Scrum ceremony automation\n- Tenant onboarding (multi-tenant SaaS)\n- E2E test suite execution\n\n**Lobbi Platform Extensions**\n- Multi-tenant architecture agents\n- Stripe payment integration specialists\n- Keycloak authentication experts\n- Selenium E2E testing automation\n- Membership management workflows\n\n**Registry-First Architecture**\n- Lazy-loaded resource discovery\n- Keyword-based search and activation\n- Profile-based context management\n- 98.6% context reduction through external storage\n\n**Enterprise Ready**\n- Production-grade Kubernetes/Helm support\n- Docker containerization patterns\n- Obsidian vault documentation sync\n- Comprehensive hook system for customization",
-
-    "features": [
-      {
-        "title": "Mandatory Orchestration Protocol",
-        "description": "6-phase workflow with 3-13 sub-agents ensures consistent, high-quality results"
+  "description": "Enterprise multi-agent orchestration system with 97+ specialized agents, mandatory 6-phase protocol, and comprehensive DevOps workflows",
+  "owner": {
+    "name": "Markus Ahling",
+    "email": "markus@example.com"
+  },
+  "plugins": [
+    {
+      "name": "golden-armada",
+      "description": "Multi-LLM agent orchestration with 97+ specialized agents across 21 categories, mandatory orchestration protocol, and registry-first architecture",
+      "version": "4.0.0",
+      "author": {
+        "name": "Markus Ahling",
+        "email": "markus@example.com"
       },
-      {
-        "title": "100+ Specialized Agents",
-        "description": "Pre-built agents for development, DevOps, security, data/AI, and platform specialists"
-      },
-      {
-        "title": "Registry-First Architecture",
-        "description": "Lazy-loaded resources with intelligent search and context-aware activation"
-      },
-      {
-        "title": "Lobbi Platform Support",
-        "description": "Multi-tenant SaaS development with Stripe, Keycloak, and membership management"
-      },
-      {
-        "title": "Obsidian Integration",
-        "description": "Automatic documentation sync to Obsidian vault with templates and cross-linking"
-      }
-    ],
-
-    "changelog": "## Version 4.0.0 (December 2025)\n\n### New Features\n- Plugin marketplace format for easy distribution\n- 18 new Lobbi Platform agents (multi-tenant, stripe, keycloak, membership)\n- Unified activation profiles with context-aware loading\n- Enhanced registry with lazy loading (98.6% context reduction)\n\n### Improvements\n- Mandatory orchestration protocol enforcement\n- SQLite-based agent tracking and coordination\n- Improved checkpoint and state recovery\n- Better hook system with enforcement capabilities\n\n### Agent Categories Added\n- multi-tenant (2 agents)\n- stripe-payment (3 agents)\n- frontend-theming (3 agents)\n- selenium-testing (3 agents)\n- membership-domain (4 agents)\n- utility (3 agents)\n\n### Breaking Changes\n- Minimum 3 sub-agents now required (previously optional)\n- Registry format updated to v4.0.0\n- Hooks now use .mjs format for ES modules"
-  },
-
-  "media": {
-    "icon": "assets/golden-armada-icon.png",
-    "screenshots": [],
-    "thumbnail": "assets/golden-armada-thumb.png"
-  },
-
-  "pricing": {
-    "model": "free",
-    "tiers": []
-  },
-
-  "support": {
-    "documentation": "https://github.com/markus41/claude#readme",
-    "community": "https://github.com/markus41/claude/discussions",
-    "issues": "https://github.com/markus41/claude/issues"
-  },
-
-  "metrics": {
-    "installCount": 0,
-    "rating": 0,
-    "reviews": []
-  },
-
-  "verification": {
-    "verified": false,
-    "verifiedAt": null,
-    "badges": []
-  },
-
-  "compatibility": {
-    "minimumVersion": "1.0.0",
-    "maximumVersion": null,
-    "platforms": ["macos", "windows", "linux"]
-  },
-
-  "tags": [
-    "orchestration",
-    "multi-agent",
-    "devops",
-    "kubernetes",
-    "docker",
-    "testing",
-    "ci-cd",
-    "automation",
-    "code-generation",
-    "code-review",
-    "multi-tenant",
-    "saas",
-    "stripe",
-    "keycloak",
-    "enterprise"
-  ],
-
-  "relatedPlugins": []
+      "source": ".",
+      "category": "orchestration"
+    }
+  ]
 }
