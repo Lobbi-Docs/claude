@@ -2,14 +2,21 @@
   "$schema": "../registry/schema/mcp.schema.json",
   "version": "1.0.0",
   "description": "Obsidian vault integration for centralized documentation",
+  "_notes": {
+    "environment_variables": [
+      "OBSIDIAN_VAULT_PATH - Path to your Obsidian vault directory (required). Example: C:\Users\username\obsidian",
+      "OBSIDIAN_REST_API_PORT - Port for Obsidian REST API (default: 27124)",
+      "OBSIDIAN_API_KEY - API key for Obsidian REST API (optional, required only if REST API authentication is enabled)"
+    ]
+  },
 
   "mcpServers": {
     "obsidian": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-obsidian"],
       "env": {
-        "OBSIDIAN_VAULT_PATH": "C:\\Users\\MarkusAhling\\obsidian",
-        "OBSIDIAN_REST_API_PORT": "27124",
+        "OBSIDIAN_VAULT_PATH": "${OBSIDIAN_VAULT_PATH}",
+        "OBSIDIAN_REST_API_PORT": "${OBSIDIAN_REST_API_PORT:-27124}",
         "OBSIDIAN_REST_API_KEY": "${OBSIDIAN_API_KEY}"
       },
       "metadata": {

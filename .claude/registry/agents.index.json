@@ -625,280 +625,6 @@
       }
     },
 
-    "keycloak": {
-      "keycloak-realm-admin": {
-        "path": "agents/keycloak/keycloak-realm-admin.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "realm", "client", "role", "user", "group", "permission"],
-        "capabilities": ["realm_management", "client_configuration", "role_assignment", "user_federation"],
-        "priority": "high"
-      },
-      "keycloak-theme-developer": {
-        "path": "agents/keycloak/keycloak-theme-developer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "theme", "login", "ui", "customization", "branding", "ftl"],
-        "capabilities": ["theme_development", "login_customization", "email_templates"],
-        "priority": "medium"
-      },
-      "keycloak-identity-specialist": {
-        "path": "agents/keycloak/keycloak-identity-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "identity", "ldap", "saml", "oidc", "federation", "sso", "idp"],
-        "capabilities": ["identity_federation", "ldap_integration", "social_login", "saml_configuration"],
-        "priority": "high"
-      },
-      "keycloak-auth-flow-designer": {
-        "path": "agents/keycloak/keycloak-auth-flow-designer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "authentication", "flow", "2fa", "mfa", "otp", "webauthn", "passkey"],
-        "capabilities": ["auth_flow_design", "mfa_configuration", "otp_setup", "webauthn_integration"],
-        "priority": "high"
-      },
-      "keycloak-security-auditor": {
-        "path": "agents/keycloak/keycloak-security-auditor.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["keycloak", "security", "audit", "vulnerability", "compliance", "hardening"],
-        "capabilities": ["security_audit", "vulnerability_assessment", "compliance_review", "hardening"],
-        "priority": "high"
-      }
-    },
-
-    "mongodb-atlas": {
-      "mongodb-atlas-admin": {
-        "path": "agents/mongodb-atlas/mongodb-atlas-admin.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["mongodb", "atlas", "cluster", "database", "cloud", "backup", "scaling"],
-        "capabilities": ["cluster_management", "database_administration", "backup_configuration", "security_setup"],
-        "priority": "high"
-      },
-      "mongodb-schema-designer": {
-        "path": "agents/mongodb-atlas/mongodb-schema-designer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["mongodb", "schema", "model", "document", "embedding", "reference", "prisma"],
-        "capabilities": ["schema_design", "data_modeling", "embedding_patterns", "prisma_mongodb"],
-        "priority": "high"
-      },
-      "mongodb-query-optimizer": {
-        "path": "agents/mongodb-atlas/mongodb-query-optimizer.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["mongodb", "query", "performance", "index", "explain", "optimize", "slow"],
-        "capabilities": ["query_optimization", "index_analysis", "performance_tuning", "explain_analysis"],
-        "priority": "high"
-      },
-      "mongodb-aggregation-specialist": {
-        "path": "agents/mongodb-atlas/mongodb-aggregation-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["mongodb", "aggregation", "pipeline", "analytics", "report", "group", "lookup"],
-        "capabilities": ["aggregation_pipelines", "data_transformation", "analytics_queries", "report_generation"],
-        "priority": "medium"
-      }
-    },
-
-    "helm": {
-      "helm-chart-developer": {
-        "path": "agents/helm/helm-chart-developer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["helm", "chart", "template", "values", "dependency", "packaging"],
-        "capabilities": ["chart_development", "template_creation", "dependency_management", "chart_testing"],
-        "priority": "high"
-      },
-      "helm-values-manager": {
-        "path": "agents/helm/helm-values-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["helm", "values", "environment", "configuration", "override", "secrets"],
-        "capabilities": ["values_management", "environment_config", "secrets_integration", "multi_env_support"],
-        "priority": "medium"
-      },
-      "helm-release-manager": {
-        "path": "agents/helm/helm-release-manager.md",
-        "type": "coordinator",
-        "model": "sonnet",
-        "keywords": ["helm", "release", "upgrade", "rollback", "deploy", "history"],
-        "capabilities": ["release_management", "deployment_coordination", "rollback_handling", "multi_cluster"],
-        "priority": "high"
-      }
-    },
-
-    "kubernetes": {
-      "k8s-architect": {
-        "path": "agents/kubernetes/k8s-architect.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "architecture", "design", "cluster", "topology", "networking"],
-        "capabilities": ["cluster_architecture", "network_design", "resource_planning", "high_availability"],
-        "priority": "high"
-      },
-      "k8s-debugger": {
-        "path": "agents/kubernetes/k8s-debugger.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "debug", "troubleshoot", "logs", "events", "pod", "crash"],
-        "capabilities": ["pod_debugging", "log_analysis", "event_investigation", "network_debugging"],
-        "priority": "high"
-      },
-      "k8s-security-specialist": {
-        "path": "agents/kubernetes/k8s-security-specialist.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "security", "rbac", "psp", "network-policy", "secrets", "compliance"],
-        "capabilities": ["security_audit", "rbac_design", "network_policies", "secret_management"],
-        "priority": "high"
-      },
-      "k8s-resource-optimizer": {
-        "path": "agents/kubernetes/k8s-resource-optimizer.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "resources", "optimization", "scaling", "hpa", "vpa", "cost"],
-        "capabilities": ["resource_optimization", "autoscaling_configuration", "capacity_planning", "cost_optimization"],
-        "priority": "medium"
-      }
-    },
-
-    "multi-tenant": {
-      "multi-tenant-architect": {
-        "path": "agents/multi-tenant/multi-tenant-architect.md",
-        "type": "architect",
-        "model": "sonnet",
-        "keywords": ["multi-tenant", "saas", "tenant", "organization", "isolation", "org_id"],
-        "capabilities": ["tenant_architecture", "data_isolation", "org_management", "tenant_provisioning"],
-        "priority": "high"
-      },
-      "tenant-provisioning-specialist": {
-        "path": "agents/multi-tenant/tenant-provisioning-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["tenant", "provisioning", "onboarding", "organization", "setup", "enrollment"],
-        "capabilities": ["tenant_onboarding", "org_setup", "user_provisioning", "enrollment_flows"],
-        "priority": "high"
-      }
-    },
-
-    "stripe-payment": {
-      "stripe-integration-specialist": {
-        "path": "agents/stripe-payment/stripe-integration-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["stripe", "payment", "subscription", "billing", "webhook", "checkout"],
-        "capabilities": ["stripe_api", "payment_processing", "subscription_management", "webhook_handling"],
-        "priority": "high"
-      },
-      "subscription-lifecycle-manager": {
-        "path": "agents/stripe-payment/subscription-lifecycle-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["subscription", "lifecycle", "trial", "upgrade", "downgrade", "churn"],
-        "capabilities": ["subscription_lifecycle", "trial_management", "plan_changes", "churn_prevention"],
-        "priority": "high"
-      },
-      "invoice-manager": {
-        "path": "agents/stripe-payment/invoice-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["invoice", "billing", "receipt", "statement", "payment-history"],
-        "capabilities": ["invoice_generation", "payment_history", "billing_statements", "receipt_management"],
-        "priority": "medium"
-      }
-    },
-
-    "frontend-theming": {
-      "theme-system-architect": {
-        "path": "agents/frontend-theming/theme-system-architect.md",
-        "type": "architect",
-        "model": "sonnet",
-        "keywords": ["theme", "css", "design-tokens", "multi-tenant", "styling", "css-in-js"],
-        "capabilities": ["theme_architecture", "design_tokens", "dynamic_theming", "css_variables"],
-        "priority": "high"
-      },
-      "theme-builder": {
-        "path": "agents/frontend-theming/theme-builder.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["theme", "builder", "color-palette", "typography", "branding"],
-        "capabilities": ["theme_creation", "color_generation", "typography_config", "component_styling"],
-        "priority": "medium"
-      },
-      "white-label-specialist": {
-        "path": "agents/frontend-theming/white-label-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["white-label", "branding", "custom-domain", "enterprise", "logo"],
-        "capabilities": ["white_labeling", "custom_domains", "brand_assets", "keycloak_themes"],
-        "priority": "high"
-      }
-    },
-
-    "selenium-testing": {
-      "selenium-test-architect": {
-        "path": "agents/selenium-testing/selenium-test-architect.md",
-        "type": "architect",
-        "model": "sonnet",
-        "keywords": ["selenium", "e2e", "testing", "automation", "page-object", "webdriver"],
-        "capabilities": ["test_architecture", "page_objects", "test_data", "ci_integration"],
-        "priority": "high"
-      },
-      "auth-flow-tester": {
-        "path": "agents/selenium-testing/auth-flow-tester.md",
-        "type": "validator",
-        "model": "sonnet",
-        "keywords": ["authentication", "login", "mfa", "sso", "keycloak", "session"],
-        "capabilities": ["auth_testing", "mfa_testing", "sso_testing", "session_testing"],
-        "priority": "high"
-      },
-      "member-journey-tester": {
-        "path": "agents/selenium-testing/member-journey-tester.md",
-        "type": "validator",
-        "model": "sonnet",
-        "keywords": ["member", "enrollment", "profile", "journey", "e2e", "isolation"],
-        "capabilities": ["enrollment_testing", "profile_testing", "journey_testing", "isolation_testing"],
-        "priority": "high"
-      }
-    },
-
-    "membership-domain": {
-      "membership-specialist": {
-        "path": "agents/membership-domain/membership-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["member", "membership", "crud", "tier", "renewal", "status"],
-        "capabilities": ["member_crud", "tier_management", "status_management", "renewal_processing"],
-        "priority": "high"
-      },
-      "member-engagement-agent": {
-        "path": "agents/membership-domain/member-engagement-agent.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["engagement", "activity", "tracking", "retention", "communication"],
-        "capabilities": ["activity_tracking", "engagement_scoring", "communication_prefs", "retention_analysis"],
-        "priority": "medium"
-      },
-      "membership-analytics-agent": {
-        "path": "agents/membership-domain/membership-analytics-agent.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["analytics", "metrics", "churn", "growth", "cohort", "dashboard"],
-        "capabilities": ["member_metrics", "churn_prediction", "growth_analysis", "cohort_analysis"],
-        "priority": "medium"
-      },
-      "directory-manager": {
-        "path": "agents/membership-domain/directory-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["directory", "search", "privacy", "export", "categories"],
-        "capabilities": ["directory_management", "privacy_controls", "search_functionality", "export_generation"],
-        "priority": "medium"
-      }
-    },
 
     "utility": {
       "context-cleanup-agent": {
@@ -930,21 +656,20 @@
 
   "stats": {
     "byType": {
-      "developer": 60,
-      "analyst": 22,
-      "coordinator": 19,
-      "validator": 7,
-      "architect": 4
+      "developer": 28,
+      "analyst": 16,
+      "coordinator": 14,
+      "validator": 4
     },
     "byModel": {
-      "sonnet": 88,
-      "haiku": 9,
+      "sonnet": 54,
+      "haiku": 6,
       "opus": 0
     },
     "byPriority": {
-      "high": 47,
-      "medium": 43,
-      "low": 15
+      "high": 22,
+      "medium": 26,
+      "low": 12
     },
     "byCategory": {
       "core": 6,
@@ -962,17 +687,9 @@
       "documentation": 3,
       "golden-armada": 3,
       "testing": 4,
-      "keycloak": 5,
-      "mongodb-atlas": 4,
-      "helm": 3,
-      "kubernetes": 4,
-      "multi-tenant": 2,
-      "stripe-payment": 3,
-      "frontend-theming": 3,
-      "selenium-testing": 3,
-      "membership-domain": 4,
       "utility": 3
     },
-    "totalAgents": 101
+    "totalAgents": 60,
+    "note": "Platform-specific agents (Lobbi, Stripe, Keycloak, MongoDB, multi-tenant, etc.) removed for portability. Add project-specific agents as needed."
   }
 }

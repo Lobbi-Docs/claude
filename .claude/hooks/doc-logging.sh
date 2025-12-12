@@ -17,12 +17,13 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Configuration
+# Configuration - Uses environment variables for portability
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DB_PATH="${DB_PATH:-.claude/orchestration/db/agents.db}"
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-C:/Users/MarkusAhling/obsidian}"
+OBSIDIAN_VAULT="${OBSIDIAN_VAULT_PATH:-${HOME}/obsidian}"
 OBSIDIAN_API_URL="${OBSIDIAN_API_URL:-http://localhost:27123}"
+PROJECT_NAME="${PROJECT_NAME:-project}"
 
 # Agent context (from environment or defaults)
 CLAUDE_AGENT_ID="${CLAUDE_AGENT_ID:-unknown}"
@@ -139,23 +140,23 @@ determine_doc_type() {
 determine_obsidian_path() {
     local file_path="$1"
     local doc_type="$2"
-    local repo_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || echo 'unknown')")
+    local repo_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || echo "$PROJECT_NAME")")
 
     case "$doc_type" in
         readme)
-            echo "Repositories/Alpha-1.4/${basename%%.*}.md"
+            echo "Repositories/${repo_name}/${basename%%.*}.md"
             ;;
         adr)
-            echo "Repositories/Alpha-1.4/Decisions/$(basename "$file_path")"
+            echo "Repositories/${repo_name}/Decisions/$(basename "$file_path")"
             ;;
         architecture)
-            echo "Repositories/Alpha-1.4/Architecture/$(basename "$file_path")"
+            echo "Repositories/${repo_name}/Architecture/$(basename "$file_path")"
             ;;
         api)
-            echo "Repositories/Alpha-1.4/API/$(basename "$file_path")"
+            echo "Repositories/${repo_name}/API/$(basename "$file_path")"
             ;;
         guide|quickstart)
-            echo "Repositories/Alpha-1.4/Guides/$(basename "$file_path")"
+            echo "Repositories/${repo_name}/Guides/$(basename "$file_path")"
             ;;
         research)
             # Extract research topic from path
@@ -163,7 +164,7 @@ determine_obsidian_path() {
             echo "Research/${topic}/$(basename "$file_path")"
             ;;
         *)
-            echo "Repositories/Alpha-1.4/$(basename "$file_path")"
+            echo "Repositories/${repo_name}/$(basename "$file_path")"
             ;;
     esac
 }

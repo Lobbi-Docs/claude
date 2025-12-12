@@ -183,14 +183,6 @@
         "dependencies": [],
         "conflicts": [],
         "autoActivate": true
-      },
-      "keycloak": {
-        "path": "skills/keycloak/SKILL.md",
-        "triggers": ["keycloak", "realm", "identity", "sso", "mfa", "2fa", "federation", "idp", "iam"],
-        "activationScore": 0,
-        "dependencies": ["authentication"],
-        "conflicts": [],
-        "autoActivate": true
       }
     },
 
@@ -198,14 +190,6 @@
       "database": {
         "path": "skills/database/SKILL.md",
         "triggers": ["sql", "database", "postgres", "mysql", "migration", "schema"],
-        "activationScore": 0,
-        "dependencies": [],
-        "conflicts": [],
-        "autoActivate": true
-      },
-      "mongodb-atlas": {
-        "path": "skills/mongodb-atlas/SKILL.md",
-        "triggers": ["mongodb", "atlas", "mongo", "nosql", "document", "aggregation", "prisma-mongo", "mongosh"],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -248,40 +232,6 @@
       }
     },
 
-    "lobbi-platform": {
-      "multi-tenant": {
-        "path": "skills/multi-tenant/SKILL.md",
-        "triggers": ["multi-tenant", "tenant", "org_id", "organization", "isolation", "tenant-aware"],
-        "activationScore": 0,
-        "dependencies": [],
-        "conflicts": [],
-        "autoActivate": true
-      },
-      "stripe-payments": {
-        "path": "skills/stripe-payments/SKILL.md",
-        "triggers": ["stripe", "payment", "subscription", "billing", "invoice", "checkout", "webhook"],
-        "activationScore": 0,
-        "dependencies": [],
-        "conflicts": [],
-        "autoActivate": true
-      },
-      "member-management": {
-        "path": "skills/member-management/SKILL.md",
-        "triggers": ["member", "membership", "enrollment", "directory", "tier", "dues"],
-        "activationScore": 0,
-        "dependencies": ["multi-tenant"],
-        "conflicts": [],
-        "autoActivate": true
-      },
-      "e2e-testing": {
-        "path": "skills/e2e-testing/SKILL.md",
-        "triggers": ["selenium", "e2e", "testing", "automation", "webdriver", "page-object"],
-        "activationScore": 0,
-        "dependencies": [],
-        "conflicts": [],
-        "autoActivate": true
-      }
-    }
   },
 
   "activationRules": {
@@ -310,7 +260,7 @@
   },
 
   "stats": {
-    "totalSkills": 31,
+    "totalSkills": 23,
     "format": "Claude Code Official SKILL.md",
     "byCategory": {
       "infrastructure": 4,
@@ -319,10 +269,10 @@
       "methodology": 2,
       "integration": 1,
       "cloud": 2,
-      "security": 2,
-      "data": 4,
-      "frontend": 2,
-      "lobbi-platform": 4
-    }
+      "security": 1,
+      "data": 3,
+      "frontend": 2
+    },
+    "note": "Platform-specific skills (Lobbi, Stripe, Keycloak, MongoDB Atlas, multi-tenant, member management, etc.) removed for portability. Add project-specific skills as needed."
   }
 }

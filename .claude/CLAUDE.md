@@ -104,6 +104,24 @@ Configure your agents in `.claude/registry/agents.index.json`. Common categories
 
 **Load Command:** `mcp__obsidian__get_file_contents("System/Claude-Instructions/{filename}.md")`
 
+### 🌐 GitHub Backup (No Local Access)
+
+If Obsidian vault is unavailable, use the GitHub backup repository:
+
+**Base URL:** `https://github.com/markus41/obsidian/blob/main/`
+
+| Document                         | GitHub URL                                                                                        |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Orchestration Protocol           | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Orchestration-Protocol.md) |
+| MCP Servers                      | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/MCP-Servers.md) |
+| Agent Categories                 | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Agent-Categories.md) |
+| Workflows                        | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Workflows.md) |
+| Skills and Commands              | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Skills-and-Commands.md) |
+| Documentation Logging            | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Documentation-Logging-Architecture.md) |
+| Agent Activity Integration       | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Agent-Activity-Integration.md) |
+
+**Usage:** Use `WebFetch` or `mcp__MCP_DOCKER__fetch` to retrieve raw content from GitHub
+
 ---
 
 ## 🔑 Environment Variables
