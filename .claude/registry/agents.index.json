@@ -95,6 +95,14 @@
         "keywords": ["gitops", "argocd", "flux", "declarative"],
         "capabilities": ["gitops", "argo", "flux"],
         "priority": "low"
+      },
+      "ansible-specialist": {
+        "path": "agents/devops/ansible-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["ansible", "automation", "playbook", "configuration", "provisioning", "yaml"],
+        "capabilities": ["ansible_playbooks", "role_creation", "configuration_management"],
+        "priority": "medium"
       }
     },
 
@@ -137,6 +145,30 @@
         "model": "sonnet",
         "keywords": ["performance", "optimization", "profiling", "latency"],
         "capabilities": ["profiling", "optimization", "benchmarking"],
+        "priority": "medium"
+      },
+      "prisma-specialist": {
+        "path": "agents/development/prisma-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["prisma", "orm", "database", "schema", "typescript", "postgresql"],
+        "capabilities": ["prisma_schema", "migrations", "type_safe_queries"],
+        "priority": "high"
+      },
+      "redis-specialist": {
+        "path": "agents/development/redis-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["redis", "cache", "session", "pub-sub", "nosql", "memory"],
+        "capabilities": ["caching_strategies", "session_management", "redis_optimization"],
+        "priority": "medium"
+      },
+      "graphql-specialist": {
+        "path": "agents/development/graphql-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["graphql", "apollo", "schema", "resolver", "api", "federation"],
+        "capabilities": ["graphql_schema", "resolvers", "subscriptions", "federation"],
         "priority": "medium"
       }
     },
@@ -404,6 +436,14 @@
         "keywords": ["serverless", "lambda", "functions", "faas"],
         "capabilities": ["serverless", "event_driven"],
         "priority": "medium"
+      },
+      "pulumi-specialist": {
+        "path": "agents/cloud/pulumi-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["pulumi", "iac", "infrastructure", "cloud", "typescript", "python"],
+        "capabilities": ["pulumi_programs", "multi_cloud", "policy_as_code"],
+        "priority": "medium"
       }
     },
 
@@ -622,283 +662,17 @@
         "keywords": ["contract", "pact", "api-test", "schema"],
         "capabilities": ["contract_testing", "api_validation"],
         "priority": "low"
-      }
-    },
-
-    "keycloak": {
-      "keycloak-realm-admin": {
-        "path": "agents/keycloak/keycloak-realm-admin.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "realm", "client", "role", "user", "group", "permission"],
-        "capabilities": ["realm_management", "client_configuration", "role_assignment", "user_federation"],
-        "priority": "high"
       },
-      "keycloak-theme-developer": {
-        "path": "agents/keycloak/keycloak-theme-developer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "theme", "login", "ui", "customization", "branding", "ftl"],
-        "capabilities": ["theme_development", "login_customization", "email_templates"],
-        "priority": "medium"
-      },
-      "keycloak-identity-specialist": {
-        "path": "agents/keycloak/keycloak-identity-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "identity", "ldap", "saml", "oidc", "federation", "sso", "idp"],
-        "capabilities": ["identity_federation", "ldap_integration", "social_login", "saml_configuration"],
-        "priority": "high"
-      },
-      "keycloak-auth-flow-designer": {
-        "path": "agents/keycloak/keycloak-auth-flow-designer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["keycloak", "authentication", "flow", "2fa", "mfa", "otp", "webauthn", "passkey"],
-        "capabilities": ["auth_flow_design", "mfa_configuration", "otp_setup", "webauthn_integration"],
-        "priority": "high"
-      },
-      "keycloak-security-auditor": {
-        "path": "agents/keycloak/keycloak-security-auditor.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["keycloak", "security", "audit", "vulnerability", "compliance", "hardening"],
-        "capabilities": ["security_audit", "vulnerability_assessment", "compliance_review", "hardening"],
-        "priority": "high"
-      }
-    },
-
-    "mongodb-atlas": {
-      "mongodb-atlas-admin": {
-        "path": "agents/mongodb-atlas/mongodb-atlas-admin.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["mongodb", "atlas", "cluster", "database", "cloud", "backup", "scaling"],
-        "capabilities": ["cluster_management", "database_administration", "backup_configuration", "security_setup"],
-        "priority": "high"
-      },
-      "mongodb-schema-designer": {
-        "path": "agents/mongodb-atlas/mongodb-schema-designer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["mongodb", "schema", "model", "document", "embedding", "reference", "prisma"],
-        "capabilities": ["schema_design", "data_modeling", "embedding_patterns", "prisma_mongodb"],
-        "priority": "high"
-      },
-      "mongodb-query-optimizer": {
-        "path": "agents/mongodb-atlas/mongodb-query-optimizer.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["mongodb", "query", "performance", "index", "explain", "optimize", "slow"],
-        "capabilities": ["query_optimization", "index_analysis", "performance_tuning", "explain_analysis"],
-        "priority": "high"
-      },
-      "mongodb-aggregation-specialist": {
-        "path": "agents/mongodb-atlas/mongodb-aggregation-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["mongodb", "aggregation", "pipeline", "analytics", "report", "group", "lookup"],
-        "capabilities": ["aggregation_pipelines", "data_transformation", "analytics_queries", "report_generation"],
-        "priority": "medium"
-      }
-    },
-
-    "helm": {
-      "helm-chart-developer": {
-        "path": "agents/helm/helm-chart-developer.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["helm", "chart", "template", "values", "dependency", "packaging"],
-        "capabilities": ["chart_development", "template_creation", "dependency_management", "chart_testing"],
-        "priority": "high"
-      },
-      "helm-values-manager": {
-        "path": "agents/helm/helm-values-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["helm", "values", "environment", "configuration", "override", "secrets"],
-        "capabilities": ["values_management", "environment_config", "secrets_integration", "multi_env_support"],
-        "priority": "medium"
-      },
-      "helm-release-manager": {
-        "path": "agents/helm/helm-release-manager.md",
-        "type": "coordinator",
-        "model": "sonnet",
-        "keywords": ["helm", "release", "upgrade", "rollback", "deploy", "history"],
-        "capabilities": ["release_management", "deployment_coordination", "rollback_handling", "multi_cluster"],
-        "priority": "high"
-      }
-    },
-
-    "kubernetes": {
-      "k8s-architect": {
-        "path": "agents/kubernetes/k8s-architect.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "architecture", "design", "cluster", "topology", "networking"],
-        "capabilities": ["cluster_architecture", "network_design", "resource_planning", "high_availability"],
-        "priority": "high"
-      },
-      "k8s-debugger": {
-        "path": "agents/kubernetes/k8s-debugger.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "debug", "troubleshoot", "logs", "events", "pod", "crash"],
-        "capabilities": ["pod_debugging", "log_analysis", "event_investigation", "network_debugging"],
-        "priority": "high"
-      },
-      "k8s-security-specialist": {
-        "path": "agents/kubernetes/k8s-security-specialist.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "security", "rbac", "psp", "network-policy", "secrets", "compliance"],
-        "capabilities": ["security_audit", "rbac_design", "network_policies", "secret_management"],
-        "priority": "high"
-      },
-      "k8s-resource-optimizer": {
-        "path": "agents/kubernetes/k8s-resource-optimizer.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["kubernetes", "resources", "optimization", "scaling", "hpa", "vpa", "cost"],
-        "capabilities": ["resource_optimization", "autoscaling_configuration", "capacity_planning", "cost_optimization"],
-        "priority": "medium"
-      }
-    },
-
-    "multi-tenant": {
-      "multi-tenant-architect": {
-        "path": "agents/multi-tenant/multi-tenant-architect.md",
-        "type": "architect",
-        "model": "sonnet",
-        "keywords": ["multi-tenant", "saas", "tenant", "organization", "isolation", "org_id"],
-        "capabilities": ["tenant_architecture", "data_isolation", "org_management", "tenant_provisioning"],
-        "priority": "high"
-      },
-      "tenant-provisioning-specialist": {
-        "path": "agents/multi-tenant/tenant-provisioning-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["tenant", "provisioning", "onboarding", "organization", "setup", "enrollment"],
-        "capabilities": ["tenant_onboarding", "org_setup", "user_provisioning", "enrollment_flows"],
-        "priority": "high"
-      }
-    },
-
-    "stripe-payment": {
-      "stripe-integration-specialist": {
-        "path": "agents/stripe-payment/stripe-integration-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["stripe", "payment", "subscription", "billing", "webhook", "checkout"],
-        "capabilities": ["stripe_api", "payment_processing", "subscription_management", "webhook_handling"],
-        "priority": "high"
-      },
-      "subscription-lifecycle-manager": {
-        "path": "agents/stripe-payment/subscription-lifecycle-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["subscription", "lifecycle", "trial", "upgrade", "downgrade", "churn"],
-        "capabilities": ["subscription_lifecycle", "trial_management", "plan_changes", "churn_prevention"],
-        "priority": "high"
-      },
-      "invoice-manager": {
-        "path": "agents/stripe-payment/invoice-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["invoice", "billing", "receipt", "statement", "payment-history"],
-        "capabilities": ["invoice_generation", "payment_history", "billing_statements", "receipt_management"],
-        "priority": "medium"
-      }
-    },
-
-    "frontend-theming": {
-      "theme-system-architect": {
-        "path": "agents/frontend-theming/theme-system-architect.md",
-        "type": "architect",
-        "model": "sonnet",
-        "keywords": ["theme", "css", "design-tokens", "multi-tenant", "styling", "css-in-js"],
-        "capabilities": ["theme_architecture", "design_tokens", "dynamic_theming", "css_variables"],
-        "priority": "high"
-      },
-      "theme-builder": {
-        "path": "agents/frontend-theming/theme-builder.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["theme", "builder", "color-palette", "typography", "branding"],
-        "capabilities": ["theme_creation", "color_generation", "typography_config", "component_styling"],
-        "priority": "medium"
-      },
-      "white-label-specialist": {
-        "path": "agents/frontend-theming/white-label-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["white-label", "branding", "custom-domain", "enterprise", "logo"],
-        "capabilities": ["white_labeling", "custom_domains", "brand_assets", "keycloak_themes"],
-        "priority": "high"
-      }
-    },
-
-    "selenium-testing": {
-      "selenium-test-architect": {
-        "path": "agents/selenium-testing/selenium-test-architect.md",
-        "type": "architect",
-        "model": "sonnet",
-        "keywords": ["selenium", "e2e", "testing", "automation", "page-object", "webdriver"],
-        "capabilities": ["test_architecture", "page_objects", "test_data", "ci_integration"],
-        "priority": "high"
-      },
-      "auth-flow-tester": {
-        "path": "agents/selenium-testing/auth-flow-tester.md",
+      "vitest-specialist": {
+        "path": "agents/testing/vitest-specialist.md",
         "type": "validator",
-        "model": "sonnet",
-        "keywords": ["authentication", "login", "mfa", "sso", "keycloak", "session"],
-        "capabilities": ["auth_testing", "mfa_testing", "sso_testing", "session_testing"],
-        "priority": "high"
-      },
-      "member-journey-tester": {
-        "path": "agents/selenium-testing/member-journey-tester.md",
-        "type": "validator",
-        "model": "sonnet",
-        "keywords": ["member", "enrollment", "profile", "journey", "e2e", "isolation"],
-        "capabilities": ["enrollment_testing", "profile_testing", "journey_testing", "isolation_testing"],
-        "priority": "high"
+        "model": "haiku",
+        "keywords": ["vitest", "testing", "unit", "vite", "jest", "typescript"],
+        "capabilities": ["vitest_configuration", "unit_testing", "coverage_reporting"],
+        "priority": "low"
       }
     },
 
-    "membership-domain": {
-      "membership-specialist": {
-        "path": "agents/membership-domain/membership-specialist.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["member", "membership", "crud", "tier", "renewal", "status"],
-        "capabilities": ["member_crud", "tier_management", "status_management", "renewal_processing"],
-        "priority": "high"
-      },
-      "member-engagement-agent": {
-        "path": "agents/membership-domain/member-engagement-agent.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["engagement", "activity", "tracking", "retention", "communication"],
-        "capabilities": ["activity_tracking", "engagement_scoring", "communication_prefs", "retention_analysis"],
-        "priority": "medium"
-      },
-      "membership-analytics-agent": {
-        "path": "agents/membership-domain/membership-analytics-agent.md",
-        "type": "analyst",
-        "model": "sonnet",
-        "keywords": ["analytics", "metrics", "churn", "growth", "cohort", "dashboard"],
-        "capabilities": ["member_metrics", "churn_prediction", "growth_analysis", "cohort_analysis"],
-        "priority": "medium"
-      },
-      "directory-manager": {
-        "path": "agents/membership-domain/directory-manager.md",
-        "type": "developer",
-        "model": "sonnet",
-        "keywords": ["directory", "search", "privacy", "export", "categories"],
-        "capabilities": ["directory_management", "privacy_controls", "search_functionality", "export_generation"],
-        "priority": "medium"
-      }
-    },
 
     "utility": {
       "context-cleanup-agent": {
@@ -924,55 +698,195 @@
         "keywords": ["registry", "index", "agents", "skills", "workflows", "validation"],
         "capabilities": ["registry_management", "index_generation", "validation", "auto_discovery"],
         "priority": "high"
+      },
+      "regex-expert": {
+        "path": "agents/utility/regex-expert.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": ["regex", "pattern", "matching", "validation", "parsing", "regexp"],
+        "capabilities": ["regex_design", "pattern_optimization", "text_parsing"],
+        "priority": "medium"
+      }
+    },
+
+    "system-ops": {
+      "shell-expert": {
+        "path": "agents/system-ops/shell-expert.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["bash", "shell", "script", "zsh", "terminal", "cli", "scripting"],
+        "capabilities": ["shell_scripting", "cli_automation", "system_automation"],
+        "priority": "high"
+      },
+      "env-manager": {
+        "path": "agents/system-ops/env-manager.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": ["env", "environment", "dotenv", "config", "variables", "secrets"],
+        "capabilities": ["environment_config", "secret_detection", "config_migration"],
+        "priority": "high"
+      },
+      "dependency-analyzer": {
+        "path": "agents/system-ops/dependency-analyzer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": ["dependencies", "package", "npm", "pip", "vulnerability", "audit", "license"],
+        "capabilities": ["dependency_analysis", "vulnerability_scanning", "license_compliance"],
+        "priority": "medium"
+      },
+      "error-analyzer": {
+        "path": "agents/system-ops/error-analyzer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": ["error", "exception", "traceback", "diagnostic", "troubleshoot", "debug"],
+        "capabilities": ["error_interpretation", "stack_trace_analysis", "root_cause_identification"],
+        "priority": "high"
+      }
+    },
+
+    "mobile": {
+      "react-native-specialist": {
+        "path": "agents/mobile/react-native-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["react-native", "expo", "mobile", "ios", "android", "cross-platform"],
+        "capabilities": ["react_native_development", "expo_configuration", "native_modules"],
+        "priority": "high"
+      },
+      "flutter-specialist": {
+        "path": "agents/mobile/flutter-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["flutter", "dart", "mobile", "cross-platform", "widgets", "material"],
+        "capabilities": ["flutter_development", "dart_expertise", "state_management"],
+        "priority": "medium"
+      },
+      "ios-specialist": {
+        "path": "agents/mobile/ios-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "uikit"],
+        "capabilities": ["swift_development", "ios_sdk", "app_store_deployment"],
+        "priority": "medium"
+      },
+      "android-specialist": {
+        "path": "agents/mobile/android-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["android", "kotlin", "jetpack", "compose", "gradle", "material"],
+        "capabilities": ["kotlin_development", "android_sdk", "play_store_deployment"],
+        "priority": "medium"
+      }
+    },
+
+    "messaging": {
+      "kafka-specialist": {
+        "path": "agents/messaging/kafka-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["kafka", "streaming", "event", "pub-sub", "broker", "topics"],
+        "capabilities": ["kafka_cluster_design", "stream_processing", "schema_registry"],
+        "priority": "high"
+      },
+      "rabbitmq-specialist": {
+        "path": "agents/messaging/rabbitmq-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["rabbitmq", "amqp", "queue", "message", "broker", "exchange"],
+        "capabilities": ["rabbitmq_configuration", "message_routing", "high_availability"],
+        "priority": "medium"
+      },
+      "event-streaming-architect": {
+        "path": "agents/messaging/event-streaming-architect.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": ["event-driven", "streaming", "cqrs", "event-sourcing", "saga", "choreography"],
+        "capabilities": ["event_architecture", "cqrs_implementation", "saga_patterns"],
+        "priority": "medium"
+      }
+    },
+
+    "migration": {
+      "code-migration-specialist": {
+        "path": "agents/migration/code-migration-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["migration", "upgrade", "refactor", "modernize", "legacy", "framework"],
+        "capabilities": ["code_migration", "framework_upgrades", "breaking_change_management"],
+        "priority": "high"
+      },
+      "refactoring-guru": {
+        "path": "agents/migration/refactoring-guru.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["refactor", "cleanup", "technical-debt", "patterns", "improve", "quality"],
+        "capabilities": ["code_smell_detection", "design_patterns", "technical_debt_reduction"],
+        "priority": "high"
+      }
+    },
+
+    "quality-gates": {
+      "spec-validator": {
+        "path": "agents/quality-gates/spec-validator.md",
+        "type": "validator",
+        "model": "sonnet",
+        "keywords": ["validation", "schema", "spec", "openapi", "quality-gate", "swagger"],
+        "capabilities": ["openapi_validation", "schema_validation", "quality_enforcement"],
+        "priority": "high"
+      },
+      "coverage-analyzer": {
+        "path": "agents/quality-gates/coverage-analyzer.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": ["coverage", "testing", "metrics", "quality", "threshold", "lcov"],
+        "capabilities": ["coverage_analysis", "threshold_enforcement", "trend_tracking"],
+        "priority": "medium"
       }
     }
   },
 
   "stats": {
     "byType": {
-      "developer": 60,
-      "analyst": 22,
+      "developer": 54,
+      "analyst": 17,
       "coordinator": 19,
-      "validator": 7,
-      "architect": 4
+      "validator": 7
     },
     "byModel": {
-      "sonnet": 88,
-      "haiku": 9,
+      "sonnet": 84,
+      "haiku": 13,
       "opus": 0
     },
     "byPriority": {
-      "high": 47,
-      "medium": 43,
-      "low": 15
+      "high": 26,
+      "medium": 53,
+      "low": 18
     },
     "byCategory": {
       "core": 6,
-      "devops": 5,
-      "development": 5,
+      "devops": 6,
+      "development": 8,
       "frontend": 5,
       "languages": 7,
       "security": 5,
       "data-ai": 5,
       "operations": 4,
-      "cloud": 5,
+      "cloud": 6,
       "swarm": 3,
       "github": 4,
       "atlassian": 8,
       "documentation": 3,
       "golden-armada": 3,
-      "testing": 4,
-      "keycloak": 5,
-      "mongodb-atlas": 4,
-      "helm": 3,
-      "kubernetes": 4,
-      "multi-tenant": 2,
-      "stripe-payment": 3,
-      "frontend-theming": 3,
-      "selenium-testing": 3,
-      "membership-domain": 4,
-      "utility": 3
+      "testing": 5,
+      "utility": 4,
+      "system-ops": 4,
+      "mobile": 4,
+      "messaging": 3,
+      "migration": 2,
+      "quality-gates": 2
     },
-    "totalAgents": 101
+    "totalAgents": 97,
+    "note": "22 new agents added from VoltAgent, 0xfurai, and DeepWiki repositories. Categories: system-ops, mobile, messaging, migration, quality-gates.",
+    "lastUpdated": "2025-12-12"
   }
 }

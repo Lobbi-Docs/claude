@@ -12,8 +12,8 @@ set -e
 HOOK_NAME="repo-cleanup-manager"
 ACTION="${1:-status}"
 
-# Configuration
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT_PATH:-/home/user/obsidian}"
+# Configuration - Uses environment variables for portability
+OBSIDIAN_VAULT="${OBSIDIAN_VAULT_PATH:-${HOME}/obsidian}"
 CLAUDE_DIR=".claude"
 ARCHIVE_BASE="$OBSIDIAN_VAULT/System/Claude-Archives"
 MAX_AGE_DAYS="${MAX_AGE_DAYS:-30}"  # Files older than this can be archived

@@ -1,4 +1,4 @@
-# Golden Armada - Ultra-Minimal Entry Point
+# Claude Orchestration - Ultra-Minimal Entry Point
 
 **Context Budget:** 100,000 tokens | **Current File:** ~1,000 tokens (98.6% reduction from original)
 
@@ -6,9 +6,9 @@
 
 ## 🚀 Quick Start
 
-**Stack:** Python 3.11 + Node.js 20 + Docker/K8s | **LLMs:** Claude/GPT/Gemini/Ollama
+**Stack:** Configure your stack below | **LLMs:** Claude/GPT/Gemini/Ollama
 
-**Project:** `C:\Users\MarkusAhling\dev\new-alpa-1.4\Alpha-1.4` | **Branch:** main
+**Project:** `${PROJECT_ROOT}` | **Branch:** ${GIT_BRANCH}
 
 ---
 
@@ -47,29 +47,32 @@ EXPLORE (2+ agents) → PLAN (1-2) → CODE (2-4) → TEST (2-3) → FIX (1-2) �
 
 **All resources loaded on-demand from registry indexes:**
 
-| Resource      | Index Location                          | Count           |
-| ------------- | --------------------------------------- | --------------- |
-| **Agents**    | `.claude/registry/agents.index.json`    | 101             |
-| **Skills**    | `.claude/registry/skills.index.json`    | 31              |
-| **MCPs**      | `.claude/registry/mcps.index.json`      | 8               |
-| **Workflows** | `.claude/registry/workflows.index.json` | 21              |
-| **Keywords**  | `.claude/registry/search/keywords.json` | Unified mapping |
+| Resource      | Index Location                          | Count                      |
+| ------------- | --------------------------------------- | -------------------------- |
+| **Agents**    | `.claude/registry/agents.index.json`    | Project-specific           |
+| **Skills**    | `.claude/registry/skills.index.json`    | Project-specific           |
+| **MCPs**      | `.claude/registry/mcps.index.json`      | Based on integrations      |
+| **Workflows** | `.claude/registry/workflows.index.json` | Project-specific           |
+| **Keywords**  | `.claude/registry/search/keywords.json` | Unified mapping            |
 
 **Quick Lookup:** Check keyword index → Load specific agent/skill/workflow on-demand
 
-### Lobbi Platform Agents (NEW)
-| Category          | Agents | Purpose                        |
-| ----------------- | ------ | ------------------------------ |
-| multi-tenant      | 2      | Tenant architecture, provisioning |
-| stripe-payment    | 3      | Payments, subscriptions, invoices |
-| frontend-theming  | 3      | Theme system, white-labeling     |
-| selenium-testing  | 3      | E2E tests, auth/member flows     |
-| membership-domain | 4      | Member CRUD, engagement, analytics |
-| utility           | 3      | Context cleanup, registry mgmt   |
+### Project-Specific Agents
+
+Configure your agents in `.claude/registry/agents.index.json`. Common categories:
+
+| Category     | Purpose                              |
+| ------------ | ------------------------------------ |
+| **core**     | Core business logic, architecture    |
+| **testing**  | E2E tests, integration tests         |
+| **frontend** | UI components, theming, UX           |
+| **backend**  | API, database, services              |
+| **devops**   | CI/CD, deployment, infrastructure    |
+| **utility**  | Context cleanup, registry management |
 
 ---
 
-## 🔌 MCP Servers (8 Available)
+## 🔌 MCP Servers (Configure As Needed)
 
 **Load full MCP documentation:** `[[System/Claude-Instructions/MCP-Servers]]`
 
@@ -101,20 +104,57 @@ EXPLORE (2+ agents) → PLAN (1-2) → CODE (2-4) → TEST (2-3) → FIX (1-2) �
 
 **Load Command:** `mcp__obsidian__get_file_contents("System/Claude-Instructions/{filename}.md")`
 
+### 🌐 GitHub Backup (No Local Access)
+
+If Obsidian vault is unavailable, use the GitHub backup repository:
+
+**Base URL:** `https://github.com/markus41/obsidian/blob/main/`
+
+| Document                         | GitHub URL                                                                                        |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Orchestration Protocol           | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Orchestration-Protocol.md) |
+| MCP Servers                      | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/MCP-Servers.md) |
+| Agent Categories                 | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Agent-Categories.md) |
+| Workflows                        | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Workflows.md) |
+| Skills and Commands              | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Skills-and-Commands.md) |
+| Documentation Logging            | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Documentation-Logging-Architecture.md) |
+| Agent Activity Integration       | [GitHub](https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Agent-Activity-Integration.md) |
+
+**Usage:** Use `WebFetch` or `mcp__MCP_DOCKER__fetch` to retrieve raw content from GitHub
+
 ---
 
 ## 🔑 Environment Variables
+
+**Project Configuration:**
+
+| Variable                | Purpose                        | Example                                   |
+| ----------------------- | ------------------------------ | ----------------------------------------- |
+| `PROJECT_NAME`          | Project identifier             | `my-awesome-app`                          |
+| `PROJECT_ROOT`          | Project root directory         | `/path/to/project`                        |
+| `GIT_BRANCH`            | Default git branch             | `main`                                    |
+| `DOCKER_REGISTRY`       | Container registry             | `ghcr.io/org` or `docker.io/org`          |
+| `HELM_RELEASE_NAME`     | Helm release name              | `${PROJECT_NAME}`                         |
+| `K8S_NAMESPACE`         | Kubernetes namespace           | `${PROJECT_NAME}-prod`                    |
+| `OBSIDIAN_VAULT_PATH`   | Obsidian vault location        | `/path/to/obsidian` or `${HOME}/obsidian` |
+
+**LLM API Keys:**
 
 | Variable              | Purpose                          |
 | --------------------- | -------------------------------- |
 | `ANTHROPIC_API_KEY`   | Claude agents                    |
 | `OPENAI_API_KEY`      | GPT agents                       |
 | `GOOGLE_API_KEY`      | Gemini agents                    |
+
+**Integration Keys (Configure as needed):**
+
+| Variable              | Purpose                          |
+| --------------------- | -------------------------------- |
 | `JIRA_API_TOKEN`      | Jira integration                 |
 | `SUPABASE_*`          | Supabase MCP                     |
 | `VERCEL_*`            | Vercel MCP                       |
 | `UPSTASH_*`           | Upstash MCP                      |
-| `OBSIDIAN_VAULT_PATH` | `C:\Users\MarkusAhling\obsidian` |
+| `GITHUB_TOKEN`        | GitHub MCP                       |
 
 **Security:** Never commit secrets. Use K8s secrets or env vars.
 
@@ -123,12 +163,12 @@ EXPLORE (2+ agents) → PLAN (1-2) → CODE (2-4) → TEST (2-3) → FIX (1-2) �
 ## ⚙️ Quick CLI
 
 ```bash
-# Deploy
-docker build -f deployment/docker/claude/Dockerfile -t golden-armada/claude-agent .
-helm upgrade --install golden-armada ./deployment/helm/golden-armada -n agents
+# Deploy (customize based on your deployment strategy)
+docker build -f deployment/docker/Dockerfile -t ${DOCKER_REGISTRY}/${PROJECT_NAME} .
+helm upgrade --install ${HELM_RELEASE_NAME} ./deployment/helm/${PROJECT_NAME} -n ${K8S_NAMESPACE}
 
 # Debug
-kubectl logs -n agents -l app=claude-agent -f
+kubectl logs -n ${K8S_NAMESPACE} -l app=${PROJECT_NAME} -f
 
 # Orchestration status
 .claude/orchestration/cli.sh status
@@ -149,7 +189,7 @@ kubectl logs -n agents -l app=claude-agent -f
 ├── hooks/                     # Enforcement hooks
 └── docs/                      # Implementation guides
 
-obsidian/  (C:\Users\MarkusAhling\obsidian)
+${OBSIDIAN_VAULT_PATH}/
 └── System/
     └── Claude-Instructions/   # External detailed docs
         ├── Orchestration-Protocol.md
@@ -192,16 +232,16 @@ obsidian/  (C:\Users\MarkusAhling\obsidian)
 - Work on complex tasks without spawning sub-agents
 - Keep old documentation files in repo (sync to Obsidian first)
 
-### Hooks Enforcement:
+### Core Hooks (Generic):
 
-| Hook                        | Purpose                                    |
-| --------------------------- | ------------------------------------------ |
-| enforce-subagent-usage.sh   | Reminds to use sub-agents for complex tasks |
-| obsidian-documentation-sync | Auto-syncs docs to Obsidian vault          |
-| repo-cleanup-manager.sh     | Archives old .md files, declutters repo    |
-| tenant-isolation-validator  | Validates org_id filtering in code         |
-| stripe-webhook-security     | Validates Stripe webhook handlers          |
-| member-data-privacy         | Checks PII handling compliance             |
+| Hook                        | Purpose                                      |
+| --------------------------- | -------------------------------------------- |
+| enforce-subagent-usage.sh   | Reminds to use sub-agents for complex tasks  |
+| obsidian-documentation-sync | Auto-syncs docs to Obsidian vault            |
+| repo-cleanup-manager.sh     | Archives old .md files, declutters repo      |
+| context-management-hook.sh  | Enforces token budget and checkpointing      |
+
+**Note:** Add project-specific hooks in `.claude/hooks/` directory as needed.
 
 ### Lookup Strategy:
 
@@ -257,4 +297,22 @@ workflows = mcp__obsidian__get_file_contents(
 
 ---
 
-**Optimized for:** Maximum orchestration, zero context loss, measurable outcomes, 98.6% token reduction.
+## 🎯 Project Setup Checklist
+
+When starting a new project with this template:
+
+- [ ] Set `PROJECT_NAME` environment variable
+- [ ] Set `PROJECT_ROOT` to your project directory
+- [ ] Set `OBSIDIAN_VAULT_PATH` to your Obsidian vault
+- [ ] Configure `DOCKER_REGISTRY` for your organization
+- [ ] Update `.claude/registry/*.index.json` with project-specific agents/skills
+- [ ] Remove project-specific hooks that don't apply
+- [ ] Add custom hooks for your domain (in `.claude/hooks/`)
+- [ ] Configure MCP servers in your Claude Code settings
+- [ ] Update the Quick CLI section with your deployment commands
+- [ ] Set up LLM API keys (ANTHROPIC_API_KEY, etc.)
+- [ ] Customize the "Stack" section in Quick Start
+
+---
+
+**Optimized for:** Maximum orchestration, zero context loss, measurable outcomes, 98.6% token reduction, universal portability.

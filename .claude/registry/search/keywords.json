@@ -235,10 +235,123 @@
       "workflows": [],
       "mcps": ["supabase"],
       "tools": ["mcp__supabase__deploy_edge_function", "mcp__supabase__list_edge_functions"]
+    },
+    "think": {
+      "agents": ["system-architect", "code-analyzer", "security-auditor"],
+      "skills": ["extended-thinking", "complex-reasoning", "deep-analysis"],
+      "commands": [],
+      "workflows": [],
+      "mcps": [],
+      "tools": ["Task"]
+    },
+    "analyze": {
+      "agents": ["code-analyzer", "security-auditor", "performance-engineer"],
+      "skills": ["extended-thinking", "complex-reasoning", "deep-analysis", "debugging"],
+      "commands": ["review-all", "security-scan", "optimize-code"],
+      "workflows": ["code-review"],
+      "mcps": [],
+      "tools": ["Read", "Grep", "Task"]
+    },
+    "reason": {
+      "agents": ["system-architect"],
+      "skills": ["extended-thinking", "complex-reasoning"],
+      "commands": [],
+      "workflows": [],
+      "mcps": [],
+      "tools": ["Task"]
+    },
+    "audit": {
+      "agents": ["security-auditor", "compliance-checker", "code-analyzer"],
+      "skills": ["deep-analysis", "extended-thinking", "authentication"],
+      "commands": ["security-scan", "secure-audit", "compliance-audit"],
+      "workflows": ["code-review", "infrastructure-audit"],
+      "mcps": [],
+      "tools": ["Read", "Grep"]
+    },
+    "caching": {
+      "agents": ["performance-engineer", "backend-dev"],
+      "skills": ["prompt-caching", "redis"],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["upstash"],
+      "tools": ["Read", "Edit"]
+    },
+    "vision": {
+      "agents": ["ml-engineer", "data-engineer"],
+      "skills": ["vision-multimodal", "llm-integration"],
+      "commands": [],
+      "workflows": [],
+      "mcps": [],
+      "tools": ["Read", "Task"]
+    },
+    "image": {
+      "agents": ["ml-engineer", "ui-designer"],
+      "skills": ["vision-multimodal"],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["playwright"],
+      "tools": ["Read", "mcp__playwright__browser_take_screenshot"]
+    },
+    "streaming": {
+      "agents": ["backend-dev", "api-designer"],
+      "skills": ["streaming", "llm-integration"],
+      "commands": [],
+      "workflows": [],
+      "mcps": [],
+      "tools": ["Read", "Edit", "Write"]
+    },
+    "batch": {
+      "agents": ["data-engineer", "ml-engineer"],
+      "skills": ["batch-processing", "llm-integration"],
+      "commands": [],
+      "workflows": ["data-processing-workflow"],
+      "mcps": [],
+      "tools": ["Bash", "Task"]
+    },
+    "citation": {
+      "agents": ["rag-specialist", "docs-writer"],
+      "skills": ["citations-retrieval", "llm-integration", "vector-db"],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["context7"],
+      "tools": ["Read", "Task"]
+    },
+    "rag": {
+      "agents": ["rag-specialist", "ml-engineer", "llm-engineer"],
+      "skills": ["citations-retrieval", "vector-db", "llm-integration"],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["context7", "upstash"],
+      "tools": ["Task"]
+    },
+    "tool-use": {
+      "agents": ["api-designer", "backend-dev"],
+      "skills": ["tool-use", "llm-integration"],
+      "commands": [],
+      "workflows": [],
+      "mcps": [],
+      "tools": ["Task", "Read", "Write"]
     }
   },
 
   "synonyms": {
+    "ultrathink": "think",
+    "extended-thinking": "think",
+    "deep-thinking": "think",
+    "think-harder": "think",
+    "deliberate": "think",
+    "step-by-step": "reason",
+    "chain-of-thought": "reason",
+    "tree-of-thought": "reason",
+    "systematic": "reason",
+    "hypothesis": "reason",
+    "investigate": "analyze",
+    "evaluate": "analyze",
+    "assess": "analyze",
+    "comprehensive": "analyze",
+    "deep-dive": "analyze",
+    "code-audit": "audit",
+    "security-audit": "audit",
     "k8s": "container",
     "kube": "container",
     "kubernetes": "container",
@@ -284,7 +397,33 @@
     "github": "git",
     "jira": "sprint",
     "confluence": "documentation",
-    "atlassian": "sprint"
+    "atlassian": "sprint",
+    "prompt-cache": "caching",
+    "cache_control": "caching",
+    "ephemeral": "caching",
+    "latency": "caching",
+    "multimodal": "vision",
+    "base64": "vision",
+    "ocr": "vision",
+    "screenshot": "vision",
+    "pdf": "vision",
+    "sse": "streaming",
+    "server-sent-events": "streaming",
+    "real-time": "streaming",
+    "delta": "streaming",
+    "bulk": "batch",
+    "jsonl": "batch",
+    "mass-processing": "batch",
+    "source": "citation",
+    "reference": "citation",
+    "attribution": "citation",
+    "grounding": "citation",
+    "retrieval-augmented": "rag",
+    "contextual-retrieval": "rag",
+    "tool_use": "tool-use",
+    "tool_choice": "tool-use",
+    "function-calling": "tool-use",
+    "structured-output": "tool-use"
   },
 
   "compoundQueries": {
@@ -377,6 +516,66 @@
       "workflows": [],
       "mcps": ["supabase"],
       "tools": ["mcp__supabase__deploy_edge_function"]
+    },
+    "think harder": {
+      "agents": ["system-architect", "code-analyzer"],
+      "skills": ["extended-thinking", "complex-reasoning", "deep-analysis"],
+      "workflows": [],
+      "mcps": []
+    },
+    "deep analysis": {
+      "agents": ["code-analyzer", "security-auditor"],
+      "skills": ["deep-analysis", "extended-thinking"],
+      "workflows": ["code-review"],
+      "mcps": []
+    },
+    "comprehensive review": {
+      "agents": ["code-analyzer", "reviewer"],
+      "skills": ["deep-analysis", "extended-thinking", "complex-reasoning"],
+      "workflows": ["code-review"],
+      "mcps": []
+    },
+    "enable caching": {
+      "agents": ["performance-engineer", "backend-dev"],
+      "skills": ["prompt-caching", "llm-integration"],
+      "workflows": [],
+      "mcps": []
+    },
+    "analyze image": {
+      "agents": ["ml-engineer"],
+      "skills": ["vision-multimodal", "llm-integration"],
+      "workflows": [],
+      "mcps": []
+    },
+    "stream response": {
+      "agents": ["backend-dev", "api-designer"],
+      "skills": ["streaming", "llm-integration"],
+      "workflows": [],
+      "mcps": []
+    },
+    "batch process": {
+      "agents": ["data-engineer", "ml-engineer"],
+      "skills": ["batch-processing", "llm-integration"],
+      "workflows": ["data-processing-workflow"],
+      "mcps": []
+    },
+    "add citations": {
+      "agents": ["rag-specialist", "docs-writer"],
+      "skills": ["citations-retrieval", "llm-integration"],
+      "workflows": [],
+      "mcps": ["context7"]
+    },
+    "build rag": {
+      "agents": ["rag-specialist", "ml-engineer"],
+      "skills": ["citations-retrieval", "vector-db", "llm-integration"],
+      "workflows": [],
+      "mcps": ["context7", "upstash"]
+    },
+    "define tools": {
+      "agents": ["api-designer", "backend-dev"],
+      "skills": ["tool-use", "llm-integration"],
+      "workflows": [],
+      "mcps": []
     }
   },
 

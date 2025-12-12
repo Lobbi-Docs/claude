@@ -72,11 +72,19 @@
     },
     "full": {
       "description": "Full skill set for complex tasks",
-      "maxSkills": 10,
+      "maxSkills": 12,
       "skills": "all-matching",
       "conditions": {
         "taskComplexity": "high",
         "multipleAgents": true
+      }
+    },
+    "reasoning": {
+      "description": "Deep reasoning and analysis focused",
+      "maxSkills": 8,
+      "skills": ["extended-thinking", "complex-reasoning", "deep-analysis", "debugging", "testing"],
+      "conditions": {
+        "keywords": ["think", "analyze", "reason", "investigate", "audit", "comprehensive"]
       }
     },
     "infrastructure": {
@@ -157,6 +165,12 @@
       "skills": ["aws", "terraform"],
       "activateTogether": true,
       "trigger": "aws"
+    },
+    "ultrathink-stack": {
+      "description": "Extended thinking and reasoning stack",
+      "skills": ["extended-thinking", "complex-reasoning", "deep-analysis"],
+      "activateTogether": true,
+      "trigger": "think"
     }
   },
 
@@ -191,6 +205,16 @@
         "context": "User asks to create a Jira story and plan sprint",
         "activate": ["jira", "scrum"],
         "reasoning": "Project management task requires Jira and Scrum methodology"
+      },
+      {
+        "context": "User asks to think harder about architecture design",
+        "activate": ["extended-thinking", "complex-reasoning", "deep-analysis"],
+        "reasoning": "Complex reasoning requires full ultrathink stack"
+      },
+      {
+        "context": "User asks for comprehensive code audit",
+        "activate": ["deep-analysis", "extended-thinking", "testing", "debugging"],
+        "reasoning": "Audit needs deep analysis with extended thinking"
       }
     ]
   },

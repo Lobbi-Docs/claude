@@ -8,7 +8,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="${SCRIPT_DIR}/.."
 ORCH_DIR="${CLAUDE_DIR}/orchestration"
-VAULT_PATH="C:/Users/MarkusAhling/obsidian"
+VAULT_PATH="${OBSIDIAN_VAULT_PATH:-${HOME}/obsidian}"
 CONTEXT_MGMT_PATH="${VAULT_PATH}/System/Context-Management"
 
 # Context Budget Configuration

@@ -13,9 +13,10 @@ HOOK_NAME="obsidian-documentation-sync"
 PHASE="${1:-unknown}"
 CONTEXT="${2:-}"
 
-# Configuration
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT_PATH:-/home/user/obsidian}"
+# Configuration - Uses environment variables for portability
+OBSIDIAN_VAULT="${OBSIDIAN_VAULT_PATH:-${HOME}/obsidian}"
 CLAUDE_DIR=".claude"
+PROJECT_NAME="${PROJECT_NAME:-project}"
 ARCHIVE_DIR="$OBSIDIAN_VAULT/System/Claude-Archives"
 DOCS_DIR="$OBSIDIAN_VAULT/System/Claude-Instructions"
 

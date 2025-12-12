@@ -1,120 +1,124 @@
-# Atlassian MCP Server Setup
+# MCP Servers Configuration
 
-This directory contains configuration for Model Context Protocol (MCP) servers that enable Claude Code to interact with Jira and Confluence.
+This directory contains Model Context Protocol (MCP) server configurations that enable Claude Code to interact with external services and documentation systems.
 
-## Prerequisites
+## Overview
 
-1. **Node.js 18+** - Required for MCP server execution
-2. **Atlassian API Token** - Generate from [id.atlassian.com](https://id.atlassian.com/manage-profile/security/api-tokens)
+| MCP Server | Status | Purpose |
+|-----------|--------|---------|
+| **Obsidian** | Portable | Centralized documentation, ADRs, research notes |
+| **Atlassian (Jira/Confluence)** | Portable | Project management and team documentation |
 
 ## Environment Variables
 
-Set these environment variables before using the MCP servers:
+All MCP configurations now use environment variables for portability. Set these variables before using the services.
 
-\`\`\`bash
-# Jira Configuration
-export JIRA_URL="https://your-domain.atlassian.net"
-export JIRA_EMAIL="your-email@example.com"
-export JIRA_API_TOKEN="your-api-token"
-export JIRA_PROJECT_KEY="GA"  # Default project key
-export JIRA_BOARD_ID="1"      # Board ID for sprints
+### Obsidian Configuration
 
-# Confluence Configuration
-export CONFLUENCE_URL="https://your-domain.atlassian.net/wiki"
-export CONFLUENCE_EMAIL="your-email@example.com"
-export CONFLUENCE_API_TOKEN="your-api-token"
-export CONFLUENCE_SPACE_KEY="GA"  # Default space key
-\`\`\`
+**Required Variables:**
+- `OBSIDIAN_VAULT_PATH` - Path to your Obsidian vault directory
+  - This should point to the root directory of your Obsidian vault
 
-## MCP Server Options
+**Optional Variables:**
+- `OBSIDIAN_REST_API_PORT` - Port for Obsidian REST API (default: 27124)
+- `OBSIDIAN_API_KEY` - API key for REST API authentication (if required)
 
-### Option 1: Use Community MCP Servers (Recommended)
+### Jira Configuration
 
-Check the [MCP Server Registry](https://github.com/modelcontextprotocol/servers) for available Atlassian integrations:
+**Required Variables:**
+- `JIRA_URL` - Base URL of your Jira instance (e.g., https://your-domain.atlassian.net)
+- `JIRA_EMAIL` - Email address for Jira authentication
+- `JIRA_API_TOKEN` - API token (generate from id.atlassian.com/manage-profile/security/api-tokens)
 
-\`\`\`json
-{
-  "mcpServers": {
-    "atlassian": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-atlassian"],
-      "env": {
-        "ATLASSIAN_URL": "${JIRA_URL}",
-        "ATLASSIAN_EMAIL": "${JIRA_EMAIL}",
-        "ATLASSIAN_API_TOKEN": "${JIRA_API_TOKEN}"
-      }
-    }
-  }
-}
-\`\`\`
+**Optional Variables:**
+- `JIRA_PROJECT_KEY` - Default project key for operations (default: GA)
+- `JIRA_BOARD_ID` - Board ID for sprint operations
 
-### Option 2: Custom MCP Server Implementation
+### Confluence Configuration
 
-Create custom MCP servers using the schema defined in `atlassian-mcp.json`:
+**Required Variables:**
+- `CONFLUENCE_URL` - Base URL of your Confluence instance (e.g., https://your-domain.atlassian.net/wiki)
+- `CONFLUENCE_EMAIL` - Email address for Confluence authentication
+- `CONFLUENCE_API_TOKEN` - API token (same token as Jira)
 
-1. Install dependencies:
-   \`\`\`bash
-   npm init -y
-   npm install @modelcontextprotocol/sdk node-fetch
-   \`\`\`
-
-2. Create `jira-server.js` and `confluence-server.js` implementing the tool schemas
-
-3. Update `.claude/settings.json` with your server paths
+**Optional Variables:**
+- `CONFLUENCE_SPACE_KEY` - Default space key for operations (default: GA)
 
 ## Configuration Files
 
 | File | Purpose |
 |------|---------|
-| `atlassian-mcp.json` | Tool schemas and capability definitions |
-| `jira-server.js` | Jira MCP server implementation (create this) |
-| `confluence-server.js` | Confluence MCP server implementation (create this) |
+| obsidian-mcp.json | Obsidian vault integration |
+| atlassian-mcp.json | Jira and Confluence integration |
 
 ## Available Tools
 
+### Obsidian Tools
+- list_files_in_vault, get_file_contents, simple_search, append_content, patch_content, etc.
+
 ### Jira Tools
-- `jira_create_issue` - Create new issues
-- `jira_get_issue` - Fetch issue details
-- `jira_update_issue` - Update existing issues
-- `jira_transition_issue` - Move issues through workflow
-- `jira_search` - Search with JQL
-- `jira_add_comment` - Add comments
-- `jira_get_sprint` - Get sprint info
-- `jira_move_to_sprint` - Move issues to sprint
+- jira_create_issue, jira_get_issue, jira_update_issue, jira_transition_issue, jira_search, jira_add_comment, jira_get_sprint, jira_move_to_sprint
 
 ### Confluence Tools
-- `confluence_create_page` - Create new pages
-- `confluence_get_page` - Fetch page content
-- `confluence_update_page` - Update pages
-- `confluence_search` - Search with CQL
-- `confluence_add_labels` - Add labels to pages
-- `confluence_get_space` - Get space info
-- `confluence_list_pages` - List pages in space
+- confluence_create_page, confluence_get_page, confluence_update_page, confluence_search, confluence_add_labels, confluence_get_space, confluence_list_pages
 
-## Testing
+## Environment Variable Syntax
 
-Test your configuration:
+The JSON configuration files use this syntax:
+- ${VARIABLE_NAME} - Required environment variable
+- ${VARIABLE_NAME:-default} - Environment variable with default fallback
 
-\`\`\`bash
-# Test Jira connection
-curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" \
-  "$JIRA_URL/rest/api/3/myself" | jq '.displayName'
+Example:
+```json
+"env": {
+  "JIRA_PROJECT_KEY": "${JIRA_PROJECT_KEY:-GA}",
+  "OBSIDIAN_VAULT_PATH": "${OBSIDIAN_VAULT_PATH}"
+}
+```
 
-# Test Confluence connection
-curl -s -u "$CONFLUENCE_EMAIL:$CONFLUENCE_API_TOKEN" \
-  "$CONFLUENCE_URL/rest/api/space/$CONFLUENCE_SPACE_KEY" | jq '.name'
-\`\`\`
+## Enabling/Disabling MCP Servers
 
-## Troubleshooting
+Update .claude/settings.json to enable or disable specific servers:
+```json
+{
+  "mcpServers": {
+    "obsidian": { "disabled": false },
+    "jira": { "disabled": false },
+    "confluence": { "disabled": false }
+  }
+}
+```
 
-1. **Authentication errors**: Verify API token is valid and not expired
-2. **Permission errors**: Ensure user has appropriate Jira/Confluence permissions
-3. **Rate limiting**: Atlassian Cloud has rate limits; implement retry logic
-4. **Network issues**: Check firewall/proxy settings for Atlassian Cloud access
+## Testing Your Configuration
+
+### Test Jira Connection
+```bash
+curl -u "$JIRA_EMAIL:$JIRA_API_TOKEN" "$JIRA_URL/rest/api/3/myself" | jq '.displayName'
+```
+
+### Test Confluence Connection
+```bash
+curl -u "$CONFLUENCE_EMAIL:$CONFLUENCE_API_TOKEN" "$CONFLUENCE_URL/rest/api/space/$CONFLUENCE_SPACE_KEY" | jq '.name'
+```
+
+## Security Best Practices
+
+1. Never commit .env files - Use .gitignore
+2. Store tokens securely in environment variables, not config files
+3. Rotate API tokens regularly
+4. Use minimal permissions when creating API tokens
+5. Audit access logs periodically
 
 ## Resources
 
-- [MCP Specification](https://modelcontextprotocol.io/)
-- [Jira Cloud REST API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/)
-- [Confluence Cloud REST API](https://developer.atlassian.com/cloud/confluence/rest/v2/intro/)
-- [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+- MCP Specification: https://modelcontextprotocol.io/
+- Jira Cloud REST API: https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/
+- Confluence Cloud REST API: https://developer.atlassian.com/cloud/confluence/rest/v2/intro/
+- Atlassian API Tokens: https://id.atlassian.com/manage-profile/security/api-tokens
+
+## Next Steps
+
+1. Set required environment variables for your services
+2. Test connections using provided test commands
+3. Configure which MCP servers to enable in .claude/settings.json
+4. Start using MCP tools in Claude Code workflows

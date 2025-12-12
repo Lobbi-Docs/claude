@@ -1,0 +1,96 @@
+{
+  "$schema": "./schema/agents.schema.json",
+  "version": "4.0.0",
+  "description": "Minimal agent index - paths and models only. Use keywords.json for search.",
+  "note": "Full metadata in agents.index.json (loaded on-demand)",
+
+  "agents": {
+    "core": {
+      "coder": { "path": "agents/core/coder.md", "model": "sonnet" },
+      "researcher": { "path": "agents/core/researcher.md", "model": "sonnet" },
+      "tester": { "path": "agents/core/tester.md", "model": "sonnet" },
+      "reviewer": { "path": "agents/core/reviewer.md", "model": "sonnet" },
+      "planner": { "path": "agents/core/planner.md", "model": "sonnet" },
+      "debugger": { "path": "agents/core/debugger.md", "model": "sonnet" }
+    },
+    "devops": {
+      "cicd-engineer": { "path": "agents/devops/cicd-engineer.md", "model": "sonnet" },
+      "k8s-deployer": { "path": "agents/devops/k8s-deployer.md", "model": "sonnet" },
+      "docker-builder": { "path": "agents/devops/docker-builder.md", "model": "sonnet" },
+      "sre-engineer": { "path": "agents/devops/sre-engineer.md", "model": "sonnet" },
+      "gitops-specialist": { "path": "agents/devops/gitops-specialist.md", "model": "sonnet" }
+    },
+    "keycloak": {
+      "keycloak-realm-admin": { "path": "agents/keycloak/keycloak-realm-admin.md", "model": "sonnet" },
+      "keycloak-theme-developer": { "path": "agents/keycloak/keycloak-theme-developer.md", "model": "sonnet" },
+      "keycloak-identity-specialist": { "path": "agents/keycloak/keycloak-identity-specialist.md", "model": "sonnet" },
+      "keycloak-auth-flow-designer": { "path": "agents/keycloak/keycloak-auth-flow-designer.md", "model": "sonnet" },
+      "keycloak-security-auditor": { "path": "agents/keycloak/keycloak-security-auditor.md", "model": "sonnet" }
+    },
+    "mongodb-atlas": {
+      "mongodb-atlas-admin": { "path": "agents/mongodb-atlas/mongodb-atlas-admin.md", "model": "sonnet" },
+      "mongodb-schema-designer": { "path": "agents/mongodb-atlas/mongodb-schema-designer.md", "model": "sonnet" },
+      "mongodb-query-optimizer": { "path": "agents/mongodb-atlas/mongodb-query-optimizer.md", "model": "sonnet" },
+      "mongodb-aggregation-specialist": { "path": "agents/mongodb-atlas/mongodb-aggregation-specialist.md", "model": "sonnet" }
+    },
+    "kubernetes": {
+      "k8s-architect": { "path": "agents/kubernetes/k8s-architect.md", "model": "sonnet" },
+      "k8s-debugger": { "path": "agents/kubernetes/k8s-debugger.md", "model": "sonnet" },
+      "k8s-security-specialist": { "path": "agents/kubernetes/k8s-security-specialist.md", "model": "sonnet" },
+      "k8s-resource-optimizer": { "path": "agents/kubernetes/k8s-resource-optimizer.md", "model": "sonnet" }
+    },
+    "helm": {
+      "helm-chart-developer": { "path": "agents/helm/helm-chart-developer.md", "model": "sonnet" },
+      "helm-values-manager": { "path": "agents/helm/helm-values-manager.md", "model": "sonnet" },
+      "helm-release-manager": { "path": "agents/helm/helm-release-manager.md", "model": "sonnet" }
+    },
+    "multi-tenant": {
+      "multi-tenant-architect": { "path": "agents/multi-tenant/multi-tenant-architect.md", "model": "sonnet" },
+      "tenant-provisioning-specialist": { "path": "agents/multi-tenant/tenant-provisioning-specialist.md", "model": "sonnet" }
+    },
+    "stripe-payment": {
+      "stripe-integration-specialist": { "path": "agents/stripe-payment/stripe-integration-specialist.md", "model": "sonnet" },
+      "subscription-lifecycle-manager": { "path": "agents/stripe-payment/subscription-lifecycle-manager.md", "model": "sonnet" },
+      "invoice-manager": { "path": "agents/stripe-payment/invoice-manager.md", "model": "sonnet" }
+    },
+    "frontend-theming": {
+      "theme-system-architect": { "path": "agents/frontend-theming/theme-system-architect.md", "model": "sonnet" },
+      "theme-builder": { "path": "agents/frontend-theming/theme-builder.md", "model": "sonnet" },
+      "white-label-specialist": { "path": "agents/frontend-theming/white-label-specialist.md", "model": "sonnet" }
+    },
+    "selenium-testing": {
+      "selenium-test-architect": { "path": "agents/selenium-testing/selenium-test-architect.md", "model": "sonnet" },
+      "auth-flow-tester": { "path": "agents/selenium-testing/auth-flow-tester.md", "model": "sonnet" },
+      "member-journey-tester": { "path": "agents/selenium-testing/member-journey-tester.md", "model": "sonnet" }
+    },
+    "membership-domain": {
+      "membership-specialist": { "path": "agents/membership-domain/membership-specialist.md", "model": "sonnet" },
+      "member-engagement-agent": { "path": "agents/membership-domain/member-engagement-agent.md", "model": "sonnet" },
+      "membership-analytics-agent": { "path": "agents/membership-domain/membership-analytics-agent.md", "model": "sonnet" },
+      "directory-manager": { "path": "agents/membership-domain/directory-manager.md", "model": "sonnet" }
+    },
+    "utility": {
+      "context-cleanup-agent": { "path": "agents/utility/context-cleanup-agent.md", "model": "haiku" },
+      "documentation-sync-agent": { "path": "agents/utility/documentation-sync-agent.md", "model": "haiku" },
+      "registry-manager-agent": { "path": "agents/utility/registry-manager-agent.md", "model": "haiku" }
+    }
+  },
+
+  "counts": {
+    "total": 41,
+    "byCategory": {
+      "core": 6,
+      "devops": 5,
+      "keycloak": 5,
+      "mongodb-atlas": 4,
+      "kubernetes": 4,
+      "helm": 3,
+      "multi-tenant": 2,
+      "stripe-payment": 3,
+      "frontend-theming": 3,
+      "selenium-testing": 3,
+      "membership-domain": 4,
+      "utility": 3
+    }
+  }
+}
