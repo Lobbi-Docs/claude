@@ -95,6 +95,14 @@
         "keywords": ["gitops", "argocd", "flux", "declarative"],
         "capabilities": ["gitops", "argo", "flux"],
         "priority": "low"
+      },
+      "ansible-specialist": {
+        "path": "agents/devops/ansible-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["ansible", "automation", "playbook", "configuration", "provisioning", "yaml"],
+        "capabilities": ["ansible_playbooks", "role_creation", "configuration_management"],
+        "priority": "medium"
       }
     },
 
@@ -137,6 +145,30 @@
         "model": "sonnet",
         "keywords": ["performance", "optimization", "profiling", "latency"],
         "capabilities": ["profiling", "optimization", "benchmarking"],
+        "priority": "medium"
+      },
+      "prisma-specialist": {
+        "path": "agents/development/prisma-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["prisma", "orm", "database", "schema", "typescript", "postgresql"],
+        "capabilities": ["prisma_schema", "migrations", "type_safe_queries"],
+        "priority": "high"
+      },
+      "redis-specialist": {
+        "path": "agents/development/redis-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["redis", "cache", "session", "pub-sub", "nosql", "memory"],
+        "capabilities": ["caching_strategies", "session_management", "redis_optimization"],
+        "priority": "medium"
+      },
+      "graphql-specialist": {
+        "path": "agents/development/graphql-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["graphql", "apollo", "schema", "resolver", "api", "federation"],
+        "capabilities": ["graphql_schema", "resolvers", "subscriptions", "federation"],
         "priority": "medium"
       }
     },
@@ -404,6 +436,14 @@
         "keywords": ["serverless", "lambda", "functions", "faas"],
         "capabilities": ["serverless", "event_driven"],
         "priority": "medium"
+      },
+      "pulumi-specialist": {
+        "path": "agents/cloud/pulumi-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["pulumi", "iac", "infrastructure", "cloud", "typescript", "python"],
+        "capabilities": ["pulumi_programs", "multi_cloud", "policy_as_code"],
+        "priority": "medium"
       }
     },
 
@@ -622,6 +662,14 @@
         "keywords": ["contract", "pact", "api-test", "schema"],
         "capabilities": ["contract_testing", "api_validation"],
         "priority": "low"
+      },
+      "vitest-specialist": {
+        "path": "agents/testing/vitest-specialist.md",
+        "type": "validator",
+        "model": "haiku",
+        "keywords": ["vitest", "testing", "unit", "vite", "jest", "typescript"],
+        "capabilities": ["vitest_configuration", "unit_testing", "coverage_reporting"],
+        "priority": "low"
       }
     },
 
@@ -650,46 +698,195 @@
         "keywords": ["registry", "index", "agents", "skills", "workflows", "validation"],
         "capabilities": ["registry_management", "index_generation", "validation", "auto_discovery"],
         "priority": "high"
+      },
+      "regex-expert": {
+        "path": "agents/utility/regex-expert.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": ["regex", "pattern", "matching", "validation", "parsing", "regexp"],
+        "capabilities": ["regex_design", "pattern_optimization", "text_parsing"],
+        "priority": "medium"
+      }
+    },
+
+    "system-ops": {
+      "shell-expert": {
+        "path": "agents/system-ops/shell-expert.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["bash", "shell", "script", "zsh", "terminal", "cli", "scripting"],
+        "capabilities": ["shell_scripting", "cli_automation", "system_automation"],
+        "priority": "high"
+      },
+      "env-manager": {
+        "path": "agents/system-ops/env-manager.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": ["env", "environment", "dotenv", "config", "variables", "secrets"],
+        "capabilities": ["environment_config", "secret_detection", "config_migration"],
+        "priority": "high"
+      },
+      "dependency-analyzer": {
+        "path": "agents/system-ops/dependency-analyzer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": ["dependencies", "package", "npm", "pip", "vulnerability", "audit", "license"],
+        "capabilities": ["dependency_analysis", "vulnerability_scanning", "license_compliance"],
+        "priority": "medium"
+      },
+      "error-analyzer": {
+        "path": "agents/system-ops/error-analyzer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": ["error", "exception", "traceback", "diagnostic", "troubleshoot", "debug"],
+        "capabilities": ["error_interpretation", "stack_trace_analysis", "root_cause_identification"],
+        "priority": "high"
+      }
+    },
+
+    "mobile": {
+      "react-native-specialist": {
+        "path": "agents/mobile/react-native-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["react-native", "expo", "mobile", "ios", "android", "cross-platform"],
+        "capabilities": ["react_native_development", "expo_configuration", "native_modules"],
+        "priority": "high"
+      },
+      "flutter-specialist": {
+        "path": "agents/mobile/flutter-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["flutter", "dart", "mobile", "cross-platform", "widgets", "material"],
+        "capabilities": ["flutter_development", "dart_expertise", "state_management"],
+        "priority": "medium"
+      },
+      "ios-specialist": {
+        "path": "agents/mobile/ios-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "uikit"],
+        "capabilities": ["swift_development", "ios_sdk", "app_store_deployment"],
+        "priority": "medium"
+      },
+      "android-specialist": {
+        "path": "agents/mobile/android-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["android", "kotlin", "jetpack", "compose", "gradle", "material"],
+        "capabilities": ["kotlin_development", "android_sdk", "play_store_deployment"],
+        "priority": "medium"
+      }
+    },
+
+    "messaging": {
+      "kafka-specialist": {
+        "path": "agents/messaging/kafka-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["kafka", "streaming", "event", "pub-sub", "broker", "topics"],
+        "capabilities": ["kafka_cluster_design", "stream_processing", "schema_registry"],
+        "priority": "high"
+      },
+      "rabbitmq-specialist": {
+        "path": "agents/messaging/rabbitmq-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["rabbitmq", "amqp", "queue", "message", "broker", "exchange"],
+        "capabilities": ["rabbitmq_configuration", "message_routing", "high_availability"],
+        "priority": "medium"
+      },
+      "event-streaming-architect": {
+        "path": "agents/messaging/event-streaming-architect.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": ["event-driven", "streaming", "cqrs", "event-sourcing", "saga", "choreography"],
+        "capabilities": ["event_architecture", "cqrs_implementation", "saga_patterns"],
+        "priority": "medium"
+      }
+    },
+
+    "migration": {
+      "code-migration-specialist": {
+        "path": "agents/migration/code-migration-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["migration", "upgrade", "refactor", "modernize", "legacy", "framework"],
+        "capabilities": ["code_migration", "framework_upgrades", "breaking_change_management"],
+        "priority": "high"
+      },
+      "refactoring-guru": {
+        "path": "agents/migration/refactoring-guru.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": ["refactor", "cleanup", "technical-debt", "patterns", "improve", "quality"],
+        "capabilities": ["code_smell_detection", "design_patterns", "technical_debt_reduction"],
+        "priority": "high"
+      }
+    },
+
+    "quality-gates": {
+      "spec-validator": {
+        "path": "agents/quality-gates/spec-validator.md",
+        "type": "validator",
+        "model": "sonnet",
+        "keywords": ["validation", "schema", "spec", "openapi", "quality-gate", "swagger"],
+        "capabilities": ["openapi_validation", "schema_validation", "quality_enforcement"],
+        "priority": "high"
+      },
+      "coverage-analyzer": {
+        "path": "agents/quality-gates/coverage-analyzer.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": ["coverage", "testing", "metrics", "quality", "threshold", "lcov"],
+        "capabilities": ["coverage_analysis", "threshold_enforcement", "trend_tracking"],
+        "priority": "medium"
       }
     }
   },
 
   "stats": {
     "byType": {
-      "developer": 28,
+      "developer": 46,
       "analyst": 16,
       "coordinator": 14,
-      "validator": 4
+      "validator": 6
     },
     "byModel": {
-      "sonnet": 54,
-      "haiku": 6,
+      "sonnet": 72,
+      "haiku": 10,
       "opus": 0
     },
     "byPriority": {
-      "high": 22,
-      "medium": 26,
-      "low": 12
+      "high": 30,
+      "medium": 39,
+      "low": 13
     },
     "byCategory": {
       "core": 6,
-      "devops": 5,
-      "development": 5,
+      "devops": 6,
+      "development": 8,
       "frontend": 5,
       "languages": 7,
       "security": 5,
       "data-ai": 5,
       "operations": 4,
-      "cloud": 5,
+      "cloud": 6,
       "swarm": 3,
       "github": 4,
       "atlassian": 8,
       "documentation": 3,
       "golden-armada": 3,
-      "testing": 4,
-      "utility": 3
+      "testing": 5,
+      "utility": 4,
+      "system-ops": 4,
+      "mobile": 4,
+      "messaging": 3,
+      "migration": 2,
+      "quality-gates": 2
     },
-    "totalAgents": 60,
-    "note": "Platform-specific agents (Lobbi, Stripe, Keycloak, MongoDB, multi-tenant, etc.) removed for portability. Add project-specific agents as needed."
+    "totalAgents": 82,
+    "note": "Platform-specific agents (Lobbi, Stripe, Keycloak, MongoDB, multi-tenant, etc.) removed for portability. 22 new agents added from VoltAgent, 0xfurai, and DeepWiki repositories.",
+    "lastUpdated": "2025-12-12"
   }
 }

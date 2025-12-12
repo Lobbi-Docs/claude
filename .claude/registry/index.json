@@ -6,7 +6,7 @@
 
   "metadata": {
     "totalAgents": 67,
-    "totalSkills": 25,
+    "totalSkills": 34,
     "totalCommands": 44,
     "totalWorkflows": 10,
     "totalMcpServers": 8,
@@ -60,7 +60,7 @@
       "github", "atlassian", "documentation", "testing", "golden-armada"
     ],
     "skills": [
-      "infrastructure", "development", "frontend", "data",
+      "reasoning", "infrastructure", "development", "frontend", "data",
       "cloud", "security", "project-management"
     ],
     "commands": [
@@ -88,6 +88,9 @@
       "sql|database|query|migration": "skills/database",
       "redis|cache|session": "skills/redis",
       "oauth|jwt|auth|token": "skills/authentication",
+      "think|ultrathink|reason|deliberate": "skills/extended-thinking",
+      "analyze|audit|review|comprehensive": "skills/deep-analysis",
+      "hypothesis|systematic|multi-step": "skills/complex-reasoning",
       "supabase|rls|edge-function": "mcps/supabase",
       "vercel|deploy|preview": "mcps/vercel",
       "github|pr|issue|branch": "mcps/github",
@@ -115,6 +118,6 @@
   "contextActivation": {
     "enabled": true,
     "evaluationOrder": ["keywords", "fileContext", "directoryContext", "envVars", "recentUsage"],
-    "profiles": ["minimal", "standard", "full", "database", "frontend", "devops", "project-management"]
+    "profiles": ["minimal", "standard", "full", "reasoning", "database", "frontend", "devops", "project-management"]
   }
 }

@@ -3,12 +3,19 @@
   "version": "4.0.0",
   "description": "Official Claude Code SKILL.md format - skills auto-discovered from description field",
   "format": "claude-code-official",
-
   "skills": {
     "infrastructure": {
       "kubernetes": {
         "path": "skills/kubernetes/SKILL.md",
-        "triggers": ["k8s", "kubernetes", "kubectl", "pod", "deployment", "service", "namespace"],
+        "triggers": [
+          "k8s",
+          "kubernetes",
+          "kubectl",
+          "pod",
+          "deployment",
+          "service",
+          "namespace"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -16,15 +23,30 @@
       },
       "helm": {
         "path": "skills/helm/SKILL.md",
-        "triggers": ["helm", "chart", "values", "template", "release"],
+        "triggers": [
+          "helm",
+          "chart",
+          "values",
+          "template",
+          "release"
+        ],
         "activationScore": 0,
-        "dependencies": ["kubernetes"],
+        "dependencies": [
+          "kubernetes"
+        ],
         "conflicts": [],
         "autoActivate": true
       },
       "docker": {
         "path": "skills/docker/SKILL.md",
-        "triggers": ["docker", "dockerfile", "container", "image", "build", "compose"],
+        "triggers": [
+          "docker",
+          "dockerfile",
+          "container",
+          "image",
+          "build",
+          "compose"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -32,18 +54,30 @@
       },
       "terraform": {
         "path": "skills/terraform/SKILL.md",
-        "triggers": ["terraform", "tf", "hcl", "iac", "infrastructure-as-code", "provider"],
+        "triggers": [
+          "terraform",
+          "tf",
+          "hcl",
+          "iac",
+          "infrastructure-as-code",
+          "provider"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
         "autoActivate": true
       }
     },
-
     "development": {
       "flask-api": {
         "path": "skills/flask-api/SKILL.md",
-        "triggers": ["flask", "api", "endpoint", "route", "blueprint"],
+        "triggers": [
+          "flask",
+          "api",
+          "endpoint",
+          "route",
+          "blueprint"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -51,7 +85,13 @@
       },
       "fastapi": {
         "path": "skills/fastapi/SKILL.md",
-        "triggers": ["fastapi", "pydantic", "async", "uvicorn", "starlette"],
+        "triggers": [
+          "fastapi",
+          "pydantic",
+          "async",
+          "uvicorn",
+          "starlette"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -59,7 +99,14 @@
       },
       "git-workflows": {
         "path": "skills/git-workflows/SKILL.md",
-        "triggers": ["git", "branch", "commit", "merge", "rebase", "pr"],
+        "triggers": [
+          "git",
+          "branch",
+          "commit",
+          "merge",
+          "rebase",
+          "pr"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -67,7 +114,14 @@
       },
       "testing": {
         "path": "skills/testing/SKILL.md",
-        "triggers": ["test", "pytest", "unittest", "mock", "coverage", "tdd"],
+        "triggers": [
+          "test",
+          "pytest",
+          "unittest",
+          "mock",
+          "coverage",
+          "tdd"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -75,7 +129,14 @@
       },
       "debugging": {
         "path": "skills/debugging/SKILL.md",
-        "triggers": ["debug", "error", "traceback", "exception", "breakpoint", "pdb"],
+        "triggers": [
+          "debug",
+          "error",
+          "traceback",
+          "exception",
+          "breakpoint",
+          "pdb"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -83,7 +144,14 @@
       },
       "graphql": {
         "path": "skills/graphql/SKILL.md",
-        "triggers": ["graphql", "query", "mutation", "subscription", "schema", "resolver"],
+        "triggers": [
+          "graphql",
+          "query",
+          "mutation",
+          "subscription",
+          "schema",
+          "resolver"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -91,18 +159,53 @@
       },
       "rest-api": {
         "path": "skills/rest-api/SKILL.md",
-        "triggers": ["rest", "http", "crud", "openapi", "swagger", "json-api"],
+        "triggers": [
+          "rest",
+          "http",
+          "crud",
+          "openapi",
+          "swagger",
+          "json-api"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true
+      },
+      "tool-use": {
+        "path": "skills/tool-use/SKILL.md",
+        "triggers": [
+          "tool",
+          "tool-use",
+          "tool-call",
+          "tool_use",
+          "tool_choice",
+          "schema",
+          "json-schema",
+          "structured-output",
+          "tool-result",
+          "parallel-tools",
+          "agentic",
+          "agent"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
         "autoActivate": true
       }
     },
-
     "project-management": {
       "jira": {
         "path": "skills/jira/SKILL.md",
-        "triggers": ["jira", "issue", "sprint", "jql", "backlog", "board", "epic"],
+        "triggers": [
+          "jira",
+          "issue",
+          "sprint",
+          "jql",
+          "backlog",
+          "board",
+          "epic"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -110,7 +213,13 @@
       },
       "confluence": {
         "path": "skills/confluence/SKILL.md",
-        "triggers": ["confluence", "wiki", "page", "space", "template"],
+        "triggers": [
+          "confluence",
+          "wiki",
+          "page",
+          "space",
+          "template"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -118,48 +227,172 @@
       },
       "atlassian-api": {
         "path": "skills/atlassian-api/SKILL.md",
-        "triggers": ["atlassian", "oauth", "scim", "atlassian-api"],
+        "triggers": [
+          "atlassian",
+          "oauth",
+          "scim",
+          "atlassian-api"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
         "autoActivate": false
       }
     },
-
     "methodology": {
       "scrum": {
         "path": "skills/scrum/SKILL.md",
-        "triggers": ["scrum", "sprint", "standup", "retro", "ceremony", "velocity"],
+        "triggers": [
+          "scrum",
+          "sprint",
+          "standup",
+          "retro",
+          "ceremony",
+          "velocity"
+        ],
         "activationScore": 0,
         "dependencies": [],
-        "conflicts": ["kanban"],
+        "conflicts": [
+          "kanban"
+        ],
         "autoActivate": true
       },
       "kanban": {
         "path": "skills/kanban/SKILL.md",
-        "triggers": ["kanban", "wip", "flow", "cycle-time", "throughput", "board"],
+        "triggers": [
+          "kanban",
+          "wip",
+          "flow",
+          "cycle-time",
+          "throughput",
+          "board"
+        ],
         "activationScore": 0,
         "dependencies": [],
-        "conflicts": ["scrum"],
+        "conflicts": [
+          "scrum"
+        ],
         "autoActivate": true
       }
     },
-
     "integration": {
       "llm-integration": {
         "path": "skills/llm-integration/SKILL.md",
-        "triggers": ["claude", "gpt", "gemini", "anthropic", "openai", "llm", "prompt"],
+        "triggers": [
+          "claude",
+          "gpt",
+          "gemini",
+          "anthropic",
+          "openai",
+          "llm",
+          "prompt",
+          "token",
+          "extended thinking"
+        ],
         "activationScore": 0,
         "dependencies": [],
+        "relatedSkills": [
+          "extended-thinking",
+          "complex-reasoning",
+          "deep-analysis",
+          "prompt-caching",
+          "streaming",
+          "vision-multimodal",
+          "batch-processing"
+        ],
+        "conflicts": [],
+        "autoActivate": true
+      },
+      "prompt-caching": {
+        "path": "skills/prompt-caching/SKILL.md",
+        "triggers": [
+          "cache",
+          "prompt-caching",
+          "cache_control",
+          "ephemeral",
+          "cache breakpoint",
+          "latency",
+          "cost optimization"
+        ],
+        "activationScore": 0,
+        "dependencies": [
+          "llm-integration"
+        ],
+        "conflicts": [],
+        "autoActivate": true
+      },
+      "vision-multimodal": {
+        "path": "skills/vision-multimodal/SKILL.md",
+        "triggers": [
+          "vision",
+          "image",
+          "multimodal",
+          "base64",
+          "screenshot",
+          "pdf",
+          "document",
+          "ocr",
+          "visual",
+          "picture"
+        ],
+        "activationScore": 0,
+        "dependencies": [
+          "llm-integration"
+        ],
+        "conflicts": [],
+        "autoActivate": true
+      },
+      "streaming": {
+        "path": "skills/streaming/SKILL.md",
+        "triggers": [
+          "streaming",
+          "stream",
+          "sse",
+          "server-sent events",
+          "real-time",
+          "progressive",
+          "delta",
+          "event"
+        ],
+        "activationScore": 0,
+        "dependencies": [
+          "llm-integration"
+        ],
+        "conflicts": [],
+        "autoActivate": true
+      },
+      "batch-processing": {
+        "path": "skills/batch-processing/SKILL.md",
+        "triggers": [
+          "batch",
+          "batches",
+          "bulk",
+          "jsonl",
+          "batch processing",
+          "batch api",
+          "mass processing"
+        ],
+        "activationScore": 0,
+        "dependencies": [
+          "llm-integration"
+        ],
         "conflicts": [],
         "autoActivate": true
       }
     },
-
     "cloud": {
       "aws": {
         "path": "skills/aws/SKILL.md",
-        "triggers": ["aws", "s3", "ec2", "lambda", "cloudformation", "iam", "rds", "eks"],
+        "triggers": [
+          "aws",
+          "s3",
+          "ec2",
+          "lambda",
+          "cloudformation",
+          "iam",
+          "rds",
+          "eks"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -167,29 +400,50 @@
       },
       "gcp": {
         "path": "skills/gcp/SKILL.md",
-        "triggers": ["gcp", "cloud-run", "bigquery", "pubsub", "gke", "cloud-functions"],
+        "triggers": [
+          "gcp",
+          "cloud-run",
+          "bigquery",
+          "pubsub",
+          "gke",
+          "cloud-functions"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
         "autoActivate": true
       }
     },
-
     "security": {
       "authentication": {
         "path": "skills/authentication/SKILL.md",
-        "triggers": ["oauth", "jwt", "auth", "token", "session", "oidc", "saml", "rbac"],
+        "triggers": [
+          "oauth",
+          "jwt",
+          "auth",
+          "token",
+          "session",
+          "oidc",
+          "saml",
+          "rbac"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
         "autoActivate": true
       }
     },
-
     "data": {
       "database": {
         "path": "skills/database/SKILL.md",
-        "triggers": ["sql", "database", "postgres", "mysql", "migration", "schema"],
+        "triggers": [
+          "sql",
+          "database",
+          "postgres",
+          "mysql",
+          "migration",
+          "schema"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -197,7 +451,13 @@
       },
       "redis": {
         "path": "skills/redis/SKILL.md",
-        "triggers": ["redis", "cache", "session", "pubsub", "queue"],
+        "triggers": [
+          "redis",
+          "cache",
+          "session",
+          "pubsub",
+          "queue"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -205,18 +465,53 @@
       },
       "vector-db": {
         "path": "skills/vector-db/SKILL.md",
-        "triggers": ["vector", "embedding", "pinecone", "weaviate", "chroma", "pgvector", "rag"],
+        "triggers": [
+          "vector",
+          "embedding",
+          "pinecone",
+          "weaviate",
+          "chroma",
+          "pgvector",
+          "rag"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
         "autoActivate": true
+      },
+      "citations-retrieval": {
+        "path": "skills/citations-retrieval/SKILL.md",
+        "triggers": [
+          "citation",
+          "citations",
+          "rag",
+          "retrieval",
+          "source",
+          "document",
+          "grounding",
+          "reference",
+          "attribution",
+          "retrieval-augmented-generation"
+        ],
+        "activationScore": 0,
+        "dependencies": [
+          "llm-integration"
+        ],
+        "conflicts": [],
+        "autoActivate": false
       }
     },
-
     "frontend": {
       "react": {
         "path": "skills/react/SKILL.md",
-        "triggers": ["react", "jsx", "hooks", "component", "state", "useEffect"],
+        "triggers": [
+          "react",
+          "jsx",
+          "hooks",
+          "component",
+          "state",
+          "useEffect"
+        ],
         "activationScore": 0,
         "dependencies": [],
         "conflicts": [],
@@ -224,16 +519,78 @@
       },
       "nextjs": {
         "path": "skills/nextjs/SKILL.md",
-        "triggers": ["nextjs", "app-router", "ssr", "ssg", "server-components"],
+        "triggers": [
+          "nextjs",
+          "app-router",
+          "ssr",
+          "ssg",
+          "server-components"
+        ],
         "activationScore": 0,
-        "dependencies": ["react"],
+        "dependencies": [
+          "react"
+        ],
         "conflicts": [],
         "autoActivate": true
       }
     },
-
+    "reasoning": {
+      "extended-thinking": {
+        "path": "skills/extended-thinking/SKILL.md",
+        "triggers": [
+          "think",
+          "think harder",
+          "ultrathink",
+          "extended thinking",
+          "deep thinking",
+          "reasoning",
+          "deliberate",
+          "step by step"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true
+      },
+      "complex-reasoning": {
+        "path": "skills/complex-reasoning/SKILL.md",
+        "triggers": [
+          "chain of thought",
+          "tree of thought",
+          "systematic",
+          "hypothesis",
+          "multi-step",
+          "break down"
+        ],
+        "activationScore": 0,
+        "dependencies": [
+          "extended-thinking"
+        ],
+        "conflicts": [],
+        "autoActivate": true
+      },
+      "deep-analysis": {
+        "path": "skills/deep-analysis/SKILL.md",
+        "triggers": [
+          "analyze",
+          "audit",
+          "review",
+          "assess",
+          "evaluate",
+          "investigate",
+          "deep dive",
+          "comprehensive"
+        ],
+        "activationScore": 0,
+        "dependencies": [
+          "extended-thinking",
+          "complex-reasoning"
+        ],
+        "conflicts": [],
+        "autoActivate": true
+      }
+    }
   },
-
   "activationRules": {
     "maxActiveSkills": 10,
     "minActivationScore": 2,
@@ -244,6 +601,7 @@
       "descriptionMatch": 3
     },
     "priorityOrder": [
+      "reasoning",
       "infrastructure",
       "development",
       "security",
@@ -251,28 +609,27 @@
       "cloud"
     ]
   },
-
   "claudeCodeConfig": {
     "skillFormat": "SKILL.md",
     "autoDiscovery": true,
     "descriptionBasedActivation": true,
     "allowedToolsSupport": true
   },
-
   "stats": {
-    "totalSkills": 23,
+    "totalSkills": 34,
     "format": "Claude Code Official SKILL.md",
     "byCategory": {
       "infrastructure": 4,
-      "development": 7,
+      "development": 8,
       "project-management": 3,
       "methodology": 2,
-      "integration": 1,
+      "integration": 5,
       "cloud": 2,
       "security": 1,
-      "data": 3,
-      "frontend": 2
+      "data": 4,
+      "frontend": 2,
+      "reasoning": 3
     },
-    "note": "Platform-specific skills (Lobbi, Stripe, Keycloak, MongoDB Atlas, multi-tenant, member management, etc.) removed for portability. Add project-specific skills as needed."
+    "note": "Includes ultrathink/extended-thinking skills for complex reasoning tasks, plus Anthropic API skills (prompt-caching, vision-multimodal, streaming, batch-processing, tool-use, citations-retrieval)."
   }
 }
