@@ -1,0 +1,16 @@
+{
+  "id": "89e3d210-a3c3-456e-99db-fd78e1d08572",
+  "type": "post-plan",
+  "session_id": "c6372c88-9f83-4649-9824-380cc2b47d2e",
+  "task_id": null,
+  "agent_id": "coder-001",
+  "state": {
+    "phase": "plan_complete"
+  },
+  "files": null,
+  "metadata": {
+    "plan_approved": true,
+    "estimated_duration": 60
+  },
+  "created_at": "2025-11-29T05:07:41.128612"
+}

@@ -1,0 +1,271 @@
+{
+  "$schema": "./schema/mcps.schema.json",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server registry - dynamic discovery and activation",
+
+  "mcpServers": {
+    "core": {
+      "supabase": {
+        "description": "Supabase database operations, migrations, and TypeScript type generation",
+        "provider": "builtin",
+        "keywords": ["database", "supabase", "sql", "migration", "schema", "types", "edge-function"],
+        "capabilities": {
+          "tools": [
+            "list_tables", "list_extensions", "list_migrations", "apply_migration",
+            "execute_sql", "get_logs", "get_advisors", "get_project_url", "get_anon_key",
+            "generate_typescript_types", "list_edge_functions", "get_edge_function",
+            "deploy_edge_function", "create_branch", "list_branches", "delete_branch",
+            "merge_branch", "reset_branch", "rebase_branch", "search_docs"
+          ],
+          "resources": []
+        },
+        "autoActivate": true,
+        "triggers": ["supabase", "database", "sql", "migration", "edge-function", "rls", "postgres"],
+        "priority": "high"
+      },
+      "vercel": {
+        "description": "Vercel deployment, project management, and domain configuration",
+        "provider": "builtin",
+        "keywords": ["vercel", "deploy", "hosting", "domain", "nextjs", "preview"],
+        "capabilities": {
+          "tools": [
+            "search_vercel_documentation", "deploy_to_vercel", "list_projects", "get_project",
+            "list_deployments", "get_deployment", "get_deployment_build_logs",
+            "get_access_to_vercel_url", "web_fetch_vercel_url", "list_teams",
+            "check_domain_availability_and_price"
+          ],
+          "resources": []
+        },
+        "autoActivate": true,
+        "triggers": ["vercel", "deploy", "preview", "domain", "hosting"],
+        "priority": "high"
+      },
+      "upstash": {
+        "description": "Upstash Redis database and QStash message queue management",
+        "provider": "builtin",
+        "keywords": ["redis", "cache", "queue", "qstash", "upstash", "workflow"],
+        "capabilities": {
+          "tools": [
+            "redis_database_create_new", "redis_database_delete", "redis_database_list_databases",
+            "redis_database_get_details", "redis_database_update_regions", "redis_database_reset_password",
+            "redis_database_get_statistics", "redis_database_manage_backup", "redis_database_list_backups",
+            "redis_database_set_daily_backup", "redis_database_run_redis_commands",
+            "qstash_get_user_token", "qstash_publish_message", "qstash_logs_list", "qstash_logs_get",
+            "qstash_dlq_list", "qstash_dlq_get", "qstash_schedules_list", "qstash_schedules_manage",
+            "workflow_logs_list", "workflow_logs_get", "workflow_dlq_list", "workflow_dlq_get", "workflow_dlq_manage"
+          ],
+          "resources": []
+        },
+        "autoActivate": true,
+        "triggers": ["redis", "cache", "queue", "qstash", "upstash", "rate-limit"],
+        "priority": "medium"
+      },
+      "github": {
+        "description": "GitHub repository, issue, and pull request management",
+        "provider": "builtin",
+        "keywords": ["github", "git", "pr", "issue", "repository", "branch", "commit"],
+        "capabilities": {
+          "tools": [
+            "create_or_update_file", "search_repositories", "create_repository", "get_file_contents",
+            "push_files", "create_issue", "create_pull_request", "fork_repository", "create_branch",
+            "list_commits", "list_issues", "update_issue", "add_issue_comment", "search_code",
+            "search_issues", "search_users", "get_issue", "get_pull_request", "list_pull_requests",
+            "create_pull_request_review", "merge_pull_request", "get_pull_request_files",
+            "get_pull_request_status", "update_pull_request_branch", "get_pull_request_comments",
+            "get_pull_request_reviews"
+          ],
+          "resources": []
+        },
+        "autoActivate": true,
+        "triggers": ["github", "git", "pr", "pull-request", "issue", "branch", "commit", "repo"],
+        "priority": "high"
+      },
+      "playwright": {
+        "description": "Browser automation for testing and web interaction",
+        "provider": "builtin",
+        "keywords": ["browser", "playwright", "test", "automation", "e2e", "screenshot"],
+        "capabilities": {
+          "tools": [
+            "browser_close", "browser_resize", "browser_console_messages", "browser_handle_dialog",
+            "browser_evaluate", "browser_file_upload", "browser_fill_form", "browser_install",
+            "browser_press_key", "browser_type", "browser_navigate", "browser_navigate_back",
+            "browser_network_requests", "browser_run_code", "browser_take_screenshot",
+            "browser_snapshot", "browser_click", "browser_drag", "browser_hover",
+            "browser_select_option", "browser_tabs", "browser_wait_for"
+          ],
+          "resources": []
+        },
+        "autoActivate": false,
+        "triggers": ["browser", "playwright", "e2e", "screenshot", "automation", "test-ui"],
+        "priority": "medium"
+      },
+      "context7": {
+        "description": "Up-to-date documentation and code examples for any library",
+        "provider": "builtin",
+        "keywords": ["docs", "documentation", "library", "api", "reference", "examples"],
+        "capabilities": {
+          "tools": [
+            "resolve-library-id", "get-library-docs"
+          ],
+          "resources": []
+        },
+        "autoActivate": true,
+        "triggers": ["library", "docs", "documentation", "api-reference", "how-to", "example"],
+        "priority": "high"
+      },
+      "ide": {
+        "description": "VS Code IDE integration for diagnostics and code execution",
+        "provider": "builtin",
+        "keywords": ["vscode", "ide", "diagnostics", "jupyter", "notebook"],
+        "capabilities": {
+          "tools": [
+            "getDiagnostics", "executeCode"
+          ],
+          "resources": []
+        },
+        "autoActivate": true,
+        "triggers": ["vscode", "diagnostics", "linter", "jupyter", "notebook", "kernel"],
+        "priority": "medium"
+      }
+    },
+
+    "project": {
+      "atlassian": {
+        "description": "Atlassian Jira and Confluence integration for project management",
+        "provider": "custom",
+        "configPath": ".claude/mcp/atlassian-mcp.json",
+        "keywords": ["jira", "confluence", "atlassian", "issue", "sprint", "wiki", "documentation"],
+        "capabilities": {
+          "tools": [
+            "jira_create_issue", "jira_get_issue", "jira_update_issue", "jira_transition_issue",
+            "jira_search", "jira_add_comment", "jira_get_sprint", "jira_move_to_sprint",
+            "confluence_create_page", "confluence_get_page", "confluence_update_page",
+            "confluence_search", "confluence_add_labels", "confluence_get_space", "confluence_list_pages"
+          ],
+          "resources": [
+            "jira://project/{projectKey}",
+            "jira://issue/{issueKey}",
+            "jira://sprint/{sprintId}",
+            "confluence://space/{spaceKey}",
+            "confluence://page/{pageId}"
+          ]
+        },
+        "autoActivate": false,
+        "triggers": ["jira", "confluence", "sprint", "backlog", "wiki", "issue", "story", "epic"],
+        "priority": "medium",
+        "requiredEnvVars": ["JIRA_URL", "JIRA_API_TOKEN", "CONFLUENCE_URL", "CONFLUENCE_API_TOKEN"]
+      },
+      "n8n": {
+        "description": "n8n workflow automation and integration platform for workflow execution, webhooks, and data transformation",
+        "provider": "http",
+        "url": "https://the-lobbi.app.n8n.cloud/mcp-server/http",
+        "keywords": ["n8n", "workflow", "automation", "webhook", "integration", "pipeline", "etl"],
+        "capabilities": {
+          "tools": [],
+          "resources": []
+        },
+        "autoActivate": false,
+        "triggers": ["workflow", "n8n", "automation", "webhook", "pipeline", "integration"],
+        "priority": "medium",
+        "authentication": "bearer-token"
+      },
+      "obsidian": {
+        "description": "Obsidian vault for centralized documentation, templates, and ADRs",
+        "provider": "custom",
+        "configPath": ".claude/mcp/obsidian-mcp.json",
+        "keywords": ["obsidian", "vault", "documentation", "template", "adr", "wiki", "notes"],
+        "capabilities": {
+          "tools": [
+            "list_files_in_vault", "list_files_in_dir", "get_file_contents",
+            "simple_search", "complex_search", "append_content", "patch_content",
+            "get_periodic_note", "get_recent_periodic_notes", "batch_get_file_contents",
+            "delete_file"
+          ],
+          "resources": [
+            "obsidian://vault/Repositories/{org}/{repo}.md",
+            "obsidian://vault/Projects/{project}/",
+            "obsidian://vault/Research/",
+            "obsidian://vault/Templates/",
+            "obsidian://vault/System/"
+          ]
+        },
+        "autoActivate": false,
+        "triggers": ["documentation", "vault", "obsidian", "adr", "template", "wiki", "research"],
+        "priority": "medium",
+        "requiredConfig": {
+          "vaultPath": "C:\\Users\\MarkusAhling\\obsidian",
+          "pluginEnabled": "obsidian-local-rest-api"
+        }
+      }
+    },
+
+    "extension": {
+      "custom-mcp-server": {
+        "description": "Template for creating custom MCP servers",
+        "provider": "custom",
+        "configPath": ".claude/tools/mcp-server/config.json",
+        "keywords": ["custom", "mcp", "tool", "extension"],
+        "capabilities": {
+          "tools": ["execute_agent", "get_agent_status", "list_agents"],
+          "resources": []
+        },
+        "autoActivate": false,
+        "triggers": [],
+        "priority": "low"
+      }
+    }
+  },
+
+  "toolAliases": {
+    "db": "mcp__supabase__execute_sql",
+    "migrate": "mcp__supabase__apply_migration",
+    "tables": "mcp__supabase__list_tables",
+    "deploy": "mcp__vercel__deploy_to_vercel",
+    "screenshot": "mcp__playwright__browser_take_screenshot",
+    "snapshot": "mcp__playwright__browser_snapshot",
+    "docs": "mcp__context7__get-library-docs",
+    "vault": "mcp__obsidian__list_files_in_vault",
+    "vault-read": "mcp__obsidian__get_file_contents",
+    "vault-search": "mcp__obsidian__simple_search",
+    "vault-add": "mcp__obsidian__append_content"
+  },
+
+  "activationRules": {
+    "contextBased": {
+      "enabled": true,
+      "maxActiveMcps": 5,
+      "scoringWeights": {
+        "keywordMatch": 5,
+        "triggerMatch": 4,
+        "recentUsage": 2,
+        "dependency": 3
+      }
+    },
+    "filePatterns": {
+      ".sql": ["supabase"],
+      "supabase/**": ["supabase"],
+      "vercel.json": ["vercel"],
+      ".github/**": ["github"],
+      "playwright.config.*": ["playwright"],
+      "*.spec.ts": ["playwright"],
+      "*.test.ts": ["playwright"]
+    },
+    "projectType": {
+      "nextjs": ["vercel", "supabase", "context7"],
+      "supabase-project": ["supabase", "upstash"],
+      "full-stack": ["supabase", "vercel", "upstash", "github"]
+    }
+  },
+
+  "stats": {
+    "totalMcpServers": 10,
+    "builtinServers": 7,
+    "customServers": 3,
+    "totalTools": 91,
+    "byCategory": {
+      "core": 7,
+      "project": 3,
+      "extension": 0
+    }
+  }
+}

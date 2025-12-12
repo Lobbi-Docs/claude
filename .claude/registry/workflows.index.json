@@ -1,0 +1,752 @@
+{
+  "$schema": "./schema/workflows.schema.json",
+  "version": "1.0.0",
+  "description": "Workflow registry for multi-agent orchestration patterns",
+  "workflows": {
+    "development": {
+      "feature-development": {
+        "path": ".claude/workflows/feature-development.md",
+        "description": "End-to-end feature development workflow with planning, coding, testing, and review",
+        "type": "hybrid",
+        "keywords": [
+          "feature",
+          "develop",
+          "implement",
+          "build",
+          "create"
+        ],
+        "agents": [
+          "planner",
+          "coder",
+          "tester",
+          "reviewer",
+          "docs-writer"
+        ],
+        "triggers": [
+          "implement feature",
+          "build feature",
+          "create feature",
+          "develop"
+        ],
+        "stages": [
+          "plan",
+          "implement",
+          "test",
+          "review",
+          "document"
+        ],
+        "estimatedDuration": "2-4 hours",
+        "priority": "high"
+      },
+      "code-review": {
+        "path": ".claude/workflows/code-review.md",
+        "description": "Comprehensive code review with security, performance, and style checks",
+        "type": "parallel",
+        "keywords": [
+          "review",
+          "pr",
+          "pull-request",
+          "check",
+          "audit"
+        ],
+        "agents": [
+          "reviewer",
+          "security-auditor",
+          "performance-engineer",
+          "code-analyzer"
+        ],
+        "triggers": [
+          "review code",
+          "check pr",
+          "review pull request"
+        ],
+        "stages": [
+          "style-check",
+          "security-scan",
+          "performance-review",
+          "synthesis"
+        ],
+        "estimatedDuration": "30-60 minutes",
+        "priority": "high"
+      }
+    },
+    "devops": {
+      "ci-cd-workflow": {
+        "path": ".claude/workflows/ci-cd-workflow.json",
+        "description": "Automated CI/CD pipeline with testing, security scanning, and deployment",
+        "type": "sequential",
+        "keywords": [
+          "ci",
+          "cd",
+          "pipeline",
+          "deploy",
+          "build",
+          "release"
+        ],
+        "agents": [
+          "reviewer",
+          "tester",
+          "security-auditor",
+          "docker-builder",
+          "k8s-deployer"
+        ],
+        "triggers": [
+          "deploy",
+          "release",
+          "ci/cd",
+          "pipeline"
+        ],
+        "stages": [
+          "review",
+          "test",
+          "security",
+          "build",
+          "deploy"
+        ],
+        "estimatedDuration": "15-45 minutes",
+        "priority": "high"
+      },
+      "incident-response": {
+        "path": ".claude/workflows/incident-response.md",
+        "description": "Incident detection, diagnosis, and resolution workflow",
+        "type": "sequential",
+        "keywords": [
+          "incident",
+          "outage",
+          "emergency",
+          "fix",
+          "debug"
+        ],
+        "agents": [
+          "incident-responder",
+          "debugger",
+          "observability",
+          "sre-engineer"
+        ],
+        "triggers": [
+          "incident",
+          "outage",
+          "production issue",
+          "emergency"
+        ],
+        "stages": [
+          "detect",
+          "diagnose",
+          "resolve",
+          "postmortem"
+        ],
+        "estimatedDuration": "1-4 hours",
+        "priority": "critical"
+      }
+    },
+    "project-management": {
+      "sprint-management": {
+        "path": ".claude/workflows/sprint-management.md",
+        "description": "Sprint planning, execution, and retrospective workflow",
+        "type": "hybrid",
+        "keywords": [
+          "sprint",
+          "agile",
+          "scrum",
+          "plan",
+          "retro"
+        ],
+        "agents": [
+          "scrum-master",
+          "product-owner",
+          "sprint-analyst",
+          "jira-specialist"
+        ],
+        "triggers": [
+          "sprint plan",
+          "sprint planning",
+          "manage sprint"
+        ],
+        "stages": [
+          "planning",
+          "refinement",
+          "execution",
+          "review",
+          "retrospective"
+        ],
+        "estimatedDuration": "1-2 days",
+        "priority": "medium"
+      },
+      "scrum-ceremonies": {
+        "path": ".claude/workflows/scrum-ceremonies.md",
+        "description": "Daily standups, sprint reviews, and retrospectives",
+        "type": "sequential",
+        "keywords": [
+          "standup",
+          "ceremony",
+          "retro",
+          "review",
+          "scrum"
+        ],
+        "agents": [
+          "scrum-master",
+          "agile-coach"
+        ],
+        "triggers": [
+          "standup",
+          "daily scrum",
+          "sprint review",
+          "retro"
+        ],
+        "stages": [
+          "preparation",
+          "execution",
+          "documentation"
+        ],
+        "estimatedDuration": "15-60 minutes",
+        "priority": "medium"
+      }
+    },
+    "integration": {
+      "atlassian-integration": {
+        "path": ".claude/workflows/atlassian-integration.md",
+        "description": "Jira and Confluence synchronization workflow",
+        "type": "parallel",
+        "keywords": [
+          "jira",
+          "confluence",
+          "atlassian",
+          "sync",
+          "integration"
+        ],
+        "agents": [
+          "jira-specialist",
+          "confluence-specialist",
+          "atlassian-admin"
+        ],
+        "triggers": [
+          "sync jira",
+          "update confluence",
+          "atlassian sync"
+        ],
+        "stages": [
+          "extract",
+          "transform",
+          "sync",
+          "verify"
+        ],
+        "estimatedDuration": "5-15 minutes",
+        "priority": "medium",
+        "requiredMcps": [
+          "atlassian"
+        ]
+      }
+    },
+    "data": {
+      "data-processing-workflow": {
+        "path": ".claude/workflows/data-processing-workflow.json",
+        "description": "ETL pipeline with AI-powered data quality validation",
+        "type": "hybrid",
+        "keywords": [
+          "etl",
+          "data",
+          "pipeline",
+          "transform",
+          "load"
+        ],
+        "agents": [
+          "data-engineer",
+          "data-analyst",
+          "ml-engineer"
+        ],
+        "triggers": [
+          "process data",
+          "etl",
+          "data pipeline"
+        ],
+        "stages": [
+          "extract",
+          "transform",
+          "quality-check",
+          "load"
+        ],
+        "estimatedDuration": "30-120 minutes",
+        "priority": "medium"
+      }
+    },
+    "group": {
+      "group-chat-workflow": {
+        "path": ".claude/workflows/group-chat-workflow.json",
+        "description": "Multi-agent collaborative discussion workflow",
+        "type": "parallel",
+        "keywords": [
+          "chat",
+          "discussion",
+          "collaborate",
+          "brainstorm"
+        ],
+        "agents": [
+          "researcher",
+          "coder",
+          "reviewer",
+          "planner"
+        ],
+        "triggers": [
+          "discuss",
+          "brainstorm",
+          "collaborate"
+        ],
+        "stages": [
+          "initiate",
+          "discuss",
+          "synthesize",
+          "conclude"
+        ],
+        "estimatedDuration": "15-45 minutes",
+        "priority": "low"
+      },
+      "sequential-workflow": {
+        "path": ".claude/workflows/sequential-workflow.json",
+        "description": "Sequential multi-agent task execution",
+        "type": "sequential",
+        "keywords": [
+          "sequence",
+          "chain",
+          "steps",
+          "pipeline"
+        ],
+        "agents": [
+          "configurable"
+        ],
+        "triggers": [
+          "run sequence",
+          "execute pipeline"
+        ],
+        "stages": [
+          "configurable"
+        ],
+        "estimatedDuration": "variable",
+        "priority": "medium"
+      }
+    },
+    "documentation": {
+      "documentation-lifecycle": {
+        "path": ".claude/workflows/documentation-lifecycle.md",
+        "description": "Complete documentation workflow for repository updates, research, and knowledge management",
+        "type": "sequential",
+        "keywords": [
+          "document",
+          "docs",
+          "documentation",
+          "update",
+          "knowledge"
+        ],
+        "agents": [
+          "docs-writer",
+          "researcher",
+          "reviewer"
+        ],
+        "triggers": [
+          "document repo",
+          "create docs",
+          "update documentation"
+        ],
+        "stages": [
+          "discover",
+          "template",
+          "populate",
+          "cross-reference",
+          "verify"
+        ],
+        "estimatedDuration": "15-30 minutes",
+        "priority": "medium",
+        "requiredMcps": [
+          "obsidian"
+        ]
+      },
+      "adr-workflow": {
+        "path": ".claude/workflows/adr-workflow.md",
+        "description": "Architecture Decision Record creation and review workflow",
+        "type": "sequential",
+        "keywords": [
+          "adr",
+          "decision",
+          "architecture",
+          "design"
+        ],
+        "agents": [
+          "system-architect",
+          "docs-writer"
+        ],
+        "triggers": [
+          "architecture decision",
+          "create adr",
+          "document decision"
+        ],
+        "stages": [
+          "context",
+          "number",
+          "draft",
+          "content",
+          "review"
+        ],
+        "estimatedDuration": "30-60 minutes",
+        "priority": "medium",
+        "requiredMcps": [
+          "obsidian"
+        ]
+      },
+      "repository-documentation": {
+        "path": ".claude/workflows/repository-documentation.md",
+        "description": "Automated repository documentation updates and synchronization",
+        "type": "sequential",
+        "keywords": [
+          "repo",
+          "repository",
+          "readme",
+          "documentation"
+        ],
+        "agents": [
+          "docs-writer",
+          "code-analyzer"
+        ],
+        "triggers": [
+          "document repo",
+          "update repo docs",
+          "repository documentation"
+        ],
+        "stages": [
+          "discover",
+          "template",
+          "populate",
+          "cross-reference",
+          "verify"
+        ],
+        "estimatedDuration": "10-20 minutes",
+        "priority": "medium",
+        "requiredMcps": [
+          "obsidian"
+        ]
+      }
+    },
+    "infrastructure": {
+      "keycloak-setup": {
+        "path": ".claude/workflows/keycloak-setup.md",
+        "description": "Complete Keycloak setup including realm, clients, auth flows, and themes",
+        "type": "sequential",
+        "keywords": [
+          "keycloak",
+          "auth",
+          "realm",
+          "identity",
+          "sso"
+        ],
+        "agents": [
+          "keycloak-realm-admin",
+          "keycloak-auth-flow-designer",
+          "keycloak-theme-developer",
+          "keycloak-security-auditor"
+        ],
+        "triggers": [
+          "setup keycloak",
+          "configure keycloak",
+          "initialize auth"
+        ],
+        "stages": [
+          "realm-setup",
+          "client-configuration",
+          "auth-flow-design",
+          "theme-customization",
+          "security-audit"
+        ],
+        "estimatedDuration": "2-4 hours",
+        "priority": "high"
+      },
+      "mongodb-optimization": {
+        "path": ".claude/workflows/mongodb-optimization.md",
+        "description": "Comprehensive MongoDB optimization including schema review, index optimization, and query tuning",
+        "type": "parallel",
+        "keywords": [
+          "mongodb",
+          "optimization",
+          "performance",
+          "index",
+          "query"
+        ],
+        "agents": [
+          "mongodb-schema-designer",
+          "mongodb-query-optimizer",
+          "mongodb-aggregation-specialist"
+        ],
+        "triggers": [
+          "optimize mongodb",
+          "mongodb performance",
+          "database optimization"
+        ],
+        "stages": [
+          "analysis",
+          "schema-review",
+          "index-optimization",
+          "query-tuning",
+          "validation"
+        ],
+        "estimatedDuration": "1-3 hours",
+        "priority": "high"
+      },
+      "deployment-pipeline": {
+        "path": ".claude/workflows/deployment-pipeline.md",
+        "description": "End-to-end deployment workflow with Helm, testing, and validation",
+        "type": "sequential",
+        "keywords": [
+          "deploy",
+          "release",
+          "helm",
+          "kubernetes",
+          "pipeline"
+        ],
+        "agents": [
+          "helm-chart-developer",
+          "helm-values-manager",
+          "helm-release-manager",
+          "k8s-debugger",
+          "k8s-security-specialist"
+        ],
+        "triggers": [
+          "deploy to",
+          "release to",
+          "deployment pipeline"
+        ],
+        "stages": [
+          "pre-deploy",
+          "deploy",
+          "validate",
+          "post-deploy"
+        ],
+        "estimatedDuration": "30-60 minutes",
+        "priority": "critical"
+      },
+      "infrastructure-audit": {
+        "path": ".claude/workflows/infrastructure-audit.md",
+        "description": "Complete infrastructure audit covering Keycloak, MongoDB, Kubernetes, and Helm",
+        "type": "parallel",
+        "keywords": [
+          "audit",
+          "security",
+          "compliance",
+          "infrastructure"
+        ],
+        "agents": [
+          "keycloak-security-auditor",
+          "mongodb-query-optimizer",
+          "k8s-security-specialist",
+          "k8s-resource-optimizer"
+        ],
+        "triggers": [
+          "audit infrastructure",
+          "security audit",
+          "compliance check"
+        ],
+        "stages": [
+          "security-audit",
+          "performance-audit",
+          "compliance-check",
+          "remediation-plan"
+        ],
+        "estimatedDuration": "1-2 hours",
+        "priority": "high"
+      }
+    },
+    "lobbi-platform": {
+      "tenant-onboarding": {
+        "path": ".claude/workflows/tenant-onboarding.md",
+        "description": "Complete tenant onboarding workflow including provisioning, Keycloak setup, billing, and theme configuration",
+        "type": "sequential",
+        "keywords": [
+          "tenant",
+          "onboarding",
+          "provision",
+          "organization",
+          "setup"
+        ],
+        "agents": [
+          "tenant-provisioning-specialist",
+          "stripe-integration-specialist",
+          "keycloak-realm-admin",
+          "theme-builder"
+        ],
+        "triggers": [
+          "onboard tenant",
+          "provision organization",
+          "new tenant setup"
+        ],
+        "stages": [
+          "provision",
+          "keycloak-setup",
+          "billing-config",
+          "admin-creation",
+          "theme-setup",
+          "notification"
+        ],
+        "estimatedDuration": "45-90 minutes",
+        "priority": "high"
+      },
+      "member-enrollment": {
+        "path": ".claude/workflows/member-enrollment.md",
+        "description": "Multi-path member enrollment workflow supporting self-registration, admin invitation, and bulk import",
+        "type": "hybrid",
+        "keywords": [
+          "member",
+          "enrollment",
+          "registration",
+          "invitation",
+          "bulk-import"
+        ],
+        "agents": [
+          "membership-specialist",
+          "keycloak-realm-admin",
+          "email-notification-specialist"
+        ],
+        "triggers": [
+          "enroll member",
+          "member registration",
+          "bulk import members"
+        ],
+        "stages": [
+          "path-selection",
+          "validation",
+          "duplicate-check",
+          "keycloak-user",
+          "member-record",
+          "notification"
+        ],
+        "estimatedDuration": "5-15 minutes",
+        "priority": "high"
+      },
+      "subscription-upgrade": {
+        "path": ".claude/workflows/subscription-upgrade.md",
+        "description": "Subscription lifecycle management workflow for upgrades, downgrades, and plan modifications",
+        "type": "sequential",
+        "keywords": [
+          "subscription",
+          "upgrade",
+          "downgrade",
+          "plan",
+          "billing"
+        ],
+        "agents": [
+          "subscription-lifecycle-manager",
+          "stripe-integration-specialist",
+          "invoice-manager"
+        ],
+        "triggers": [
+          "upgrade subscription",
+          "change plan",
+          "downgrade plan"
+        ],
+        "stages": [
+          "eligibility-check",
+          "plan-comparison",
+          "proration",
+          "payment",
+          "feature-unlock",
+          "notification"
+        ],
+        "estimatedDuration": "10-20 minutes",
+        "priority": "high"
+      },
+      "e2e-test-suite": {
+        "path": ".claude/workflows/e2e-test-suite.md",
+        "description": "Comprehensive automated testing workflow with Selenium covering auth, members, payments, and tenant operations",
+        "type": "parallel",
+        "keywords": [
+          "e2e",
+          "testing",
+          "selenium",
+          "automation",
+          "qa"
+        ],
+        "agents": [
+          "selenium-test-architect",
+          "auth-flow-tester",
+          "member-journey-tester"
+        ],
+        "triggers": [
+          "run e2e tests",
+          "test suite",
+          "automated testing"
+        ],
+        "stages": [
+          "environment-setup",
+          "test-data-prep",
+          "auth-tests",
+          "member-tests",
+          "payment-tests",
+          "cleanup",
+          "report-generation"
+        ],
+        "estimatedDuration": "30-60 minutes",
+        "priority": "high"
+      }
+    }
+  },
+  "workflowPatterns": {
+    "hierarchical": {
+      "description": "Single coordinator delegates to worker agents",
+      "coordinator": "hierarchical-coordinator",
+      "useCase": "Complex features requiring strict coordination",
+      "example": "Implementing a new authentication system"
+    },
+    "mesh": {
+      "description": "Peer-to-peer distributed coordination",
+      "coordinator": "mesh-coordinator",
+      "useCase": "Research and analysis tasks",
+      "example": "Multi-perspective code review"
+    },
+    "adaptive": {
+      "description": "Dynamic topology switching based on task",
+      "coordinator": "adaptive-coordinator",
+      "useCase": "Mixed workloads with varying complexity",
+      "example": "Incident response with unknown scope"
+    },
+    "pipeline": {
+      "description": "Sequential stage-based processing",
+      "coordinator": null,
+      "useCase": "Well-defined linear processes",
+      "example": "CI/CD deployment pipeline"
+    }
+  },
+  "activationRules": {
+    "keywordMatching": {
+      "enabled": true,
+      "minScore": 2,
+      "weights": {
+        "exactMatch": 5,
+        "partialMatch": 2,
+        "contextMatch": 1
+      }
+    },
+    "contextAware": {
+      "enabled": true,
+      "sources": [
+        "user_message",
+        "file_context",
+        "active_agents",
+        "recent_workflows"
+      ]
+    }
+  },
+  "stats": {
+    "totalWorkflows": 21,
+    "byType": {
+      "sequential": 10,
+      "parallel": 6,
+      "hybrid": 5
+    },
+    "byCategory": {
+      "development": 2,
+      "devops": 2,
+      "project-management": 2,
+      "integration": 1,
+      "data": 1,
+      "group": 2,
+      "documentation": 3,
+      "infrastructure": 4,
+      "lobbi-platform": 4
+    }
+  }
+}

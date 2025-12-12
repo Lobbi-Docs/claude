@@ -1,0 +1,402 @@
+{
+  "$schema": "../schema/search.schema.json",
+  "version": "4.0.0",
+  "description": "Comprehensive keyword-to-resource mapping for agents, skills, MCPs, tools, and workflows",
+
+  "keywordMap": {
+    "deploy": {
+      "agents": ["k8s-deployer", "docker-builder", "helm-specialist", "cicd-engineer"],
+      "skills": ["kubernetes", "helm", "docker"],
+      "commands": ["deploy", "rollback", "scale"],
+      "workflows": ["ci-cd-workflow", "feature-development"],
+      "mcps": ["vercel"],
+      "tools": ["Bash"]
+    },
+    "test": {
+      "agents": ["tester", "qa-engineer", "e2e-tester", "load-tester"],
+      "skills": ["testing", "debugging"],
+      "commands": ["test", "generate-tests"],
+      "workflows": ["code-review", "ci-cd-workflow"],
+      "mcps": ["playwright"],
+      "tools": ["Bash", "Task"]
+    },
+    "review": {
+      "agents": ["reviewer", "security-auditor", "code-analyzer", "code-review-swarm"],
+      "skills": ["git-workflows"],
+      "commands": ["review", "review-all", "security-scan"],
+      "workflows": ["code-review"],
+      "mcps": ["github"],
+      "tools": ["Read", "Grep"]
+    },
+    "debug": {
+      "agents": ["debugger", "incident-responder", "observability"],
+      "skills": ["debugging"],
+      "commands": ["debug", "logs"],
+      "workflows": ["incident-response"],
+      "mcps": ["supabase", "vercel"],
+      "tools": ["Bash", "Read", "Grep"]
+    },
+    "security": {
+      "agents": ["security-auditor", "penetration-tester", "compliance-checker", "secrets-manager"],
+      "skills": ["authentication"],
+      "commands": ["security-scan", "secure-audit", "security-fortress"],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": [],
+      "tools": ["Grep", "Read"]
+    },
+    "api": {
+      "agents": ["api-designer", "backend-dev"],
+      "skills": ["rest-api", "graphql", "flask-api", "fastapi"],
+      "commands": ["document-api"],
+      "workflows": ["feature-development"],
+      "mcps": ["supabase", "context7"],
+      "tools": ["Read", "Edit", "Write"]
+    },
+    "database": {
+      "agents": ["database-specialist", "data-engineer"],
+      "skills": ["database", "redis", "vector-db"],
+      "commands": [],
+      "workflows": ["data-processing-workflow"],
+      "mcps": ["supabase", "upstash"],
+      "tools": ["mcp__supabase__execute_sql", "mcp__supabase__apply_migration"]
+    },
+    "sprint": {
+      "agents": ["scrum-master", "product-owner", "sprint-analyst", "jira-specialist"],
+      "skills": ["scrum", "jira"],
+      "commands": ["sprint-plan", "standup", "retro", "backlog-groom"],
+      "workflows": ["sprint-management", "scrum-ceremonies"],
+      "mcps": ["atlassian"],
+      "tools": []
+    },
+    "documentation": {
+      "agents": ["docs-writer", "api-documenter", "runbook-writer", "confluence-specialist"],
+      "skills": ["confluence"],
+      "commands": ["confluence-publish", "update-documentation", "document-api"],
+      "workflows": ["atlassian-integration", "documentation-lifecycle", "adr-workflow", "repository-documentation"],
+      "mcps": ["atlassian", "context7", "obsidian"],
+      "tools": ["Write", "Read"]
+    },
+    "vault": {
+      "agents": ["docs-writer"],
+      "skills": [],
+      "commands": ["update-documentation"],
+      "workflows": ["documentation-lifecycle", "adr-workflow", "repository-documentation"],
+      "mcps": ["obsidian"],
+      "tools": ["mcp__obsidian__list_files_in_vault", "mcp__obsidian__get_file_contents", "mcp__obsidian__simple_search", "mcp__obsidian__append_content"]
+    },
+    "workflow": {
+      "agents": ["cicd-engineer", "gitops-specialist"],
+      "skills": [],
+      "commands": [],
+      "workflows": ["ci-cd-workflow", "data-processing-workflow"],
+      "mcps": ["n8n", "github"],
+      "tools": ["Task", "Bash"]
+    },
+    "automation": {
+      "agents": ["cicd-engineer", "sre-engineer"],
+      "skills": [],
+      "commands": [],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": ["n8n", "github", "upstash"],
+      "tools": ["Bash", "Task"]
+    },
+    "integration": {
+      "agents": ["backend-dev", "api-designer"],
+      "skills": ["rest-api", "graphql"],
+      "commands": [],
+      "workflows": ["atlassian-integration", "data-processing-workflow"],
+      "mcps": ["n8n", "supabase", "vercel"],
+      "tools": ["Task", "Read"]
+    },
+    "webhook": {
+      "agents": ["backend-dev", "api-designer"],
+      "skills": ["rest-api", "fastapi", "flask-api"],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["n8n", "upstash"],
+      "tools": ["Edit", "Write"]
+    },
+    "architecture": {
+      "agents": ["system-architect", "api-designer"],
+      "skills": [],
+      "commands": ["migrate-architecture"],
+      "workflows": ["feature-development"],
+      "mcps": [],
+      "tools": ["Read", "Task"]
+    },
+    "ml": {
+      "agents": ["ml-engineer", "data-engineer", "rag-specialist", "llm-engineer"],
+      "skills": ["llm-integration", "vector-db"],
+      "commands": [],
+      "workflows": ["data-processing-workflow"],
+      "mcps": ["upstash"],
+      "tools": ["Task"]
+    },
+    "cloud": {
+      "agents": ["aws-specialist", "gcp-specialist", "azure-specialist", "terraform-specialist"],
+      "skills": ["aws", "gcp", "terraform"],
+      "commands": [],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": ["vercel"],
+      "tools": ["Bash"]
+    },
+    "container": {
+      "agents": ["docker-builder", "k8s-deployer"],
+      "skills": ["docker", "kubernetes"],
+      "commands": ["build-agent"],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": [],
+      "tools": ["Bash"]
+    },
+    "incident": {
+      "agents": ["incident-responder", "observability", "sre-engineer"],
+      "skills": ["debugging"],
+      "commands": ["logs", "debug", "disaster-recovery"],
+      "workflows": ["incident-response"],
+      "mcps": ["supabase", "vercel"],
+      "tools": ["Bash", "Read", "Grep"]
+    },
+    "performance": {
+      "agents": ["performance-engineer", "load-tester", "observability"],
+      "skills": [],
+      "commands": ["performance-surge", "optimize-code"],
+      "workflows": ["code-review"],
+      "mcps": [],
+      "tools": ["Task", "Bash"]
+    },
+    "frontend": {
+      "agents": ["react-specialist", "ui-designer", "vue-specialist", "nextjs-specialist", "accessibility-expert"],
+      "skills": ["react", "nextjs"],
+      "commands": [],
+      "workflows": ["feature-development"],
+      "mcps": ["playwright", "vercel", "context7"],
+      "tools": ["Read", "Edit", "Write"]
+    },
+    "release": {
+      "agents": ["release-manager", "cicd-engineer"],
+      "skills": ["git-workflows"],
+      "commands": ["deploy", "rollback"],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": ["github", "vercel"],
+      "tools": ["Bash"]
+    },
+    "git": {
+      "agents": ["pr-manager", "release-manager", "code-review-swarm"],
+      "skills": ["git-workflows"],
+      "commands": [],
+      "workflows": ["code-review"],
+      "mcps": ["github"],
+      "tools": ["Bash"]
+    },
+    "browser": {
+      "agents": ["e2e-tester"],
+      "skills": [],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["playwright"],
+      "tools": ["mcp__playwright__*"]
+    },
+    "cache": {
+      "agents": [],
+      "skills": ["redis"],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["upstash"],
+      "tools": ["mcp__upstash__redis_*"]
+    },
+    "queue": {
+      "agents": [],
+      "skills": [],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["upstash"],
+      "tools": ["mcp__upstash__qstash_*"]
+    },
+    "types": {
+      "agents": ["typescript-specialist"],
+      "skills": [],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["supabase"],
+      "tools": ["mcp__supabase__generate_typescript_types"]
+    },
+    "migration": {
+      "agents": ["database-specialist"],
+      "skills": ["database"],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["supabase"],
+      "tools": ["mcp__supabase__apply_migration", "mcp__supabase__list_migrations"]
+    },
+    "edge-function": {
+      "agents": [],
+      "skills": [],
+      "commands": [],
+      "workflows": [],
+      "mcps": ["supabase"],
+      "tools": ["mcp__supabase__deploy_edge_function", "mcp__supabase__list_edge_functions"]
+    }
+  },
+
+  "synonyms": {
+    "k8s": "container",
+    "kube": "container",
+    "kubernetes": "container",
+    "ci/cd": "deploy",
+    "pipeline": "deploy",
+    "pr": "review",
+    "pull-request": "review",
+    "bug": "debug",
+    "error": "debug",
+    "fix": "debug",
+    "doc": "documentation",
+    "docs": "documentation",
+    "wiki": "documentation",
+    "adr": "vault",
+    "obsidian": "vault",
+    "template": "documentation",
+    "research": "documentation",
+    "auth": "security",
+    "authentication": "security",
+    "perf": "performance",
+    "ui": "frontend",
+    "ux": "frontend",
+    "react": "frontend",
+    "nextjs": "frontend",
+    "infra": "deploy",
+    "infrastructure": "deploy",
+    "ship": "release",
+    "publish": "release",
+    "postgres": "database",
+    "sql": "database",
+    "db": "database",
+    "redis": "cache",
+    "caching": "cache",
+    "message": "queue",
+    "job": "queue",
+    "typescript": "types",
+    "ts": "types",
+    "playwright": "browser",
+    "e2e": "browser",
+    "screenshot": "browser",
+    "supabase": "database",
+    "vercel": "deploy",
+    "github": "git",
+    "jira": "sprint",
+    "confluence": "documentation",
+    "atlassian": "sprint"
+  },
+
+  "compoundQueries": {
+    "deploy to kubernetes": {
+      "agents": ["k8s-deployer", "helm-specialist"],
+      "skills": ["kubernetes", "helm", "docker"],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": []
+    },
+    "deploy to vercel": {
+      "agents": ["cicd-engineer"],
+      "skills": [],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": ["vercel"]
+    },
+    "fix bug": {
+      "agents": ["debugger", "tester"],
+      "skills": ["debugging", "testing"],
+      "workflows": ["incident-response"],
+      "mcps": []
+    },
+    "create api": {
+      "agents": ["api-designer", "backend-dev", "coder"],
+      "skills": ["rest-api", "flask-api"],
+      "workflows": ["feature-development"],
+      "mcps": ["supabase"]
+    },
+    "write tests": {
+      "agents": ["tester", "coder"],
+      "skills": ["testing"],
+      "workflows": ["code-review"],
+      "mcps": ["playwright"]
+    },
+    "security audit": {
+      "agents": ["security-auditor", "compliance-checker"],
+      "skills": ["authentication"],
+      "workflows": ["code-review"],
+      "mcps": []
+    },
+    "plan sprint": {
+      "agents": ["scrum-master", "product-owner"],
+      "skills": ["scrum", "jira"],
+      "commands": ["sprint-plan"],
+      "workflows": ["sprint-management"],
+      "mcps": ["atlassian"]
+    },
+    "run standup": {
+      "agents": ["scrum-master"],
+      "skills": ["scrum", "jira"],
+      "commands": ["standup"],
+      "workflows": ["scrum-ceremonies"],
+      "mcps": ["atlassian"]
+    },
+    "database migration": {
+      "agents": ["database-specialist"],
+      "skills": ["database"],
+      "workflows": [],
+      "mcps": ["supabase"],
+      "tools": ["mcp__supabase__apply_migration"]
+    },
+    "generate types": {
+      "agents": ["typescript-specialist"],
+      "skills": [],
+      "workflows": [],
+      "mcps": ["supabase"],
+      "tools": ["mcp__supabase__generate_typescript_types"]
+    },
+    "browser test": {
+      "agents": ["e2e-tester"],
+      "skills": ["testing"],
+      "workflows": [],
+      "mcps": ["playwright"]
+    },
+    "fetch docs": {
+      "agents": [],
+      "skills": [],
+      "workflows": [],
+      "mcps": ["context7"],
+      "tools": ["mcp__context7__get-library-docs"]
+    },
+    "create issue": {
+      "agents": ["jira-specialist"],
+      "skills": ["jira"],
+      "workflows": [],
+      "mcps": ["github", "atlassian"]
+    },
+    "deploy edge function": {
+      "agents": [],
+      "skills": [],
+      "workflows": [],
+      "mcps": ["supabase"],
+      "tools": ["mcp__supabase__deploy_edge_function"]
+    }
+  },
+
+  "mcpToolShortcuts": {
+    "db": "mcp__supabase__execute_sql",
+    "migrate": "mcp__supabase__apply_migration",
+    "tables": "mcp__supabase__list_tables",
+    "types": "mcp__supabase__generate_typescript_types",
+    "logs": "mcp__supabase__get_logs",
+    "deploy-vercel": "mcp__vercel__deploy_to_vercel",
+    "deploy-fn": "mcp__supabase__deploy_edge_function",
+    "screenshot": "mcp__playwright__browser_take_screenshot",
+    "snapshot": "mcp__playwright__browser_snapshot",
+    "click": "mcp__playwright__browser_click",
+    "docs": "mcp__context7__get-library-docs",
+    "redis-run": "mcp__upstash__redis_database_run_redis_commands",
+    "qstash-pub": "mcp__upstash__qstash_publish_message",
+    "vault": "mcp__obsidian__list_files_in_vault",
+    "vault-read": "mcp__obsidian__get_file_contents",
+    "vault-search": "mcp__obsidian__simple_search",
+    "vault-add": "mcp__obsidian__append_content"
+  }
+}

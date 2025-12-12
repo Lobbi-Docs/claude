@@ -1,0 +1,17 @@
+{
+  "server": {
+    "name": "mcp-server-stub",
+    "version": "0.1.0",
+    "host": "localhost",
+    "port": 8080
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": false,
+    "prompts": false
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "mcp-server.log"
+  }
+}

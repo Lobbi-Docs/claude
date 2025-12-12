@@ -1,0 +1,113 @@
+{
+  "$schema": "./schema/registry.schema.json",
+  "version": "4.0.0",
+  "lastUpdated": "2025-11-28",
+  "description": "Central registry for Claude Code resources - agents, skills, commands, workflows, MCPs, tools",
+
+  "metadata": {
+    "totalAgents": 67,
+    "totalSkills": 25,
+    "totalCommands": 44,
+    "totalWorkflows": 10,
+    "totalMcpServers": 8,
+    "totalMcpTools": 80,
+    "totalBuiltinTools": 17
+  },
+
+  "indexes": {
+    "agents": "./agents.index.json",
+    "skills": "./skills.index.json",
+    "commands": "./commands.index.json",
+    "workflows": "./workflows.index.json",
+    "mcps": "./mcps.index.json",
+    "tools": "./tools.index.json"
+  },
+
+  "activation": {
+    "unified": "./activation/unified.activation.json",
+    "skills": "./activation/skills.activation.json"
+  },
+
+  "search": {
+    "enabled": true,
+    "fuzzyMatch": true,
+    "keywordIndex": "./search/keywords.json"
+  },
+
+  "orchestration": {
+    "protocol": "4.0.0",
+    "mandatoryPhases": ["explore", "plan", "code", "test", "fix", "document"],
+    "subAgentLimits": {
+      "minimum": 3,
+      "maximum": 13,
+      "default": 5
+    },
+    "stateDirectory": "../orchestration/state",
+    "hooksScript": "../hooks/orchestration-hooks.sh"
+  },
+
+  "categories": {
+    "agents": [
+      "core", "devops", "development", "frontend", "languages",
+      "security", "data-ai", "operations", "cloud", "swarm",
+      "github", "atlassian", "documentation", "testing", "golden-armada"
+    ],
+    "skills": [
+      "infrastructure", "development", "frontend", "data",
+      "cloud", "security", "project-management"
+    ],
+    "commands": [
+      "core", "development", "deployment", "security",
+      "atlassian", "orchestration", "analysis"
+    ],
+    "mcps": [
+      "core", "project", "extension"
+    ]
+  },
+
+  "quickLookup": {
+    "byTrigger": {
+      "k8s|kubernetes|kubectl|pod|deployment": "skills/kubernetes",
+      "docker|dockerfile|container|image": "skills/docker",
+      "helm|chart|values": "skills/helm",
+      "jira|sprint|backlog|issue": "skills/jira",
+      "confluence|wiki|page": "skills/confluence",
+      "test|pytest|unittest|coverage": "skills/testing",
+      "aws|s3|ec2|lambda": "skills/aws",
+      "gcp|cloud-run|bigquery": "skills/gcp",
+      "terraform|iac|infrastructure": "skills/terraform",
+      "react|component|hooks|state": "skills/react",
+      "graphql|query|mutation|schema": "skills/graphql",
+      "sql|database|query|migration": "skills/database",
+      "redis|cache|session": "skills/redis",
+      "oauth|jwt|auth|token": "skills/authentication",
+      "supabase|rls|edge-function": "mcps/supabase",
+      "vercel|deploy|preview": "mcps/vercel",
+      "github|pr|issue|branch": "mcps/github",
+      "playwright|e2e|browser": "mcps/playwright"
+    },
+    "byTask": {
+      "deploy": ["k8s-deployer", "docker-builder", "helm-specialist", "cicd-engineer"],
+      "review": ["reviewer", "security-auditor", "code-analyzer"],
+      "test": ["tester", "e2e-tester", "qa-engineer", "penetration-tester"],
+      "build": ["coder", "docker-builder", "cicd-engineer"],
+      "debug": ["debugger", "incident-responder", "observability"],
+      "design": ["system-architect", "api-designer", "database-specialist"],
+      "document": ["docs-writer", "api-documenter", "confluence-specialist"],
+      "plan": ["planner", "product-owner", "scrum-master"]
+    },
+    "byMcp": {
+      "database": ["supabase", "upstash"],
+      "deployment": ["vercel", "github"],
+      "testing": ["playwright"],
+      "documentation": ["context7"],
+      "project-management": ["atlassian"]
+    }
+  },
+
+  "contextActivation": {
+    "enabled": true,
+    "evaluationOrder": ["keywords", "fileContext", "directoryContext", "envVars", "recentUsage"],
+    "profiles": ["minimal", "standard", "full", "database", "frontend", "devops", "project-management"]
+  }
+}

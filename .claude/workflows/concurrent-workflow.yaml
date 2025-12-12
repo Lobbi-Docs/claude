@@ -1,0 +1,61 @@
+workflow:
+  name: ConcurrentDataProcessing
+  type: concurrent
+  description: Concurrent workflow for parallel data processing
+  version: 1.0.0
+  phases:
+    - id: fetch_phase
+      type: concurrent
+      steps:
+        - id: fetch_source_a
+          agent: data-fetcher-a
+          input:
+            source: workflow_input
+            mapping:
+              query: $.input.query_a
+          output: data_a
+        - id: fetch_source_b
+          agent: data-fetcher-b
+          input:
+            source: workflow_input
+            mapping:
+              query: $.input.query_b
+          output: data_b
+        - id: fetch_source_c
+          agent: data-fetcher-c
+          input:
+            source: workflow_input
+            mapping:
+              query: $.input.query_c
+          output: data_c
+      checkpointing:
+        enabled: true
+        strategy: phase_completion
+    
+    - id: aggregation_phase
+      type: sequential
+      steps:
+        - id: aggregate
+          agent: aggregator-agent
+          input:
+            sources:
+              - data_a
+              - data_b
+              - data_c
+          output: aggregated_result
+      checkpointing:
+        enabled: true
+        strategy: superstep
+  
+  error_handling:
+    strategy: partial_failure_tolerant
+    min_successful_steps: 2
+    continue_on_error: true
+  
+  monitoring:
+    telemetry_enabled: true
+    trace_sampling: 1.0
+    metrics:
+      - execution_time
+      - step_duration
+      - success_rate

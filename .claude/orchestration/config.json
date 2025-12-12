@@ -1,0 +1,173 @@
+{
+  "$schema": "../schema/orchestration.schema.json",
+  "version": "1.0.0",
+  "description": "Agent orchestration, tracking, and coordination system configuration",
+
+  "database": {
+    "default": "sqlite",
+    "providers": {
+      "sqlite": {
+        "enabled": true,
+        "path": ".claude/orchestration/db/agents.db",
+        "backup": true,
+        "backupInterval": "1h"
+      },
+      "supabase": {
+        "enabled": false,
+        "url": "${SUPABASE_URL}",
+        "key": "${SUPABASE_KEY}",
+        "schema": "golden_armada"
+      },
+      "upstash": {
+        "enabled": false,
+        "url": "${UPSTASH_REDIS_URL}",
+        "token": "${UPSTASH_REDIS_TOKEN}"
+      },
+      "neon": {
+        "enabled": false,
+        "connectionString": "${NEON_DATABASE_URL}"
+      },
+      "mongodb": {
+        "enabled": false,
+        "uri": "${MONGODB_URI}",
+        "database": "golden_armada"
+      }
+    }
+  },
+
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "directory": ".claude/orchestration/logs",
+    "retention": {
+      "days": 30,
+      "maxSize": "100MB"
+    },
+    "outputs": {
+      "file": true,
+      "database": true,
+      "console": false
+    },
+    "categories": [
+      "agent_activity",
+      "task_execution",
+      "communication",
+      "errors",
+      "checkpoints"
+    ]
+  },
+
+  "checkpoints": {
+    "enabled": true,
+    "directory": ".claude/orchestration/checkpoints",
+    "strategy": "incremental",
+    "triggers": {
+      "onTaskStart": true,
+      "onTaskComplete": true,
+      "onError": true,
+      "periodic": "5m"
+    },
+    "retention": {
+      "maxCheckpoints": 100,
+      "maxAge": "7d"
+    }
+  },
+
+  "coordination": {
+    "enabled": true,
+    "lockDirectory": ".claude/orchestration/locks",
+    "lockTimeout": "5m",
+    "strategies": {
+      "file_locks": {
+        "enabled": true,
+        "granularity": "file"
+      },
+      "resource_locks": {
+        "enabled": true,
+        "types": ["database", "api", "file", "task"]
+      },
+      "distributed_locks": {
+        "enabled": false,
+        "backend": "upstash"
+      }
+    },
+    "conflictResolution": {
+      "strategy": "queue",
+      "maxWait": "30s",
+      "fallback": "skip"
+    }
+  },
+
+  "communication": {
+    "enabled": true,
+    "messageDirectory": ".claude/orchestration/messages",
+    "channels": {
+      "broadcast": {
+        "description": "All agents receive messages",
+        "persistent": true
+      },
+      "direct": {
+        "description": "Point-to-point messaging",
+        "persistent": true
+      },
+      "task": {
+        "description": "Task-specific communication",
+        "persistent": false
+      }
+    },
+    "messageRetention": "24h",
+    "maxMessageSize": "1MB"
+  },
+
+  "parallel": {
+    "enabled": true,
+    "maxConcurrentAgents": 10,
+    "workDistribution": {
+      "strategy": "round_robin",
+      "loadBalancing": true,
+      "affinityRules": []
+    },
+    "isolation": {
+      "workspaces": true,
+      "tempDirectories": true,
+      "envIsolation": false
+    }
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "metrics": [
+      "agent_count",
+      "task_throughput",
+      "error_rate",
+      "average_duration",
+      "resource_usage"
+    ],
+    "alerts": {
+      "errorThreshold": 5,
+      "durationThreshold": "10m",
+      "notify": "log"
+    }
+  },
+
+  "activity_logging": {
+    "enabled": true,
+    "obsidian_vault": "C:\\Users\\MarkusAhling\\obsidian",
+    "activity_log_path": "System/Agents/Activity-Log.md",
+    "fallback_json": ".claude/orchestration/db/agent-activity.json",
+    "checkpoints": [
+      "start",
+      "planning",
+      "post-plan",
+      "quality-check",
+      "commit"
+    ],
+    "retention_days": 30,
+    "archive_path": "System/Agents/Archive/",
+    "auto_archive": true,
+    "daily_summary": true,
+    "summary_path": "System/Agents/Daily-Summary.md",
+    "error_threshold": 3,
+    "alert_on_threshold": true
+  }
+}

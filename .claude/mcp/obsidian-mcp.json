@@ -1,0 +1,49 @@
+{
+  "$schema": "../registry/schema/mcp.schema.json",
+  "version": "1.0.0",
+  "description": "Obsidian vault integration for centralized documentation",
+
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-obsidian"],
+      "env": {
+        "OBSIDIAN_VAULT_PATH": "C:\\Users\\MarkusAhling\\obsidian",
+        "OBSIDIAN_REST_API_PORT": "27124",
+        "OBSIDIAN_REST_API_KEY": "${OBSIDIAN_API_KEY}"
+      },
+      "metadata": {
+        "description": "Obsidian vault for documentation, ADRs, and research notes",
+        "provider": "custom",
+        "keywords": ["obsidian", "vault", "documentation", "template", "adr"],
+        "autoActivate": false,
+        "triggers": ["documentation", "vault", "obsidian", "adr", "template"],
+        "priority": "medium"
+      }
+    }
+  },
+
+  "tools": {
+    "obsidian": [
+      "list_files_in_vault",
+      "list_files_in_dir",
+      "get_file_contents",
+      "simple_search",
+      "complex_search",
+      "append_content",
+      "patch_content",
+      "get_periodic_note",
+      "get_recent_periodic_notes",
+      "batch_get_file_contents",
+      "delete_file"
+    ]
+  },
+
+  "resources": [
+    "obsidian://vault/Repositories/{org}/{repo}.md",
+    "obsidian://vault/Projects/{project}/",
+    "obsidian://vault/Research/",
+    "obsidian://vault/Templates/",
+    "obsidian://vault/System/"
+  ]
+}

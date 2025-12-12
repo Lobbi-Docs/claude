@@ -1,0 +1,459 @@
+{
+  "$schema": "../schema/activation.schema.json",
+  "version": "4.0.0",
+  "description": "Unified dynamic activation system for agents, skills, MCPs, tools, and workflows",
+
+  "activationEngine": {
+    "enabled": true,
+    "mode": "dynamic",
+    "evaluationStrategy": "context-aware-unified",
+    "resourceTypes": ["agents", "skills", "mcps", "tools", "workflows"]
+  },
+
+  "contextAnalysis": {
+    "sources": [
+      "user_message",
+      "file_context",
+      "recent_tool_calls",
+      "active_agents",
+      "project_type",
+      "environment_vars"
+    ],
+    "extractors": {
+      "keywords": {
+        "method": "tokenize_and_match",
+        "caseSensitive": false,
+        "minLength": 2,
+        "lookupFile": "search/keywords.json"
+      },
+      "fileTypes": {
+        "method": "extension_mapping",
+        "patterns": {
+          ".py": {
+            "skills": ["flask-api", "fastapi", "testing"],
+            "agents": ["python-specialist"]
+          },
+          ".ts": {
+            "skills": ["nextjs", "react"],
+            "agents": ["typescript-specialist"],
+            "mcps": ["context7"]
+          },
+          ".tsx": {
+            "skills": ["react", "nextjs"],
+            "agents": ["react-specialist"],
+            "mcps": ["context7"]
+          },
+          ".sql": {
+            "skills": ["database"],
+            "agents": ["database-specialist"],
+            "mcps": ["supabase"]
+          },
+          ".yml": {
+            "skills": ["kubernetes", "docker"],
+            "agents": ["k8s-deployer"]
+          },
+          ".yaml": {
+            "skills": ["kubernetes", "helm"],
+            "agents": ["k8s-deployer", "helm-specialist"]
+          },
+          ".tf": {
+            "skills": ["terraform"],
+            "agents": ["terraform-specialist"]
+          },
+          ".md": {
+            "skills": ["confluence"],
+            "agents": ["docs-writer"]
+          },
+          ".spec.ts": {
+            "skills": ["testing"],
+            "agents": ["tester"],
+            "mcps": ["playwright"]
+          },
+          ".test.ts": {
+            "skills": ["testing"],
+            "agents": ["tester"],
+            "mcps": ["playwright"]
+          }
+        }
+      },
+      "directoryContext": {
+        "method": "path_analysis",
+        "patterns": {
+          "supabase/**": {
+            "mcps": ["supabase"],
+            "skills": ["database"],
+            "agents": ["database-specialist"]
+          },
+          "deployment/docker/**": {
+            "skills": ["docker"],
+            "agents": ["docker-builder"]
+          },
+          "deployment/helm/**": {
+            "skills": ["helm", "kubernetes"],
+            "agents": ["helm-specialist", "k8s-deployer"]
+          },
+          ".github/workflows/**": {
+            "skills": ["git-workflows"],
+            "agents": ["cicd-engineer"],
+            "mcps": ["github"]
+          },
+          "terraform/**": {
+            "skills": ["terraform"],
+            "agents": ["terraform-specialist"]
+          },
+          "tests/**": {
+            "skills": ["testing"],
+            "agents": ["tester"],
+            "mcps": ["playwright"]
+          },
+          "e2e/**": {
+            "skills": ["testing"],
+            "agents": ["e2e-tester"],
+            "mcps": ["playwright"]
+          },
+          "app/**": {
+            "skills": ["nextjs", "react"],
+            "agents": ["nextjs-specialist"],
+            "mcps": ["context7"]
+          },
+          "components/**": {
+            "skills": ["react"],
+            "agents": ["react-specialist"],
+            "mcps": ["context7"]
+          }
+        }
+      },
+      "envVarContext": {
+        "method": "env_check",
+        "mappings": {
+          "SUPABASE_*": {
+            "mcps": ["supabase"]
+          },
+          "VERCEL_*": {
+            "mcps": ["vercel"]
+          },
+          "UPSTASH_*": {
+            "mcps": ["upstash"]
+          },
+          "JIRA_*": {
+            "mcps": ["atlassian"],
+            "skills": ["jira"]
+          },
+          "CONFLUENCE_*": {
+            "mcps": ["atlassian"],
+            "skills": ["confluence"]
+          },
+          "GITHUB_*": {
+            "mcps": ["github"]
+          }
+        }
+      }
+    }
+  },
+
+  "activationProfiles": {
+    "minimal": {
+      "description": "Minimal resource set for simple tasks",
+      "maxResources": {
+        "agents": 2,
+        "skills": 3,
+        "mcps": 2,
+        "workflows": 1
+      },
+      "defaults": {
+        "skills": ["git-workflows", "debugging"],
+        "mcps": ["context7"]
+      },
+      "conditions": {
+        "taskComplexity": "low"
+      }
+    },
+    "standard": {
+      "description": "Standard development workflow",
+      "maxResources": {
+        "agents": 4,
+        "skills": 6,
+        "mcps": 4,
+        "workflows": 2
+      },
+      "defaults": {
+        "skills": ["git-workflows", "testing", "debugging"],
+        "mcps": ["supabase", "github", "context7"]
+      },
+      "conditions": {
+        "taskComplexity": "medium"
+      }
+    },
+    "full": {
+      "description": "Full resource set for complex tasks",
+      "maxResources": {
+        "agents": 8,
+        "skills": 10,
+        "mcps": 6,
+        "workflows": 4
+      },
+      "defaults": {
+        "skills": "all-matching",
+        "mcps": "all-available"
+      },
+      "conditions": {
+        "taskComplexity": "high",
+        "multipleAgents": true
+      }
+    },
+    "database": {
+      "description": "Database-focused work",
+      "maxResources": {
+        "agents": 3,
+        "skills": 4,
+        "mcps": 2,
+        "workflows": 1
+      },
+      "defaults": {
+        "skills": ["database", "testing"],
+        "mcps": ["supabase", "upstash"],
+        "agents": ["database-specialist"]
+      },
+      "conditions": {
+        "keywords": ["database", "sql", "migration", "schema"]
+      }
+    },
+    "frontend": {
+      "description": "Frontend development focus",
+      "maxResources": {
+        "agents": 4,
+        "skills": 5,
+        "mcps": 4,
+        "workflows": 2
+      },
+      "defaults": {
+        "skills": ["react", "nextjs", "testing"],
+        "mcps": ["vercel", "playwright", "context7"],
+        "agents": ["react-specialist", "nextjs-specialist"]
+      },
+      "conditions": {
+        "keywords": ["frontend", "react", "component", "ui"]
+      }
+    },
+    "devops": {
+      "description": "DevOps/Infrastructure focused",
+      "maxResources": {
+        "agents": 5,
+        "skills": 6,
+        "mcps": 3,
+        "workflows": 2
+      },
+      "defaults": {
+        "skills": ["kubernetes", "helm", "docker", "terraform"],
+        "mcps": ["vercel", "github"],
+        "agents": ["k8s-deployer", "docker-builder"],
+        "workflows": ["ci-cd-workflow"]
+      },
+      "conditions": {
+        "keywords": ["deploy", "kubernetes", "docker", "ci/cd"]
+      }
+    },
+    "project-management": {
+      "description": "Project management focused",
+      "maxResources": {
+        "agents": 4,
+        "skills": 4,
+        "mcps": 1,
+        "workflows": 3
+      },
+      "defaults": {
+        "skills": ["jira", "confluence", "scrum"],
+        "mcps": ["atlassian"],
+        "agents": ["scrum-master", "jira-specialist"],
+        "workflows": ["sprint-management", "scrum-ceremonies"]
+      },
+      "conditions": {
+        "keywords": ["sprint", "jira", "backlog", "story", "scrum"]
+      }
+    }
+  },
+
+  "dynamicActivation": {
+    "triggerThresholds": {
+      "activate": 2,
+      "deactivate": 0
+    },
+    "scoring": {
+      "exactKeywordMatch": 5,
+      "partialKeywordMatch": 2,
+      "fileContextMatch": 3,
+      "directoryContextMatch": 3,
+      "agentRecommendation": 4,
+      "recentUsage": 1,
+      "mcpToolUsage": 4
+    },
+    "decayRate": 0.8,
+    "sessionPersistence": true,
+    "crossResourceActivation": {
+      "enabled": true,
+      "rules": [
+        {
+          "when": {"mcp": "supabase"},
+          "also": {"skills": ["database"], "agents": ["database-specialist"]}
+        },
+        {
+          "when": {"mcp": "playwright"},
+          "also": {"skills": ["testing"], "agents": ["e2e-tester"]}
+        },
+        {
+          "when": {"mcp": "atlassian"},
+          "also": {"skills": ["jira", "confluence"], "agents": ["jira-specialist"]}
+        },
+        {
+          "when": {"workflow": "ci-cd-workflow"},
+          "also": {"mcps": ["github", "vercel"], "agents": ["cicd-engineer"]}
+        }
+      ]
+    }
+  },
+
+  "resourceGroups": {
+    "core": {
+      "description": "Always-available core resources",
+      "resources": {
+        "skills": ["git-workflows", "debugging"],
+        "mcps": ["context7", "github"],
+        "tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
+      },
+      "alwaysActive": true
+    },
+    "supabase-stack": {
+      "description": "Supabase development stack",
+      "resources": {
+        "skills": ["database"],
+        "mcps": ["supabase", "upstash"],
+        "agents": ["database-specialist"]
+      },
+      "activateTogether": true,
+      "trigger": "supabase"
+    },
+    "nextjs-stack": {
+      "description": "Next.js + Vercel development stack",
+      "resources": {
+        "skills": ["react", "nextjs"],
+        "mcps": ["vercel", "context7"],
+        "agents": ["nextjs-specialist", "react-specialist"]
+      },
+      "activateTogether": true,
+      "trigger": "nextjs"
+    },
+    "testing-stack": {
+      "description": "Full testing stack",
+      "resources": {
+        "skills": ["testing"],
+        "mcps": ["playwright"],
+        "agents": ["tester", "e2e-tester"]
+      },
+      "activateTogether": true,
+      "trigger": "test"
+    },
+    "atlassian-stack": {
+      "description": "Atlassian tools stack",
+      "resources": {
+        "skills": ["jira", "confluence", "scrum"],
+        "mcps": ["atlassian"],
+        "agents": ["jira-specialist", "confluence-specialist", "scrum-master"],
+        "workflows": ["sprint-management", "atlassian-integration"]
+      },
+      "activateTogether": true,
+      "trigger": "atlassian"
+    },
+    "deployment-stack": {
+      "description": "Deployment pipeline stack",
+      "resources": {
+        "skills": ["docker", "kubernetes", "helm"],
+        "mcps": ["vercel", "github"],
+        "agents": ["k8s-deployer", "docker-builder", "cicd-engineer"],
+        "workflows": ["ci-cd-workflow"]
+      },
+      "activateTogether": true,
+      "trigger": "deploy"
+    }
+  },
+
+  "claudeDirectives": {
+    "description": "Instructions for Claude to determine unified resource activation",
+    "evaluation": [
+      "1. Analyze user message for explicit technology/tool mentions",
+      "2. Check file context for technology indicators",
+      "3. Evaluate active directory for project type",
+      "4. Consider environment variables for available integrations",
+      "5. Check recent tool usage for context",
+      "6. Apply activation profiles based on task complexity",
+      "7. Activate resource groups when primary trigger is detected",
+      "8. Ensure cross-resource dependencies are satisfied",
+      "9. Cap total active resources based on current profile"
+    ],
+    "priorities": [
+      "Prefer resources directly mentioned in user message",
+      "Activate MCPs before dependent skills/agents",
+      "Activate dependencies before dependent resources",
+      "Deactivate conflicting resources",
+      "Consider resource groups as atomic units when possible",
+      "Use context7 proactively for library documentation needs"
+    ],
+    "examples": [
+      {
+        "context": "User asks to deploy a Next.js app to Vercel with Supabase backend",
+        "activate": {
+          "skills": ["nextjs", "database"],
+          "mcps": ["vercel", "supabase", "context7"],
+          "agents": ["nextjs-specialist", "database-specialist"],
+          "workflows": ["ci-cd-workflow"]
+        },
+        "reasoning": "Full-stack deployment requires both Vercel and Supabase MCPs, relevant skills and agents"
+      },
+      {
+        "context": "User asks to write E2E tests for a payment flow",
+        "activate": {
+          "skills": ["testing"],
+          "mcps": ["playwright", "supabase"],
+          "agents": ["e2e-tester", "tester"],
+          "workflows": []
+        },
+        "reasoning": "E2E testing requires Playwright for browser automation, Supabase for data verification"
+      },
+      {
+        "context": "User asks to plan sprint and create Jira stories",
+        "activate": {
+          "skills": ["jira", "scrum"],
+          "mcps": ["atlassian"],
+          "agents": ["scrum-master", "product-owner"],
+          "workflows": ["sprint-management"]
+        },
+        "reasoning": "Sprint planning requires Atlassian MCP and scrum methodology"
+      },
+      {
+        "context": "User asks for help with React hooks",
+        "activate": {
+          "skills": ["react"],
+          "mcps": ["context7"],
+          "agents": ["react-specialist"]
+        },
+        "reasoning": "Use context7 to fetch latest React documentation for hooks"
+      }
+    ]
+  },
+
+  "currentState": {
+    "activeResources": {
+      "agents": ["researcher", "code-analyzer", "planner", "docs-writer"],
+      "skills": ["git-workflows", "debugging"],
+      "mcps": ["supabase", "context7", "github"],
+      "workflows": []
+    },
+    "activationScores": {
+      "researcher": 8,
+      "code-analyzer": 7,
+      "planner": 9,
+      "docs-writer": 6
+    },
+    "profile": "full",
+    "lastEvaluated": "2025-11-28T12:40:00Z"
+  }
+}

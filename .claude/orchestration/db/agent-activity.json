@@ -1,0 +1,1454 @@
+[
+  {
+    "timestamp": "2025-11-29T05:07:40.631252",
+    "agent_id": "6ba000c2",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-001",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:40.669522",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing authentication requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:40.720948",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing authentication requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:40.878691",
+    "agent_id": "coder-001",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "tasks_identified": 5,
+        "dependencies": [
+          "jwt",
+          "bcrypt"
+        ]
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:40.917151",
+    "agent_id": "6ba000c2",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "tasks_identified": 5,
+        "dependencies": [
+          "jwt",
+          "bcrypt"
+        ]
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:40.967634",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Creating task breakdown",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:40.996130",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Creating task breakdown",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.141780",
+    "agent_id": "coder-001",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "post-plan",
+      "metadata": {
+        "plan_approved": true,
+        "estimated_duration": 60
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.169630",
+    "agent_id": "6ba000c2",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "post-plan",
+      "metadata": {
+        "plan_approved": true,
+        "estimated_duration": 60
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.209753",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing JWT authentication",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.236713",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing JWT authentication",
+      "files_modified": 3
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.374720",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Adding password hashing",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.402103",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Adding password hashing",
+      "files_modified": 5
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.554778",
+    "agent_id": "coder-001",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_run": 15,
+        "tests_passed": 15,
+        "coverage": 95
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.592831",
+    "agent_id": "6ba000c2",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_run": 15,
+        "tests_passed": 15,
+        "coverage": 95
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.644418",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running authentication tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.685900",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running authentication tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.863373",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Updating API documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:41.895460",
+    "agent_id": "6ba000c2",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Updating API documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.048302",
+    "agent_id": "coder-001",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "commit",
+      "metadata": {
+        "files_committed": 5,
+        "tests_passing": 15
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.095821",
+    "agent_id": "6ba000c2",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "commit",
+      "metadata": {
+        "files_committed": 5,
+        "tests_passing": 15
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.155990",
+    "agent_id": "6ba000c2",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.03,
+      "errors": 0,
+      "warnings": 1
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.284243",
+    "agent_id": "69739bbc",
+    "event_type": "start",
+    "data": {
+      "agent_type": "tester",
+      "task_id": "task-002",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.333560",
+    "agent_id": "69739bbc",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing test requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.446319",
+    "agent_id": "69739bbc",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "test_suites": 3
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.481238",
+    "agent_id": "69739bbc",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running integration tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.565736",
+    "agent_id": "69739bbc",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_passed": 25
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.609324",
+    "agent_id": "69739bbc",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.692260",
+    "agent_id": "80e39532",
+    "event_type": "start",
+    "data": {
+      "agent_type": "planner",
+      "task_id": "sprint-001",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.769238",
+    "agent_id": "80e39532",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Breaking down sprint tasks",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.821932",
+    "agent_id": "80e39532",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Breaking down sprint tasks",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.938838",
+    "agent_id": "6cbd1cba",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "sprint-001-1",
+      "parent_task": "sprint-001"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:42.993921",
+    "agent_id": "6cbd1cba",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature A",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.035847",
+    "agent_id": "6cbd1cba",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature A",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.144656",
+    "agent_id": "6cbd1cba",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.195311",
+    "agent_id": "767903ba",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "sprint-001-2",
+      "parent_task": "sprint-001"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.233126",
+    "agent_id": "767903ba",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature B",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.260446",
+    "agent_id": "767903ba",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature B",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.349648",
+    "agent_id": "767903ba",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.391784",
+    "agent_id": "80e39532",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Finalizing sprint documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.420264",
+    "agent_id": "80e39532",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Finalizing sprint documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:07:43.461098",
+    "agent_id": "80e39532",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:02.749838",
+    "agent_id": "d9a7e1e0",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-001",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:02.797961",
+    "agent_id": "d9a7e1e0",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:02.945801",
+    "agent_id": "d9a7e1e0",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "tasks_identified": 3
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:02.979790",
+    "agent_id": "d9a7e1e0",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Creating task breakdown",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:03.113487",
+    "agent_id": "d9a7e1e0",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing features",
+      "files_modified": 5
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:03.248522",
+    "agent_id": "d9a7e1e0",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_run": 10
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:03.280065",
+    "agent_id": "d9a7e1e0",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:03.411594",
+    "agent_id": "d9a7e1e0",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "commit",
+      "metadata": {
+        "files_committed": 5
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:03.444762",
+    "agent_id": "d9a7e1e0",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:19.598315",
+    "agent_id": "fcfdb5b3",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-001",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:19.654917",
+    "agent_id": "fcfdb5b3",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:19.803631",
+    "agent_id": "fcfdb5b3",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "tasks_identified": 3
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:19.865142",
+    "agent_id": "fcfdb5b3",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Creating task breakdown",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.014745",
+    "agent_id": "fcfdb5b3",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing features",
+      "files_modified": 5
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.147975",
+    "agent_id": "fcfdb5b3",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_run": 10
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.182317",
+    "agent_id": "fcfdb5b3",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.312726",
+    "agent_id": "fcfdb5b3",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "commit",
+      "metadata": {
+        "files_committed": 5
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.345417",
+    "agent_id": "fcfdb5b3",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.376688",
+    "agent_id": "c7f83fce",
+    "event_type": "start",
+    "data": {
+      "agent_type": "tester",
+      "task_id": "task-002",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.425188",
+    "agent_id": "c7f83fce",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running unit tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.561702",
+    "agent_id": "c7f83fce",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 2
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.603726",
+    "agent_id": "ba936202",
+    "event_type": "start",
+    "data": {
+      "agent_type": "planner",
+      "task_id": "task-003",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.649646",
+    "agent_id": "ba936202",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Breaking down tasks",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.716340",
+    "agent_id": "70488fd4",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-003-1",
+      "parent_task": "task-003"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.762699",
+    "agent_id": "70488fd4",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature A",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.849055",
+    "agent_id": "70488fd4",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.895168",
+    "agent_id": "c25dae3b",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-003-2",
+      "parent_task": "task-003"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:20.938877",
+    "agent_id": "c25dae3b",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature B",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:21.031961",
+    "agent_id": "c25dae3b",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:21.077774",
+    "agent_id": "ba936202",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Finalizing plan",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:09:21.118666",
+    "agent_id": "ba936202",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:48.964198",
+    "agent_id": "0df38c5f",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-001",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:48.984635",
+    "agent_id": "0df38c5f",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.126794",
+    "agent_id": "0df38c5f",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "tasks_identified": 3
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.172203",
+    "agent_id": "0df38c5f",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Creating task breakdown",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.315696",
+    "agent_id": "0df38c5f",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing features",
+      "files_modified": 5
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.449411",
+    "agent_id": "0df38c5f",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_run": 10
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.485489",
+    "agent_id": "0df38c5f",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.625443",
+    "agent_id": "0df38c5f",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "commit",
+      "metadata": {
+        "files_committed": 5
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.680718",
+    "agent_id": "0df38c5f",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.741525",
+    "agent_id": "ba74c06b",
+    "event_type": "start",
+    "data": {
+      "agent_type": "tester",
+      "task_id": "task-002",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:49.837128",
+    "agent_id": "ba74c06b",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running unit tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.017313",
+    "agent_id": "ba74c06b",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 2
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.103392",
+    "agent_id": "ca84bb4d",
+    "event_type": "start",
+    "data": {
+      "agent_type": "planner",
+      "task_id": "task-003",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.219255",
+    "agent_id": "ca84bb4d",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Breaking down tasks",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.291429",
+    "agent_id": "e50647fe",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-003-1",
+      "parent_task": "task-003"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.374858",
+    "agent_id": "e50647fe",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature A",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.481814",
+    "agent_id": "e50647fe",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.528262",
+    "agent_id": "f3ce1d9c",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-003-2",
+      "parent_task": "task-003"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.573767",
+    "agent_id": "f3ce1d9c",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature B",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.675249",
+    "agent_id": "f3ce1d9c",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.748101",
+    "agent_id": "ca84bb4d",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Finalizing plan",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:14:50.806821",
+    "agent_id": "ca84bb4d",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.149558",
+    "agent_id": "98c6bb26",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "task-46ace3ee",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.174922",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing authentication requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.208205",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing authentication requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.358760",
+    "agent_id": "coder-5e3a8cbc",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "tasks_identified": 5,
+        "dependencies": [
+          "jwt",
+          "bcrypt"
+        ]
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.395114",
+    "agent_id": "98c6bb26",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "tasks_identified": 5,
+        "dependencies": [
+          "jwt",
+          "bcrypt"
+        ]
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.435593",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Creating task breakdown",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.467597",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Creating task breakdown",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.610921",
+    "agent_id": "coder-5e3a8cbc",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "post-plan",
+      "metadata": {
+        "plan_approved": true,
+        "estimated_duration": 60
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.644454",
+    "agent_id": "98c6bb26",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "post-plan",
+      "metadata": {
+        "plan_approved": true,
+        "estimated_duration": 60
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.695688",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing JWT authentication",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.725120",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing JWT authentication",
+      "files_modified": 3
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.874744",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Adding password hashing",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:18.905311",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Adding password hashing",
+      "files_modified": 5
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.072318",
+    "agent_id": "coder-5e3a8cbc",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_run": 15,
+        "tests_passed": 15,
+        "coverage": 95
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.149864",
+    "agent_id": "98c6bb26",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_run": 15,
+        "tests_passed": 15,
+        "coverage": 95
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.201282",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running authentication tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.232327",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running authentication tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.376926",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Updating API documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.410353",
+    "agent_id": "98c6bb26",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Updating API documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.558224",
+    "agent_id": "coder-5e3a8cbc",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "commit",
+      "metadata": {
+        "files_committed": 5,
+        "tests_passing": 15
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.591252",
+    "agent_id": "98c6bb26",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "commit",
+      "metadata": {
+        "files_committed": 5,
+        "tests_passing": 15
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.639220",
+    "agent_id": "98c6bb26",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.02,
+      "errors": 0,
+      "warnings": 1
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.729259",
+    "agent_id": "bf7199ec",
+    "event_type": "start",
+    "data": {
+      "agent_type": "tester",
+      "task_id": "task-f536f294",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.749078",
+    "agent_id": "bf7199ec",
+    "event_type": "phase",
+    "data": {
+      "phase": "explore",
+      "action": "Analyzing test requirements",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.839879",
+    "agent_id": "bf7199ec",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "planning",
+      "metadata": {
+        "test_suites": 3
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.880221",
+    "agent_id": "bf7199ec",
+    "event_type": "phase",
+    "data": {
+      "phase": "test",
+      "action": "Running integration tests",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:19.985926",
+    "agent_id": "bf7199ec",
+    "event_type": "checkpoint",
+    "data": {
+      "checkpoint": "quality-check",
+      "metadata": {
+        "tests_passed": 25
+      }
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.046520",
+    "agent_id": "bf7199ec",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.158826",
+    "agent_id": "7d296c99",
+    "event_type": "start",
+    "data": {
+      "agent_type": "planner",
+      "task_id": "sprint-9fce83e9",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.233641",
+    "agent_id": "7d296c99",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Breaking down sprint tasks",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.293430",
+    "agent_id": "7d296c99",
+    "event_type": "phase",
+    "data": {
+      "phase": "plan",
+      "action": "Breaking down sprint tasks",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.427975",
+    "agent_id": "dc52003b",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "sprint-9fce83e9-1",
+      "parent_task": "sprint-9fce83e9"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.504355",
+    "agent_id": "dc52003b",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature A",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.584102",
+    "agent_id": "dc52003b",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature A",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.700018",
+    "agent_id": "dc52003b",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.751331",
+    "agent_id": "b1ce7f24",
+    "event_type": "start",
+    "data": {
+      "agent_type": "coder",
+      "task_id": "sprint-9fce83e9-2",
+      "parent_task": "sprint-9fce83e9"
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.807501",
+    "agent_id": "b1ce7f24",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature B",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.843416",
+    "agent_id": "b1ce7f24",
+    "event_type": "phase",
+    "data": {
+      "phase": "code",
+      "action": "Implementing feature B",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:20.966043",
+    "agent_id": "b1ce7f24",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:21.062695",
+    "agent_id": "7d296c99",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Finalizing sprint documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:21.165387",
+    "agent_id": "7d296c99",
+    "event_type": "phase",
+    "data": {
+      "phase": "document",
+      "action": "Finalizing sprint documentation",
+      "files_modified": 0
+    }
+  },
+  {
+    "timestamp": "2025-11-29T05:19:21.258997",
+    "agent_id": "7d296c99",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.02,
+      "errors": 0,
+      "warnings": 0
+    }
+  }
+]

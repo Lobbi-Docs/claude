@@ -1,0 +1,233 @@
+{
+  "$schema": "./schema/tools.schema.json",
+  "version": "1.0.0",
+  "description": "Claude Code built-in tools and custom tool registry",
+
+  "builtinTools": {
+    "file-operations": {
+      "Read": {
+        "description": "Read file contents from the filesystem",
+        "keywords": ["read", "file", "content", "view", "cat"],
+        "usage": "Read files, images, PDFs, Jupyter notebooks",
+        "bestFor": "Viewing file contents, reading images and documents"
+      },
+      "Write": {
+        "description": "Write content to a file, creating or overwriting",
+        "keywords": ["write", "create", "file", "save"],
+        "usage": "Create new files or overwrite existing ones",
+        "bestFor": "Creating new files when no existing file to edit"
+      },
+      "Edit": {
+        "description": "Perform exact string replacements in files",
+        "keywords": ["edit", "modify", "change", "replace", "update"],
+        "usage": "Replace specific strings in files with new content",
+        "bestFor": "Modifying existing files with targeted changes"
+      },
+      "NotebookEdit": {
+        "description": "Edit Jupyter notebook cells",
+        "keywords": ["notebook", "jupyter", "cell", "ipynb"],
+        "usage": "Replace, insert, or delete notebook cells",
+        "bestFor": "Working with Jupyter notebooks"
+      },
+      "Glob": {
+        "description": "Fast file pattern matching",
+        "keywords": ["find", "search", "pattern", "glob", "files"],
+        "usage": "Find files matching glob patterns like **/*.ts",
+        "bestFor": "Finding files by name patterns quickly"
+      },
+      "Grep": {
+        "description": "Search file contents using regex",
+        "keywords": ["search", "grep", "find", "content", "regex"],
+        "usage": "Search for patterns in file contents",
+        "bestFor": "Finding code patterns across the codebase"
+      }
+    },
+
+    "execution": {
+      "Bash": {
+        "description": "Execute shell commands",
+        "keywords": ["bash", "shell", "command", "terminal", "run"],
+        "usage": "Run git, npm, docker, and other CLI commands",
+        "bestFor": "System operations, git, npm, build commands"
+      },
+      "BashOutput": {
+        "description": "Retrieve output from background shell",
+        "keywords": ["output", "background", "shell", "result"],
+        "usage": "Get output from running background processes",
+        "bestFor": "Monitoring long-running commands"
+      },
+      "KillShell": {
+        "description": "Terminate a background shell",
+        "keywords": ["kill", "stop", "terminate", "shell"],
+        "usage": "Stop a running background process",
+        "bestFor": "Cleaning up stuck or finished processes"
+      }
+    },
+
+    "web": {
+      "WebFetch": {
+        "description": "Fetch and analyze web content",
+        "keywords": ["fetch", "web", "url", "http", "download"],
+        "usage": "Retrieve web page content and process with AI",
+        "bestFor": "Reading documentation, API responses"
+      },
+      "WebSearch": {
+        "description": "Search the web for information",
+        "keywords": ["search", "web", "google", "find", "lookup"],
+        "usage": "Search for up-to-date information",
+        "bestFor": "Finding current docs, tutorials, solutions"
+      }
+    },
+
+    "orchestration": {
+      "Task": {
+        "description": "Launch specialized sub-agents for complex tasks",
+        "keywords": ["agent", "task", "delegate", "subagent"],
+        "usage": "Delegate work to specialized agents",
+        "bestFor": "Complex multi-step tasks requiring specialization",
+        "subagentTypes": [
+          "general-purpose", "Explore", "Plan", "claude-code-guide",
+          "critical-bug-analyzer", "database-architect", "react-component-architect",
+          "form-validation-architect", "feature-completion-specialist",
+          "performance-optimization-engineer", "integration-api-specialist"
+        ]
+      },
+      "TodoWrite": {
+        "description": "Create and manage task lists",
+        "keywords": ["todo", "task", "plan", "track", "progress"],
+        "usage": "Track multi-step tasks and progress",
+        "bestFor": "Planning and tracking complex work"
+      },
+      "AskUserQuestion": {
+        "description": "Ask user for clarification or choices",
+        "keywords": ["ask", "question", "clarify", "confirm"],
+        "usage": "Get user input when needed",
+        "bestFor": "Gathering requirements, confirming approaches"
+      }
+    },
+
+    "planning": {
+      "EnterPlanMode": {
+        "description": "Enter planning mode for complex tasks",
+        "keywords": ["plan", "design", "architect", "strategy"],
+        "usage": "Thoroughly explore before implementing",
+        "bestFor": "Tasks with multiple approaches or architectural decisions"
+      },
+      "ExitPlanMode": {
+        "description": "Exit planning mode after plan approval",
+        "keywords": ["execute", "implement", "start"],
+        "usage": "Signal plan completion and readiness",
+        "bestFor": "Transitioning from planning to implementation"
+      }
+    },
+
+    "skills": {
+      "Skill": {
+        "description": "Execute a skill within the conversation",
+        "keywords": ["skill", "invoke", "activate"],
+        "usage": "Load specialized skills for specific domains",
+        "bestFor": "Domain-specific knowledge activation"
+      },
+      "SlashCommand": {
+        "description": "Execute a custom slash command",
+        "keywords": ["command", "slash", "custom"],
+        "usage": "Run predefined command workflows",
+        "bestFor": "Executing reusable command patterns"
+      }
+    }
+  },
+
+  "customTools": {
+    "mcp-server": {
+      "path": ".claude/tools/mcp-server",
+      "description": "Custom MCP server implementation template",
+      "keywords": ["mcp", "server", "custom", "tool"],
+      "tools": ["execute_agent", "get_agent_status", "list_agents"]
+    },
+    "mcp-tool-stub": {
+      "path": ".claude/tools/mcp-tool-stub",
+      "description": "MCP tool stub for agent interaction",
+      "keywords": ["mcp", "stub", "agent", "execute"],
+      "tools": ["execute_agent", "get_agent_status", "list_agents"]
+    },
+    "code-exec": {
+      "path": ".claude/tools/code-exec",
+      "description": "Code execution utilities",
+      "keywords": ["execute", "run", "code", "script"]
+    },
+    "file-io": {
+      "path": ".claude/tools/file-io",
+      "description": "Advanced file I/O operations",
+      "keywords": ["file", "io", "read", "write", "stream"]
+    },
+    "openapi": {
+      "path": ".claude/tools/openapi",
+      "description": "OpenAPI specification tools",
+      "keywords": ["openapi", "swagger", "api", "spec", "schema"]
+    },
+    "web-search": {
+      "path": ".claude/tools/web-search",
+      "description": "Web search integration",
+      "keywords": ["search", "web", "query", "find"]
+    }
+  },
+
+  "toolGroups": {
+    "development": {
+      "description": "Tools for code development",
+      "tools": ["Read", "Write", "Edit", "Grep", "Glob", "Bash"],
+      "activateTogether": false
+    },
+    "exploration": {
+      "description": "Tools for codebase exploration",
+      "tools": ["Glob", "Grep", "Read", "Task"],
+      "activateTogether": true
+    },
+    "testing": {
+      "description": "Tools for testing workflows",
+      "tools": ["Bash", "Read", "mcp__playwright__*"],
+      "activateTogether": false
+    },
+    "database": {
+      "description": "Tools for database operations",
+      "tools": ["mcp__supabase__*", "Read", "Write"],
+      "activateTogether": true
+    }
+  },
+
+  "toolPatterns": {
+    "find-then-read": {
+      "description": "Find files then read them",
+      "sequence": ["Glob", "Read"],
+      "useCase": "Locating and viewing specific files"
+    },
+    "search-then-edit": {
+      "description": "Search for pattern then edit",
+      "sequence": ["Grep", "Read", "Edit"],
+      "useCase": "Finding and modifying code patterns"
+    },
+    "test-then-fix": {
+      "description": "Run tests then fix failures",
+      "sequence": ["Bash", "Grep", "Edit", "Bash"],
+      "useCase": "Test-driven development cycle"
+    },
+    "migrate-then-generate": {
+      "description": "Apply migration then generate types",
+      "sequence": ["mcp__supabase__apply_migration", "mcp__supabase__generate_typescript_types"],
+      "useCase": "Database schema changes"
+    }
+  },
+
+  "stats": {
+    "totalBuiltinTools": 17,
+    "totalCustomTools": 6,
+    "byCategory": {
+      "file-operations": 6,
+      "execution": 3,
+      "web": 2,
+      "orchestration": 3,
+      "planning": 2,
+      "skills": 2
+    }
+  }
+}

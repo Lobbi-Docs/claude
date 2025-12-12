@@ -1,0 +1,19 @@
+{
+  "id": "c430444f-075e-4eb0-9da2-b96da14f8c8d",
+  "type": "planning",
+  "session_id": "418b16d7-075d-470a-b3cc-7b28d2f7d986",
+  "task_id": null,
+  "agent_id": "coder-5e3a8cbc",
+  "state": {
+    "phase": "plan"
+  },
+  "files": null,
+  "metadata": {
+    "tasks_identified": 5,
+    "dependencies": [
+      "jwt",
+      "bcrypt"
+    ]
+  },
+  "created_at": "2025-11-29T05:19:18.343617"
+}

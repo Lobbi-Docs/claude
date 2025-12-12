@@ -1,0 +1,294 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/schema/mcp-server.json",
+  "name": "atlassian-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Atlassian Jira and Confluence integration",
+
+  "_setup_note": "See README.md in this directory for MCP server setup instructions",
+
+  "servers": {
+    "jira": {
+      "command": "node",
+      "args": ["jira-server.js"],
+      "env": {
+        "JIRA_URL": "${JIRA_URL}",
+        "JIRA_EMAIL": "${JIRA_EMAIL}",
+        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
+        "JIRA_PROJECT_KEY": "${JIRA_PROJECT_KEY:-GA}"
+      },
+      "capabilities": {
+        "tools": [
+          {
+            "name": "jira_create_issue",
+            "description": "Create a new Jira issue",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "project": {"type": "string", "description": "Project key"},
+                "issueType": {"type": "string", "enum": ["Bug", "Story", "Task", "Epic"]},
+                "summary": {"type": "string", "description": "Issue summary"},
+                "description": {"type": "string", "description": "Issue description"},
+                "priority": {"type": "string", "enum": ["Highest", "High", "Medium", "Low", "Lowest"]},
+                "labels": {"type": "array", "items": {"type": "string"}},
+                "assignee": {"type": "string", "description": "Assignee account ID"}
+              },
+              "required": ["project", "issueType", "summary"]
+            }
+          },
+          {
+            "name": "jira_get_issue",
+            "description": "Get details of a Jira issue",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "issueKey": {"type": "string", "description": "Issue key (e.g., GA-123)"}
+              },
+              "required": ["issueKey"]
+            }
+          },
+          {
+            "name": "jira_update_issue",
+            "description": "Update an existing Jira issue",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "issueKey": {"type": "string"},
+                "summary": {"type": "string"},
+                "description": {"type": "string"},
+                "priority": {"type": "string"},
+                "assignee": {"type": "string"},
+                "labels": {"type": "array", "items": {"type": "string"}}
+              },
+              "required": ["issueKey"]
+            }
+          },
+          {
+            "name": "jira_transition_issue",
+            "description": "Transition a Jira issue to a new status",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "issueKey": {"type": "string"},
+                "transitionName": {"type": "string", "description": "Target status name"},
+                "comment": {"type": "string", "description": "Optional transition comment"}
+              },
+              "required": ["issueKey", "transitionName"]
+            }
+          },
+          {
+            "name": "jira_search",
+            "description": "Search Jira issues using JQL",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "jql": {"type": "string", "description": "JQL query string"},
+                "maxResults": {"type": "integer", "default": 50},
+                "fields": {"type": "array", "items": {"type": "string"}}
+              },
+              "required": ["jql"]
+            }
+          },
+          {
+            "name": "jira_add_comment",
+            "description": "Add a comment to a Jira issue",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "issueKey": {"type": "string"},
+                "body": {"type": "string", "description": "Comment text"}
+              },
+              "required": ["issueKey", "body"]
+            }
+          },
+          {
+            "name": "jira_get_sprint",
+            "description": "Get current sprint information",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "boardId": {"type": "integer"},
+                "state": {"type": "string", "enum": ["active", "closed", "future"]}
+              },
+              "required": ["boardId"]
+            }
+          },
+          {
+            "name": "jira_move_to_sprint",
+            "description": "Move issues to a sprint",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "sprintId": {"type": "integer"},
+                "issues": {"type": "array", "items": {"type": "string"}}
+              },
+              "required": ["sprintId", "issues"]
+            }
+          }
+        ],
+        "resources": [
+          {
+            "uri": "jira://project/{projectKey}",
+            "name": "Jira Project",
+            "description": "Access project information and issues"
+          },
+          {
+            "uri": "jira://issue/{issueKey}",
+            "name": "Jira Issue",
+            "description": "Access individual issue details"
+          },
+          {
+            "uri": "jira://sprint/{sprintId}",
+            "name": "Jira Sprint",
+            "description": "Access sprint information"
+          }
+        ]
+      }
+    },
+
+    "confluence": {
+      "command": "node",
+      "args": ["confluence-server.js"],
+      "env": {
+        "CONFLUENCE_URL": "${CONFLUENCE_URL}",
+        "CONFLUENCE_EMAIL": "${CONFLUENCE_EMAIL}",
+        "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}",
+        "CONFLUENCE_SPACE_KEY": "${CONFLUENCE_SPACE_KEY:-GA}"
+      },
+      "capabilities": {
+        "tools": [
+          {
+            "name": "confluence_create_page",
+            "description": "Create a new Confluence page",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "spaceKey": {"type": "string", "description": "Space key"},
+                "title": {"type": "string", "description": "Page title"},
+                "content": {"type": "string", "description": "Page content (HTML or storage format)"},
+                "parentId": {"type": "string", "description": "Parent page ID (optional)"}
+              },
+              "required": ["spaceKey", "title", "content"]
+            }
+          },
+          {
+            "name": "confluence_get_page",
+            "description": "Get a Confluence page by ID or title",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "pageId": {"type": "string"},
+                "spaceKey": {"type": "string"},
+                "title": {"type": "string"}
+              }
+            }
+          },
+          {
+            "name": "confluence_update_page",
+            "description": "Update an existing Confluence page",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "pageId": {"type": "string"},
+                "title": {"type": "string"},
+                "content": {"type": "string"},
+                "versionMessage": {"type": "string"}
+              },
+              "required": ["pageId", "content"]
+            }
+          },
+          {
+            "name": "confluence_search",
+            "description": "Search Confluence content using CQL",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "cql": {"type": "string", "description": "CQL query string"},
+                "limit": {"type": "integer", "default": 25}
+              },
+              "required": ["cql"]
+            }
+          },
+          {
+            "name": "confluence_add_labels",
+            "description": "Add labels to a Confluence page",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "pageId": {"type": "string"},
+                "labels": {"type": "array", "items": {"type": "string"}}
+              },
+              "required": ["pageId", "labels"]
+            }
+          },
+          {
+            "name": "confluence_get_space",
+            "description": "Get Confluence space information",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "spaceKey": {"type": "string"}
+              },
+              "required": ["spaceKey"]
+            }
+          },
+          {
+            "name": "confluence_list_pages",
+            "description": "List pages in a space",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "spaceKey": {"type": "string"},
+                "parentId": {"type": "string"},
+                "limit": {"type": "integer", "default": 25}
+              },
+              "required": ["spaceKey"]
+            }
+          }
+        ],
+        "resources": [
+          {
+            "uri": "confluence://space/{spaceKey}",
+            "name": "Confluence Space",
+            "description": "Access space information and pages"
+          },
+          {
+            "uri": "confluence://page/{pageId}",
+            "name": "Confluence Page",
+            "description": "Access individual page content"
+          }
+        ]
+      }
+    }
+  },
+
+  "prompts": {
+    "jira_create_bug": {
+      "name": "Create Bug Report",
+      "description": "Template for creating a bug report in Jira",
+      "arguments": [
+        {"name": "title", "description": "Bug title", "required": true},
+        {"name": "description", "description": "Bug description", "required": true},
+        {"name": "steps", "description": "Steps to reproduce", "required": true},
+        {"name": "expected", "description": "Expected behavior", "required": true},
+        {"name": "actual", "description": "Actual behavior", "required": true}
+      ]
+    },
+    "confluence_doc_page": {
+      "name": "Create Documentation Page",
+      "description": "Template for creating a documentation page",
+      "arguments": [
+        {"name": "title", "description": "Page title", "required": true},
+        {"name": "overview", "description": "Overview section", "required": true},
+        {"name": "content", "description": "Main content", "required": true}
+      ]
+    }
+  },
+
+  "configuration": {
+    "defaultProject": "GA",
+    "defaultSpace": "GA",
+    "autoSync": false,
+    "cacheTimeout": 300,
+    "rateLimitRetries": 3
+  }
+}

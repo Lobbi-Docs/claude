@@ -1,0 +1,60 @@
+workflow:
+  name: HandoffWorkflow
+  type: handoff
+  description: Handoff workflow with specialized agents
+  version: 1.0.0
+  
+  triage:
+    agent: triage-agent
+    rules:
+      - condition: request_type == 'technical'
+        handoff_to: technical-specialist
+      - condition: request_type == 'business'
+        handoff_to: business-specialist
+      - condition: request_type == 'mixed'
+        handoff_to: orchestrator-agent
+    default_handoff: general-agent
+  
+  stages:
+    - id: triage
+      agent: triage-agent
+      output: triage_decision
+      checkpointing:
+        enabled: true
+    
+    - id: specialist_handling
+      agent: ${triage_decision.agent}
+      input:
+        source: triage_decision
+        mapping:
+          task: $.triage_decision.task
+      output: specialist_result
+      checkpointing:
+        enabled: true
+    
+    - id: quality_assurance
+      agent: qa-agent
+      input:
+        source: specialist_result
+      output: qa_result
+      checkpointing:
+        enabled: true
+      
+      escalation:
+        enabled: true
+        conditions:
+          - quality_score < 0.7
+        escalate_to: senior-specialist
+  
+  handoff_protocol:
+    include_context: true
+    context_depth: 3
+    preserve_metadata: true
+  
+  monitoring:
+    telemetry_enabled: true
+    track_handoffs: true
+    handoff_metrics:
+      - handoff_count
+      - time_to_resolution
+      - escalation_rate

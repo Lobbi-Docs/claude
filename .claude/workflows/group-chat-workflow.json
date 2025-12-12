@@ -1,0 +1,63 @@
+{
+  "workflow": {
+    "name": "GroupChatCollaboration",
+    "type": "group_chat",
+    "description": "Group chat workflow for collaborative problem solving",
+    "version": "1.0.0",
+    "participants": [
+      {
+        "id": "moderator",
+        "agent": "orchestrator-agent",
+        "role": "moderator"
+      },
+      {
+        "id": "expert_1",
+        "agent": "domain-expert-1",
+        "role": "participant"
+      },
+      {
+        "id": "expert_2",
+        "agent": "domain-expert-2",
+        "role": "participant"
+      },
+      {
+        "id": "summarizer",
+        "agent": "summary-agent",
+        "role": "observer"
+      }
+    ],
+    "rounds": [
+      {
+        "id": "initiation",
+        "speaker": "moderator",
+        "type": "broadcast",
+        "message_template": "Let's discuss: ${topic}"
+      },
+      {
+        "id": "discussion",
+        "speakers": ["expert_1", "expert_2"],
+        "type": "round_robin",
+        "max_turns": 3
+      },
+      {
+        "id": "summary",
+        "speaker": "summarizer",
+        "type": "consolidation",
+        "input_source": "all_messages"
+      }
+    ],
+    "termination_conditions": {
+      "max_rounds": 5,
+      "consensus_threshold": 0.8,
+      "time_limit_seconds": 300
+    },
+    "checkpointing": {
+      "enabled": true,
+      "strategy": "per_round"
+    },
+    "monitoring": {
+      "telemetry_enabled": true,
+      "log_all_messages": true
+    }
+  }
+}

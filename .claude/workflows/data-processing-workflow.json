@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "data-processing-workflow",
+  "name": "Data Processing and ETL Workflow",
+  "version": "1.0.0",
+  "description": "Workflow for extracting, transforming, and loading data with AI-powered data quality checks",
+  "type": "parallel",
+  "agents": [
+    {
+      "id": "data-extraction-agent",
+      "stage": "extract",
+      "required": true,
+      "timeout": 1800,
+      "configuration": {
+        "sources": [
+          "azure-blob",
+          "sql-database",
+          "api-endpoints"
+        ]
+      }
+    },
+    {
+      "id": "data-transformation-agent",
+      "stage": "transform",
+      "required": true,
+      "timeout": 3600,
+      "dependencies": [
+        "data-extraction-agent"
+      ],
+      "configuration": {
+        "rules_path": "/config/transformation-rules.json"
+      }
+    },
+    {
+      "id": "data-quality-agent",
+      "stage": "quality-check",
+      "required": true,
+      "timeout": 900,
+      "parallel": true,
+      "dependencies": [
+        "data-transformation-agent"
+      ]
+    },
+    {
+      "id": "data-loading-agent",
+      "stage": "load",
+      "required": true,
+      "timeout": 1800,
+      "dependencies": [
+        "data-quality-agent"
+      ],
+      "configuration": {
+        "destinations": [
+          "azure-synapse",
+          "cosmos-db"
+        ]
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "type": "schedule",
+      "cron": "0 2 * * *",
+      "description": "Daily ETL run at 2 AM UTC"
+    },
+    {
+      "type": "event",
+      "source": "azure-event-grid",
+      "event_type": "data.arrived"
+    }
+  ],
+  "observability": {
+    "telemetry_enabled": true,
+    "log_level": "info",
+    "metrics_enabled": true,
+    "trace_sampling_rate": 0.5
+  }
+}

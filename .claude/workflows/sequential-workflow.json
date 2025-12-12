@@ -1,0 +1,64 @@
+{
+  "workflow": {
+    "name": "SequentialDataProcessing",
+    "type": "sequential",
+    "description": "Sequential workflow for data analysis and processing",
+    "version": "1.0.0",
+    "steps": [
+      {
+        "id": "analyze",
+        "agent": "analyzer-agent",
+        "input": {
+          "source": "workflow_input",
+          "mapping": {
+            "data": "$.input.data"
+          }
+        },
+        "output": "analysis_result",
+        "checkpointing": {
+          "enabled": true,
+          "strategy": "superstep"
+        }
+      },
+      {
+        "id": "process",
+        "agent": "processor-agent",
+        "input": {
+          "source": "analysis_result",
+          "mapping": {
+            "data": "$.analysis_result.output"
+          }
+        },
+        "output": "processed_result",
+        "checkpointing": {
+          "enabled": true,
+          "strategy": "superstep"
+        }
+      },
+      {
+        "id": "validate",
+        "agent": "validator-agent",
+        "input": {
+          "source": "processed_result",
+          "mapping": {
+            "data": "$.processed_result.output"
+          }
+        },
+        "output": "final_result",
+        "checkpointing": {
+          "enabled": true,
+          "strategy": "superstep"
+        }
+      }
+    ],
+    "error_handling": {
+      "strategy": "retry_with_backoff",
+      "max_retries": 3,
+      "backoff_multiplier": 2
+    },
+    "monitoring": {
+      "telemetry_enabled": true,
+      "trace_sampling": 1.0
+    }
+  }
+}

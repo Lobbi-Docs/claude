@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "ci-cd-workflow",
+  "name": "Continuous Integration and Deployment Workflow",
+  "version": "1.0.0",
+  "description": "Automated workflow that orchestrates code review, testing, building, and deployment using multiple AI agents",
+  "type": "sequential",
+  "agents": [
+    {
+      "id": "code-review-agent",
+      "stage": "review",
+      "required": true,
+      "timeout": 300,
+      "retry": {
+        "max_attempts": 2,
+        "backoff": "exponential"
+      }
+    },
+    {
+      "id": "testing-agent",
+      "stage": "test",
+      "required": true,
+      "timeout": 600,
+      "parallel": true,
+      "dependencies": [
+        "code-review-agent"
+      ]
+    },
+    {
+      "id": "security-scan-agent",
+      "stage": "security",
+      "required": true,
+      "timeout": 300,
+      "parallel": true,
+      "dependencies": [
+        "code-review-agent"
+      ]
+    },
+    {
+      "id": "build-agent",
+      "stage": "build",
+      "required": true,
+      "timeout": 900,
+      "dependencies": [
+        "testing-agent",
+        "security-scan-agent"
+      ]
+    },
+    {
+      "id": "deploy-agent",
+      "stage": "deploy",
+      "required": false,
+      "timeout": 1200,
+      "dependencies": [
+        "build-agent"
+      ],
+      "conditions": {
+        "branch": "main",
+        "status": "success"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "type": "webhook",
+      "event": "pull_request.opened",
+      "stages": [
+        "review",
+        "test",
+        "security",
+        "build"
+      ]
+    },
+    {
+      "type": "webhook",
+      "event": "push",
+      "conditions": {
+        "branch": "main"
+      },
+      "stages": [
+        "review",
+        "test",
+        "security",
+        "build",
+        "deploy"
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "type": "email",
+      "recipients": [
+        "team@agentstudio.local"
+      ],
+      "events": [
+        "workflow.failed",
+        "workflow.completed"
+      ]
+    },
+    {
+      "type": "slack",
+      "channel": "#ci-cd",
+      "events": [
+        "workflow.failed",
+        "deployment.completed"
+      ]
+    }
+  ],
+  "observability": {
+    "telemetry_enabled": true,
+    "log_level": "info",
+    "metrics_enabled": true,
+    "trace_sampling_rate": 1.0
+  },
+  "error_handling": {
+    "on_failure": "stop",
+    "notification_required": true,
+    "rollback_enabled": true
+  }
+}

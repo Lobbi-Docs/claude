@@ -1,0 +1,71 @@
+{
+  "version": "3.0.0",
+  "project": {
+    "name": "neural-orchestration-platform",
+    "patterns": [
+      "plan-then-execute",
+      "hierarchical-decomposition",
+      "blackboard",
+      "event-sourcing"
+    ],
+    "architecture": "microservices-mesh",
+    "description": "Ultra-sophisticated enterprise AI platform with advanced orchestration"
+  },
+  "models": {
+    "strategic": "claude-opus-4-1",
+    "tactical": "claude-sonnet-4",
+    "operational": "claude-haiku-3",
+    "verification": "claude-opus-4-1",
+    "fallback": ["gpt-4", "mistral-large", "llama-3"]
+  },
+  "memory": {
+    "hierarchy": {
+      "sensory": "redis-streams",
+      "working": "redis-cache",
+      "episodic": "cosmos-db",
+      "semantic": "pinecone-vector",
+      "procedural": "git-versioned"
+    },
+    "synchronization": "crdt-based",
+    "consistency": "eventual-with-causal"
+  },
+  "execution": {
+    "parallelism": "adaptive",
+    "maxConcurrent": 20,
+    "queueStrategy": "priority-weighted",
+    "circuitBreaker": {
+      "enabled": true,
+      "threshold": 5,
+      "timeout": 30000,
+      "halfOpenAfter": 60000
+    }
+  },
+  "security": {
+    "model": "zero-trust-plus",
+    "encryption": "e2e-aes-256",
+    "authentication": "oauth2-pkce",
+    "authorization": "rbac-with-abac",
+    "sandboxing": "docker-gvisor",
+    "toolScoping": "dynamic-per-task",
+    "auditLogging": "immutable-append-only"
+  },
+  "agents": {
+    "contextWindow": 200000,
+    "defaultModel": "claude-sonnet-4",
+    "memoryStrategy": "hierarchical-persistent",
+    "stateManagement": "distributed-crdt"
+  },
+  "monitoring": {
+    "telemetry": "opentelemetry",
+    "traces": true,
+    "metrics": true,
+    "logs": true,
+    "exporters": ["datadog", "jaeger", "prometheus"]
+  },
+  "deployment": {
+    "platform": "kubernetes",
+    "iac": "terraform",
+    "regions": ["us-east-1", "eu-west-1", "ap-southeast-1"],
+    "autoScaling": true
+  }
+}

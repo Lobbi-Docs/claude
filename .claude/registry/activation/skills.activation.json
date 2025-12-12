@@ -1,0 +1,204 @@
+{
+  "$schema": "../schema/activation.schema.json",
+  "version": "3.0.0",
+  "description": "Dynamic skill activation system - Claude determines which skills to enable based on context",
+
+  "activationEngine": {
+    "enabled": true,
+    "mode": "dynamic",
+    "evaluationStrategy": "context-aware"
+  },
+
+  "contextAnalysis": {
+    "sources": [
+      "user_message",
+      "file_context",
+      "recent_tool_calls",
+      "active_agents"
+    ],
+    "extractors": {
+      "keywords": {
+        "method": "tokenize_and_match",
+        "caseSensitive": false,
+        "minLength": 2
+      },
+      "fileTypes": {
+        "method": "extension_mapping",
+        "patterns": {
+          ".py": ["python", "flask-api", "fastapi", "testing"],
+          ".ts": ["typescript", "nodejs", "react"],
+          ".tsx": ["react", "typescript", "css"],
+          ".go": ["golang"],
+          ".rs": ["rust"],
+          ".yml": ["kubernetes", "docker", "ansible"],
+          ".yaml": ["kubernetes", "helm", "docker"],
+          ".tf": ["terraform"],
+          ".sql": ["database"],
+          ".md": ["documentation"]
+        }
+      },
+      "directoryContext": {
+        "method": "path_analysis",
+        "patterns": {
+          "deployment/docker": ["docker"],
+          "deployment/helm": ["helm", "kubernetes"],
+          "deployment/k8s": ["kubernetes"],
+          ".github/workflows": ["cicd", "git-workflows"],
+          "terraform": ["terraform", "aws", "gcp", "azure"],
+          "src/api": ["rest-api", "flask-api"],
+          "tests": ["testing"]
+        }
+      }
+    }
+  },
+
+  "activationProfiles": {
+    "minimal": {
+      "description": "Minimal skill set for simple tasks",
+      "maxSkills": 3,
+      "skills": ["git-workflows", "debugging"],
+      "conditions": {
+        "taskComplexity": "low",
+        "contextLength": "<1000"
+      }
+    },
+    "standard": {
+      "description": "Standard development workflow",
+      "maxSkills": 6,
+      "skills": ["git-workflows", "testing", "debugging", "docker"],
+      "conditions": {
+        "taskComplexity": "medium"
+      }
+    },
+    "full": {
+      "description": "Full skill set for complex tasks",
+      "maxSkills": 10,
+      "skills": "all-matching",
+      "conditions": {
+        "taskComplexity": "high",
+        "multipleAgents": true
+      }
+    },
+    "infrastructure": {
+      "description": "DevOps/Infrastructure focused",
+      "maxSkills": 8,
+      "skills": ["kubernetes", "helm", "docker", "terraform", "aws", "gcp", "azure"],
+      "conditions": {
+        "keywords": ["deploy", "infrastructure", "k8s", "cluster"]
+      }
+    },
+    "development": {
+      "description": "Code development focused",
+      "maxSkills": 8,
+      "skills": ["testing", "debugging", "git-workflows", "rest-api", "database"],
+      "conditions": {
+        "keywords": ["implement", "code", "develop", "feature"]
+      }
+    },
+    "project-management": {
+      "description": "Project management focused",
+      "maxSkills": 5,
+      "skills": ["jira", "confluence", "scrum", "kanban"],
+      "conditions": {
+        "keywords": ["sprint", "backlog", "issue", "story"]
+      }
+    }
+  },
+
+  "dynamicActivation": {
+    "triggerThresholds": {
+      "activate": 2,
+      "deactivate": 0
+    },
+    "scoring": {
+      "exactKeywordMatch": 5,
+      "partialKeywordMatch": 2,
+      "fileContextMatch": 3,
+      "directoryContextMatch": 3,
+      "agentRecommendation": 4,
+      "recentUsage": 1
+    },
+    "decayRate": 0.8,
+    "sessionPersistence": true
+  },
+
+  "skillGroups": {
+    "core": {
+      "description": "Always-available core skills",
+      "skills": ["git-workflows", "debugging"],
+      "alwaysActive": true
+    },
+    "python-stack": {
+      "description": "Python development stack",
+      "skills": ["python", "flask-api", "fastapi", "testing"],
+      "activateTogether": true,
+      "trigger": "python"
+    },
+    "node-stack": {
+      "description": "Node.js development stack",
+      "skills": ["nodejs", "typescript", "react", "nextjs"],
+      "activateTogether": true,
+      "trigger": "node"
+    },
+    "k8s-stack": {
+      "description": "Kubernetes deployment stack",
+      "skills": ["kubernetes", "helm", "docker"],
+      "activateTogether": true,
+      "trigger": "kubernetes"
+    },
+    "atlassian-stack": {
+      "description": "Atlassian tools stack",
+      "skills": ["jira", "confluence", "atlassian-api"],
+      "activateTogether": true,
+      "trigger": "atlassian"
+    },
+    "cloud-aws": {
+      "description": "AWS cloud stack",
+      "skills": ["aws", "terraform"],
+      "activateTogether": true,
+      "trigger": "aws"
+    }
+  },
+
+  "claudeDirectives": {
+    "description": "Instructions for Claude to determine skill activation",
+    "evaluation": [
+      "1. Analyze user message for explicit technology mentions",
+      "2. Check file context for technology indicators",
+      "3. Consider active agent capabilities and needs",
+      "4. Apply activation profiles based on task complexity",
+      "5. Activate skill groups when primary trigger is detected",
+      "6. Cap total active skills based on current profile"
+    ],
+    "priorities": [
+      "Prefer skills directly mentioned in user message",
+      "Activate dependencies before dependent skills",
+      "Deactivate conflicting skills",
+      "Consider skill groups as atomic units when possible"
+    ],
+    "examples": [
+      {
+        "context": "User asks to deploy a Flask API to Kubernetes",
+        "activate": ["flask-api", "python", "docker", "kubernetes", "helm"],
+        "reasoning": "Flask implies Python, K8s deployment needs Docker and Helm"
+      },
+      {
+        "context": "User asks to fix a bug in the authentication",
+        "activate": ["debugging", "authentication", "testing"],
+        "reasoning": "Bug fix needs debugging, auth context, and tests to verify"
+      },
+      {
+        "context": "User asks to create a Jira story and plan sprint",
+        "activate": ["jira", "scrum"],
+        "reasoning": "Project management task requires Jira and Scrum methodology"
+      }
+    ]
+  },
+
+  "currentState": {
+    "activeSkills": [],
+    "activationScores": {},
+    "profile": "standard",
+    "lastEvaluated": null
+  }
+}
