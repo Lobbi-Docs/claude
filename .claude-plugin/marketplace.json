@@ -16,7 +16,7 @@
         "name": "Markus Ahling",
         "email": "markus@example.com"
       },
-      "source": ".",
+      "source": "./",
       "category": "orchestration"
     }
   ]
