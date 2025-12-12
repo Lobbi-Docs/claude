@@ -43,6 +43,9 @@ Desktop.ini
 .env.*.local
 *.env
 
+# Configuration (keep template, ignore generated)
+.claude/config.json
+
 # Build artifacts
 dist/
 build/

@@ -15,12 +15,19 @@
   },
 
   "indexes": {
-    "agents": "./agents.index.json",
+    "agents": "./agents.minimal.json",
+    "agentsFull": "./agents.index.json",
     "skills": "./skills.index.json",
     "commands": "./commands.index.json",
     "workflows": "./workflows.index.json",
     "mcps": "./mcps.index.json",
     "tools": "./tools.index.json"
+  },
+
+  "loadStrategy": {
+    "default": "minimal",
+    "onDemand": ["agentsFull", "activation"],
+    "note": "Use minimal indexes at startup, load full metadata on-demand"
   },
 
   "activation": {
