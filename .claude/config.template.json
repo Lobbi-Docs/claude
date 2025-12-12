@@ -1,0 +1,394 @@
+{
+  "version": "4.0.0",
+  "project": "${PROJECT_NAME}",
+  "description": "Multi-LLM Agent Fleet Platform with Unified Resource Discovery, MCP Integration, and Mandatory Orchestration",
+
+  "orchestration": {
+    "enabled": true,
+    "mandatory": true,
+    "directory": ".claude/orchestration",
+    "protocol": {
+      "minSubAgents": 3,
+      "maxSubAgents": 13,
+      "defaultSubAgents": 5,
+      "mandatoryPhases": ["explore", "plan", "code", "test", "fix", "document"],
+      "contextPersistence": true,
+      "nextStepsTracking": true
+    },
+    "database": {
+      "default": "sqlite",
+      "path": ".claude/orchestration/db/agents.db"
+    },
+    "features": {
+      "tracking": true,
+      "logging": true,
+      "checkpointing": true,
+      "coordination": true,
+      "messaging": true,
+      "contextPreservation": true
+    },
+    "parallel": {
+      "maxConcurrentAgents": 13,
+      "lockTimeout": "5m"
+    },
+    "hooks": ".claude/hooks/orchestration-hooks.sh"
+  },
+
+  "registry": {
+    "enabled": true,
+    "directory": ".claude/registry",
+    "indexes": {
+      "agents": "registry/agents.index.json",
+      "skills": "registry/skills.index.json",
+      "mcps": "registry/mcps.index.json",
+      "tools": "registry/tools.index.json",
+      "workflows": "registry/workflows.index.json",
+      "search": "registry/search/keywords.json",
+      "activation": "registry/activation/unified.activation.json"
+    },
+    "legacyActivation": "registry/activation/skills.activation.json"
+  },
+
+  "mcps": {
+    "enabled": true,
+    "autoActivation": true,
+    "registry": "registry/mcps.index.json",
+    "builtin": {
+      "supabase": {
+        "enabled": true,
+        "priority": "high",
+        "autoActivate": true
+      },
+      "vercel": {
+        "enabled": true,
+        "priority": "high",
+        "autoActivate": true
+      },
+      "github": {
+        "enabled": true,
+        "priority": "high",
+        "autoActivate": true
+      },
+      "upstash": {
+        "enabled": true,
+        "priority": "medium",
+        "autoActivate": true
+      },
+      "playwright": {
+        "enabled": true,
+        "priority": "medium",
+        "autoActivate": false
+      },
+      "context7": {
+        "enabled": true,
+        "priority": "high",
+        "autoActivate": true,
+        "mandatory": true
+      },
+      "ide": {
+        "enabled": true,
+        "priority": "medium",
+        "autoActivate": true
+      }
+    },
+    "custom": {
+      "atlassian": {
+        "enabled": true,
+        "configPath": ".claude/mcp/atlassian-mcp.json",
+        "priority": "medium",
+        "autoActivate": false
+      },
+      "n8n": {
+        "enabled": true,
+        "type": "http",
+        "url": "${N8N_BASE_URL}/mcp-server/http",
+        "priority": "medium",
+        "autoActivate": false
+      },
+      "obsidian": {
+        "enabled": true,
+        "configPath": ".claude/mcp/obsidian-mcp.json",
+        "priority": "medium",
+        "autoActivate": false
+      }
+    }
+  },
+
+  "agents": {
+    "enabled": true,
+    "categories": [
+      "core",
+      "devops",
+      "development",
+      "frontend",
+      "languages",
+      "security",
+      "data-ai",
+      "operations",
+      "documentation",
+      "atlassian",
+      "cloud",
+      "testing",
+      "swarm",
+      "github",
+      "${PROJECT_NAME}"
+    ],
+    "phaseMapping": {
+      "explore": ["researcher", "code-analyzer", "system-architect"],
+      "plan": ["planner", "system-architect"],
+      "code": ["coder", "backend-dev", "frontend-dev", "database-specialist"],
+      "test": ["tester", "security-auditor", "e2e-tester"],
+      "fix": ["debugger", "tester"],
+      "document": ["docs-writer", "reviewer"]
+    },
+    "registry": {
+      "core": ["coder", "researcher", "tester", "reviewer", "planner", "debugger"],
+      "devops": ["cicd-engineer", "k8s-deployer", "docker-builder", "sre-engineer", "gitops-specialist"],
+      "development": ["backend-dev", "system-architect", "api-designer", "database-specialist", "performance-engineer"],
+      "frontend": ["react-specialist", "ui-designer", "vue-specialist", "nextjs-specialist", "accessibility-expert"],
+      "languages": ["python-specialist", "typescript-specialist", "go-specialist", "rust-specialist", "java-specialist", "csharp-specialist", "elixir-specialist"],
+      "security": ["security-auditor", "penetration-tester", "compliance-checker", "secrets-manager", "threat-modeler"],
+      "data-ai": ["ml-engineer", "data-engineer", "rag-specialist", "llm-engineer", "data-analyst"],
+      "operations": ["incident-responder", "observability", "capacity-planner", "cost-optimizer"],
+      "documentation": ["docs-writer", "api-documenter", "runbook-writer"],
+      "atlassian": ["jira-specialist", "confluence-specialist", "atlassian-admin", "agile-coach", "project-tracker", "scrum-master", "product-owner", "sprint-analyst"],
+      "cloud": ["aws-specialist", "gcp-specialist", "azure-specialist", "terraform-specialist", "serverless-specialist"],
+      "testing": ["qa-engineer", "e2e-tester", "load-tester", "contract-tester"],
+      "swarm": ["hierarchical-coordinator", "mesh-coordinator", "adaptive-coordinator"],
+      "github": ["pr-manager", "issue-tracker", "code-review-swarm", "release-manager"],
+      "${PROJECT_NAME}": ["llm-agent-builder", "fleet-orchestrator", "helm-specialist"]
+    }
+  },
+
+  "orchestrationPatterns": {
+    "hierarchical": {
+      "description": "Queen-led centralized coordination",
+      "coordinator": "hierarchical-coordinator",
+      "workers": ["coder", "tester", "reviewer", "docker-builder"],
+      "useCase": "Complex features requiring strict coordination",
+      "minAgents": 4,
+      "maxAgents": 10
+    },
+    "mesh": {
+      "description": "Peer-to-peer distributed coordination",
+      "coordinator": "mesh-coordinator",
+      "peers": ["researcher", "code-analyzer", "security-auditor"],
+      "useCase": "Research and analysis tasks",
+      "minAgents": 3,
+      "maxAgents": 8
+    },
+    "adaptive": {
+      "description": "Dynamic topology switching",
+      "coordinator": "adaptive-coordinator",
+      "useCase": "Mixed workloads with varying complexity",
+      "minAgents": 3,
+      "maxAgents": 13
+    },
+    "pipeline": {
+      "description": "Sequential stage-based processing",
+      "stages": ["planner", "coder", "tester", "reviewer", "docker-builder", "k8s-deployer"],
+      "useCase": "Full development lifecycle",
+      "minAgents": 5,
+      "maxAgents": 13
+    }
+  },
+
+  "skills": {
+    "enabled": true,
+    "directory": ".claude/skills",
+    "dynamicActivation": true,
+    "activationConfig": "registry/activation/unified.activation.json",
+    "registry": [
+      "kubernetes", "helm", "docker", "terraform",
+      "flask-api", "fastapi", "graphql", "rest-api", "git-workflows", "testing", "debugging",
+      "jira", "confluence", "atlassian-api", "scrum", "kanban",
+      "llm-integration",
+      "aws", "gcp",
+      "authentication",
+      "database", "redis", "vector-db",
+      "react", "nextjs"
+    ]
+  },
+
+  "workflows": {
+    "enabled": true,
+    "directory": ".claude/workflows",
+    "registry": "registry/workflows.index.json",
+    "list": [
+      "feature-development",
+      "code-review",
+      "ci-cd-workflow",
+      "incident-response",
+      "sprint-management",
+      "scrum-ceremonies",
+      "atlassian-integration",
+      "data-processing-workflow",
+      "group-chat-workflow",
+      "sequential-workflow"
+    ]
+  },
+
+  "tools": {
+    "enabled": true,
+    "registry": "registry/tools.index.json",
+    "builtin": {
+      "fileOperations": ["Read", "Write", "Edit", "NotebookEdit", "Glob", "Grep"],
+      "execution": ["Bash", "BashOutput", "KillShell"],
+      "web": ["WebFetch", "WebSearch"],
+      "orchestration": ["Task", "TodoWrite", "AskUserQuestion"],
+      "planning": ["EnterPlanMode", "ExitPlanMode"],
+      "skills": ["Skill", "SlashCommand"]
+    },
+    "customDirectory": ".claude/tools"
+  },
+
+  "prompts": {
+    "enabled": true,
+    "directory": ".claude/prompts",
+    "categories": [
+      "code-generation",
+      "code-review",
+      "debugging",
+      "jira-issue",
+      "confluence-docs",
+      "scrum"
+    ]
+  },
+
+  "commands": {
+    "enabled": true,
+    "directory": ".claude/commands",
+    "registry": [
+      "deploy", "build-agent", "status", "test", "review", "review-all",
+      "security-scan", "logs", "scale", "rollback", "init", "debug", "clean",
+      "jira-create", "jira-status", "jira-transition",
+      "confluence-publish", "atlassian-sync",
+      "sprint-plan", "standup", "retro", "backlog-groom",
+      "create-agent", "project-status", "generate-tests", "document-api"
+    ]
+  },
+
+  "hooks": {
+    "enabled": true,
+    "directory": ".claude/hooks",
+    "preTask": true,
+    "postTask": true,
+    "postEdit": true,
+    "phaseTransition": true
+  },
+
+  "modes": {
+    "default": "hierarchical",
+    "available": ["hierarchical", "mesh", "adaptive", "pipeline", "solo"]
+  },
+
+  "sparc": {
+    "enabled": true,
+    "phases": ["specification", "pseudocode", "architecture", "refinement", "completion"]
+  },
+
+  "memory": {
+    "enabled": true,
+    "namespace": "${PROJECT_NAME}",
+    "persistence": true,
+    "contextPreservation": {
+      "enabled": true,
+      "maxContextSize": 200000,
+      "preserveAcrossPhases": true
+    }
+  },
+
+  "integrations": {
+    "github": {
+      "enabled": true,
+      "repo": "${GITHUB_ORG}/${GITHUB_REPO}",
+      "mcp": "github"
+    },
+    "docker": {
+      "registry": "${DOCKER_REGISTRY}",
+      "agents": ["claude", "gemini", "gpt", "ollama", "orchestrator"]
+    },
+    "kubernetes": {
+      "namespace": "${K8S_NAMESPACE}",
+      "helm_chart": "deployment/helm/${PROJECT_NAME}"
+    },
+    "atlassian": {
+      "enabled": true,
+      "mcp": "atlassian",
+      "jira": {
+        "url": "${JIRA_URL}",
+        "project_key": "${JIRA_PROJECT_KEY}",
+        "board_id": "${JIRA_BOARD_ID}"
+      },
+      "confluence": {
+        "url": "${CONFLUENCE_URL}",
+        "space_key": "${CONFLUENCE_SPACE_KEY}"
+      },
+      "mcp_server": ".claude/mcp/atlassian-mcp.json"
+    },
+    "supabase": {
+      "enabled": true,
+      "mcp": "supabase"
+    },
+    "vercel": {
+      "enabled": true,
+      "mcp": "vercel"
+    },
+    "upstash": {
+      "enabled": true,
+      "mcp": "upstash"
+    },
+    "n8n": {
+      "enabled": true,
+      "mcp": "n8n",
+      "url": "${N8N_BASE_URL}",
+      "description": "Workflow automation and integration platform"
+    }
+  },
+
+  "defaults": {
+    "agent": "coder",
+    "coordinator": "hierarchical-coordinator",
+    "reviewer": "reviewer",
+    "model": "sonnet",
+    "minSubAgents": 3,
+    "maxSubAgents": 13
+  },
+
+  "modelAssignment": {
+    "haiku": [
+      "compliance-checker", "docs-writer", "ui-designer", "project-tracker",
+      "api-documenter", "runbook-writer", "cost-optimizer"
+    ],
+    "sonnet": [
+      "coder", "tester", "reviewer", "researcher", "planner", "debugger",
+      "python-specialist", "typescript-specialist", "go-specialist", "rust-specialist",
+      "java-specialist", "csharp-specialist", "elixir-specialist",
+      "security-auditor", "penetration-tester", "secrets-manager", "threat-modeler",
+      "ml-engineer", "data-engineer", "rag-specialist", "llm-engineer", "data-analyst",
+      "incident-responder", "observability", "capacity-planner",
+      "react-specialist", "vue-specialist", "nextjs-specialist", "accessibility-expert",
+      "api-designer", "database-specialist", "backend-dev", "system-architect", "performance-engineer",
+      "jira-specialist", "confluence-specialist", "atlassian-admin", "agile-coach",
+      "scrum-master", "product-owner", "sprint-analyst",
+      "aws-specialist", "gcp-specialist", "azure-specialist", "terraform-specialist", "serverless-specialist",
+      "qa-engineer", "e2e-tester", "load-tester", "contract-tester",
+      "sre-engineer", "gitops-specialist", "release-manager",
+      "hierarchical-coordinator", "mesh-coordinator", "adaptive-coordinator"
+    ],
+    "opus": ["system-architect", "hierarchical-coordinator"]
+  },
+
+  "context7": {
+    "enabled": true,
+    "mandatory": true,
+    "useFor": [
+      "library-documentation",
+      "api-reference",
+      "code-generation",
+      "configuration-setup",
+      "framework-patterns"
+    ],
+    "autoResolve": true
+  }
+}

@@ -1,0 +1,269 @@
+{
+  "$schema": "https://claude.ai/schemas/plugin.v1.json",
+  "name": "golden-armada",
+  "version": "4.0.0",
+  "apiVersion": "v1",
+  "displayName": "Golden Armada - Multi-Agent Orchestration System",
+  "description": "Professional-grade multi-LLM agent coordination with 100+ specialized agents, comprehensive registry system, mandatory orchestration protocol, and production-ready DevOps workflows",
+
+  "author": {
+    "name": "Golden Armada Team",
+    "email": "platform@golden-armada.dev",
+    "url": "https://github.com/markus41"
+  },
+
+  "license": "MIT",
+  "homepage": "https://github.com/markus41/claude",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markus41/claude"
+  },
+
+  "categories": [
+    "orchestration",
+    "agents",
+    "devops",
+    "testing",
+    "code-generation",
+    "multi-tenant",
+    "saas"
+  ],
+
+  "keywords": [
+    "orchestration",
+    "multi-agent",
+    "llm",
+    "claude",
+    "agents",
+    "kubernetes",
+    "helm",
+    "docker",
+    "ci-cd",
+    "testing",
+    "keycloak",
+    "stripe",
+    "multi-tenant",
+    "mongodb",
+    "selenium"
+  ],
+
+  "provides": {
+    "agents": 101,
+    "skills": 31,
+    "commands": 44,
+    "workflows": 21,
+    "hooks": 21,
+    "templates": 3,
+    "tools": 7
+  },
+
+  "discovery": {
+    "agents": {
+      "enabled": true,
+      "directory": ".claude/agents",
+      "pattern": "**/*.md",
+      "indexFile": ".claude/registry/agents.index.json"
+    },
+    "skills": {
+      "enabled": true,
+      "directory": ".claude/skills",
+      "pattern": "**/SKILL.md",
+      "indexFile": ".claude/registry/skills.index.json",
+      "descriptionBased": true
+    },
+    "commands": {
+      "enabled": true,
+      "directory": ".claude/commands",
+      "pattern": "*.md",
+      "indexFile": ".claude/registry/commands.index.json"
+    },
+    "workflows": {
+      "enabled": true,
+      "directory": ".claude/workflows",
+      "pattern": "*.{md,json,yaml}",
+      "indexFile": ".claude/registry/workflows.index.json"
+    },
+    "hooks": {
+      "enabled": true,
+      "directory": ".claude/hooks",
+      "pattern": "*.{sh,mjs}"
+    }
+  },
+
+  "orchestration": {
+    "enabled": true,
+    "mandatory": true,
+    "protocol": {
+      "version": "4.0.0",
+      "minSubAgents": 3,
+      "maxSubAgents": 13,
+      "defaultSubAgents": 5,
+      "mandatoryPhases": [
+        "explore",
+        "plan",
+        "code",
+        "test",
+        "fix",
+        "document"
+      ]
+    },
+    "features": {
+      "tracking": true,
+      "logging": true,
+      "checkpointing": true,
+      "coordination": true,
+      "messaging": true,
+      "contextPreservation": true
+    },
+    "database": {
+      "type": "sqlite",
+      "path": "${CLAUDE_PLUGIN_ROOT}/.claude/orchestration/db/agents.db"
+    }
+  },
+
+  "registry": {
+    "enabled": true,
+    "lazyLoading": true,
+    "masterIndex": ".claude/registry/index.json",
+    "search": {
+      "enabled": true,
+      "fuzzyMatch": true,
+      "keywordIndex": ".claude/registry/search/keywords.json"
+    },
+    "activation": {
+      "contextAware": true,
+      "profileSupport": true,
+      "profiles": ["minimal", "standard", "full", "database", "frontend", "devops", "project-management"]
+    }
+  },
+
+  "agentCategories": {
+    "core": ["coder", "tester", "reviewer", "planner", "debugger", "researcher"],
+    "lobbi-platform": {
+      "multi-tenant": ["multi-tenant-architect", "tenant-provisioning-specialist"],
+      "stripe-payment": ["stripe-integration-specialist", "subscription-lifecycle-manager", "invoice-manager"],
+      "frontend-theming": ["theme-system-architect", "theme-builder", "white-label-specialist"],
+      "selenium-testing": ["selenium-test-architect", "auth-flow-tester", "member-journey-tester"],
+      "membership-domain": ["membership-specialist", "member-engagement-agent", "membership-analytics-agent", "directory-manager"]
+    },
+    "infrastructure": {
+      "keycloak": ["keycloak-realm-admin", "keycloak-theme-developer", "keycloak-identity-specialist", "keycloak-auth-flow-designer", "keycloak-security-auditor"],
+      "mongodb-atlas": ["mongodb-atlas-admin", "mongodb-schema-designer", "mongodb-query-optimizer", "mongodb-aggregation-specialist"],
+      "kubernetes": ["k8s-architect", "k8s-debugger", "k8s-security-specialist", "k8s-resource-optimizer"],
+      "helm": ["helm-chart-developer", "helm-values-manager", "helm-release-manager"]
+    },
+    "utility": ["context-cleanup-agent", "documentation-sync-agent", "registry-manager-agent"]
+  },
+
+  "configuration": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "orchestration": {
+          "type": "object",
+          "properties": {
+            "minSubAgents": {
+              "type": "number",
+              "default": 3,
+              "minimum": 3
+            },
+            "maxSubAgents": {
+              "type": "number",
+              "default": 13,
+              "maximum": 13
+            },
+            "defaultModel": {
+              "type": "string",
+              "enum": ["haiku", "sonnet", "opus"],
+              "default": "sonnet"
+            }
+          }
+        },
+        "contextManagement": {
+          "type": "object",
+          "properties": {
+            "tokenBudget": {
+              "type": "number",
+              "default": 100000
+            },
+            "warningThreshold": {
+              "type": "number",
+              "default": 0.75
+            },
+            "autoCheckpoint": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "documentation": {
+          "type": "object",
+          "properties": {
+            "obsidianVaultPath": {
+              "type": "string",
+              "description": "Path to Obsidian vault for documentation sync"
+            },
+            "autoSync": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "hooks": {
+    "preTask": ".claude/hooks/pre-task.sh",
+    "postTask": ".claude/hooks/post-task.sh",
+    "postEdit": ".claude/hooks/post-edit.sh",
+    "sessionStart": ".claude/hooks/session-start.sh"
+  },
+
+  "mcpServers": {
+    "required": ["context7"],
+    "recommended": ["github", "obsidian"],
+    "optional": ["supabase", "vercel", "upstash", "playwright", "atlassian", "n8n"]
+  },
+
+  "minimumClaudeCodeVersion": "1.0.0",
+
+  "activation": {
+    "auto": true,
+    "priority": 100,
+    "conditions": {
+      "filePatterns": [
+        "**/*.py",
+        "**/*.ts",
+        "**/*.js",
+        "**/Dockerfile",
+        "**/docker-compose.yml",
+        "**/*.yaml",
+        "**/Chart.yaml",
+        "**/prisma/schema.prisma"
+      ],
+      "keywords": [
+        "orchestrate",
+        "multi-agent",
+        "deploy",
+        "test",
+        "review",
+        "tenant",
+        "stripe",
+        "keycloak"
+      ]
+    }
+  },
+
+  "documentation": {
+    "quickStart": ".claude/README.md",
+    "userGuide": ".claude/docs/ORCHESTRATION-GUIDE.md",
+    "agentDevelopment": ".claude/docs/AGENT_ACTIVITY_TRACKING.md",
+    "troubleshooting": ".claude/docs/CONTEXT-REDUCTION-GUIDE.md"
+  },
+
+  "scripts": {
+    "postInstall": "echo 'Golden Armada installed successfully! Run /status to verify.'",
+    "postUpdate": "echo 'Golden Armada updated. Check /project-status for changes.'"
+  }
+}
