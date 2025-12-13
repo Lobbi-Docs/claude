@@ -108,6 +108,13 @@
       "toolPattern": "(Write|Edit)",
       "filePattern": "(docker-compose|Dockerfile|package\\.json)$",
       "handler": "hooks/scripts/check-health.sh"
+    },
+    "keycloak-validation": {
+      "description": "Validate Keycloak configuration changes",
+      "event": "PostToolUse",
+      "toolPattern": "(Write|Edit)",
+      "filePattern": "(keycloak|realm|theme)",
+      "handler": "hooks/scripts/check-keycloak.sh"
     }
   },
   "configuration": {

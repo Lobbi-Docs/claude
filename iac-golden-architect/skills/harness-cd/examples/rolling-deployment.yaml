@@ -1,0 +1,477 @@
+# Harness Rolling Deployment Pipeline Example
+# This pipeline demonstrates a production-grade rolling deployment
+# with pre-deployment checks, health verification, and rollback capabilities
+
+pipeline:
+  name: Rolling Deployment Production
+  identifier: rolling_deployment_prod
+  projectIdentifier: default
+  orgIdentifier: default
+  description: Production rolling deployment with automated health checks and rollback
+  tags:
+    deployment_type: rolling
+    environment: production
+
+  # Pipeline-level variables
+  variables:
+    - name: image_tag
+      type: String
+      description: Docker image tag to deploy
+      value: <+input>
+      required: true
+
+    - name: replicas
+      type: String
+      description: Number of replicas
+      value: "3"
+      default: "3"
+
+    - name: max_surge
+      type: String
+      description: Max surge during rolling update
+      value: "1"
+
+    - name: max_unavailable
+      type: String
+      description: Max unavailable during rolling update
+      value: "1"
+
+    - name: enable_canary_check
+      type: String
+      description: Enable canary verification before full rollout
+      value: <+input>.allowedValues(true,false)
+      default: "false"
+
+  stages:
+    # Stage 1: Pre-Deployment Validation
+    - stage:
+        name: Pre-Deployment Checks
+        identifier: pre_deployment
+        description: Validate environment and prerequisites
+        type: Custom
+        tags: {}
+        spec:
+          execution:
+            steps:
+              # Verify Kubernetes cluster connectivity
+              - step:
+                  name: Verify Cluster Access
+                  identifier: verify_cluster
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "Verifying Kubernetes cluster connectivity..."
+                          kubectl cluster-info
+
+                          echo "Checking namespace exists..."
+                          kubectl get namespace production || kubectl create namespace production
+
+                          echo "Cluster verification successful"
+
+              # Verify image exists and is accessible
+              - step:
+                  name: Verify Docker Image
+                  identifier: verify_image
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          IMAGE="myorg/myapp:<+pipeline.variables.image_tag>"
+                          echo "Verifying image exists: $IMAGE"
+
+                          # Pull image to verify it exists and is accessible
+                          docker pull $IMAGE
+
+                          # Scan image for vulnerabilities (optional)
+                          # trivy image --severity HIGH,CRITICAL $IMAGE
+
+                          echo "Image verification successful"
+
+              # Check current deployment status
+              - step:
+                  name: Check Current Deployment
+                  identifier: check_deployment
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          echo "Checking current deployment status..."
+                          kubectl get deployment myapp -n production || echo "Deployment does not exist, will create"
+
+                          # Get current image
+                          CURRENT_IMAGE=$(kubectl get deployment myapp -n production -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "none")
+                          echo "Current image: $CURRENT_IMAGE"
+                          echo "New image: myorg/myapp:<+pipeline.variables.image_tag>"
+                    outputVariables:
+                      - name: current_image
+                        type: String
+                        value: current_image
+
+              # Approval for production deployment
+              - step:
+                  name: Production Deployment Approval
+                  identifier: prod_approval
+                  type: HarnessApproval
+                  timeout: 1d
+                  spec:
+                    approvalMessage: |
+                      Production deployment requested:
+
+                      Image: myorg/myapp:<+pipeline.variables.image_tag>
+                      Replicas: <+pipeline.variables.replicas>
+                      Deployment Strategy: Rolling
+
+                      Please review and approve.
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                      userGroups:
+                        - account.Production_Approvers
+                    approverInputs: []
+
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: Abort
+
+    # Stage 2: Rolling Deployment
+    - stage:
+        name: Deploy to Production
+        identifier: deploy_production
+        description: Rolling deployment to production environment
+        type: Deployment
+        tags: {}
+        spec:
+          deploymentType: Kubernetes
+
+          # Service configuration
+          service:
+            serviceRef: myapp_service
+            serviceInputs:
+              serviceDefinition:
+                type: Kubernetes
+                spec:
+                  variables:
+                    - name: image_tag
+                      type: String
+                      value: <+pipeline.variables.image_tag>
+                    - name: replicas
+                      type: String
+                      value: <+pipeline.variables.replicas>
+                  manifests:
+                    - manifest:
+                        identifier: k8s_manifests
+                        type: K8sManifest
+                        spec:
+                          store:
+                            type: Github
+                            spec:
+                              connectorRef: github_connector
+                              gitFetchType: Branch
+                              branch: main
+                              paths:
+                                - kubernetes/deployment.yaml
+                                - kubernetes/service.yaml
+                                - kubernetes/configmap.yaml
+                          valuesPaths: []
+                          skipResourceVersioning: false
+
+          # Environment configuration
+          environment:
+            environmentRef: production
+            deployToAll: false
+            environmentInputs:
+              identifier: production
+              type: Production
+              variables:
+                - name: namespace
+                  type: String
+                  value: production
+            infrastructureDefinitions:
+              - identifier: prod_k8s_cluster
+
+          # Execution steps
+          execution:
+            steps:
+              # Pre-deployment health check
+              - step:
+                  name: Pre-Deployment Health Check
+                  identifier: pre_health_check
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "Running pre-deployment health checks..."
+
+                          # Check if deployment exists
+                          if kubectl get deployment myapp -n production &> /dev/null; then
+                            # Verify all replicas are ready
+                            DESIRED=$(kubectl get deployment myapp -n production -o jsonpath='{.spec.replicas}')
+                            READY=$(kubectl get deployment myapp -n production -o jsonpath='{.status.readyReplicas}')
+
+                            echo "Desired replicas: $DESIRED"
+                            echo "Ready replicas: $READY"
+
+                            if [ "$DESIRED" != "$READY" ]; then
+                              echo "WARNING: Not all replicas are ready before deployment"
+                              exit 1
+                            fi
+
+                            echo "All replicas healthy"
+                          else
+                            echo "Deployment does not exist, skipping health check"
+                          fi
+
+              # Rolling deployment step
+              - step:
+                  name: Rolling Deployment
+                  identifier: rolling_deployment
+                  type: K8sRollingDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+
+              # Post-deployment verification
+              - step:
+                  name: Verify Deployment
+                  identifier: verify_deployment
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "Verifying deployment..."
+
+                          # Wait for rollout to complete
+                          kubectl rollout status deployment/myapp -n production --timeout=300s
+
+                          # Verify all replicas are ready
+                          DESIRED=$(kubectl get deployment myapp -n production -o jsonpath='{.spec.replicas}')
+                          READY=$(kubectl get deployment myapp -n production -o jsonpath='{.status.readyReplicas}')
+
+                          echo "Desired replicas: $DESIRED"
+                          echo "Ready replicas: $READY"
+
+                          if [ "$DESIRED" != "$READY" ]; then
+                            echo "ERROR: Not all replicas are ready"
+                            exit 1
+                          fi
+
+                          echo "Deployment verification successful"
+
+              # Health check
+              - step:
+                  name: Health Check
+                  identifier: health_check
+                  type: Http
+                  timeout: 2m
+                  spec:
+                    url: http://myapp.production.svc.cluster.local:8080/health
+                    method: GET
+                    assertion: <+httpResponseCode> == 200
+                    headers: []
+                    outputVariables: []
+
+              # Smoke tests
+              - step:
+                  name: Smoke Tests
+                  identifier: smoke_tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "Running smoke tests..."
+
+                          SERVICE_URL="http://myapp.production.svc.cluster.local:8080"
+
+                          # Test 1: Health endpoint
+                          echo "Test 1: Health check"
+                          curl -f "$SERVICE_URL/health"
+
+                          # Test 2: API endpoint
+                          echo "Test 2: API check"
+                          curl -f "$SERVICE_URL/api/v1/status"
+
+                          # Test 3: Metrics endpoint
+                          echo "Test 3: Metrics check"
+                          curl -f "$SERVICE_URL/metrics"
+
+                          echo "All smoke tests passed"
+
+            # Rollback steps
+            rollbackSteps:
+              - step:
+                  name: Rollback Deployment
+                  identifier: rollback_deployment
+                  type: K8sRollingRollback
+                  timeout: 10m
+                  spec: {}
+
+              - step:
+                  name: Verify Rollback
+                  identifier: verify_rollback
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          echo "Verifying rollback..."
+                          kubectl rollout status deployment/myapp -n production
+                          echo "Rollback completed successfully"
+
+              - step:
+                  name: Notify Rollback
+                  identifier: notify_rollback
+                  type: ShellScript
+                  spec:
+                    shell: Bash
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          echo "Deployment rolled back due to failure"
+                          # Send notification (Slack, email, etc.)
+
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
+
+    # Stage 3: Post-Deployment
+    - stage:
+        name: Post-Deployment
+        identifier: post_deployment
+        description: Post-deployment monitoring and notifications
+        type: Custom
+        tags: {}
+        spec:
+          execution:
+            steps:
+              # Monitor metrics
+              - step:
+                  name: Monitor Deployment Metrics
+                  identifier: monitor_metrics
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          echo "Monitoring deployment metrics for 5 minutes..."
+
+                          # Monitor error rate, latency, etc.
+                          # This is a placeholder - integrate with your monitoring solution
+                          sleep 60
+
+                          echo "Metrics look good"
+
+              # Send success notification
+              - step:
+                  name: Send Notification
+                  identifier: send_notification
+                  type: ShellScript
+                  spec:
+                    shell: Bash
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          echo "Deployment successful!"
+                          echo "Image: myorg/myapp:<+pipeline.variables.image_tag>"
+                          echo "Environment: production"
+                          echo "Replicas: <+pipeline.variables.replicas>"
+
+                          # Send Slack notification
+                          # curl -X POST <webhook_url> -d '{"text":"Deployment successful"}'
+
+        when:
+          pipelineStatus: Success
+
+  # Notification rules
+  notificationRules:
+    - name: Deployment Success
+      identifier: deployment_success
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook")>
+
+    - name: Deployment Failure
+      identifier: deployment_failure
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups:
+            - account.DevOps_Team
+          recipients:
+            - devops@example.com

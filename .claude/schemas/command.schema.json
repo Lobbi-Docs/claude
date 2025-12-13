@@ -1,0 +1,385 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://anthropic.com/claude-code/command.schema.v1.json",
+  "title": "Claude Code Command Definition",
+  "description": "Schema for defining slash commands that execute pre-defined prompts or workflows",
+  "type": "object",
+  "required": ["name", "description"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Command name in kebab-case, used as /command-name",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable command name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of what the command does",
+      "minLength": 10,
+      "maxLength": 200
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Command version (semver)"
+    },
+    "category": {
+      "type": "string",
+      "description": "Command category for organization",
+      "examples": [
+        "deployment",
+        "testing",
+        "analysis",
+        "documentation",
+        "development",
+        "debugging",
+        "utility"
+      ]
+    },
+    "aliases": {
+      "type": "array",
+      "description": "Alternative names for this command",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      }
+    },
+    "prompt": {
+      "type": "string",
+      "description": "The prompt that will be executed when command is invoked",
+      "minLength": 10
+    },
+    "promptTemplate": {
+      "type": "string",
+      "description": "Prompt template with variable substitution",
+      "minLength": 10
+    },
+    "argumentHint": {
+      "type": "string",
+      "description": "Hint about expected arguments (e.g., '<pr-number>' or '[options]')",
+      "maxLength": 100,
+      "examples": ["<pr-number>", "[suite-name]", "<issue-id>", "[--verbose]"]
+    },
+    "arguments": {
+      "type": "array",
+      "description": "Command argument definitions",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Argument name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Argument description"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["string", "number", "boolean", "array"],
+            "default": "string"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          },
+          "default": {
+            "description": "Default value if not provided"
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Regex pattern for validation"
+          },
+          "enum": {
+            "type": "array",
+            "description": "Allowed values"
+          },
+          "position": {
+            "type": "number",
+            "description": "Positional argument index (0-based)",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "options": {
+      "type": "array",
+      "description": "Command options/flags",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Option name (without --)"
+          },
+          "short": {
+            "type": "string",
+            "pattern": "^[a-z]$",
+            "description": "Short option (single letter)"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["boolean", "string", "number"],
+            "default": "boolean"
+          },
+          "default": {
+            "description": "Default value"
+          }
+        }
+      }
+    },
+    "examples": {
+      "type": "array",
+      "description": "Usage examples",
+      "items": {
+        "type": "object",
+        "required": ["command", "description"],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Example command invocation"
+          },
+          "description": {
+            "type": "string",
+            "description": "What the example does"
+          },
+          "output": {
+            "type": "string",
+            "description": "Expected output or result"
+          }
+        }
+      }
+    },
+    "allowedTools": {
+      "type": "array",
+      "description": "Claude Code tools allowed when executing this command",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit",
+          "Grep",
+          "Glob",
+          "WebFetch",
+          "WebSearch",
+          "Task",
+          "TodoWrite",
+          "NotebookEdit",
+          "Skill",
+          "SlashCommand"
+        ]
+      }
+    },
+    "requiredMcpServers": {
+      "type": "array",
+      "description": "MCP servers required for this command",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiredAgents": {
+      "type": "array",
+      "description": "Agents that should be available",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      }
+    },
+    "requiredSkills": {
+      "type": "array",
+      "description": "Skills that should be activated",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      }
+    },
+    "workflow": {
+      "type": "string",
+      "description": "Path to workflow file to execute"
+    },
+    "workflowInline": {
+      "type": "object",
+      "description": "Inline workflow definition",
+      "$ref": "https://anthropic.com/claude-code/workflow.schema.v1.json"
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Command timeout in milliseconds",
+      "minimum": 1000,
+      "maximum": 3600000
+    },
+    "interactive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether command requires interactive input"
+    },
+    "dangerLevel": {
+      "type": "string",
+      "enum": ["safe", "caution", "dangerous"],
+      "default": "safe",
+      "description": "Risk level of command execution"
+    },
+    "confirmationRequired": {
+      "type": "boolean",
+      "default": false,
+      "description": "Require user confirmation before execution"
+    },
+    "contextRequirements": {
+      "type": "object",
+      "description": "Context requirements for command",
+      "properties": {
+        "gitRepository": {
+          "type": "boolean",
+          "description": "Must be run in git repository"
+        },
+        "files": {
+          "type": "array",
+          "description": "Files that must exist",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "type": "object",
+          "description": "Required environment variables",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "description": "Output configuration",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["text", "json", "yaml", "markdown", "table"],
+          "default": "text"
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "Stream output as it's generated"
+        },
+        "file": {
+          "type": "string",
+          "description": "Output to file instead of console"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation rules",
+      "properties": {
+        "preExecution": {
+          "type": "array",
+          "description": "Validation checks before execution",
+          "items": {
+            "type": "object",
+            "required": ["check", "message"],
+            "properties": {
+              "check": {
+                "type": "string",
+                "description": "Validation check to perform"
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message if validation fails"
+              }
+            }
+          }
+        },
+        "postExecution": {
+          "type": "array",
+          "description": "Validation checks after execution",
+          "items": {
+            "type": "object",
+            "required": ["check", "message"],
+            "properties": {
+              "check": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Permission requirements",
+      "properties": {
+        "filesystem": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "access"],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "access": {
+                "type": "string",
+                "enum": ["read", "write", "readwrite"]
+              }
+            }
+          }
+        },
+        "network": {
+          "type": "boolean",
+          "default": false
+        },
+        "destructive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Can modify or delete files/resources"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["experimental", "beta", "stable", "deprecated"]
+        }
+      }
+    }
+  }
+}

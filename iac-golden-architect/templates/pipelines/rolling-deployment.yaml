@@ -1,0 +1,530 @@
+# Harness Pipeline - Rolling Deployment
+#
+# This pipeline performs a rolling deployment strategy:
+# - Gradual instance replacement
+# - Health checks between batches
+# - Automatic rollback on failure
+# - Configurable batch size and wait times
+# - Zero-downtime deployment
+#
+# Usage:
+#   1. Import this template into Harness
+#   2. Configure deployment parameters
+#   3. Set up health check endpoints
+#   4. Run pipeline for application deployments
+
+pipeline:
+  name: Rolling Deployment
+  identifier: rolling_deployment
+  projectIdentifier: <+input>
+  orgIdentifier: <+input>
+  tags:
+    category: deployment
+    strategy: rolling
+    compliance: soc2
+
+  variables:
+    # Application Configuration
+    - name: APP_NAME
+      type: String
+      description: Application name
+      value: <+input>
+
+    - name: APP_VERSION
+      type: String
+      description: Application version/tag to deploy
+      value: <+input>
+
+    - name: CONTAINER_IMAGE
+      type: String
+      description: Container image with tag
+      value: <+input>
+
+    # Environment Configuration
+    - name: ENVIRONMENT
+      type: String
+      description: Deployment environment
+      allowedValues:
+        - production
+        - staging
+        - development
+      value: <+input>
+
+    - name: NAMESPACE
+      type: String
+      description: Kubernetes namespace
+      value: <+input>
+
+    # Rolling Strategy Configuration
+    - name: BATCH_SIZE
+      type: String
+      description: Number of instances to update per batch (or percentage)
+      default: "25%"
+      value: <+input>
+
+    - name: MAX_SURGE
+      type: String
+      description: Maximum number of pods above desired count
+      default: "1"
+
+    - name: MAX_UNAVAILABLE
+      type: String
+      description: Maximum number of pods that can be unavailable
+      default: "0"
+
+    - name: WAIT_BETWEEN_BATCHES
+      type: String
+      description: Wait time between batches (seconds)
+      default: "30"
+
+    # Health Check Configuration
+    - name: HEALTH_CHECK_ENDPOINT
+      type: String
+      description: Health check endpoint path
+      default: "/health"
+
+    - name: HEALTH_CHECK_TIMEOUT
+      type: String
+      description: Health check timeout (seconds)
+      default: "120"
+
+    - name: READINESS_PROBE_DELAY
+      type: String
+      description: Initial delay for readiness probe (seconds)
+      default: "10"
+
+    # Rollback Configuration
+    - name: AUTO_ROLLBACK
+      type: String
+      description: Automatically rollback on failure
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+  stages:
+    # Stage 1: Pre-Deployment Validation
+    - stage:
+        name: Pre-Deployment
+        identifier: pre_deployment
+        description: Validate deployment prerequisites
+        type: Custom
+        spec:
+          execution:
+            steps:
+              # Step 1: Validate Image
+              - step:
+                  type: ShellScript
+                  name: Validate Container Image
+                  identifier: validate_image
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Validating Container Image ====="
+                          IMAGE="<+pipeline.variables.CONTAINER_IMAGE>"
+
+                          # Check if image exists in registry
+                          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
+                            echo "✅ Image found: $IMAGE"
+                          else
+                            echo "❌ ERROR: Image not found: $IMAGE"
+                            exit 1
+                          fi
+
+                          # Security scan (optional)
+                          echo ""
+                          echo "Running security scan..."
+                          # trivy image --severity HIGH,CRITICAL "$IMAGE"
+
+                          echo "✅ Image validation completed"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+              # Step 2: Check Cluster Health
+              - step:
+                  type: ShellScript
+                  name: Check Cluster Health
+                  identifier: check_cluster
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Checking Kubernetes Cluster Health ====="
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                          # Check if namespace exists
+                          if ! kubectl get namespace "$NAMESPACE" > /dev/null 2>&1; then
+                            echo "Creating namespace: $NAMESPACE"
+                            kubectl create namespace "$NAMESPACE"
+                          fi
+
+                          # Check node status
+                          echo ""
+                          echo "Node Status:"
+                          kubectl get nodes
+
+                          NOT_READY=$(kubectl get nodes --no-headers | grep -v "Ready" | wc -l)
+                          if [ "$NOT_READY" -gt 0 ]; then
+                            echo "⚠️  WARNING: $NOT_READY nodes are not ready"
+                          fi
+
+                          # Check resource availability
+                          echo ""
+                          echo "Resource Usage:"
+                          kubectl top nodes || echo "⚠️  Metrics server not available"
+
+                          echo "✅ Cluster health check completed"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+              # Step 3: Backup Current Deployment
+              - step:
+                  type: ShellScript
+                  name: Backup Current Deployment
+                  identifier: backup_deployment
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Backing Up Current Deployment ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+                          BACKUP_FILE="/tmp/deployment-backup-${APP_NAME}-<+pipeline.executionId>.yaml"
+
+                          if kubectl get deployment "$APP_NAME" -n "$NAMESPACE" > /dev/null 2>&1; then
+                            kubectl get deployment "$APP_NAME" -n "$NAMESPACE" -o yaml > "$BACKUP_FILE"
+                            echo "✅ Deployment backed up to: $BACKUP_FILE"
+
+                            # Store current replica count
+                            CURRENT_REPLICAS=$(kubectl get deployment "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.replicas}')
+                            echo "Current replicas: $CURRENT_REPLICAS"
+                          else
+                            echo "ℹ️  No existing deployment found - this is a new deployment"
+                          fi
+
+                    environmentVariables: []
+                    outputVariables:
+                      - name: CURRENT_REPLICAS
+
+    # Stage 2: Rolling Deployment
+    - stage:
+        name: Deploy
+        identifier: deploy
+        description: Execute rolling deployment
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: <+input>
+            serviceInputs: <+input>
+
+          environment:
+            environmentRef: <+input>
+            deployToAll: false
+            infrastructureDefinitions: <+input>
+
+          execution:
+            steps:
+              # Step 1: Apply Deployment Manifest
+              - step:
+                  type: K8sRollingDeploy
+                  name: Rolling Deploy
+                  identifier: rolling_deploy
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+
+                    # Rolling strategy configuration
+                    strategy:
+                      type: Rolling
+                      spec:
+                        maxSurge: <+pipeline.variables.MAX_SURGE>
+                        maxUnavailable: <+pipeline.variables.MAX_UNAVAILABLE>
+
+                    # Deployment manifest
+                    manifests:
+                      - manifest:
+                          identifier: deployment
+                          type: K8sManifest
+                          spec:
+                            store:
+                              type: Harness
+                              spec:
+                                files:
+                                  - /templates/deployment.yaml
+                                  - /templates/service.yaml
+
+                            valuesPaths:
+                              - /values/<+pipeline.variables.ENVIRONMENT>.yaml
+
+                            values:
+                              image: <+pipeline.variables.CONTAINER_IMAGE>
+                              replicas: <+pipeline.stages.pre_deployment.spec.execution.steps.backup_deployment.output.CURRENT_REPLICAS>
+                              environment: <+pipeline.variables.ENVIRONMENT>
+
+                              # Health check configuration
+                              readinessProbe:
+                                httpGet:
+                                  path: <+pipeline.variables.HEALTH_CHECK_ENDPOINT>
+                                  port: 8080
+                                initialDelaySeconds: <+pipeline.variables.READINESS_PROBE_DELAY>
+                                periodSeconds: 10
+                                timeoutSeconds: 5
+                                successThreshold: 1
+                                failureThreshold: 3
+
+                              livenessProbe:
+                                httpGet:
+                                  path: <+pipeline.variables.HEALTH_CHECK_ENDPOINT>
+                                  port: 8080
+                                initialDelaySeconds: 30
+                                periodSeconds: 10
+                                timeoutSeconds: 5
+                                successThreshold: 1
+                                failureThreshold: 3
+
+                  timeout: 10m
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: StageRollback
+
+              # Step 2: Health Check
+              - step:
+                  type: ShellScript
+                  name: Verify Deployment Health
+                  identifier: verify_health
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Verifying Deployment Health ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+                          TIMEOUT="<+pipeline.variables.HEALTH_CHECK_TIMEOUT>"
+
+                          # Wait for rollout to complete
+                          echo "Waiting for rollout to complete..."
+                          kubectl rollout status deployment/"$APP_NAME" -n "$NAMESPACE" --timeout="${TIMEOUT}s"
+
+                          # Check pod status
+                          echo ""
+                          echo "Pod Status:"
+                          kubectl get pods -n "$NAMESPACE" -l app="$APP_NAME"
+
+                          # Verify all pods are ready
+                          READY_PODS=$(kubectl get pods -n "$NAMESPACE" -l app="$APP_NAME" --field-selector=status.phase=Running -o json | jq '[.items[] | select(.status.conditions[] | select(.type=="Ready" and .status=="True"))] | length')
+                          DESIRED_PODS=$(kubectl get deployment "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.replicas}')
+
+                          echo ""
+                          echo "Ready pods: $READY_PODS / $DESIRED_PODS"
+
+                          if [ "$READY_PODS" -ne "$DESIRED_PODS" ]; then
+                            echo "❌ ERROR: Not all pods are ready"
+                            exit 1
+                          fi
+
+                          echo "✅ All pods are healthy"
+
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: <+pipeline.variables.HEALTH_CHECK_TIMEOUT>s
+
+              # Step 3: Smoke Tests
+              - step:
+                  type: ShellScript
+                  name: Run Smoke Tests
+                  identifier: smoke_tests
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Running Smoke Tests ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+                          HEALTH_ENDPOINT="<+pipeline.variables.HEALTH_CHECK_ENDPOINT>"
+
+                          # Get service endpoint
+                          SERVICE_IP=$(kubectl get svc "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+                          if [ -z "$SERVICE_IP" ]; then
+                            SERVICE_IP=$(kubectl get svc "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.clusterIP}')
+                          fi
+
+                          echo "Service IP: $SERVICE_IP"
+
+                          # Health check
+                          echo ""
+                          echo "Testing health endpoint..."
+                          HEALTH_URL="http://${SERVICE_IP}${HEALTH_ENDPOINT}"
+
+                          for i in {1..5}; do
+                            if curl -f -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" | grep -q "200"; then
+                              echo "✅ Health check passed (attempt $i)"
+                              break
+                            else
+                              echo "⚠️  Health check failed (attempt $i/5)"
+                              if [ $i -eq 5 ]; then
+                                echo "❌ ERROR: Health check failed after 5 attempts"
+                                exit 1
+                              fi
+                              sleep 5
+                            fi
+                          done
+
+                          echo "✅ Smoke tests completed successfully"
+
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 2m
+
+            rollbackSteps:
+              - step:
+                  type: K8sRollingRollback
+                  name: Rollback Deployment
+                  identifier: rollback
+                  spec:
+                    pruningEnabled: false
+                  timeout: 10m
+                  when:
+                    stageStatus: Failed
+                    condition: <+pipeline.variables.AUTO_ROLLBACK> == "true"
+
+    # Stage 3: Post-Deployment
+    - stage:
+        name: Post-Deployment
+        identifier: post_deployment
+        description: Post-deployment validation and monitoring
+        type: Custom
+        spec:
+          execution:
+            steps:
+              # Step 1: Verify Metrics
+              - step:
+                  type: ShellScript
+                  name: Verify Metrics
+                  identifier: verify_metrics
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Verifying Application Metrics ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                          # Get resource usage
+                          echo "Resource Usage:"
+                          kubectl top pods -n "$NAMESPACE" -l app="$APP_NAME" || echo "⚠️  Metrics not available"
+
+                          # Check for errors in logs
+                          echo ""
+                          echo "Checking recent logs for errors..."
+                          ERROR_COUNT=$(kubectl logs -n "$NAMESPACE" -l app="$APP_NAME" --since=5m --tail=100 | grep -i "error" | wc -l)
+
+                          echo "Error count in last 5 minutes: $ERROR_COUNT"
+
+                          if [ "$ERROR_COUNT" -gt 10 ]; then
+                            echo "⚠️  WARNING: High error count detected"
+                          fi
+
+                          echo "✅ Metrics verification completed"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+              # Step 2: Update Deployment Tags
+              - step:
+                  type: ShellScript
+                  name: Tag Deployment
+                  identifier: tag_deployment
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Tagging Deployment ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+                          VERSION="<+pipeline.variables.APP_VERSION>"
+
+                          # Add deployment annotations
+                          kubectl annotate deployment "$APP_NAME" -n "$NAMESPACE" \
+                            harness.io/deployment-id="<+pipeline.executionId>" \
+                            harness.io/deployed-at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                            harness.io/deployed-version="$VERSION" \
+                            --overwrite
+
+                          echo "✅ Deployment tagged successfully"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+  # Notification Configuration
+  notificationRules:
+    - name: Deployment Success
+      identifier: deployment_success
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook_url")>
+      enabled: true
+
+    - name: Deployment Failure
+      identifier: deployment_failure
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook_url")>
+      enabled: true

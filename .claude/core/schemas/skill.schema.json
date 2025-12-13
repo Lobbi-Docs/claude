@@ -1,0 +1,442 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://anthropic.com/claude-code/skill.schema.v1.json",
+    "title": "Claude Code Skill Definition",
+    "description": "Schema for defining reusable skills that provide domain-specific knowledge and patterns",
+    "type": "object",
+    "required": ["name", "description"],
+    "additionalProperties": true,
+    "properties": {
+        "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "Skill name in kebab-case (e.g., 'kubernetes-deployment')",
+            "minLength": 1,
+            "maxLength": 100
+        },
+        "displayName": {
+            "type": "string",
+            "description": "Human-readable skill name",
+            "minLength": 1,
+            "maxLength": 200
+        },
+        "description": {
+            "type": "string",
+            "description": "Brief description of what the skill provides",
+            "minLength": 10,
+            "maxLength": 500
+        },
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Skill version (semver)",
+            "examples": ["1.0.0", "2.1.3"]
+        },
+        "category": {
+            "type": "string",
+            "description": "Primary category for organization",
+            "examples": [
+                "devops",
+                "frontend",
+                "backend",
+                "database",
+                "cloud",
+                "testing",
+                "security",
+                "documentation",
+                "ai-ml",
+                "integration"
+            ]
+        },
+        "subcategory": {
+            "type": "string",
+            "description": "Optional subcategory",
+            "examples": ["kubernetes", "aws", "react", "testing"]
+        },
+        "triggers": {
+            "type": "array",
+            "description": "Keywords or patterns that should activate this skill",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "minLength": 2
+            },
+            "examples": [
+                ["kubernetes", "k8s", "kubectl", "pods", "deployments"]
+            ]
+        },
+        "filePatterns": {
+            "type": "array",
+            "description": "File patterns that indicate this skill should be active",
+            "items": {
+                "type": "string"
+            },
+            "examples": [
+                ["**/*.k8s.yaml", "**/deployment.yaml", "**/Chart.yaml"]
+            ]
+        },
+        "dependencies": {
+            "type": "array",
+            "description": "Other skills this skill depends on",
+            "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+        },
+        "relatedSkills": {
+            "type": "array",
+            "description": "Related skills that might be useful together",
+            "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+        },
+        "tools": {
+            "type": "array",
+            "description": "Claude Code tools required by this skill",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "Bash",
+                    "Read",
+                    "Write",
+                    "Edit",
+                    "Grep",
+                    "Glob",
+                    "WebFetch",
+                    "WebSearch",
+                    "Task",
+                    "TodoWrite",
+                    "NotebookEdit"
+                ]
+            }
+        },
+        "mcpServers": {
+            "type": "array",
+            "description": "MCP servers used by this skill",
+            "items": {
+                "type": "string"
+            },
+            "examples": [["github", "kubernetes", "docker"]]
+        },
+        "knowledgeBase": {
+            "type": "object",
+            "description": "Domain knowledge provided by this skill",
+            "properties": {
+                "commands": {
+                    "type": "array",
+                    "description": "Common commands and their usage",
+                    "items": {
+                        "type": "object",
+                        "required": ["command", "description"],
+                        "properties": {
+                            "command": {
+                                "type": "string",
+                                "description": "The command"
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "What the command does"
+                            },
+                            "examples": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "patterns": {
+                    "type": "array",
+                    "description": "Common patterns and best practices",
+                    "items": {
+                        "type": "object",
+                        "required": ["name", "description"],
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "code": {
+                                "type": "string",
+                                "description": "Example code"
+                            },
+                            "language": {
+                                "type": "string",
+                                "description": "Programming language"
+                            }
+                        }
+                    }
+                },
+                "templates": {
+                    "type": "array",
+                    "description": "Code or configuration templates",
+                    "items": {
+                        "type": "object",
+                        "required": ["name", "content"],
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "content": {
+                                "type": "string"
+                            },
+                            "language": {
+                                "type": "string"
+                            },
+                            "variables": {
+                                "type": "array",
+                                "description": "Template variables",
+                                "items": {
+                                    "type": "object",
+                                    "required": ["name"],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "default": {
+                                            "type": "string"
+                                        },
+                                        "required": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "troubleshooting": {
+                    "type": "array",
+                    "description": "Common issues and solutions",
+                    "items": {
+                        "type": "object",
+                        "required": ["problem", "solution"],
+                        "properties": {
+                            "problem": {
+                                "type": "string",
+                                "description": "Problem description"
+                            },
+                            "symptoms": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "solution": {
+                                "type": "string",
+                                "description": "How to fix it"
+                            },
+                            "commands": {
+                                "type": "array",
+                                "description": "Commands to run",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "references": {
+                    "type": "array",
+                    "description": "External references and documentation",
+                    "items": {
+                        "type": "object",
+                        "required": ["title", "url"],
+                        "properties": {
+                            "title": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri"
+                            },
+                            "description": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "capabilities": {
+            "type": "array",
+            "description": "What this skill enables",
+            "items": {
+                "type": "string"
+            },
+            "examples": [
+                ["Deploy applications to Kubernetes", "Debug pod issues", "Manage services and ingress"]
+            ]
+        },
+        "usageExamples": {
+            "type": "array",
+            "description": "Example usage scenarios",
+            "items": {
+                "type": "object",
+                "required": ["scenario", "description"],
+                "properties": {
+                    "scenario": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "userInput": {
+                        "type": "string",
+                        "description": "Example user request"
+                    },
+                    "expectedOutput": {
+                        "type": "string",
+                        "description": "What the skill should help produce"
+                    }
+                }
+            }
+        },
+        "bestPractices": {
+            "type": "array",
+            "description": "Best practices for this domain",
+            "items": {
+                "type": "object",
+                "required": ["practice"],
+                "properties": {
+                    "practice": {
+                        "type": "string"
+                    },
+                    "rationale": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "antiPatterns": {
+            "type": "array",
+            "description": "Common mistakes to avoid",
+            "items": {
+                "type": "object",
+                "required": ["pattern", "reason"],
+                "properties": {
+                    "pattern": {
+                        "type": "string",
+                        "description": "The anti-pattern"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "description": "Why to avoid it"
+                    },
+                    "alternative": {
+                        "type": "string",
+                        "description": "What to do instead"
+                    }
+                }
+            }
+        },
+        "contextRequirements": {
+            "type": "object",
+            "description": "What context is needed to use this skill effectively",
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "description": "Files that should be available",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "environment": {
+                    "type": "object",
+                    "description": "Required environment setup",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "prerequisites": {
+                    "type": "array",
+                    "description": "Prerequisites before using this skill",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "performance": {
+            "type": "object",
+            "description": "Performance characteristics",
+            "properties": {
+                "contextTokens": {
+                    "type": "number",
+                    "description": "Estimated context tokens when skill is active",
+                    "minimum": 0
+                },
+                "complexity": {
+                    "type": "string",
+                    "enum": ["low", "medium", "high"]
+                }
+            }
+        },
+        "activation": {
+            "type": "object",
+            "description": "Activation configuration",
+            "properties": {
+                "auto": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto-activate based on triggers"
+                },
+                "priority": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "default": 50
+                },
+                "contextAware": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use file context for activation"
+                }
+            }
+        },
+        "metadata": {
+            "type": "object",
+            "description": "Additional metadata",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "updated": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "enum": ["experimental", "beta", "stable", "deprecated"]
+                },
+                "license": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

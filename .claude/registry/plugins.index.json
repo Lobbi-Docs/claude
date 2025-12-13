@@ -1,0 +1,113 @@
+{
+  "$schema": "./schema/plugins.schema.json",
+  "version": "1.0.0",
+  "description": "Claude Code Plugin Registry - tracks installed plugins and available plugins from registry",
+
+  "installed": {
+    "lobbi-platform-manager": {
+      "version": "1.0.0",
+      "path": "../lobbi-platform-manager",
+      "source": "local",
+      "installedAt": "2025-12-12T20:15:00Z",
+      "dependencies": {}
+    }
+  },
+
+  "registry": {
+    "lobbi-platform-manager": {
+      "name": "lobbi-platform-manager",
+      "version": "1.0.0",
+      "description": "Streamline development on the-lobbi/keycloak-alpha with Keycloak management, service orchestration, and test generation",
+      "author": "Markus Ahling",
+      "license": "MIT",
+      "repository": "https://github.com/the-lobbi/keycloak-alpha",
+      "keywords": ["keycloak", "multi-tenant", "mern", "microservices", "docker", "testing", "devops"],
+      "categories": ["devops", "authentication", "testing", "platform"],
+      "dependencies": {},
+      "provides": {
+        "commands": 8,
+        "agents": 4,
+        "skills": 3,
+        "hooks": 3
+      }
+    },
+
+    "claude-frontend-toolkit": {
+      "name": "claude-frontend-toolkit",
+      "version": "1.0.0",
+      "description": "Comprehensive frontend development toolkit for React, Vue, Next.js with component generation and testing",
+      "author": "Community",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["frontend", "react", "vue", "nextjs", "components", "ui"],
+      "categories": ["frontend", "development", "testing"],
+      "dependencies": {},
+      "provides": {
+        "commands": 6,
+        "agents": 3,
+        "skills": 5,
+        "hooks": 2
+      }
+    },
+
+    "team-collaboration-suite": {
+      "name": "team-collaboration-suite",
+      "version": "1.0.0",
+      "description": "Team collaboration tools with Jira, Confluence, GitHub integration for agile workflows",
+      "author": "Community",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["jira", "confluence", "github", "agile", "scrum", "collaboration"],
+      "categories": ["collaboration", "project-management", "devops"],
+      "dependencies": {},
+      "provides": {
+        "commands": 10,
+        "agents": 6,
+        "skills": 4,
+        "hooks": 1
+      }
+    },
+
+    "cloud-infrastructure-manager": {
+      "name": "cloud-infrastructure-manager",
+      "version": "1.0.0",
+      "description": "Manage AWS, GCP, Azure infrastructure with Terraform, Kubernetes, and Helm",
+      "author": "Community",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["aws", "gcp", "azure", "terraform", "kubernetes", "helm", "cloud"],
+      "categories": ["cloud", "infrastructure", "devops"],
+      "dependencies": {},
+      "provides": {
+        "commands": 12,
+        "agents": 5,
+        "skills": 6,
+        "hooks": 3
+      }
+    },
+
+    "iac-golden-architect": {
+      "name": "iac-golden-architect",
+      "version": "1.0.0",
+      "description": "The Dredgen - Comprehensive Infrastructure as Code command center for multi-cloud Terraform, Harness CD, HashiCorp Vault, and Terraformer. Built for enterprise architects establishing SOC2-compliant infrastructure patterns.",
+      "author": "Golden Armada",
+      "license": "MIT",
+      "repository": "https://github.com/the-Lobbi/iac-golden-architect",
+      "keywords": ["terraform", "terraformer", "harness", "vault", "infrastructure-as-code", "iac", "multi-cloud", "aws", "azure", "gcp", "soc2", "compliance", "devops", "gitops"],
+      "categories": ["infrastructure", "devops", "security", "compliance"],
+      "dependencies": {},
+      "provides": {
+        "commands": 8,
+        "agents": 4,
+        "skills": 5,
+        "hooks": 2
+      }
+    }
+  },
+
+  "stats": {
+    "totalInstalled": 1,
+    "totalAvailable": 5,
+    "lastUpdated": "2025-12-12T22:30:00Z"
+  }
+}

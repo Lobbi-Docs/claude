@@ -1,0 +1,26 @@
+{
+  "name": "@claude/core",
+  "version": "1.0.0",
+  "description": "Core utilities for Claude orchestration system",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "check": "node --loader tsx ./registry-validator.ts",
+    "health": "node --loader tsx ./health/cli.ts",
+    "health:fix": "node --loader tsx ./health/cli.ts --fix",
+    "health:verbose": "node --loader tsx ./health/cli.ts --verbose"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "glob": "^10.3.10",
+    "picocolors": "^1.0.0",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

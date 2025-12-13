@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://anthropic.com/claude-code/agent.schema.v1.json",
+  "title": "Claude Code Agent Definition",
+  "description": "Schema for defining specialized AI agents with specific capabilities and system prompts",
+  "type": "object",
+  "required": ["name", "description", "model", "when_to_use"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Agent name in kebab-case (e.g., 'kubernetes-specialist')",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable agent name",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of agent's purpose and capabilities",
+      "minLength": 10,
+      "maxLength": 500
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Agent version (semver)",
+      "examples": ["1.0.0", "2.1.3"]
+    },
+    "model": {
+      "type": "string",
+      "enum": ["opus", "sonnet", "haiku", "gpt-4", "gpt-4-turbo", "gpt-3.5-turbo", "gemini-pro", "gemini-ultra"],
+      "description": "Preferred LLM model for this agent",
+      "default": "sonnet"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "developer",
+        "tester",
+        "reviewer",
+        "architect",
+        "specialist",
+        "coordinator",
+        "analyst",
+        "optimizer",
+        "debugger",
+        "documenter",
+        "researcher"
+      ],
+      "description": "Agent type/role classification"
+    },
+    "category": {
+      "type": "string",
+      "description": "Primary category for organization",
+      "examples": [
+        "core",
+        "devops",
+        "testing",
+        "frontend",
+        "backend",
+        "database",
+        "cloud",
+        "kubernetes",
+        "security",
+        "documentation",
+        "utility"
+      ]
+    },
+    "subcategory": {
+      "type": "string",
+      "description": "Optional subcategory for finer organization",
+      "examples": ["helm", "terraform", "docker", "monitoring"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low"],
+      "default": "medium",
+      "description": "Agent priority for activation"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color theme for UI representation",
+      "examples": ["blue", "green", "red", "purple", "orange", "infrastructure", "testing", "development"]
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon identifier or emoji",
+      "maxLength": 10
+    },
+    "keywords": {
+      "type": "array",
+      "description": "Keywords for agent discovery and search",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 30
+      }
+    },
+    "when_to_use": {
+      "type": "string",
+      "description": "Detailed explanation of when to activate this agent",
+      "minLength": 20
+    },
+    "examples": {
+      "type": "array",
+      "description": "Example use cases and scenarios",
+      "items": {
+        "type": "object",
+        "required": ["scenario", "description"],
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "description": "Brief scenario title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed scenario description"
+          },
+          "input": {
+            "type": "string",
+            "description": "Example user input"
+          },
+          "output": {
+            "type": "string",
+            "description": "Expected agent output or action"
+          }
+        }
+      }
+    },
+    "systemPrompt": {
+      "type": "string",
+      "description": "System prompt defining agent's behavior and expertise",
+      "minLength": 50
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Additional instructions or guidelines for the agent"
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "Other agents this agent depends on or works with",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      }
+    },
+    "tools": {
+      "type": "array",
+      "description": "Claude Code tools this agent is allowed to use",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit",
+          "Grep",
+          "Glob",
+          "WebFetch",
+          "WebSearch",
+          "Task",
+          "TodoWrite",
+          "NotebookEdit",
+          "Skill",
+          "SlashCommand"
+        ]
+      }
+    },
+    "allowedMcpServers": {
+      "type": "array",
+      "description": "MCP servers this agent can access",
+      "items": {
+        "type": "string"
+      },
+      "examples": [["github", "obsidian", "supabase"]]
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "List of agent capabilities",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        ["kubernetes-deployment", "helm-charts", "troubleshooting"]
+      ]
+    },
+    "limitations": {
+      "type": "array",
+      "description": "Known limitations or constraints",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bestPractices": {
+      "type": "array",
+      "description": "Best practices this agent follows",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputFormat": {
+      "type": "object",
+      "description": "Preferred output format specifications",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["markdown", "json", "yaml", "code", "text", "structured"]
+        },
+        "template": {
+          "type": "string",
+          "description": "Output template or structure"
+        },
+        "sections": {
+          "type": "array",
+          "description": "Required output sections",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "contextRequirements": {
+      "type": "object",
+      "description": "Context requirements for agent operation",
+      "properties": {
+        "minimumFiles": {
+          "type": "array",
+          "description": "Files that should be read before activation",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "type": "object",
+          "description": "Required environment variables",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "required": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance characteristics",
+      "properties": {
+        "estimatedTokens": {
+          "type": "number",
+          "description": "Estimated context tokens consumed",
+          "minimum": 0
+        },
+        "typicalDuration": {
+          "type": "string",
+          "description": "Typical execution duration",
+          "examples": ["30s", "2m", "5m"]
+        },
+        "complexity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "very-high"]
+        }
+      }
+    },
+    "activation": {
+      "type": "object",
+      "description": "Activation rules and conditions",
+      "properties": {
+        "auto": {
+          "type": "boolean",
+          "default": false,
+          "description": "Auto-activate when conditions are met"
+        },
+        "priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 50
+        },
+        "triggers": {
+          "type": "object",
+          "properties": {
+            "filePatterns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "keywords": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commands": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["experimental", "beta", "stable", "deprecated"]
+        }
+      }
+    }
+  }
+}

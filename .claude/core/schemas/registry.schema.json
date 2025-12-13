@@ -1,0 +1,450 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://anthropic.com/claude-code/registry.schema.v1.json",
+    "title": "Claude Code Registry Index",
+    "description": "Schema for registry index files that catalog agents, skills, commands, and workflows",
+    "type": "object",
+    "required": ["version", "type"],
+    "additionalProperties": false,
+    "properties": {
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Registry schema version"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["agents", "skills", "commands", "workflows", "tools", "master"],
+            "description": "Registry type"
+        },
+        "generated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when registry was generated"
+        },
+        "plugin": {
+            "type": "object",
+            "description": "Plugin metadata",
+            "required": ["name", "version"],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "statistics": {
+            "type": "object",
+            "description": "Registry statistics",
+            "properties": {
+                "total": {
+                    "type": "number",
+                    "description": "Total number of items"
+                },
+                "byCategory": {
+                    "type": "object",
+                    "description": "Count by category",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "byStatus": {
+                    "type": "object",
+                    "properties": {
+                        "experimental": {
+                            "type": "number"
+                        },
+                        "beta": {
+                            "type": "number"
+                        },
+                        "stable": {
+                            "type": "number"
+                        },
+                        "deprecated": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        "items": {
+            "type": "array",
+            "description": "Registry items",
+            "items": {
+                "type": "object",
+                "required": ["id", "name", "type"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Item name"
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "description": "Human-readable name"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Item type"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Brief description"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Item version"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Primary category"
+                    },
+                    "subcategory": {
+                        "type": "string",
+                        "description": "Subcategory"
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "Relative path to item file"
+                    },
+                    "keywords": {
+                        "type": "array",
+                        "description": "Search keywords",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "tags": {
+                        "type": "array",
+                        "description": "Classification tags",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": ["experimental", "beta", "stable", "deprecated"],
+                        "description": "Item status"
+                    },
+                    "priority": {
+                        "type": "number",
+                        "description": "Activation priority"
+                    },
+                    "dependencies": {
+                        "type": "array",
+                        "description": "Item dependencies",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Additional metadata",
+                        "properties": {
+                            "author": {
+                                "type": "string"
+                            },
+                            "created": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "updated": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "license": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "categories": {
+            "type": "object",
+            "description": "Category definitions and organization",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "icon": {
+                        "type": "string"
+                    },
+                    "color": {
+                        "type": "string"
+                    },
+                    "subcategories": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "search": {
+            "type": "object",
+            "description": "Search index configuration",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "keywords": {
+                    "type": "object",
+                    "description": "Keyword to item ID mappings",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "fuzzyMatch": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "activation": {
+            "type": "object",
+            "description": "Activation profiles",
+            "properties": {
+                "profiles": {
+                    "type": "object",
+                    "description": "Named activation profiles",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "items": {
+                                "type": "array",
+                                "description": "Item IDs to activate",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "autoActivate": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                },
+                "default": {
+                    "type": "string",
+                    "description": "Default profile name"
+                }
+            }
+        },
+        "indexing": {
+            "type": "object",
+            "description": "Index generation metadata",
+            "properties": {
+                "lastScan": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "scanDuration": {
+                    "type": "number",
+                    "description": "Scan duration in milliseconds"
+                },
+                "filesScanned": {
+                    "type": "number"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "file": {
+                                "type": "string"
+                            },
+                            "error": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "validation": {
+            "type": "object",
+            "description": "Validation results",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "lastValidation": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "itemId": {
+                                "type": "string"
+                            },
+                            "severity": {
+                                "type": "string",
+                                "enum": ["error", "warning", "info"]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "path": {
+                                "type": "string",
+                                "description": "JSON path to error location"
+                            }
+                        }
+                    }
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "itemId": {
+                                "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "agents"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "properties": {
+                                "model": {
+                                    "type": "string",
+                                    "enum": ["opus", "sonnet", "haiku", "gpt-4", "gemini-pro"]
+                                },
+                                "agentType": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "skills"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "properties": {
+                                "triggers": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "filePatterns": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "commands"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "properties": {
+                                "commandName": {
+                                    "type": "string",
+                                    "description": "Slash command name"
+                                },
+                                "aliases": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "workflows"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "properties": {
+                                "workflowType": {
+                                    "type": "string",
+                                    "enum": ["sequential", "parallel", "hierarchical", "mesh", "adaptive"]
+                                },
+                                "stepCount": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

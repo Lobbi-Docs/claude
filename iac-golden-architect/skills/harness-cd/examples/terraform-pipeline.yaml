@@ -1,0 +1,461 @@
+# Harness Terraform Pipeline Example
+# Infrastructure deployment with Terraform, including plan, approval, and apply
+
+pipeline:
+  name: Terraform Infrastructure Deployment
+  identifier: terraform_infrastructure
+  projectIdentifier: default
+  orgIdentifier: default
+  description: Production Terraform deployment with plan review and approval
+  tags:
+    iac_tool: terraform
+    environment: production
+
+  variables:
+    - name: terraform_workspace
+      type: String
+      value: <+input>.allowedValues(dev,staging,prod)
+      default: "dev"
+
+    - name: terraform_action
+      type: String
+      value: <+input>.allowedValues(apply,destroy)
+      default: "apply"
+
+    - name: auto_approve
+      type: String
+      value: <+input>.allowedValues(true,false)
+      default: "false"
+
+  stages:
+    # Stage 1: Terraform Plan
+    - stage:
+        name: Terraform Plan
+        identifier: tf_plan
+        type: Custom
+        spec:
+          execution:
+            steps:
+              # Initialize Terraform
+              - step:
+                  name: Terraform Init
+                  identifier: tf_init
+                  type: ShellScript
+                  timeout: 10m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          cd /workspace/terraform
+
+                          echo "Initializing Terraform..."
+                          terraform init \
+                            -backend-config="bucket=my-terraform-state" \
+                            -backend-config="key=<+pipeline.variables.terraform_workspace>/terraform.tfstate" \
+                            -backend-config="region=us-west-2"
+
+                          # Select workspace
+                          terraform workspace select <+pipeline.variables.terraform_workspace> || \
+                            terraform workspace new <+pipeline.variables.terraform_workspace>
+
+                          echo "Terraform initialization completed"
+
+              # Validate Terraform
+              - step:
+                  name: Terraform Validate
+                  identifier: tf_validate
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          cd /workspace/terraform
+
+                          echo "Validating Terraform configuration..."
+                          terraform validate
+
+                          echo "Terraform validation passed"
+
+              # Security scan
+              - step:
+                  name: Security Scan
+                  identifier: security_scan
+                  type: ShellScript
+                  timeout: 10m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          cd /workspace/terraform
+
+                          echo "Running security scans..."
+
+                          # tfsec
+                          echo "Running tfsec..."
+                          tfsec . --minimum-severity MEDIUM
+
+                          # checkov
+                          echo "Running checkov..."
+                          checkov -d . --quiet --compact
+
+                          # trivy
+                          echo "Running trivy..."
+                          trivy config .
+
+                          echo "Security scans completed"
+
+              # Terraform Plan
+              - step:
+                  name: Terraform Plan
+                  identifier: tf_plan_step
+                  type: TerraformPlan
+                  timeout: 30m
+                  spec:
+                    provisionerIdentifier: terraform_provisioner
+                    configuration:
+                      command: <+pipeline.variables.terraform_action>
+                      configFiles:
+                        store:
+                          type: Github
+                          spec:
+                            gitFetchType: Branch
+                            connectorRef: github_connector
+                            branch: main
+                            folderPath: terraform/
+                      secretManagerRef: vault_connector
+                      varFiles:
+                        - varFile:
+                            identifier: tfvars
+                            spec:
+                              content: |
+                                environment = "<+pipeline.variables.terraform_workspace>"
+                                region = "us-west-2"
+                                project = "myapp"
+                            type: Inline
+                      backendConfig:
+                        type: Inline
+                        spec:
+                          content: |
+                            bucket = "my-terraform-state"
+                            key = "<+pipeline.variables.terraform_workspace>/terraform.tfstate"
+                            region = "us-west-2"
+                            encrypt = true
+                            dynamodb_table = "terraform-locks"
+                      workspace: <+pipeline.variables.terraform_workspace>
+
+              # Export plan
+              - step:
+                  name: Export Plan
+                  identifier: export_plan
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          cd /workspace/terraform
+
+                          echo "Exporting plan for review..."
+                          terraform show -no-color tfplan > tfplan.txt
+
+                          # Extract resource counts
+                          RESOURCES_ADD=$(grep "# will be created" tfplan.txt | wc -l || echo "0")
+                          RESOURCES_CHANGE=$(grep "# will be updated in-place" tfplan.txt | wc -l || echo "0")
+                          RESOURCES_DESTROY=$(grep "# will be destroyed" tfplan.txt | wc -l || echo "0")
+
+                          echo "Resources to add: $RESOURCES_ADD"
+                          echo "Resources to change: $RESOURCES_CHANGE"
+                          echo "Resources to destroy: $RESOURCES_DESTROY"
+
+                          # Save for approval message
+                          echo "RESOURCES_ADD=$RESOURCES_ADD" >> $HARNESS_ENV_EXPORT_PATH
+                          echo "RESOURCES_CHANGE=$RESOURCES_CHANGE" >> $HARNESS_ENV_EXPORT_PATH
+                          echo "RESOURCES_DESTROY=$RESOURCES_DESTROY" >> $HARNESS_ENV_EXPORT_PATH
+                    outputVariables:
+                      - name: resources_add
+                        type: String
+                        value: RESOURCES_ADD
+                      - name: resources_change
+                        type: String
+                        value: RESOURCES_CHANGE
+                      - name: resources_destroy
+                        type: String
+                        value: RESOURCES_DESTROY
+
+              # Cost estimation
+              - step:
+                  name: Cost Estimation
+                  identifier: cost_estimation
+                  type: ShellScript
+                  timeout: 10m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          cd /workspace/terraform
+
+                          echo "Estimating infrastructure cost..."
+
+                          # Using Infracost
+                          infracost breakdown --path . \
+                            --terraform-plan-flags "-var-file=terraform.tfvars"
+
+                          echo "Cost estimation completed"
+
+    # Stage 2: Approval
+    - stage:
+        name: Terraform Apply Approval
+        identifier: tf_approval
+        type: Approval
+        when:
+          pipelineStatus: Success
+          condition: <+pipeline.variables.auto_approve> == "false"
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Review and Approve
+                  identifier: approve_apply
+                  type: HarnessApproval
+                  timeout: 1d
+                  spec:
+                    approvalMessage: |
+                      Terraform Plan Summary:
+
+                      Workspace: <+pipeline.variables.terraform_workspace>
+                      Action: <+pipeline.variables.terraform_action>
+
+                      Resources:
+                      - To Add: <+pipeline.stages.tf_plan.spec.execution.steps.export_plan.output.outputVariables.resources_add>
+                      - To Change: <+pipeline.stages.tf_plan.spec.execution.steps.export_plan.output.outputVariables.resources_change>
+                      - To Destroy: <+pipeline.stages.tf_plan.spec.execution.steps.export_plan.output.outputVariables.resources_destroy>
+
+                      Please review the plan and approve to proceed with apply.
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                      userGroups:
+                        - account.Infrastructure_Team
+                    approverInputs: []
+
+    # Stage 3: Terraform Apply
+    - stage:
+        name: Terraform Apply
+        identifier: tf_apply
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Terraform Apply
+                  identifier: tf_apply_step
+                  type: TerraformApply
+                  timeout: 30m
+                  spec:
+                    provisionerIdentifier: terraform_provisioner
+                    configuration:
+                      type: InheritFromPlan
+
+              - step:
+                  name: Verify Infrastructure
+                  identifier: verify_infra
+                  type: ShellScript
+                  timeout: 10m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          cd /workspace/terraform
+
+                          echo "Verifying infrastructure deployment..."
+
+                          # Get outputs
+                          terraform output -json > outputs.json
+
+                          # Verify critical resources
+                          echo "Verifying critical resources..."
+
+                          # Example: Check if VPC was created
+                          VPC_ID=$(terraform output -raw vpc_id || echo "")
+                          if [ -z "$VPC_ID" ]; then
+                            echo "ERROR: VPC not created"
+                            exit 1
+                          fi
+
+                          echo "VPC ID: $VPC_ID"
+
+                          # Example: Verify EKS cluster
+                          CLUSTER_NAME=$(terraform output -raw eks_cluster_name || echo "")
+                          if [ -n "$CLUSTER_NAME" ]; then
+                            echo "EKS Cluster: $CLUSTER_NAME"
+                            aws eks describe-cluster --name $CLUSTER_NAME --region us-west-2
+                          fi
+
+                          echo "Infrastructure verification completed"
+
+              - step:
+                  name: Run Smoke Tests
+                  identifier: smoke_tests
+                  type: ShellScript
+                  timeout: 10m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          echo "Running infrastructure smoke tests..."
+
+                          # Test 1: Network connectivity
+                          echo "Test 1: Network connectivity"
+                          # ping -c 3 <endpoint>
+
+                          # Test 2: Database connectivity
+                          echo "Test 2: Database connectivity"
+                          # pg_isready -h <db_endpoint>
+
+                          # Test 3: API endpoints
+                          echo "Test 3: API endpoints"
+                          # curl -f https://api.example.com/health
+
+                          echo "Smoke tests completed"
+
+              - step:
+                  name: Update Documentation
+                  identifier: update_docs
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          cd /workspace/terraform
+
+                          echo "Updating infrastructure documentation..."
+
+                          # Generate documentation
+                          terraform-docs markdown table . > README.md
+
+                          # Commit to repository
+                          git config user.name "Harness CD"
+                          git config user.email "cd@harness.io"
+                          git add README.md
+                          git commit -m "Update Terraform documentation [skip ci]" || true
+                          git push origin main || true
+
+                          echo "Documentation updated"
+
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: Abort
+
+    # Stage 4: Drift Detection
+    - stage:
+        name: Drift Detection
+        identifier: drift_detection
+        type: Custom
+        when:
+          pipelineStatus: Success
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Check for Drift
+                  identifier: check_drift
+                  type: ShellScript
+                  timeout: 15m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          cd /workspace/terraform
+
+                          echo "Checking for infrastructure drift..."
+
+                          terraform plan -detailed-exitcode -out=drift.tfplan || EXITCODE=$?
+
+                          if [ "$EXITCODE" == "0" ]; then
+                            echo "No drift detected"
+                          elif [ "$EXITCODE" == "2" ]; then
+                            echo "WARNING: Drift detected"
+                            terraform show drift.tfplan
+                            # Optionally send alert
+                          else
+                            echo "ERROR: Terraform plan failed"
+                            exit 1
+                          fi
+
+  notificationRules:
+    - name: Apply Success
+      identifier: apply_success
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Slack
+        spec:
+          webhookUrl: <+secrets.getValue("slack_webhook")>
+          messageContent: |
+            Terraform apply completed successfully
+            Workspace: <+pipeline.variables.terraform_workspace>
+
+    - name: Apply Failure
+      identifier: apply_failure
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups:
+            - account.Infrastructure_Team

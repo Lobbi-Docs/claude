@@ -1,0 +1,521 @@
+# Harness Pipeline - Terraform Apply
+#
+# This pipeline applies Terraform changes with approval gates and validation:
+# - Runs terraform plan (can reuse artifacts from terraform-plan pipeline)
+# - Manual approval gate for production environments
+# - Terraform apply with auto-approve
+# - Post-apply validation
+# - Drift detection schedule
+# - Notifications and audit logging
+#
+# Usage:
+#   1. Import this template into Harness
+#   2. Configure pipeline variables
+#   3. Set up approval workflows
+#   4. Run pipeline to apply infrastructure changes
+
+pipeline:
+  name: Terraform Apply
+  identifier: terraform_apply
+  projectIdentifier: <+input>
+  orgIdentifier: <+input>
+  tags:
+    category: infrastructure
+    tool: terraform
+    compliance: soc2
+    critical: "true"
+
+  properties:
+    ci:
+      codebase:
+        connectorRef: <+input>
+        repoName: <+input>
+        build: <+input>
+
+  variables:
+    # Terraform Configuration
+    - name: TF_VERSION
+      type: String
+      description: Terraform version to use
+      default: "1.6.0"
+      value: <+input>
+
+    - name: TF_WORKING_DIR
+      type: String
+      description: Directory containing Terraform configuration
+      default: "."
+      value: <+input>
+
+    - name: TF_WORKSPACE
+      type: String
+      description: Terraform workspace to use
+      default: "default"
+      value: <+input>
+
+    # Cloud Provider Configuration
+    - name: CLOUD_PROVIDER
+      type: String
+      description: Cloud provider (aws, azure, gcp)
+      allowedValues:
+        - aws
+        - azure
+        - gcp
+      value: <+input>
+
+    - name: CLOUD_REGION
+      type: String
+      description: Cloud region for deployment
+      value: <+input>
+
+    # Approval Configuration
+    - name: REQUIRE_APPROVAL
+      type: String
+      description: Require manual approval before apply
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    - name: APPROVAL_TIMEOUT
+      type: String
+      description: Approval timeout in minutes
+      default: "60"
+
+    # Apply Configuration
+    - name: AUTO_APPROVE
+      type: String
+      description: Auto-approve terraform apply (use with caution)
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    - name: ENABLE_BACKUP
+      type: String
+      description: Backup state before apply
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    # Compliance
+    - name: ENVIRONMENT
+      type: String
+      description: Environment (production, staging, development)
+      allowedValues:
+        - production
+        - staging
+        - development
+        - sandbox
+      value: <+input>
+
+    # Change Management
+    - name: CHANGE_TICKET_ID
+      type: String
+      description: Change management ticket ID (required for production)
+      value: <+input>
+
+  stages:
+    # Stage 1: Pre-Apply Planning
+    - stage:
+        name: Plan and Validation
+        identifier: plan_validation
+        description: Generate and validate Terraform plan
+        type: CI
+        spec:
+          cloneCodebase: true
+
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: <+input>
+              namespace: harness-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+
+          execution:
+            steps:
+              # Step 1: Terraform Init
+              - step:
+                  type: Run
+                  name: Terraform Init
+                  identifier: terraform_init
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    envVariables:
+                      # Cloud provider credentials (same as plan pipeline)
+                      AWS_ACCESS_KEY_ID: <+secrets.getValue("aws_access_key_id")>
+                      AWS_SECRET_ACCESS_KEY: <+secrets.getValue("aws_secret_access_key")>
+                      AWS_REGION: <+pipeline.variables.CLOUD_REGION>
+                      ARM_CLIENT_ID: <+secrets.getValue("azure_client_id")>
+                      ARM_CLIENT_SECRET: <+secrets.getValue("azure_client_secret")>
+                      ARM_SUBSCRIPTION_ID: <+secrets.getValue("azure_subscription_id")>
+                      ARM_TENANT_ID: <+secrets.getValue("azure_tenant_id")>
+                      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
+
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Terraform Init ====="
+                      terraform init -upgrade
+
+                      echo ""
+                      echo "===== Select Workspace ====="
+                      terraform workspace select <+pipeline.variables.TF_WORKSPACE> || \
+                        terraform workspace new <+pipeline.variables.TF_WORKSPACE>
+
+                      echo "✅ Terraform initialized"
+
+              # Step 2: Backup State
+              - step:
+                  type: Run
+                  name: Backup Terraform State
+                  identifier: backup_state
+                  when:
+                    stageStatus: Success
+                    condition: <+pipeline.variables.ENABLE_BACKUP> == "true"
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Backing Up Terraform State ====="
+                      BACKUP_FILE="terraform.tfstate.backup-<+pipeline.executionId>"
+
+                      terraform state pull > "$BACKUP_FILE"
+
+                      echo "State backed up to: $BACKUP_FILE"
+                      echo "✅ State backup completed"
+
+              # Step 3: Terraform Plan
+              - step:
+                  type: Run
+                  name: Terraform Plan
+                  identifier: terraform_plan
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Terraform Plan ====="
+                      terraform plan \
+                        -out=tfplan.binary \
+                        -var="environment=<+pipeline.variables.ENVIRONMENT>" \
+                        -detailed-exitcode || EXIT_CODE=$?
+
+                      if [ "${EXIT_CODE:-0}" -eq 1 ]; then
+                        echo "❌ Terraform plan failed"
+                        exit 1
+                      fi
+
+                      if [ "${EXIT_CODE:-0}" -eq 0 ]; then
+                        echo "ℹ️  No infrastructure changes detected - skipping apply"
+                        exit 0
+                      fi
+
+                      echo ""
+                      echo "===== Plan Summary ====="
+                      terraform show tfplan.binary
+
+                      echo ""
+                      echo "===== Change Statistics ====="
+                      terraform show -json tfplan.binary | jq -r '
+                        .resource_changes | group_by(.change.actions[0]) |
+                        map({action: .[0].change.actions[0], count: length}) |
+                        .[] | "\(.action): \(.count)"
+                      '
+
+                      echo ""
+                      echo "✅ Terraform plan completed - changes detected"
+
+                    outputVariables:
+                      - name: PLAN_EXIT_CODE
+
+    # Stage 2: Approval Gate
+    - stage:
+        name: Approval
+        identifier: approval
+        description: Manual approval before applying changes
+        type: Approval
+        when:
+          stageStatus: Success
+          condition: <+pipeline.variables.REQUIRE_APPROVAL> == "true"
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: HarnessApproval
+                  name: Production Approval
+                  identifier: production_approval
+                  timeout: <+pipeline.variables.APPROVAL_TIMEOUT>m
+                  spec:
+                    approvalMessage: |
+                      ### Terraform Apply Approval Required
+
+                      **Environment:** <+pipeline.variables.ENVIRONMENT>
+                      **Cloud Provider:** <+pipeline.variables.CLOUD_PROVIDER>
+                      **Region:** <+pipeline.variables.CLOUD_REGION>
+                      **Workspace:** <+pipeline.variables.TF_WORKSPACE>
+                      **Change Ticket:** <+pipeline.variables.CHANGE_TICKET_ID>
+
+                      Please review the Terraform plan output before approving.
+
+                      **Pipeline Execution:** <+pipeline.executionUrl>
+
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - account.Infrastructure_Admins
+                        - account.DevOps_Team
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+
+                    approverInputs:
+                      - name: approval_comments
+                        type: String
+                        required: true
+
+    # Stage 3: Terraform Apply
+    - stage:
+        name: Apply
+        identifier: apply
+        description: Apply Terraform changes
+        type: CI
+        spec:
+          cloneCodebase: true
+
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: <+input>
+              namespace: harness-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+
+          execution:
+            steps:
+              # Step 1: Pre-Apply Checks
+              - step:
+                  type: Run
+                  name: Pre-Apply Validation
+                  identifier: pre_apply_validation
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      echo "===== Pre-Apply Validation ====="
+
+                      # Validate change ticket for production
+                      if [ "<+pipeline.variables.ENVIRONMENT>" == "production" ]; then
+                        if [ -z "<+pipeline.variables.CHANGE_TICKET_ID>" ]; then
+                          echo "❌ ERROR: Change ticket required for production deployments"
+                          exit 1
+                        fi
+                        echo "✅ Change ticket validated: <+pipeline.variables.CHANGE_TICKET_ID>"
+                      fi
+
+                      # Validate workspace
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+                      CURRENT_WORKSPACE=$(terraform workspace show)
+                      EXPECTED_WORKSPACE="<+pipeline.variables.TF_WORKSPACE>"
+
+                      if [ "$CURRENT_WORKSPACE" != "$EXPECTED_WORKSPACE" ]; then
+                        echo "❌ ERROR: Workspace mismatch"
+                        echo "Expected: $EXPECTED_WORKSPACE"
+                        echo "Current: $CURRENT_WORKSPACE"
+                        exit 1
+                      fi
+
+                      echo "✅ Pre-apply validation passed"
+
+              # Step 2: Terraform Apply
+              - step:
+                  type: Run
+                  name: Terraform Apply
+                  identifier: terraform_apply
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    envVariables:
+                      # Cloud provider credentials
+                      AWS_ACCESS_KEY_ID: <+secrets.getValue("aws_access_key_id")>
+                      AWS_SECRET_ACCESS_KEY: <+secrets.getValue("aws_secret_access_key")>
+                      AWS_REGION: <+pipeline.variables.CLOUD_REGION>
+                      ARM_CLIENT_ID: <+secrets.getValue("azure_client_id")>
+                      ARM_CLIENT_SECRET: <+secrets.getValue("azure_client_secret")>
+                      ARM_SUBSCRIPTION_ID: <+secrets.getValue("azure_subscription_id")>
+                      ARM_TENANT_ID: <+secrets.getValue("azure_tenant_id")>
+                      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
+
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Terraform Apply ====="
+                      START_TIME=$(date +%s)
+
+                      if [ "<+pipeline.variables.AUTO_APPROVE>" == "true" ]; then
+                        terraform apply -auto-approve tfplan.binary
+                      else
+                        terraform apply tfplan.binary
+                      fi
+
+                      END_TIME=$(date +%s)
+                      DURATION=$((END_TIME - START_TIME))
+
+                      echo ""
+                      echo "✅ Terraform apply completed in ${DURATION}s"
+
+                    outputVariables:
+                      - name: APPLY_DURATION
+
+    # Stage 4: Post-Apply Validation
+    - stage:
+        name: Post-Apply Validation
+        identifier: post_apply_validation
+        description: Validate applied infrastructure
+        type: CI
+        spec:
+          cloneCodebase: false
+
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: <+input>
+              namespace: harness-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+
+          execution:
+            steps:
+              # Step 1: Terraform State Validation
+              - step:
+                  type: Run
+                  name: Validate State
+                  identifier: validate_state
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Validating Terraform State ====="
+                      terraform state list
+
+                      echo ""
+                      echo "===== Resource Count ====="
+                      RESOURCE_COUNT=$(terraform state list | wc -l)
+                      echo "Total resources: $RESOURCE_COUNT"
+
+                      echo "✅ State validation completed"
+
+              # Step 2: Output Values
+              - step:
+                  type: Run
+                  name: Display Outputs
+                  identifier: display_outputs
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Terraform Outputs ====="
+                      terraform output -json | jq '.'
+
+                      echo "✅ Outputs displayed"
+
+              # Step 3: Drift Detection
+              - step:
+                  type: Run
+                  name: Drift Detection
+                  identifier: drift_detection
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Checking for Configuration Drift ====="
+                      terraform plan -detailed-exitcode || EXIT_CODE=$?
+
+                      if [ "${EXIT_CODE:-0}" -eq 2 ]; then
+                        echo "⚠️  WARNING: Configuration drift detected!"
+                        echo "Resources may have been modified outside Terraform"
+                        exit 0  # Don't fail pipeline, just warn
+                      fi
+
+                      echo "✅ No configuration drift detected"
+
+  # Notification Configuration
+  notificationRules:
+    - name: Apply Success
+      identifier: apply_success
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook_url")>
+      enabled: true
+
+    - name: Apply Failure
+      identifier: apply_failure
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook_url")>
+      enabled: true
+
+    - name: Approval Timeout
+      identifier: approval_timeout
+      pipelineEvents:
+        - type: StageTimeout
+      notificationMethod:
+        type: Email
+        spec:
+          userGroups:
+            - account.Infrastructure_Admins
+          recipients: []
+      enabled: true

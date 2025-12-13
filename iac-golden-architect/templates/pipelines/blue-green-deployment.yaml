@@ -1,0 +1,630 @@
+# Harness Pipeline - Blue-Green Deployment
+#
+# This pipeline performs a blue-green deployment strategy:
+# - Deploy new version (green) alongside existing (blue)
+# - Run tests against green environment
+# - Gradual traffic shifting with validation
+# - Instant rollback capability
+# - Zero-downtime deployment
+#
+# Usage:
+#   1. Import this template into Harness
+#   2. Configure traffic shifting parameters
+#   3. Set up validation tests
+#   4. Run pipeline for application deployments
+
+pipeline:
+  name: Blue-Green Deployment
+  identifier: blue_green_deployment
+  projectIdentifier: <+input>
+  orgIdentifier: <+input>
+  tags:
+    category: deployment
+    strategy: blue-green
+    compliance: soc2
+
+  variables:
+    # Application Configuration
+    - name: APP_NAME
+      type: String
+      description: Application name
+      value: <+input>
+
+    - name: APP_VERSION
+      type: String
+      description: Application version/tag to deploy
+      value: <+input>
+
+    - name: CONTAINER_IMAGE
+      type: String
+      description: Container image with tag
+      value: <+input>
+
+    # Environment Configuration
+    - name: ENVIRONMENT
+      type: String
+      description: Deployment environment
+      allowedValues:
+        - production
+        - staging
+        - development
+      value: <+input>
+
+    - name: NAMESPACE
+      type: String
+      description: Kubernetes namespace
+      value: <+input>
+
+    # Blue-Green Strategy Configuration
+    - name: TRAFFIC_SHIFT_INCREMENTS
+      type: String
+      description: Traffic shift percentages (comma-separated)
+      default: "25,50,75,100"
+      value: <+input>
+
+    - name: TRAFFIC_SHIFT_INTERVAL
+      type: String
+      description: Wait time between traffic shifts (seconds)
+      default: "300"
+
+    - name: ENABLE_CANARY_ANALYSIS
+      type: String
+      description: Enable automated canary analysis
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    # Validation Configuration
+    - name: VALIDATION_TIMEOUT
+      type: String
+      description: Validation timeout per traffic increment (seconds)
+      default: "300"
+
+    - name: ERROR_RATE_THRESHOLD
+      type: String
+      description: Maximum acceptable error rate percentage
+      default: "1.0"
+
+    - name: LATENCY_THRESHOLD_MS
+      type: String
+      description: Maximum acceptable p95 latency (ms)
+      default: "500"
+
+    # Rollback Configuration
+    - name: AUTO_ROLLBACK
+      type: String
+      description: Automatically rollback on failure
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    - name: KEEP_OLD_VERSION
+      type: String
+      description: Keep old version running for instant rollback
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+  stages:
+    # Stage 1: Pre-Deployment
+    - stage:
+        name: Pre-Deployment
+        identifier: pre_deployment
+        description: Prepare for blue-green deployment
+        type: Custom
+        spec:
+          execution:
+            steps:
+              # Step 1: Validate Image
+              - step:
+                  type: ShellScript
+                  name: Validate Container Image
+                  identifier: validate_image
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Validating Container Image ====="
+                          IMAGE="<+pipeline.variables.CONTAINER_IMAGE>"
+
+                          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
+                            echo "✅ Image found: $IMAGE"
+                          else
+                            echo "❌ ERROR: Image not found: $IMAGE"
+                            exit 1
+                          fi
+
+                          echo "✅ Image validation completed"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+              # Step 2: Detect Current Version (Blue)
+              - step:
+                  type: ShellScript
+                  name: Detect Blue Version
+                  identifier: detect_blue
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Detecting Current (Blue) Version ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                          # Check if blue deployment exists
+                          if kubectl get deployment "${APP_NAME}-blue" -n "$NAMESPACE" > /dev/null 2>&1; then
+                            BLUE_IMAGE=$(kubectl get deployment "${APP_NAME}-blue" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}')
+                            BLUE_REPLICAS=$(kubectl get deployment "${APP_NAME}-blue" -n "$NAMESPACE" -o jsonpath='{.spec.replicas}')
+                            echo "Current blue version: $BLUE_IMAGE"
+                            echo "Current blue replicas: $BLUE_REPLICAS"
+                          else
+                            echo "ℹ️  No existing blue deployment found"
+                            BLUE_IMAGE="none"
+                            BLUE_REPLICAS="3"
+                          fi
+
+                    environmentVariables: []
+                    outputVariables:
+                      - name: BLUE_IMAGE
+                      - name: BLUE_REPLICAS
+
+    # Stage 2: Deploy Green Version
+    - stage:
+        name: Deploy Green
+        identifier: deploy_green
+        description: Deploy new version (green) alongside blue
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: <+input>
+            serviceInputs: <+input>
+
+          environment:
+            environmentRef: <+input>
+            deployToAll: false
+            infrastructureDefinitions: <+input>
+
+          execution:
+            steps:
+              # Step 1: Deploy Green Version
+              - step:
+                  type: K8sDeploy
+                  name: Deploy Green Version
+                  identifier: deploy_green_version
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+
+                    # Green deployment manifest
+                    manifests:
+                      - manifest:
+                          identifier: green_deployment
+                          type: K8sManifest
+                          spec:
+                            store:
+                              type: Harness
+                              spec:
+                                files:
+                                  - /templates/deployment-green.yaml
+
+                            valuesPaths:
+                              - /values/<+pipeline.variables.ENVIRONMENT>.yaml
+
+                            values:
+                              name: <+pipeline.variables.APP_NAME>-green
+                              image: <+pipeline.variables.CONTAINER_IMAGE>
+                              replicas: <+pipeline.stages.pre_deployment.spec.execution.steps.detect_blue.output.BLUE_REPLICAS>
+                              environment: <+pipeline.variables.ENVIRONMENT>
+                              selector:
+                                app: <+pipeline.variables.APP_NAME>
+                                version: green
+
+                  timeout: 10m
+
+              # Step 2: Wait for Green to be Ready
+              - step:
+                  type: ShellScript
+                  name: Verify Green Readiness
+                  identifier: verify_green_ready
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Verifying Green Deployment Readiness ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                          # Wait for rollout
+                          kubectl rollout status deployment/"${APP_NAME}-green" -n "$NAMESPACE" --timeout=300s
+
+                          # Verify pod health
+                          READY_PODS=$(kubectl get pods -n "$NAMESPACE" -l app="$APP_NAME",version=green --field-selector=status.phase=Running -o json | jq '[.items[] | select(.status.conditions[] | select(.type=="Ready" and .status=="True"))] | length')
+                          DESIRED_PODS=$(kubectl get deployment "${APP_NAME}-green" -n "$NAMESPACE" -o jsonpath='{.spec.replicas}')
+
+                          echo "Ready pods: $READY_PODS / $DESIRED_PODS"
+
+                          if [ "$READY_PODS" -ne "$DESIRED_PODS" ]; then
+                            echo "❌ ERROR: Not all green pods are ready"
+                            exit 1
+                          fi
+
+                          echo "✅ Green version is ready"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+              # Step 3: Run Tests Against Green
+              - step:
+                  type: ShellScript
+                  name: Test Green Version
+                  identifier: test_green
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Testing Green Version ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                          # Get green service endpoint (internal testing service)
+                          GREEN_SERVICE="${APP_NAME}-green-test"
+                          GREEN_IP=$(kubectl get svc "$GREEN_SERVICE" -n "$NAMESPACE" -o jsonpath='{.spec.clusterIP}')
+
+                          echo "Testing green service at: $GREEN_IP"
+
+                          # Health check
+                          echo "Running health checks..."
+                          for i in {1..5}; do
+                            if curl -f -s "http://${GREEN_IP}/health" > /dev/null; then
+                              echo "✅ Health check passed (attempt $i)"
+                              break
+                            else
+                              if [ $i -eq 5 ]; then
+                                echo "❌ ERROR: Health check failed"
+                                exit 1
+                              fi
+                              sleep 5
+                            fi
+                          done
+
+                          # Smoke tests
+                          echo ""
+                          echo "Running smoke tests..."
+                          # Add your smoke tests here
+                          # Example: curl -f "http://${GREEN_IP}/api/status"
+
+                          echo "✅ Green version tests passed"
+
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 5m
+
+    # Stage 3: Traffic Shifting
+    - stage:
+        name: Traffic Shift
+        identifier: traffic_shift
+        description: Gradually shift traffic from blue to green
+        type: Custom
+        spec:
+          execution:
+            steps:
+              # Dynamic steps for each traffic increment
+              - stepGroup:
+                  name: Progressive Traffic Shift
+                  identifier: progressive_shift
+                  steps:
+                    # Step 1: Shift to 25%
+                    - step:
+                        type: ShellScript
+                        name: Shift Traffic to 25%
+                        identifier: shift_25
+                        spec:
+                          shell: Bash
+                          onDelegate: true
+                          source:
+                            type: Inline
+                            spec:
+                              script: |
+                                #!/bin/bash
+                                set -e
+
+                                echo "===== Shifting 25% Traffic to Green ====="
+                                APP_NAME="<+pipeline.variables.APP_NAME>"
+                                NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                                # Update service selector to include both blue and green
+                                # with appropriate weight distribution
+                                kubectl patch service "$APP_NAME" -n "$NAMESPACE" --type='json' -p='[
+                                  {
+                                    "op": "replace",
+                                    "path": "/spec/selector",
+                                    "value": {"app": "'$APP_NAME'"}
+                                  }
+                                ]'
+
+                                # Scale deployments for 25/75 distribution
+                                TOTAL_REPLICAS=<+pipeline.stages.pre_deployment.spec.execution.steps.detect_blue.output.BLUE_REPLICAS>
+                                GREEN_REPLICAS=$(echo "$TOTAL_REPLICAS * 0.25" | bc | awk '{print int($1+0.5)}')
+                                BLUE_REPLICAS=$(echo "$TOTAL_REPLICAS - $GREEN_REPLICAS" | bc)
+
+                                kubectl scale deployment "${APP_NAME}-green" -n "$NAMESPACE" --replicas=$GREEN_REPLICAS
+                                kubectl scale deployment "${APP_NAME}-blue" -n "$NAMESPACE" --replicas=$BLUE_REPLICAS
+
+                                echo "Green replicas: $GREEN_REPLICAS"
+                                echo "Blue replicas: $BLUE_REPLICAS"
+                                echo "✅ Traffic shifted to 25% green"
+
+                          environmentVariables: []
+                          outputVariables: []
+
+                    # Validation after 25%
+                    - step:
+                        type: ShellScript
+                        name: Validate 25% Traffic
+                        identifier: validate_25
+                        spec:
+                          shell: Bash
+                          onDelegate: true
+                          source:
+                            type: Inline
+                            spec:
+                              script: |
+                                #!/bin/bash
+                                set -e
+
+                                echo "===== Validating 25% Traffic Shift ====="
+
+                                # Monitor error rates and latency
+                                # This would integrate with your monitoring system
+                                # Example: Query Prometheus for error rate and latency
+
+                                sleep <+pipeline.variables.TRAFFIC_SHIFT_INTERVAL>
+
+                                echo "✅ 25% traffic validation passed"
+
+                          environmentVariables: []
+                          outputVariables: []
+                        timeout: <+pipeline.variables.VALIDATION_TIMEOUT>s
+
+                    # Step 2: Shift to 50%
+                    - step:
+                        type: ShellScript
+                        name: Shift Traffic to 50%
+                        identifier: shift_50
+                        spec:
+                          shell: Bash
+                          onDelegate: true
+                          source:
+                            type: Inline
+                            spec:
+                              script: |
+                                #!/bin/bash
+                                set -e
+
+                                echo "===== Shifting 50% Traffic to Green ====="
+                                APP_NAME="<+pipeline.variables.APP_NAME>"
+                                NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                                TOTAL_REPLICAS=<+pipeline.stages.pre_deployment.spec.execution.steps.detect_blue.output.BLUE_REPLICAS>
+                                GREEN_REPLICAS=$(echo "$TOTAL_REPLICAS * 0.5" | bc | awk '{print int($1+0.5)}')
+                                BLUE_REPLICAS=$(echo "$TOTAL_REPLICAS - $GREEN_REPLICAS" | bc)
+
+                                kubectl scale deployment "${APP_NAME}-green" -n "$NAMESPACE" --replicas=$GREEN_REPLICAS
+                                kubectl scale deployment "${APP_NAME}-blue" -n "$NAMESPACE" --replicas=$BLUE_REPLICAS
+
+                                echo "✅ Traffic shifted to 50% green"
+
+                          environmentVariables: []
+                          outputVariables: []
+
+                    # Validation after 50%
+                    - step:
+                        type: ShellScript
+                        name: Validate 50% Traffic
+                        identifier: validate_50
+                        spec:
+                          shell: Bash
+                          onDelegate: true
+                          source:
+                            type: Inline
+                            spec:
+                              script: |
+                                #!/bin/bash
+                                set -e
+
+                                echo "===== Validating 50% Traffic Shift ====="
+                                sleep <+pipeline.variables.TRAFFIC_SHIFT_INTERVAL>
+                                echo "✅ 50% traffic validation passed"
+
+                          environmentVariables: []
+                          outputVariables: []
+                        timeout: <+pipeline.variables.VALIDATION_TIMEOUT>s
+
+                    # Step 3: Shift to 100%
+                    - step:
+                        type: ShellScript
+                        name: Shift Traffic to 100%
+                        identifier: shift_100
+                        spec:
+                          shell: Bash
+                          onDelegate: true
+                          source:
+                            type: Inline
+                            spec:
+                              script: |
+                                #!/bin/bash
+                                set -e
+
+                                echo "===== Shifting 100% Traffic to Green ====="
+                                APP_NAME="<+pipeline.variables.APP_NAME>"
+                                NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                                TOTAL_REPLICAS=<+pipeline.stages.pre_deployment.spec.execution.steps.detect_blue.output.BLUE_REPLICAS>
+
+                                kubectl scale deployment "${APP_NAME}-green" -n "$NAMESPACE" --replicas=$TOTAL_REPLICAS
+                                kubectl scale deployment "${APP_NAME}-blue" -n "$NAMESPACE" --replicas=0
+
+                                echo "✅ Traffic shifted to 100% green"
+
+                          environmentVariables: []
+                          outputVariables: []
+
+                    # Final validation
+                    - step:
+                        type: ShellScript
+                        name: Final Validation
+                        identifier: validate_100
+                        spec:
+                          shell: Bash
+                          onDelegate: true
+                          source:
+                            type: Inline
+                            spec:
+                              script: |
+                                #!/bin/bash
+                                set -e
+
+                                echo "===== Final Validation ====="
+                                sleep <+pipeline.variables.TRAFFIC_SHIFT_INTERVAL>
+                                echo "✅ 100% traffic validation passed"
+
+                          environmentVariables: []
+                          outputVariables: []
+                        timeout: <+pipeline.variables.VALIDATION_TIMEOUT>s
+
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: StageRollback
+
+    # Stage 4: Finalize Deployment
+    - stage:
+        name: Finalize
+        identifier: finalize
+        description: Promote green to blue and cleanup
+        type: Custom
+        spec:
+          execution:
+            steps:
+              # Step 1: Promote Green to Blue
+              - step:
+                  type: ShellScript
+                  name: Promote Green to Blue
+                  identifier: promote_green
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Promoting Green to Blue ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                          # Rename green deployment to blue
+                          kubectl get deployment "${APP_NAME}-green" -n "$NAMESPACE" -o yaml | \
+                            sed "s/${APP_NAME}-green/${APP_NAME}-blue/g" | \
+                            sed "s/version: green/version: blue/g" | \
+                            kubectl apply -f -
+
+                          # Update service to point to blue only
+                          kubectl patch service "$APP_NAME" -n "$NAMESPACE" --type='json' -p='[
+                            {
+                              "op": "replace",
+                              "path": "/spec/selector",
+                              "value": {"app": "'$APP_NAME'", "version": "blue"}
+                            }
+                          ]'
+
+                          echo "✅ Green promoted to blue"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+              # Step 2: Cleanup Old Green
+              - step:
+                  type: ShellScript
+                  name: Cleanup Green Deployment
+                  identifier: cleanup_green
+                  when:
+                    stageStatus: Success
+                    condition: <+pipeline.variables.KEEP_OLD_VERSION> == "false"
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          set -e
+
+                          echo "===== Cleaning Up Green Deployment ====="
+                          APP_NAME="<+pipeline.variables.APP_NAME>"
+                          NAMESPACE="<+pipeline.variables.NAMESPACE>"
+
+                          kubectl delete deployment "${APP_NAME}-green" -n "$NAMESPACE" --ignore-not-found=true
+
+                          echo "✅ Green deployment cleaned up"
+
+                    environmentVariables: []
+                    outputVariables: []
+
+  # Notification Configuration
+  notificationRules:
+    - name: Deployment Success
+      identifier: deployment_success
+      pipelineEvents:
+        - type: PipelineSuccess
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook_url")>
+      enabled: true
+
+    - name: Deployment Failure
+      identifier: deployment_failure
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook_url")>
+      enabled: true

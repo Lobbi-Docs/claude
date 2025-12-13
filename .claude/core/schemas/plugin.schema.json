@@ -1,0 +1,708 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://anthropic.com/claude-code/plugin.schema.v1.json",
+    "title": "Claude Code Plugin Manifest",
+    "description": "Schema for Claude Code plugin manifests that define agents, skills, commands, and workflows",
+    "type": "object",
+    "required": ["name", "version", "description", "author"],
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "JSON Schema reference"
+        },
+        "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "Plugin name in kebab-case (e.g., 'my-awesome-plugin')",
+            "minLength": 1,
+            "maxLength": 100
+        },
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.-]+)?(\\+[a-zA-Z0-9.-]+)?$",
+            "description": "Semantic version (e.g., '1.0.0', '2.1.0-beta.1')",
+            "examples": ["1.0.0", "2.1.0-beta.1", "3.0.0+20231201"]
+        },
+        "apiVersion": {
+            "type": "string",
+            "enum": ["v1"],
+            "default": "v1",
+            "description": "Plugin API version"
+        },
+        "displayName": {
+            "type": "string",
+            "description": "Human-readable plugin name",
+            "minLength": 1,
+            "maxLength": 200
+        },
+        "description": {
+            "type": "string",
+            "description": "Plugin description",
+            "minLength": 10,
+            "maxLength": 500
+        },
+        "author": {
+            "type": "object",
+            "required": ["name"],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Author name",
+                    "minLength": 1
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Author email"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Author website or GitHub profile"
+                }
+            }
+        },
+        "license": {
+            "type": "string",
+            "description": "SPDX license identifier",
+            "examples": ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause"]
+        },
+        "homepage": {
+            "type": "string",
+            "format": "uri",
+            "description": "Plugin homepage URL"
+        },
+        "repository": {
+            "oneOf": [
+                {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Repository URL"
+                },
+                {
+                    "type": "object",
+                    "required": ["type", "url"],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["git", "svn", "hg"],
+                            "description": "Repository type"
+                        },
+                        "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Repository URL"
+                        },
+                        "directory": {
+                            "type": "string",
+                            "description": "Subdirectory for monorepos"
+                        }
+                    }
+                }
+            ]
+        },
+        "categories": {
+            "type": "array",
+            "description": "Plugin categories for marketplace organization",
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "enum": [
+                    "orchestration",
+                    "agents",
+                    "devops",
+                    "testing",
+                    "code-generation",
+                    "frontend",
+                    "backend",
+                    "database",
+                    "cloud",
+                    "security",
+                    "documentation",
+                    "productivity",
+                    "ai-ml",
+                    "data-analysis",
+                    "monitoring",
+                    "project-management",
+                    "authentication",
+                    "api-integration",
+                    "utilities"
+                ]
+            }
+        },
+        "keywords": {
+            "type": "array",
+            "description": "Search keywords",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
+            }
+        },
+        "dependencies": {
+            "type": "object",
+            "description": "Plugin dependencies with semver ranges",
+            "additionalProperties": {
+                "type": "string",
+                "pattern": "^[~^]?\\d+\\.\\d+\\.\\d+.*$"
+            },
+            "examples": [
+                {
+                    "kubernetes-toolkit": "^1.0.0",
+                    "docker-helper": "~2.1.0"
+                }
+            ]
+        },
+        "provides": {
+            "type": "object",
+            "description": "What the plugin provides",
+            "additionalProperties": false,
+            "properties": {
+                "agents": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": ["dynamic", "static"]
+                        },
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                },
+                "skills": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": ["dynamic", "static"]
+                        },
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                },
+                "commands": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": ["dynamic", "static"]
+                        },
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                },
+                "workflows": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": ["dynamic", "static"]
+                        },
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                },
+                "hooks": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": ["dynamic", "static"]
+                        },
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                },
+                "templates": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": ["dynamic", "static"]
+                        },
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                },
+                "tools": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": ["dynamic", "static"]
+                        },
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                }
+            }
+        },
+        "discovery": {
+            "type": "object",
+            "description": "Resource discovery configuration",
+            "additionalProperties": false,
+            "properties": {
+                "agents": {
+                    "$ref": "#/$defs/discoveryConfig"
+                },
+                "skills": {
+                    "allOf": [
+                        { "$ref": "#/$defs/discoveryConfig" },
+                        {
+                            "properties": {
+                                "descriptionBased": {
+                                    "type": "boolean",
+                                    "description": "Enable description-based skill activation"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "commands": {
+                    "$ref": "#/$defs/discoveryConfig"
+                },
+                "workflows": {
+                    "$ref": "#/$defs/discoveryConfig"
+                },
+                "hooks": {
+                    "$ref": "#/$defs/discoveryConfig"
+                }
+            }
+        },
+        "commands": {
+            "type": "object",
+            "description": "Command definitions (name -> file path or inline definition)",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "description": "Path to command markdown file"
+                    },
+                    {
+                        "$ref": "https://anthropic.com/claude-code/command.schema.v1.json"
+                    }
+                ]
+            }
+        },
+        "agents": {
+            "type": "object",
+            "description": "Agent definitions (name -> file path or inline definition)",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "description": "Path to agent markdown file"
+                    },
+                    {
+                        "$ref": "https://anthropic.com/claude-code/agent.schema.v1.json"
+                    }
+                ]
+            }
+        },
+        "skills": {
+            "type": "object",
+            "description": "Skill definitions (name -> file path or inline definition)",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "description": "Path to skill markdown file"
+                    },
+                    {
+                        "$ref": "https://anthropic.com/claude-code/skill.schema.v1.json"
+                    }
+                ]
+            }
+        },
+        "hooks": {
+            "type": "object",
+            "description": "Hook script paths",
+            "additionalProperties": false,
+            "properties": {
+                "preTask": {
+                    "type": "string",
+                    "description": "Script to run before task execution"
+                },
+                "postTask": {
+                    "type": "string",
+                    "description": "Script to run after task execution"
+                },
+                "preCommit": {
+                    "type": "string",
+                    "description": "Script to run before git commit"
+                },
+                "postCommit": {
+                    "type": "string",
+                    "description": "Script to run after git commit"
+                },
+                "preEdit": {
+                    "type": "string",
+                    "description": "Script to run before file edit"
+                },
+                "postEdit": {
+                    "type": "string",
+                    "description": "Script to run after file edit"
+                },
+                "sessionStart": {
+                    "type": "string",
+                    "description": "Script to run at session start"
+                },
+                "sessionEnd": {
+                    "type": "string",
+                    "description": "Script to run at session end"
+                }
+            }
+        },
+        "permissions": {
+            "type": "object",
+            "description": "Plugin permission requirements",
+            "additionalProperties": false,
+            "properties": {
+                "filesystem": {
+                    "type": "array",
+                    "description": "Filesystem access patterns",
+                    "items": {
+                        "type": "object",
+                        "required": ["path", "access"],
+                        "properties": {
+                            "path": {
+                                "type": "string",
+                                "description": "File path or glob pattern"
+                            },
+                            "access": {
+                                "type": "string",
+                                "enum": ["read", "write", "readwrite"],
+                                "description": "Access level"
+                            }
+                        }
+                    }
+                },
+                "network": {
+                    "type": "array",
+                    "description": "Network access requirements",
+                    "items": {
+                        "type": "object",
+                        "required": ["host"],
+                        "properties": {
+                            "host": {
+                                "type": "string",
+                                "description": "Hostname or pattern (e.g., '*.github.com')"
+                            },
+                            "ports": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number",
+                                    "minimum": 1,
+                                    "maximum": 65535
+                                }
+                            },
+                            "protocols": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": ["http", "https", "ws", "wss"]
+                                }
+                            }
+                        }
+                    }
+                },
+                "tools": {
+                    "type": "array",
+                    "description": "Required Claude Code tools",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "Bash",
+                            "Read",
+                            "Write",
+                            "Edit",
+                            "Grep",
+                            "Glob",
+                            "WebFetch",
+                            "WebSearch",
+                            "Task",
+                            "TodoWrite"
+                        ]
+                    }
+                },
+                "mcpServers": {
+                    "type": "array",
+                    "description": "Required MCP servers",
+                    "items": {
+                        "type": "string",
+                        "examples": ["github", "obsidian", "supabase", "vercel"]
+                    }
+                }
+            }
+        },
+        "sandbox": {
+            "type": "object",
+            "description": "Sandbox configuration for agent execution",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable sandbox mode"
+                },
+                "memoryLimit": {
+                    "type": "string",
+                    "pattern": "^\\d+[KMG]B?$",
+                    "description": "Memory limit (e.g., '512M', '2G')",
+                    "examples": ["512M", "1G", "2GB"]
+                },
+                "timeoutMs": {
+                    "type": "number",
+                    "minimum": 1000,
+                    "maximum": 3600000,
+                    "description": "Execution timeout in milliseconds (1s - 1h)",
+                    "default": 300000
+                },
+                "allowedCommands": {
+                    "type": "array",
+                    "description": "Whitelist of allowed shell commands",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "orchestration": {
+            "type": "object",
+            "description": "Orchestration system configuration",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "mandatory": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "protocol": {
+                    "type": "object",
+                    "properties": {
+                        "version": {
+                            "type": "string"
+                        },
+                        "minSubAgents": {
+                            "type": "number",
+                            "minimum": 1
+                        },
+                        "maxSubAgents": {
+                            "type": "number",
+                            "minimum": 1
+                        },
+                        "defaultSubAgents": {
+                            "type": "number",
+                            "minimum": 1
+                        },
+                        "mandatoryPhases": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["explore", "plan", "code", "test", "fix", "document"]
+                            }
+                        }
+                    }
+                },
+                "features": {
+                    "type": "object",
+                    "properties": {
+                        "tracking": { "type": "boolean" },
+                        "logging": { "type": "boolean" },
+                        "checkpointing": { "type": "boolean" },
+                        "coordination": { "type": "boolean" },
+                        "messaging": { "type": "boolean" },
+                        "contextPreservation": { "type": "boolean" }
+                    }
+                },
+                "database": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["sqlite", "postgres", "mysql"]
+                        },
+                        "path": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "registry": {
+            "type": "object",
+            "description": "Registry system configuration",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "lazyLoading": {
+                    "type": "boolean"
+                },
+                "masterIndex": {
+                    "type": "string"
+                },
+                "search": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": { "type": "boolean" },
+                        "fuzzyMatch": { "type": "boolean" },
+                        "keywordIndex": { "type": "string" }
+                    }
+                }
+            }
+        },
+        "agentCategories": {
+            "type": "object",
+            "description": "Organization of agents by category",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "type": "array",
+                        "items": { "type": "string" }
+                    },
+                    {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        }
+                    }
+                ]
+            }
+        },
+        "configuration": {
+            "type": "object",
+            "description": "User-configurable settings schema",
+            "properties": {
+                "schema": {
+                    "type": "object",
+                    "description": "JSON Schema for plugin configuration"
+                }
+            }
+        },
+        "mcpServers": {
+            "type": "object",
+            "description": "MCP server requirements",
+            "properties": {
+                "required": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "recommended": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "optional": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+            }
+        },
+        "minimumClaudeCodeVersion": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Minimum Claude Code CLI version required"
+        },
+        "activation": {
+            "type": "object",
+            "description": "Plugin activation rules",
+            "additionalProperties": false,
+            "properties": {
+                "auto": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Auto-activate plugin when conditions are met"
+                },
+                "priority": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000,
+                    "default": 100,
+                    "description": "Activation priority (higher = earlier)"
+                },
+                "conditions": {
+                    "type": "object",
+                    "properties": {
+                        "filePatterns": {
+                            "type": "array",
+                            "description": "Activate when files match these patterns",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "keywords": {
+                            "type": "array",
+                            "description": "Activate when user input contains these keywords",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "environment": {
+                            "type": "object",
+                            "description": "Environment variable conditions",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "documentation": {
+            "type": "object",
+            "description": "Documentation file paths",
+            "additionalProperties": {
+                "type": "string",
+                "description": "Path to documentation file"
+            }
+        },
+        "scripts": {
+            "type": "object",
+            "description": "Lifecycle scripts",
+            "additionalProperties": {
+                "type": "string",
+                "description": "Shell command to execute"
+            }
+        }
+    },
+    "$defs": {
+        "discoveryConfig": {
+            "type": "object",
+            "required": ["enabled"],
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable automatic discovery"
+                },
+                "directory": {
+                    "type": "string",
+                    "description": "Directory to scan for resources"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "File pattern (glob) for resource files"
+                },
+                "indexFile": {
+                    "type": "string",
+                    "description": "Path to generated index file"
+                }
+            }
+        }
+    }
+}

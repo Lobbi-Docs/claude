@@ -1,0 +1,577 @@
+# Harness Pipeline - Terraform Plan
+#
+# This pipeline performs Terraform plan operations with comprehensive validation:
+# - Git clone and checkout
+# - Terraform initialization
+# - Validation and formatting checks
+# - Security scanning (tfsec, checkov, terrascan)
+# - Cost estimation (infracost)
+# - Plan generation and artifact storage
+#
+# Usage:
+#   1. Import this template into Harness
+#   2. Configure pipeline variables
+#   3. Set up secrets and connectors
+#   4. Run pipeline for infrastructure changes
+
+pipeline:
+  name: Terraform Plan
+  identifier: terraform_plan
+  projectIdentifier: <+input>
+  orgIdentifier: <+input>
+  tags:
+    category: infrastructure
+    tool: terraform
+    compliance: soc2
+
+  properties:
+    ci:
+      codebase:
+        connectorRef: <+input>
+        repoName: <+input>
+        build: <+input>
+
+  variables:
+    # Terraform Configuration
+    - name: TF_VERSION
+      type: String
+      description: Terraform version to use
+      default: "1.6.0"
+      value: <+input>
+
+    - name: TF_WORKING_DIR
+      type: String
+      description: Directory containing Terraform configuration
+      default: "."
+      value: <+input>
+
+    - name: TF_WORKSPACE
+      type: String
+      description: Terraform workspace to use
+      default: "default"
+      value: <+input>
+
+    # Cloud Provider Configuration
+    - name: CLOUD_PROVIDER
+      type: String
+      description: Cloud provider (aws, azure, gcp)
+      allowedValues:
+        - aws
+        - azure
+        - gcp
+      value: <+input>
+
+    - name: CLOUD_REGION
+      type: String
+      description: Cloud region for deployment
+      value: <+input>
+
+    # Security Scanning
+    - name: ENABLE_TFSEC
+      type: String
+      description: Enable tfsec security scanning
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    - name: ENABLE_CHECKOV
+      type: String
+      description: Enable Checkov policy scanning
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    - name: ENABLE_TERRASCAN
+      type: String
+      description: Enable Terrascan compliance scanning
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    # Cost Estimation
+    - name: ENABLE_INFRACOST
+      type: String
+      description: Enable Infracost cost estimation
+      default: "true"
+      allowedValues:
+        - "true"
+        - "false"
+
+    # Compliance
+    - name: ENVIRONMENT
+      type: String
+      description: Environment (production, staging, development)
+      allowedValues:
+        - production
+        - staging
+        - development
+        - sandbox
+      value: <+input>
+
+  stages:
+    # Stage 1: Source Code and Validation
+    - stage:
+        name: Source and Validation
+        identifier: source_validation
+        description: Clone repository and validate Terraform configuration
+        type: CI
+        spec:
+          cloneCodebase: true
+
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: <+input>
+              namespace: harness-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+
+          execution:
+            steps:
+              # Step 1: Setup Terraform
+              - step:
+                  type: Run
+                  name: Setup Terraform
+                  identifier: setup_terraform
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      echo "===== Terraform Version ====="
+                      terraform version
+
+                      echo "===== Validating Terraform Version ====="
+                      EXPECTED_VERSION="<+pipeline.variables.TF_VERSION>"
+                      ACTUAL_VERSION=$(terraform version -json | jq -r '.terraform_version')
+
+                      if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
+                        echo "ERROR: Expected Terraform $EXPECTED_VERSION but found $ACTUAL_VERSION"
+                        exit 1
+                      fi
+
+                      echo "✅ Terraform version verified: $ACTUAL_VERSION"
+
+              # Step 2: Terraform Format Check
+              - step:
+                  type: Run
+                  name: Terraform Format Check
+                  identifier: terraform_fmt
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Checking Terraform Formatting ====="
+                      if ! terraform fmt -check -recursive -diff; then
+                        echo ""
+                        echo "❌ ERROR: Terraform files are not properly formatted"
+                        echo "Run 'terraform fmt -recursive' to fix formatting"
+                        exit 1
+                      fi
+
+                      echo "✅ All Terraform files are properly formatted"
+
+              # Step 3: Terraform Validation
+              - step:
+                  type: Run
+                  name: Terraform Validate
+                  identifier: terraform_validate
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Terraform Init (for validation) ====="
+                      terraform init -backend=false
+
+                      echo "===== Terraform Validate ====="
+                      if ! terraform validate; then
+                        echo ""
+                        echo "❌ ERROR: Terraform configuration validation failed"
+                        exit 1
+                      fi
+
+                      echo "✅ Terraform configuration is valid"
+
+    # Stage 2: Security Scanning
+    - stage:
+        name: Security Scanning
+        identifier: security_scanning
+        description: Run security and compliance scanners
+        type: CI
+        spec:
+          cloneCodebase: true
+
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: <+input>
+              namespace: harness-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+
+          execution:
+            steps:
+              # Step 1: tfsec Security Scanner
+              - step:
+                  type: Run
+                  name: tfsec Security Scan
+                  identifier: tfsec_scan
+                  when:
+                    stageStatus: Success
+                    condition: <+pipeline.variables.ENABLE_TFSEC> == "true"
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: aquasec/tfsec:latest
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Running tfsec Security Scan ====="
+                      tfsec . \
+                        --format json \
+                        --out tfsec-results.json \
+                        --soft-fail
+
+                      echo ""
+                      echo "===== tfsec Summary ====="
+                      tfsec . --format default
+
+                      # Check for CRITICAL/HIGH issues
+                      CRITICAL_COUNT=$(jq '[.results[] | select(.severity == "CRITICAL")] | length' tfsec-results.json)
+                      HIGH_COUNT=$(jq '[.results[] | select(.severity == "HIGH")] | length' tfsec-results.json)
+
+                      echo ""
+                      echo "CRITICAL issues: $CRITICAL_COUNT"
+                      echo "HIGH issues: $HIGH_COUNT"
+
+                      if [ "$CRITICAL_COUNT" -gt 0 ]; then
+                        echo ""
+                        echo "❌ CRITICAL security issues found - pipeline will fail"
+                        exit 1
+                      fi
+
+                      if [ "$HIGH_COUNT" -gt 0 ]; then
+                        echo ""
+                        echo "⚠️  HIGH severity issues found - review required"
+                      fi
+
+                      echo "✅ tfsec scan completed"
+
+                    outputVariables:
+                      - name: TFSEC_CRITICAL_COUNT
+                      - name: TFSEC_HIGH_COUNT
+
+              # Step 2: Checkov Policy Scanner
+              - step:
+                  type: Run
+                  name: Checkov Policy Scan
+                  identifier: checkov_scan
+                  when:
+                    stageStatus: Success
+                    condition: <+pipeline.variables.ENABLE_CHECKOV> == "true"
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: bridgecrew/checkov:latest
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Running Checkov Policy Scan ====="
+                      checkov -d . \
+                        --framework terraform \
+                        --output json \
+                        --output-file checkov-results.json \
+                        --soft-fail
+
+                      echo ""
+                      echo "===== Checkov Summary ====="
+                      checkov -d . --framework terraform --compact
+
+                      # Check for failed checks
+                      FAILED_CHECKS=$(jq '.summary.failed' checkov-results.json)
+
+                      echo ""
+                      echo "Failed checks: $FAILED_CHECKS"
+
+                      if [ "$FAILED_CHECKS" -gt 10 ]; then
+                        echo ""
+                        echo "⚠️  More than 10 policy violations found - review required"
+                      fi
+
+                      echo "✅ Checkov scan completed"
+
+                    outputVariables:
+                      - name: CHECKOV_FAILED_CHECKS
+
+              # Step 3: Terrascan Compliance Scanner
+              - step:
+                  type: Run
+                  name: Terrascan Compliance Scan
+                  identifier: terrascan_scan
+                  when:
+                    stageStatus: Success
+                    condition: <+pipeline.variables.ENABLE_TERRASCAN> == "true"
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: tenable/terrascan:latest
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Running Terrascan Compliance Scan ====="
+                      terrascan scan \
+                        -t terraform \
+                        -o json \
+                        > terrascan-results.json || true
+
+                      echo ""
+                      echo "===== Terrascan Summary ====="
+                      terrascan scan -t terraform
+
+                      echo "✅ Terrascan scan completed"
+
+    # Stage 3: Terraform Plan
+    - stage:
+        name: Terraform Plan
+        identifier: terraform_plan
+        description: Initialize Terraform and generate execution plan
+        type: CI
+        spec:
+          cloneCodebase: true
+
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: <+input>
+              namespace: harness-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+
+          execution:
+            steps:
+              # Step 1: Configure Cloud Provider Credentials
+              - step:
+                  type: Run
+                  name: Configure Cloud Credentials
+                  identifier: configure_credentials
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    envVariables:
+                      # AWS
+                      AWS_ACCESS_KEY_ID: <+secrets.getValue("aws_access_key_id")>
+                      AWS_SECRET_ACCESS_KEY: <+secrets.getValue("aws_secret_access_key")>
+                      AWS_REGION: <+pipeline.variables.CLOUD_REGION>
+
+                      # Azure
+                      ARM_CLIENT_ID: <+secrets.getValue("azure_client_id")>
+                      ARM_CLIENT_SECRET: <+secrets.getValue("azure_client_secret")>
+                      ARM_SUBSCRIPTION_ID: <+secrets.getValue("azure_subscription_id")>
+                      ARM_TENANT_ID: <+secrets.getValue("azure_tenant_id")>
+
+                      # GCP
+                      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
+                      GCP_PROJECT: <+secrets.getValue("gcp_project_id")>
+
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      echo "===== Configuring Cloud Provider: <+pipeline.variables.CLOUD_PROVIDER> ====="
+
+                      case "<+pipeline.variables.CLOUD_PROVIDER>" in
+                        aws)
+                          echo "Configuring AWS credentials..."
+                          aws sts get-caller-identity
+                          ;;
+                        azure)
+                          echo "Configuring Azure credentials..."
+                          az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+                          az account set --subscription $ARM_SUBSCRIPTION_ID
+                          ;;
+                        gcp)
+                          echo "Configuring GCP credentials..."
+                          echo '<+secrets.getValue("gcp_service_account_key")>' > /tmp/gcp-key.json
+                          gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+                          gcloud config set project $GCP_PROJECT
+                          ;;
+                        *)
+                          echo "ERROR: Unsupported cloud provider"
+                          exit 1
+                          ;;
+                      esac
+
+                      echo "✅ Cloud credentials configured"
+
+              # Step 2: Terraform Init
+              - step:
+                  type: Run
+                  name: Terraform Init
+                  identifier: terraform_init
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Terraform Init ====="
+                      terraform init -upgrade
+
+                      echo ""
+                      echo "===== Select Workspace ====="
+                      terraform workspace select <+pipeline.variables.TF_WORKSPACE> || \
+                        terraform workspace new <+pipeline.variables.TF_WORKSPACE>
+
+                      echo "✅ Terraform initialized"
+
+              # Step 3: Terraform Plan
+              - step:
+                  type: Run
+                  name: Terraform Plan
+                  identifier: terraform_plan_exec
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Terraform Plan ====="
+                      terraform plan \
+                        -out=tfplan.binary \
+                        -var="environment=<+pipeline.variables.ENVIRONMENT>" \
+                        -detailed-exitcode || EXIT_CODE=$?
+
+                      # Exit code 0: No changes
+                      # Exit code 1: Error
+                      # Exit code 2: Changes detected
+
+                      if [ "${EXIT_CODE:-0}" -eq 1 ]; then
+                        echo "❌ Terraform plan failed"
+                        exit 1
+                      fi
+
+                      if [ "${EXIT_CODE:-0}" -eq 0 ]; then
+                        echo "✅ No infrastructure changes detected"
+                      else
+                        echo "✅ Infrastructure changes detected"
+                      fi
+
+                      echo ""
+                      echo "===== Converting Plan to JSON ====="
+                      terraform show -json tfplan.binary > tfplan.json
+
+                      echo "✅ Terraform plan completed"
+
+                    outputVariables:
+                      - name: PLAN_EXIT_CODE
+
+              # Step 4: Cost Estimation (Infracost)
+              - step:
+                  type: Run
+                  name: Infracost Estimation
+                  identifier: infracost
+                  when:
+                    stageStatus: Success
+                    condition: <+pipeline.variables.ENABLE_INFRACOST> == "true"
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: infracost/infracost:latest
+                    shell: Sh
+                    envVariables:
+                      INFRACOST_API_KEY: <+secrets.getValue("infracost_api_key")>
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Running Infracost ====="
+                      infracost breakdown \
+                        --path=tfplan.json \
+                        --format=json \
+                        --out-file=cost-estimate.json
+
+                      echo ""
+                      echo "===== Cost Breakdown ====="
+                      infracost breakdown --path=tfplan.json
+
+                      echo ""
+                      echo "✅ Cost estimation completed"
+
+              # Step 5: Save Plan Artifact
+              - step:
+                  type: Run
+                  name: Save Plan Artifact
+                  identifier: save_plan
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: hashicorp/terraform:<+pipeline.variables.TF_VERSION>
+                    shell: Sh
+                    command: |
+                      #!/bin/bash
+                      set -e
+
+                      cd <+pipeline.variables.TF_WORKING_DIR>
+
+                      echo "===== Archiving Plan Files ====="
+                      tar -czf /harness/tfplan-<+pipeline.executionId>.tar.gz \
+                        tfplan.binary \
+                        tfplan.json \
+                        tfsec-results.json \
+                        checkov-results.json \
+                        terrascan-results.json \
+                        cost-estimate.json
+
+                      echo "✅ Plan artifact created"
+
+  # Notification Configuration
+  notificationRules:
+    - name: Plan Failure
+      identifier: plan_failure
+      pipelineEvents:
+        - type: PipelineFailed
+      notificationMethod:
+        type: Slack
+        spec:
+          userGroups: []
+          webhookUrl: <+secrets.getValue("slack_webhook_url")>
+      enabled: true
