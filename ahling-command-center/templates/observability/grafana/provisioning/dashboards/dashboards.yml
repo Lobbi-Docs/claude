@@ -1,0 +1,183 @@
+# Grafana Dashboard Provisioning for Ahling Command Center
+# Auto-loads dashboards from filesystem and imports community dashboards
+
+apiVersion: 1
+
+providers:
+  # ============================================================================
+  # ACC System Dashboards
+  # ============================================================================
+  - name: 'ACC System'
+    orgId: 1
+    folder: 'ACC System'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/system
+      foldersFromFilesStructure: true
+
+  # ============================================================================
+  # Infrastructure Dashboards
+  # ============================================================================
+  - name: 'Infrastructure'
+    orgId: 1
+    folder: 'Infrastructure'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/infrastructure
+      foldersFromFilesStructure: true
+
+  # ============================================================================
+  # Application Dashboards
+  # ============================================================================
+  - name: 'Applications'
+    orgId: 1
+    folder: 'Applications'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/applications
+      foldersFromFilesStructure: true
+
+  # ============================================================================
+  # AI Services Dashboards
+  # ============================================================================
+  - name: 'AI Services'
+    orgId: 1
+    folder: 'AI Services'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/ai
+      foldersFromFilesStructure: true
+
+  # ============================================================================
+  # Home Automation Dashboards
+  # ============================================================================
+  - name: 'Home Automation'
+    orgId: 1
+    folder: 'Home Automation'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/home-automation
+      foldersFromFilesStructure: true
+
+  # ============================================================================
+  # Media Services Dashboards
+  # ============================================================================
+  - name: 'Media'
+    orgId: 1
+    folder: 'Media'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/media
+      foldersFromFilesStructure: true
+
+  # ============================================================================
+  # Business Intelligence
+  # ============================================================================
+  - name: 'Business Intelligence'
+    orgId: 1
+    folder: 'Business'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/business
+      foldersFromFilesStructure: true
+
+# ============================================================================
+# Community Dashboards (Import via dashboard IDs)
+# ============================================================================
+# Reference: https://grafana.com/grafana/dashboards/
+#
+# To import community dashboards, create JSON files in the appropriate folder:
+#
+# Recommended Community Dashboards:
+#
+# Infrastructure:
+# - 1860: Node Exporter Full
+# - 893: Docker and System Monitoring
+# - 14282: cAdvisor
+# - 11074: Node Exporter for Prometheus
+#
+# Databases:
+# - 9628: PostgreSQL Database
+# - 11835: Redis Dashboard
+# - 7362: PostgreSQL Overview
+#
+# Reverse Proxy:
+# - 17346: Traefik Official
+# - 12250: Traefik 2
+#
+# Observability:
+# - 13639: Loki & Promtail
+# - 12611: Loki Dashboard
+# - 15489: Prometheus Stats
+# - 3662: Prometheus 2.0 Overview
+#
+# Home Automation:
+# - 17946: Home Assistant
+# - 13908: Home Assistant Advanced
+#
+# AI/ML:
+# - Custom dashboards in /var/lib/grafana/dashboards/ai/
+#
+# ============================================================================
+
+# Dashboard Import Instructions:
+#
+# 1. Manual Import via UI:
+#    - Navigate to Dashboards > Import
+#    - Enter dashboard ID (e.g., 1860)
+#    - Select datasource and click Import
+#
+# 2. Automated Import via API:
+#    - Use the grafana-dashboard-importer script
+#    - Place dashboard JSON in appropriate folder
+#
+# 3. Custom Dashboards:
+#    - Create JSON files in dashboard folders
+#    - Auto-loaded on Grafana restart or update interval
+#
+# Example folder structure:
+# /var/lib/grafana/dashboards/
+# ├── system/
+# │   ├── acc-overview.json
+# │   └── resource-usage.json
+# ├── infrastructure/
+# │   ├── node-exporter-full.json (ID: 1860)
+# │   ├── docker-system.json (ID: 893)
+# │   └── cadvisor.json (ID: 14282)
+# ├── applications/
+# │   ├── postgres.json (ID: 9628)
+# │   ├── redis.json (ID: 11835)
+# │   └── traefik.json (ID: 17346)
+# ├── ai/
+# │   ├── ollama-metrics.json
+# │   └── qdrant-vectors.json
+# └── home-automation/
+#     └── home-assistant.json (ID: 17946)

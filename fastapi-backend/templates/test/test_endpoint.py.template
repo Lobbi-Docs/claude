@@ -1,0 +1,543 @@
+"""
+Tests for {{endpoint_name}} endpoint.
+
+This module contains comprehensive tests for the {{endpoint_name}} API endpoint,
+including success cases, error handling, authentication, and authorization.
+
+Pytest Documentation: https://docs.pytest.org/
+HTTPX Documentation: https://www.python-httpx.org/
+"""
+
+import pytest
+from datetime import datetime, timedelta
+from typing import Any, Dict, List
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from fastapi import status
+from httpx import AsyncClient
+from beanie import PydanticObjectId
+
+from app.models.{{model_module}} import {{model_name}}
+from app.schemas.{{schema_module}} import {{schema_name}}Create, {{schema_name}}Update, {{schema_name}}Response
+
+
+class Test{{endpoint_name}}GET:
+    """Tests for GET {{endpoint_path}}"""
+
+    @pytest.mark.asyncio
+    async def test_get_{{resource}}_success(
+        self,
+        client: AsyncClient,
+        test_{{resource}}: {{model_name}},
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test successful retrieval of a {{resource}}.
+
+        Given: A valid {{resource}} ID and authenticated user
+        When: GET request is made to {{endpoint_path}}/{id}
+        Then: Returns 200 OK with {{resource}} data
+        """
+        # Arrange
+        {{resource}}_id = str(test_{{resource}}.id)
+
+        # Act
+        response = await client.get(
+            f"{{endpoint_path}}/{{{resource}}_id}",
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_200_OK
+
+        data = response.json()
+        assert data["id"] == {{resource}}_id
+        {{#each assertions}}
+        assert data["{{field}}"] == {{expected}}
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_get_{{resource}}_not_found(
+        self,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test retrieval of non-existent {{resource}}.
+
+        Given: An invalid {{resource}} ID
+        When: GET request is made
+        Then: Returns 404 Not Found
+        """
+        # Arrange
+        invalid_id = str(PydanticObjectId())
+
+        # Act
+        response = await client.get(
+            f"{{endpoint_path}}/{invalid_id}",
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert "not found" in response.json()["detail"].lower()
+
+    @pytest.mark.asyncio
+    async def test_get_{{resource}}_unauthorized(
+        self,
+        client: AsyncClient,
+        test_{{resource}}: {{model_name}},
+    ) -> None:
+        """
+        Test retrieval without authentication.
+
+        Given: No authentication token
+        When: GET request is made
+        Then: Returns 401 Unauthorized
+        """
+        # Arrange
+        {{resource}}_id = str(test_{{resource}}.id)
+
+        # Act
+        response = await client.get(f"{{endpoint_path}}/{{{resource}}_id}")
+
+        # Assert
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    @pytest.mark.asyncio
+    async def test_get_{{resource}}_forbidden(
+        self,
+        client: AsyncClient,
+        test_{{resource}}: {{model_name}},
+        mock_keycloak_user_no_permissions: Dict[str, Any],
+    ) -> None:
+        """
+        Test retrieval without required permissions.
+
+        Given: User without required role/permissions
+        When: GET request is made
+        Then: Returns 403 Forbidden
+        """
+        # Arrange
+        {{resource}}_id = str(test_{{resource}}.id)
+
+        # Act
+        response = await client.get(
+            f"{{endpoint_path}}/{{{resource}}_id}",
+            headers={"Authorization": f"Bearer {mock_keycloak_user_no_permissions['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.asyncio
+    async def test_list_{{resource}}s_success(
+        self,
+        client: AsyncClient,
+        test_{{resource}}_list: List[{{model_name}}],
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test successful listing of {{resource}}s with pagination.
+
+        Given: Multiple {{resource}}s exist
+        When: GET request is made to {{endpoint_path}}
+        Then: Returns 200 OK with paginated list
+        """
+        # Act
+        response = await client.get(
+            "{{endpoint_path}}",
+            params={"skip": 0, "limit": 10},
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_200_OK
+
+        data = response.json()
+        assert "items" in data
+        assert "total" in data
+        assert len(data["items"]) <= 10
+        assert data["total"] >= len(test_{{resource}}_list)
+
+    @pytest.mark.asyncio
+    async def test_list_{{resource}}s_filtering(
+        self,
+        client: AsyncClient,
+        test_{{resource}}_list: List[{{model_name}}],
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test listing with filter parameters.
+
+        Given: Multiple {{resource}}s with different attributes
+        When: GET request is made with filter parameters
+        Then: Returns only matching {{resource}}s
+        """
+        # Arrange
+        filter_value = "{{filter_example}}"
+
+        # Act
+        response = await client.get(
+            "{{endpoint_path}}",
+            params={"{{filter_field}}": filter_value},
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_200_OK
+
+        data = response.json()
+        for item in data["items"]:
+            assert item["{{filter_field}}"] == filter_value
+
+    @pytest.mark.asyncio
+    async def test_list_{{resource}}s_sorting(
+        self,
+        client: AsyncClient,
+        test_{{resource}}_list: List[{{model_name}}],
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test listing with sorting.
+
+        Given: Multiple {{resource}}s
+        When: GET request is made with sort parameters
+        Then: Returns sorted {{resource}}s
+        """
+        # Act
+        response = await client.get(
+            "{{endpoint_path}}",
+            params={"sort_by": "{{sort_field}}", "order": "asc"},
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_200_OK
+
+        data = response.json()
+        items = data["items"]
+
+        # Verify ascending order
+        for i in range(len(items) - 1):
+            assert items[i]["{{sort_field}}"] <= items[i + 1]["{{sort_field}}"]
+
+
+class Test{{endpoint_name}}POST:
+    """Tests for POST {{endpoint_path}}"""
+
+    @pytest.mark.asyncio
+    async def test_create_{{resource}}_success(
+        self,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+        {{resource}}_create_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test successful creation of a {{resource}}.
+
+        Given: Valid {{resource}} data
+        When: POST request is made to {{endpoint_path}}
+        Then: Returns 201 Created with new {{resource}}
+        """
+        # Act
+        response = await client.post(
+            "{{endpoint_path}}",
+            json={{resource}}_create_data,
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_201_CREATED
+
+        data = response.json()
+        assert "id" in data
+        {{#each create_assertions}}
+        assert data["{{field}}"] == {{resource}}_create_data["{{field}}"]
+        {{/each}}
+
+        # Verify in database
+        created_{{resource}} = await {{model_name}}.get(PydanticObjectId(data["id"]))
+        assert created_{{resource}} is not None
+
+    @pytest.mark.asyncio
+    async def test_create_{{resource}}_validation_error(
+        self,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test creation with invalid data.
+
+        Given: Invalid {{resource}} data
+        When: POST request is made
+        Then: Returns 422 Unprocessable Entity
+        """
+        # Arrange
+        invalid_data = {
+            {{#each invalid_fields}}
+            "{{field}}": {{invalid_value}},
+            {{/each}}
+        }
+
+        # Act
+        response = await client.post(
+            "{{endpoint_path}}",
+            json=invalid_data,
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    @pytest.mark.asyncio
+    async def test_create_{{resource}}_duplicate(
+        self,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+        test_{{resource}}: {{model_name}},
+        {{resource}}_create_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test creation with duplicate unique field.
+
+        Given: {{resource}} data with existing unique field
+        When: POST request is made
+        Then: Returns 409 Conflict
+        """
+        # Arrange - Use existing unique field value
+        {{resource}}_create_data["{{unique_field}}"] = test_{{resource}}.{{unique_field}}
+
+        # Act
+        response = await client.post(
+            "{{endpoint_path}}",
+            json={{resource}}_create_data,
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+
+class Test{{endpoint_name}}PUT:
+    """Tests for PUT {{endpoint_path}}/{id}"""
+
+    @pytest.mark.asyncio
+    async def test_update_{{resource}}_success(
+        self,
+        client: AsyncClient,
+        test_{{resource}}: {{model_name}},
+        mock_keycloak_user: Dict[str, Any],
+        {{resource}}_update_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test successful update of a {{resource}}.
+
+        Given: Valid update data for existing {{resource}}
+        When: PUT request is made
+        Then: Returns 200 OK with updated {{resource}}
+        """
+        # Arrange
+        {{resource}}_id = str(test_{{resource}}.id)
+
+        # Act
+        response = await client.put(
+            f"{{endpoint_path}}/{{{resource}}_id}",
+            json={{resource}}_update_data,
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_200_OK
+
+        data = response.json()
+        {{#each update_assertions}}
+        assert data["{{field}}"] == {{resource}}_update_data["{{field}}"]
+        {{/each}}
+
+        # Verify in database
+        updated_{{resource}} = await {{model_name}}.get(PydanticObjectId({{resource}}_id))
+        {{#each update_assertions}}
+        assert updated_{{resource}}.{{field}} == {{resource}}_update_data["{{field}}"]
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_update_{{resource}}_partial(
+        self,
+        client: AsyncClient,
+        test_{{resource}}: {{model_name}},
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test partial update using PATCH semantics.
+
+        Given: Partial update data
+        When: PATCH request is made
+        Then: Returns 200 OK with updated fields only
+        """
+        # Arrange
+        {{resource}}_id = str(test_{{resource}}.id)
+        partial_data = {"{{partial_field}}": "{{partial_value}}"}
+
+        # Act
+        response = await client.patch(
+            f"{{endpoint_path}}/{{{resource}}_id}",
+            json=partial_data,
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_200_OK
+
+        data = response.json()
+        assert data["{{partial_field}}"] == "{{partial_value}}"
+
+
+class Test{{endpoint_name}}DELETE:
+    """Tests for DELETE {{endpoint_path}}/{id}"""
+
+    @pytest.mark.asyncio
+    async def test_delete_{{resource}}_success(
+        self,
+        client: AsyncClient,
+        test_{{resource}}: {{model_name}},
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test successful deletion of a {{resource}}.
+
+        Given: Existing {{resource}}
+        When: DELETE request is made
+        Then: Returns 204 No Content and {{resource}} is deleted
+        """
+        # Arrange
+        {{resource}}_id = str(test_{{resource}}.id)
+
+        # Act
+        response = await client.delete(
+            f"{{endpoint_path}}/{{{resource}}_id}",
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        # Verify deletion
+        deleted_{{resource}} = await {{model_name}}.get(PydanticObjectId({{resource}}_id))
+        assert deleted_{{resource}} is None
+
+    @pytest.mark.asyncio
+    async def test_delete_{{resource}}_not_found(
+        self,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test deletion of non-existent {{resource}}.
+
+        Given: Invalid {{resource}} ID
+        When: DELETE request is made
+        Then: Returns 404 Not Found
+        """
+        # Arrange
+        invalid_id = str(PydanticObjectId())
+
+        # Act
+        response = await client.delete(
+            f"{{endpoint_path}}/{invalid_id}",
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    @pytest.mark.asyncio
+    async def test_delete_{{resource}}_soft_delete(
+        self,
+        client: AsyncClient,
+        test_{{resource}}: {{model_name}},
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """
+        Test soft deletion of a {{resource}}.
+
+        Given: Existing {{resource}}
+        When: DELETE request is made
+        Then: {{resource}} is marked as deleted but not removed
+        """
+        # Arrange
+        {{resource}}_id = str(test_{{resource}}.id)
+
+        # Act
+        response = await client.delete(
+            f"{{endpoint_path}}/{{{resource}}_id}",
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        # Verify soft deletion
+        {{resource}} = await {{model_name}}.get(PydanticObjectId({{resource}}_id))
+        assert {{resource}}.deleted_at is not None
+        assert {{resource}}.is_deleted is True
+
+
+class Test{{endpoint_name}}EdgeCases:
+    """Edge case and error handling tests"""
+
+    @pytest.mark.asyncio
+    async def test_invalid_object_id(
+        self,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """Test request with malformed ObjectId."""
+        # Act
+        response = await client.get(
+            "{{endpoint_path}}/invalid-id",
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    @pytest.mark.asyncio
+    @patch("app.services.{{service_module}}.{{service_name}}")
+    async def test_database_error_handling(
+        self,
+        mock_service: AsyncMock,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """Test graceful handling of database errors."""
+        # Arrange
+        mock_service.get_{{resource}}.side_effect = Exception("Database connection failed")
+
+        # Act
+        response = await client.get(
+            f"{{endpoint_path}}/{str(PydanticObjectId())}",
+            headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+        )
+
+        # Assert
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    @pytest.mark.asyncio
+    async def test_rate_limiting(
+        self,
+        client: AsyncClient,
+        mock_keycloak_user: Dict[str, Any],
+    ) -> None:
+        """Test rate limiting on endpoint."""
+        # Make multiple requests rapidly
+        responses = []
+        for _ in range(100):
+            response = await client.get(
+                "{{endpoint_path}}",
+                headers={"Authorization": f"Bearer {mock_keycloak_user['access_token']}"}
+            )
+            responses.append(response.status_code)
+
+        # Assert that some requests are rate limited
+        assert status.HTTP_429_TOO_MANY_REQUESTS in responses

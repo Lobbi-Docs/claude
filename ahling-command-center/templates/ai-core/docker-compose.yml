@@ -1,0 +1,464 @@
+---
+# Ahling Command Center - AI Core Stack
+# Production-ready AI services: LLM serving, embeddings, observability, automation
+# Hardware: AMD RX 7900 XTX (24GB VRAM), 24 cores, 61GB RAM
+# GPU: ROCm 6.0+ for AMD acceleration
+
+version: '3.8'
+
+networks:
+  acc-frontend:
+    external: true
+  acc-backend:
+    external: true
+  ai-core:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+
+volumes:
+  ollama_models:
+    driver: local
+  ollama_cache:
+    driver: local
+  vllm_cache:
+    driver: local
+  qdrant_storage:
+    driver: local
+  qdrant_snapshots:
+    driver: local
+  langfuse_db:
+    driver: local
+  langfuse_uploads:
+    driver: local
+  n8n_data:
+    driver: local
+  litellm_db:
+    driver: local
+  postgres_ai_data:
+    driver: local
+
+services:
+  # ============================================================================
+  # PostgreSQL - AI Services Database
+  # Shared by LiteLLM, LangFuse, and n8n
+  # ============================================================================
+  postgres-ai:
+    image: postgres:16-alpine
+    container_name: postgres-ai
+    hostname: postgres-ai
+    restart: unless-stopped
+    networks:
+      - ai-core
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: vault://secret/data/ai-core/postgres#password
+      POSTGRES_MULTIPLE_DATABASES: litellm,langfuse,n8n
+      TZ: "${TZ:-America/New_York}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_ai_data:/var/lib/postgresql/data
+      - ./postgres/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh:ro
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=2GB
+      -c effective_cache_size=6GB
+      -c maintenance_work_mem=512MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=10MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '1'
+          memory: 2G
+    labels:
+      - "traefik.enable=false"
+
+  # ============================================================================
+  # Ollama - Local LLM Server with ROCm GPU Support
+  # Primary inference engine for AMD RX 7900 XTX
+  # ============================================================================
+  ollama:
+    image: ollama/ollama:rocm
+    container_name: ollama
+    hostname: ollama
+    restart: unless-stopped
+    networks:
+      - ai-core
+      - acc-backend
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - render
+    environment:
+      OLLAMA_HOST: "0.0.0.0:11434"
+      OLLAMA_ORIGINS: "*"
+      OLLAMA_NUM_PARALLEL: "4"
+      OLLAMA_MAX_LOADED_MODELS: "3"
+      OLLAMA_KEEP_ALIVE: "5m"
+      OLLAMA_DEBUG: "false"
+      # ROCm specific
+      HSA_OVERRIDE_GFX_VERSION: "11.0.0"
+      HIP_VISIBLE_DEVICES: "0"
+      ROCR_VISIBLE_DEVICES: "0"
+      GPU_DEVICE_ORDINAL: "0"
+      # Performance tuning
+      OLLAMA_MAX_VRAM: "20000000000"  # 20GB max VRAM usage
+      OLLAMA_LLM_LIBRARY: "rocm"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - ollama_models:/root/.ollama
+      - ollama_cache:/tmp/ollama
+      - ./ollama/config.yaml:/etc/ollama/config.yaml:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: '16'
+          memory: 32G
+        reservations:
+          cpus: '8'
+          memory: 16G
+          devices:
+            - driver: amdgpu
+              count: 1
+              capabilities: [gpu, compute, utility]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama.rule=Host(`ollama.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.ollama.entrypoints=websecure"
+      - "traefik.http.routers.ollama.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+      - "traefik.http.routers.ollama.middlewares=secure-headers@file"
+
+  # ============================================================================
+  # LiteLLM Proxy - Unified LLM Gateway
+  # Routes requests to Ollama, vLLM, or external APIs
+  # ============================================================================
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: litellm
+    hostname: litellm
+    restart: unless-stopped
+    networks:
+      - ai-core
+      - acc-backend
+      - acc-frontend
+    ports:
+      - "${LITELLM_PORT:-4000}:4000"
+    environment:
+      LITELLM_MASTER_KEY: vault://secret/data/ai-core/litellm#master_key
+      DATABASE_URL: postgresql://postgres:vault://secret/data/ai-core/postgres#password@postgres-ai:5432/litellm
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: vault://secret/data/foundation/redis#password
+      # LangFuse integration
+      LANGFUSE_PUBLIC_KEY: vault://secret/data/ai-core/langfuse#public_key
+      LANGFUSE_SECRET_KEY: vault://secret/data/ai-core/langfuse#secret_key
+      LANGFUSE_HOST: http://langfuse:3000
+      # External API keys (optional fallbacks)
+      OPENAI_API_KEY: vault://secret/data/ai-core/openai#api_key
+      ANTHROPIC_API_KEY: vault://secret/data/ai-core/anthropic#api_key
+      GOOGLE_API_KEY: vault://secret/data/ai-core/google#api_key
+      # Configuration
+      LITELLM_LOG: "INFO"
+      LITELLM_DROP_PARAMS: "true"
+      LITELLM_DETAILED_DEBUG: "false"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:ro
+      - litellm_db:/app/db
+    depends_on:
+      postgres-ai:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    command: --config /app/config.yaml --port 4000 --detailed_debug
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '2'
+          memory: 2G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.litellm.rule=Host(`llm.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.litellm.entrypoints=websecure"
+      - "traefik.http.routers.litellm.tls.certresolver=letsencrypt"
+      - "traefik.http.services.litellm.loadbalancer.server.port=4000"
+      - "traefik.http.routers.litellm.middlewares=secure-headers@file,auth@file"
+
+  # ============================================================================
+  # Qdrant - Vector Database for Embeddings
+  # Stores semantic embeddings for RAG and similarity search
+  # ============================================================================
+  qdrant:
+    image: qdrant/qdrant:v1.8.0
+    container_name: qdrant
+    hostname: qdrant
+    restart: unless-stopped
+    networks:
+      - ai-core
+      - acc-backend
+      - acc-frontend
+    ports:
+      - "${QDRANT_HTTP_PORT:-6333}:6333"
+      - "${QDRANT_GRPC_PORT:-6334}:6334"
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: "6333"
+      QDRANT__SERVICE__GRPC_PORT: "6334"
+      QDRANT__CLUSTER__ENABLED: "false"
+      QDRANT__STORAGE__STORAGE_PATH: /qdrant/storage
+      QDRANT__STORAGE__SNAPSHOTS_PATH: /qdrant/snapshots
+      QDRANT__STORAGE__ON_DISK_PAYLOAD: "true"
+      QDRANT__SERVICE__ENABLE_TLS: "false"
+      QDRANT__LOG_LEVEL: INFO
+      # Performance tuning
+      QDRANT__STORAGE__WAL__WAL_CAPACITY_MB: "512"
+      QDRANT__STORAGE__OPTIMIZERS__MAX_SEGMENT_SIZE_KB: "200000"
+      QDRANT__STORAGE__OPTIMIZERS__MEMMAP_THRESHOLD_KB: "100000"
+      QDRANT__STORAGE__OPTIMIZERS__INDEXING_THRESHOLD_KB: "50000"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+      - qdrant_snapshots:/qdrant/snapshots
+      - ./qdrant/config.yaml:/qdrant/config/production.yaml:ro
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:6333/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qdrant.rule=Host(`qdrant.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.qdrant.entrypoints=websecure"
+      - "traefik.http.routers.qdrant.tls.certresolver=letsencrypt"
+      - "traefik.http.services.qdrant.loadbalancer.server.port=6333"
+      - "traefik.http.routers.qdrant.middlewares=secure-headers@file,auth@file"
+
+  # ============================================================================
+  # LangFuse - LLM Observability & Tracing
+  # Monitors all LLM calls, costs, latency, and quality
+  # ============================================================================
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: langfuse
+    hostname: langfuse
+    restart: unless-stopped
+    networks:
+      - ai-core
+      - acc-backend
+      - acc-frontend
+    ports:
+      - "${LANGFUSE_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:vault://secret/data/ai-core/postgres#password@postgres-ai:5432/langfuse
+      NEXTAUTH_SECRET: vault://secret/data/ai-core/langfuse#nextauth_secret
+      NEXTAUTH_URL: https://langfuse.${DOMAIN:-ahling.local}
+      SALT: vault://secret/data/ai-core/langfuse#salt
+      ENCRYPTION_KEY: vault://secret/data/ai-core/langfuse#encryption_key
+      TELEMETRY_ENABLED: "false"
+      LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: "true"
+      # Performance
+      LANGFUSE_CACHE_API_KEY_ENABLED: "true"
+      LANGFUSE_CACHE_PROMPT_ENABLED: "true"
+      # S3 storage for large traces
+      LANGFUSE_S3_EVENT_UPLOAD_ENABLED: "false"
+      # LANGFUSE_S3_EVENT_UPLOAD_BUCKET: ai-traces
+      # LANGFUSE_S3_EVENT_UPLOAD_REGION: us-east-1
+      # LANGFUSE_S3_ACCESS_KEY_ID: vault://secret/data/ai-core/s3#access_key
+      # LANGFUSE_S3_SECRET_ACCESS_KEY: vault://secret/data/ai-core/s3#secret_key
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - langfuse_uploads:/app/uploads
+    depends_on:
+      postgres-ai:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/public/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.langfuse.rule=Host(`langfuse.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.langfuse.entrypoints=websecure"
+      - "traefik.http.routers.langfuse.tls.certresolver=letsencrypt"
+      - "traefik.http.services.langfuse.loadbalancer.server.port=3000"
+      - "traefik.http.routers.langfuse.middlewares=secure-headers@file"
+
+  # ============================================================================
+  # n8n - Workflow Automation & AI Orchestration
+  # No-code platform for building AI-powered workflows
+  # ============================================================================
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    hostname: n8n
+    restart: unless-stopped
+    networks:
+      - ai-core
+      - acc-backend
+      - acc-frontend
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      # Database
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres-ai
+      DB_POSTGRESDB_PORT: "5432"
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: postgres
+      DB_POSTGRESDB_PASSWORD: vault://secret/data/ai-core/postgres#password
+      DB_POSTGRESDB_SCHEMA: public
+      # Security
+      N8N_ENCRYPTION_KEY: vault://secret/data/ai-core/n8n#encryption_key
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: vault://secret/data/ai-core/n8n#admin_user
+      N8N_BASIC_AUTH_PASSWORD: vault://secret/data/ai-core/n8n#admin_password
+      # URLs
+      WEBHOOK_URL: https://n8n.${DOMAIN:-ahling.local}
+      N8N_EDITOR_BASE_URL: https://n8n.${DOMAIN:-ahling.local}
+      # Features
+      EXECUTIONS_DATA_PRUNE: "true"
+      EXECUTIONS_DATA_MAX_AGE: "336"  # 14 days
+      N8N_METRICS: "true"
+      N8N_METRICS_PREFIX: "n8n_"
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_HIRING_BANNER_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      # Performance
+      EXECUTIONS_PROCESS: "main"
+      EXECUTIONS_MODE: "regular"
+      N8N_CONCURRENCY_PRODUCTION_LIMIT: "10"
+      # Timezone
+      GENERIC_TIMEZONE: "${TZ:-America/New_York}"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/backup:/backup
+    depends_on:
+      postgres-ai:
+        condition: service_healthy
+      litellm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+      - "traefik.http.routers.n8n.middlewares=secure-headers@file"
+
+  # ============================================================================
+  # Ollama Model Manager - Automated model pulling and management
+  # Ensures required models are available on startup
+  # ============================================================================
+  ollama-init:
+    image: ollama/ollama:rocm
+    container_name: ollama-init
+    networks:
+      - ai-core
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ./ollama/pull-models.sh:/scripts/pull-models.sh:ro
+    command: /bin/sh /scripts/pull-models.sh
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+# ============================================================================
+# Resource Summary (AMD RX 7900 XTX - 24GB VRAM, 61GB RAM)
+# ============================================================================
+# VRAM Allocation:
+#   - Ollama: 20GB (primary LLM serving)
+#   - Reserve: 4GB (system overhead)
+#
+# RAM Allocation:
+#   - Ollama: 16-32GB (model context)
+#   - PostgreSQL: 2-8GB (AI services data)
+#   - Qdrant: 4-8GB (vector storage)
+#   - LiteLLM: 2-4GB (proxy)
+#   - LangFuse: 1-4GB (observability)
+#   - n8n: 1-4GB (workflows)
+#   - Total: ~26-60GB
+#
+# CPU Allocation:
+#   - Ollama: 8-16 cores (inference)
+#   - Qdrant: 2-8 cores (vector search)
+#   - PostgreSQL: 1-4 cores (database)
+#   - LiteLLM: 2-4 cores (routing)
+#   - LangFuse: 1-4 cores (tracing)
+#   - n8n: 1-4 cores (workflows)
+#   - Total: ~15-40 cores

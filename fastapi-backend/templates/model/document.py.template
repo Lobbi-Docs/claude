@@ -1,0 +1,274 @@
+"""
+{{model_name}} Document Model
+
+Beanie document model with comprehensive CRUD operations.
+Generated with FastAPI Backend Plugin.
+"""
+
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+from uuid import UUID, uuid4
+
+from beanie import Document, Indexed, before_event, Insert, Replace
+from pydantic import Field, ConfigDict
+
+from app.models.base import TimestampMixin
+
+
+class {{model_name}}(Document, TimestampMixin):
+    """
+    {{model_description}}
+
+    Attributes:
+        id: Unique identifier (auto-generated UUID)
+        name: {{field_description}}
+        description: Detailed description
+        status: Current status of the document
+        metadata: Additional flexible metadata
+        created_at: Timestamp when document was created
+        updated_at: Timestamp when document was last modified
+        created_by: User ID who created the document
+        updated_by: User ID who last updated the document
+    """
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "{{example_name}}",
+                "description": "{{example_description}}",
+                "status": "active",
+                "metadata": {"key": "value"}
+            }
+        }
+    )
+
+    # Primary fields
+    id: UUID = Field(default_factory=uuid4, description="Unique identifier")
+    name: Indexed(str) = Field(..., min_length=1, max_length=255, description="{{field_description}}")
+    description: Optional[str] = Field(None, max_length=2000, description="Detailed description")
+    status: Indexed(str) = Field(default="active", description="Document status")
+
+    # Flexible metadata
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+
+    # Audit fields (from TimestampMixin)
+    created_by: Optional[str] = Field(None, description="User ID who created this document")
+    updated_by: Optional[str] = Field(None, description="User ID who last updated this document")
+
+    @before_event(Insert, Replace)
+    async def update_timestamps(self):
+        """Update timestamp fields before insert or replace operations."""
+        now = datetime.utcnow()
+        if not self.created_at:
+            self.created_at = now
+        self.updated_at = now
+
+    # CRUD Operations
+
+    @classmethod
+    async def create(
+        cls,
+        name: str,
+        description: Optional[str] = None,
+        status: str = "active",
+        metadata: Optional[Dict[str, Any]] = None,
+        created_by: Optional[str] = None,
+    ) -> "{{model_name}}":
+        """
+        Create a new {{model_name}} document.
+
+        Args:
+            name: The name of the document
+            description: Optional description
+            status: Document status (default: "active")
+            metadata: Optional metadata dictionary
+            created_by: User ID creating the document
+
+        Returns:
+            The created {{model_name}} document
+
+        Raises:
+            ValueError: If validation fails
+        """
+        document = cls(
+            name=name,
+            description=description,
+            status=status,
+            metadata=metadata or {},
+            created_by=created_by,
+        )
+        await document.insert()
+        return document
+
+    @classmethod
+    async def get_by_id(cls, doc_id: UUID) -> Optional["{{model_name}}"]:
+        """
+        Retrieve a document by its ID.
+
+        Args:
+            doc_id: The document UUID
+
+        Returns:
+            The document if found, None otherwise
+        """
+        return await cls.find_one(cls.id == doc_id)
+
+    @classmethod
+    async def get_by_name(cls, name: str) -> Optional["{{model_name}}"]:
+        """
+        Retrieve a document by its name.
+
+        Args:
+            name: The document name
+
+        Returns:
+            The first matching document if found, None otherwise
+        """
+        return await cls.find_one(cls.name == name)
+
+    @classmethod
+    async def list_all(
+        cls,
+        status: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> List["{{model_name}}"]:
+        """
+        List documents with optional filtering and pagination.
+
+        Args:
+            status: Optional status filter
+            skip: Number of documents to skip (pagination)
+            limit: Maximum number of documents to return
+
+        Returns:
+            List of matching documents
+        """
+        query = cls.find()
+
+        if status:
+            query = query.find(cls.status == status)
+
+        return await query.skip(skip).limit(limit).to_list()
+
+    @classmethod
+    async def count(cls, status: Optional[str] = None) -> int:
+        """
+        Count documents with optional filtering.
+
+        Args:
+            status: Optional status filter
+
+        Returns:
+            Number of matching documents
+        """
+        query = cls.find()
+
+        if status:
+            query = query.find(cls.status == status)
+
+        return await query.count()
+
+    async def update_fields(
+        self,
+        updated_by: Optional[str] = None,
+        **kwargs
+    ) -> "{{model_name}}":
+        """
+        Update specific fields of the document.
+
+        Args:
+            updated_by: User ID performing the update
+            **kwargs: Fields to update
+
+        Returns:
+            The updated document
+        """
+        update_data = {k: v for k, v in kwargs.items() if v is not None}
+
+        if updated_by:
+            update_data["updated_by"] = updated_by
+
+        update_data["updated_at"] = datetime.utcnow()
+
+        await self.set(update_data)
+        return self
+
+    async def soft_delete(self, deleted_by: Optional[str] = None) -> "{{model_name}}":
+        """
+        Soft delete the document by setting status to 'deleted'.
+
+        Args:
+            deleted_by: User ID performing the deletion
+
+        Returns:
+            The updated document
+        """
+        return await self.update_fields(
+            status="deleted",
+            updated_by=deleted_by,
+        )
+
+    async def hard_delete(self) -> None:
+        """
+        Permanently delete the document from the database.
+
+        WARNING: This operation cannot be undone.
+        """
+        await self.delete()
+
+    # Custom business logic methods
+
+    async def archive(self, archived_by: Optional[str] = None) -> "{{model_name}}":
+        """
+        Archive the document.
+
+        Args:
+            archived_by: User ID archiving the document
+
+        Returns:
+            The archived document
+        """
+        return await self.update_fields(
+            status="archived",
+            updated_by=archived_by,
+        )
+
+    async def activate(self, activated_by: Optional[str] = None) -> "{{model_name}}":
+        """
+        Activate the document.
+
+        Args:
+            activated_by: User ID activating the document
+
+        Returns:
+            The activated document
+        """
+        return await self.update_fields(
+            status="active",
+            updated_by=activated_by,
+        )
+
+    def is_active(self) -> bool:
+        """Check if the document is active."""
+        return self.status == "active"
+
+    def is_deleted(self) -> bool:
+        """Check if the document is soft-deleted."""
+        return self.status == "deleted"
+
+    def is_archived(self) -> bool:
+        """Check if the document is archived."""
+        return self.status == "archived"
+
+    class Settings:
+        """Beanie document settings."""
+        name = "{{collection_name}}"
+        use_state_management = True
+        use_revision = True
+        indexes = [
+            "name",
+            "status",
+            "created_at",
+            "updated_at",
+        ]

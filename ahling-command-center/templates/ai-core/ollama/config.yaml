@@ -1,0 +1,314 @@
+# Ollama Configuration for AMD RX 7900 XTX (24GB VRAM)
+# ROCm 6.0+ GPU acceleration optimized for homelab deployment
+
+# ============================================================================
+# GPU Configuration - AMD RX 7900 XTX
+# ============================================================================
+gpu:
+  # ROCm platform configuration
+  platform: "rocm"
+
+  # GPU device selection (0 for primary GPU)
+  device_id: 0
+
+  # GFX version for RX 7900 XTX (RDNA 3)
+  # Set HSA_OVERRIDE_GFX_VERSION=11.0.0 in environment
+  gfx_version: "11.0.0"
+
+  # VRAM allocation
+  max_vram_gb: 20  # Leave 4GB for system
+
+  # GPU memory fraction (90% of available VRAM)
+  memory_fraction: 0.9
+
+  # Enable unified memory for large models
+  unified_memory: true
+
+  # Tensor core acceleration (AMD Matrix Cores)
+  tensor_cores: true
+
+  # FP16 precision for faster inference
+  fp16: true
+
+  # GPU layers - models will offload to GPU
+  # Set to high number to maximize GPU usage
+  gpu_layers: 999
+
+# ============================================================================
+# Model Defaults
+# ============================================================================
+models:
+  # Default model loading behavior
+  keep_alive: "5m"  # Keep models in VRAM for 5 minutes after last use
+
+  # Maximum models loaded simultaneously
+  # With 20GB VRAM: 1x70B or 2x7B + 1x70B embed model
+  max_loaded: 3
+
+  # Model search paths
+  model_path: "/root/.ollama/models"
+
+  # Automatic model management
+  auto_pull: false  # Don't auto-pull, use explicit management
+  auto_update: false
+
+  # Recommended models for homelab (pull separately)
+  recommended:
+    # Reasoning models
+    - name: "llama3.2:70b"
+      description: "Primary reasoning model (40GB VRAM required)"
+      vram_required: 40000
+      layers_offload: 80
+
+    - name: "llama3.2:7b"
+      description: "Fast inference model (4GB VRAM)"
+      vram_required: 4000
+      layers_offload: 32
+
+    - name: "llama3.1:8b"
+      description: "Balanced reasoning (5GB VRAM)"
+      vram_required: 5000
+      layers_offload: 32
+
+    # Code models
+    - name: "codellama:34b"
+      description: "Code generation (20GB VRAM)"
+      vram_required: 20000
+      layers_offload: 48
+
+    - name: "deepseek-coder:33b"
+      description: "Advanced code model (20GB VRAM)"
+      vram_required: 20000
+      layers_offload: 48
+
+    # Embedding models
+    - name: "nomic-embed-text:latest"
+      description: "Semantic embeddings (768d, 1GB VRAM)"
+      vram_required: 1000
+      layers_offload: 12
+
+    - name: "mxbai-embed-large:latest"
+      description: "Large embeddings (1024d, 2GB VRAM)"
+      vram_required: 2000
+      layers_offload: 24
+
+    # Vision models
+    - name: "llava:13b"
+      description: "Vision + language (8GB VRAM)"
+      vram_required: 8000
+      layers_offload: 40
+
+# ============================================================================
+# Performance Tuning
+# ============================================================================
+performance:
+  # Parallel request handling
+  num_parallel: 4
+
+  # Batch size for inference
+  batch_size: 512
+
+  # Context window
+  context_length: 8192
+
+  # Thread configuration
+  num_threads: 16  # Match CPU cores available
+
+  # KV cache optimization
+  use_mmap: true
+  use_mlock: false
+
+  # Flash attention (faster for long contexts)
+  flash_attention: true
+
+  # Speculative decoding
+  speculative_decoding: false
+
+  # Quantization defaults
+  quantization:
+    default: "Q4_K_M"  # Good balance of quality/speed
+    available:
+      - "Q2_K"     # Smallest, lowest quality
+      - "Q3_K_M"   # Small, medium quality
+      - "Q4_K_M"   # Recommended
+      - "Q5_K_M"   # High quality
+      - "Q6_K"     # Very high quality
+      - "Q8_0"     # Highest quality
+      - "F16"      # Full precision (2x size)
+
+# ============================================================================
+# Server Configuration
+# ============================================================================
+server:
+  host: "0.0.0.0"
+  port: 11434
+
+  # Request limits
+  max_request_size: "100MB"
+  request_timeout: "300s"
+
+  # CORS configuration
+  origins:
+    - "*"
+
+  # Logging
+  log_level: "info"
+  log_format: "json"
+
+  # Health check
+  health_check:
+    enabled: true
+    interval: "30s"
+
+# ============================================================================
+# Memory Management
+# ============================================================================
+memory:
+  # System RAM allocation (beyond VRAM)
+  max_ram_gb: 32
+
+  # Swap to RAM when VRAM full
+  enable_ram_offload: true
+
+  # Cache settings
+  cache:
+    enabled: true
+    size_gb: 4
+
+  # Garbage collection
+  gc:
+    enabled: true
+    interval: "60s"
+    threshold: 0.8  # Trigger at 80% memory usage
+
+# ============================================================================
+# ROCm Specific Optimizations
+# ============================================================================
+rocm:
+  # ROCm platform path
+  rocm_path: "/opt/rocm"
+
+  # HIP settings
+  hip:
+    visible_devices: "0"
+    device_order: "PCI_BUS_ID"
+
+  # HSA settings
+  hsa:
+    override_gfx_version: "11.0.0"
+    enable_sdma: true
+
+  # Performance features
+  features:
+    # Enable async DMA transfers
+    async_dma: true
+
+    # Enable memory pool
+    memory_pool: true
+
+    # Enable direct GPU-GPU communication
+    peer_access: true
+
+    # Optimize for compute workload
+    compute_mode: "exclusive_process"
+
+# ============================================================================
+# API Compatibility
+# ============================================================================
+api:
+  # OpenAI compatible API
+  openai_compatible: true
+
+  # Embeddings API
+  embeddings:
+    enabled: true
+    default_model: "nomic-embed-text"
+
+  # Chat completions API
+  chat:
+    enabled: true
+    default_model: "llama3.2:7b"
+    stream: true
+
+  # Completions API (legacy)
+  completions:
+    enabled: true
+
+# ============================================================================
+# Security
+# ============================================================================
+security:
+  # Authentication (handled by reverse proxy)
+  auth:
+    enabled: false
+
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: 60
+
+  # Model access control
+  allowed_models:
+    - "llama3.2:70b"
+    - "llama3.2:7b"
+    - "llama3.1:8b"
+    - "codellama:34b"
+    - "deepseek-coder:33b"
+    - "nomic-embed-text"
+    - "mxbai-embed-large"
+    - "llava:13b"
+
+# ============================================================================
+# Monitoring & Telemetry
+# ============================================================================
+monitoring:
+  # Prometheus metrics
+  metrics:
+    enabled: true
+    port: 11434
+    path: "/metrics"
+
+  # Health endpoint
+  health:
+    enabled: true
+    path: "/health"
+
+  # Debug mode
+  debug: false
+
+  # Telemetry collection
+  telemetry:
+    enabled: false  # Privacy: disabled
+
+# ============================================================================
+# Model Loading Strategies
+# ============================================================================
+loading:
+  # Preload models on startup
+  preload:
+    enabled: false
+    models: []
+
+  # Lazy loading (load on first request)
+  lazy_load: true
+
+  # Model unload strategy
+  unload_strategy: "lru"  # Least Recently Used
+
+  # Warmup (run test inference on load)
+  warmup:
+    enabled: true
+    prompt: "Hello"
+
+# ============================================================================
+# Experimental Features
+# ============================================================================
+experimental:
+  # Multi-GPU support (future)
+  multi_gpu: false
+
+  # Model merging
+  model_merge: false
+
+  # Custom GGUF parameters
+  gguf_overrides: {}

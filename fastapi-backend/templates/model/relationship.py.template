@@ -1,0 +1,320 @@
+"""
+{{model_name}} Document Model with Relationships
+
+Beanie document model with Link references to related documents.
+Generated with FastAPI Backend Plugin.
+"""
+
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+from uuid import UUID, uuid4
+
+from beanie import Document, Indexed, Link, before_event, Insert, Replace, BackLink
+from pydantic import Field, ConfigDict
+
+from app.models.base import TimestampMixin
+
+
+class {{model_name}}(Document, TimestampMixin):
+    """
+    {{model_description}}
+
+    This document includes relationships to other documents using Beanie's Link system.
+    Links are lazy-loaded by default and can be fetched explicitly when needed.
+
+    Attributes:
+        id: Unique identifier (auto-generated UUID)
+        name: {{field_description}}
+        description: Detailed description
+        status: Current status of the document
+
+        # Relationships
+        {{relationship_field}}: Link to related {{related_model}} document(s)
+
+        # Audit fields
+        created_at: Timestamp when document was created
+        updated_at: Timestamp when document was last modified
+        created_by: User ID who created the document
+        updated_by: User ID who last updated the document
+    """
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "{{example_name}}",
+                "description": "{{example_description}}",
+                "status": "active",
+            }
+        }
+    )
+
+    # Primary fields
+    id: UUID = Field(default_factory=uuid4, description="Unique identifier")
+    name: Indexed(str) = Field(..., min_length=1, max_length=255, description="{{field_description}}")
+    description: Optional[str] = Field(None, max_length=2000, description="Detailed description")
+    status: Indexed(str) = Field(default="active", description="Document status")
+
+    # Relationships - One-to-One
+    {{single_relationship}}: Optional[Link["{{related_model}}"]] = Field(
+        None,
+        description="Link to related {{related_model}}"
+    )
+
+    # Relationships - One-to-Many
+    {{many_relationship}}: List[Link["{{related_model_many}}"]] = Field(
+        default_factory=list,
+        description="Links to related {{related_model_many}} documents"
+    )
+
+    # Back-references (reverse relationships)
+    # These are automatically populated by Beanie when other documents link to this one
+    {{back_reference}}: Optional[BackLink["{{referencing_model}}"]] = Field(
+        original_field="{{relationship_field}}",
+        default=None
+    )
+
+    # Audit fields (from TimestampMixin)
+    created_by: Optional[str] = Field(None, description="User ID who created this document")
+    updated_by: Optional[str] = Field(None, description="User ID who last updated this document")
+
+    @before_event(Insert, Replace)
+    async def update_timestamps(self):
+        """Update timestamp fields before insert or replace operations."""
+        now = datetime.utcnow()
+        if not self.created_at:
+            self.created_at = now
+        self.updated_at = now
+
+    # CRUD Operations with Relationship Handling
+
+    @classmethod
+    async def create(
+        cls,
+        name: str,
+        description: Optional[str] = None,
+        status: str = "active",
+        {{single_relationship}}_id: Optional[UUID] = None,
+        created_by: Optional[str] = None,
+    ) -> "{{model_name}}":
+        """
+        Create a new {{model_name}} document with optional relationships.
+
+        Args:
+            name: The name of the document
+            description: Optional description
+            status: Document status (default: "active")
+            {{single_relationship}}_id: Optional ID of related {{related_model}}
+            created_by: User ID creating the document
+
+        Returns:
+            The created {{model_name}} document
+
+        Raises:
+            ValueError: If validation fails or related document not found
+        """
+        document = cls(
+            name=name,
+            description=description,
+            status=status,
+            created_by=created_by,
+        )
+
+        # Set relationship if provided
+        if {{single_relationship}}_id:
+            related = await {{related_model}}.get_by_id({{single_relationship}}_id)
+            if not related:
+                raise ValueError(f"{{related_model}} with id {{{single_relationship}}_id} not found")
+            document.{{single_relationship}} = related
+
+        await document.insert()
+        return document
+
+    @classmethod
+    async def get_by_id(
+        cls,
+        doc_id: UUID,
+        fetch_links: bool = False
+    ) -> Optional["{{model_name}}"]:
+        """
+        Retrieve a document by its ID.
+
+        Args:
+            doc_id: The document UUID
+            fetch_links: Whether to fetch linked documents (default: False)
+
+        Returns:
+            The document if found, None otherwise
+        """
+        query = cls.find_one(cls.id == doc_id)
+        if fetch_links:
+            query = query.fetch_all_links()
+        return await query
+
+    @classmethod
+    async def list_all(
+        cls,
+        status: Optional[str] = None,
+        fetch_links: bool = False,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> List["{{model_name}}"]:
+        """
+        List documents with optional filtering and pagination.
+
+        Args:
+            status: Optional status filter
+            fetch_links: Whether to fetch linked documents
+            skip: Number of documents to skip (pagination)
+            limit: Maximum number of documents to return
+
+        Returns:
+            List of matching documents
+        """
+        query = cls.find()
+
+        if status:
+            query = query.find(cls.status == status)
+
+        if fetch_links:
+            query = query.fetch_all_links()
+
+        return await query.skip(skip).limit(limit).to_list()
+
+    # Relationship Management
+
+    async def set_{{single_relationship}}(
+        self,
+        {{single_relationship}}: "{{related_model}}",
+        updated_by: Optional[str] = None
+    ) -> "{{model_name}}":
+        """
+        Set or update the {{single_relationship}} relationship.
+
+        Args:
+            {{single_relationship}}: The related {{related_model}} document
+            updated_by: User ID performing the update
+
+        Returns:
+            The updated document
+        """
+        self.{{single_relationship}} = {{single_relationship}}
+        if updated_by:
+            self.updated_by = updated_by
+        self.updated_at = datetime.utcnow()
+        await self.save()
+        return self
+
+    async def add_{{many_relationship}}(
+        self,
+        item: "{{related_model_many}}",
+        updated_by: Optional[str] = None
+    ) -> "{{model_name}}":
+        """
+        Add a {{related_model_many}} to the {{many_relationship}} list.
+
+        Args:
+            item: The {{related_model_many}} document to add
+            updated_by: User ID performing the update
+
+        Returns:
+            The updated document
+        """
+        if item not in self.{{many_relationship}}:
+            self.{{many_relationship}}.append(item)
+            if updated_by:
+                self.updated_by = updated_by
+            self.updated_at = datetime.utcnow()
+            await self.save()
+        return self
+
+    async def remove_{{many_relationship}}(
+        self,
+        item: "{{related_model_many}}",
+        updated_by: Optional[str] = None
+    ) -> "{{model_name}}":
+        """
+        Remove a {{related_model_many}} from the {{many_relationship}} list.
+
+        Args:
+            item: The {{related_model_many}} document to remove
+            updated_by: User ID performing the update
+
+        Returns:
+            The updated document
+        """
+        if item in self.{{many_relationship}}:
+            self.{{many_relationship}}.remove(item)
+            if updated_by:
+                self.updated_by = updated_by
+            self.updated_at = datetime.utcnow()
+            await self.save()
+        return self
+
+    async def fetch_relationships(self) -> "{{model_name}}":
+        """
+        Fetch all linked documents for this instance.
+
+        Returns:
+            Self with all relationships loaded
+        """
+        await self.fetch_all_links()
+        return self
+
+    async def get_{{many_relationship}}_count(self) -> int:
+        """
+        Get the count of {{many_relationship}}.
+
+        Returns:
+            Number of linked {{related_model_many}} documents
+        """
+        return len(self.{{many_relationship}})
+
+    # Advanced relationship queries
+
+    @classmethod
+    async def find_by_{{single_relationship}}(
+        cls,
+        {{single_relationship}}_id: UUID,
+        status: Optional[str] = None,
+    ) -> List["{{model_name}}"]:
+        """
+        Find all documents linked to a specific {{related_model}}.
+
+        Args:
+            {{single_relationship}}_id: The {{related_model}} UUID
+            status: Optional status filter
+
+        Returns:
+            List of matching documents
+        """
+        related = await {{related_model}}.get({{single_relationship}}_id)
+        if not related:
+            return []
+
+        query = cls.find(cls.{{single_relationship}}.id == {{single_relationship}}_id)
+
+        if status:
+            query = query.find(cls.status == status)
+
+        return await query.to_list()
+
+    class Settings:
+        """Beanie document settings."""
+        name = "{{collection_name}}"
+        use_state_management = True
+        use_revision = True
+        indexes = [
+            "name",
+            "status",
+            "created_at",
+            "updated_at",
+        ]
+
+
+# Base mixin for timestamp fields (reference)
+"""
+class TimestampMixin(BaseModel):
+    '''Mixin for automatic timestamp management.'''
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+"""

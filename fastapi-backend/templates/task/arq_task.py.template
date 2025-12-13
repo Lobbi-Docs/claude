@@ -1,0 +1,295 @@
+"""
+ARQ Background Task: {{task_name}}
+
+This module defines an ARQ Redis background task with retry logic,
+error handling, and comprehensive logging.
+
+ARQ Documentation: https://arq-docs.helpmanual.io/
+"""
+
+import logging
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
+
+from arq import cron
+from arq.connections import ArqRedis
+from pydantic import BaseModel, Field
+
+logger = logging.getLogger(__name__)
+
+
+class {{task_name}}Input(BaseModel):
+    """Input schema for {{task_name}} task."""
+
+    {{#each inputs}}
+    {{name}}: {{type}} = Field(..., description="{{description}}")
+    {{/each}}
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                {{#each inputs}}
+                "{{name}}": {{example}},
+                {{/each}}
+            }
+        }
+
+
+class {{task_name}}Result(BaseModel):
+    """Result schema for {{task_name}} task."""
+
+    success: bool = Field(..., description="Whether the task completed successfully")
+    {{#each outputs}}
+    {{name}}: {{type}} = Field(..., description="{{description}}")
+    {{/each}}
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "success": True,
+                {{#each outputs}}
+                "{{name}}": {{example}},
+                {{/each}}
+                "timestamp": "2024-01-15T10:30:00Z"
+            }
+        }
+
+
+async def {{task_name}}(
+    ctx: Dict[str, Any],
+    {{#each inputs}}
+    {{name}}: {{type}},
+    {{/each}}
+) -> {{task_name}}Result:
+    """
+    {{task_description}}
+
+    Args:
+        ctx: ARQ context containing Redis connection and job metadata
+        {{#each inputs}}
+        {{name}}: {{description}}
+        {{/each}}
+
+    Returns:
+        {{task_name}}Result: Task execution result
+
+    Raises:
+        ValueError: If input validation fails
+        RuntimeError: If task execution fails after retries
+
+    Example:
+        >>> # Enqueue the task
+        >>> await redis.enqueue_job(
+        ...     "{{task_name}}",
+        ...     {{#each inputs}}{{name}}={{example}},{{/each}}
+        ... )
+    """
+    redis: ArqRedis = ctx["redis"]
+    job_id: str = ctx.get("job_id", "unknown")
+    job_try: int = ctx.get("job_try", 1)
+
+    logger.info(
+        f"Starting {{task_name}} task",
+        extra={
+            "job_id": job_id,
+            "job_try": job_try,
+            {{#each inputs}}
+            "{{name}}": {{name}},
+            {{/each}}
+        }
+    )
+
+    try:
+        # Validate input
+        input_data = {{task_name}}Input(
+            {{#each inputs}}
+            {{name}}={{name}},
+            {{/each}}
+        )
+
+        # TODO: Implement your task logic here
+        # Example: Process data, call external APIs, update database
+        {{task_implementation}}
+
+        # Store result in Redis with expiration
+        result = {{task_name}}Result(
+            success=True,
+            {{#each outputs}}
+            {{name}}={{output_value}},
+            {{/each}}
+        )
+
+        # Cache result for 24 hours
+        await redis.setex(
+            f"task_result:{{task_name}}:{job_id}",
+            86400,  # 24 hours
+            result.model_dump_json()
+        )
+
+        logger.info(
+            f"Completed {{task_name}} task successfully",
+            extra={
+                "job_id": job_id,
+                "job_try": job_try,
+                "result": result.model_dump()
+            }
+        )
+
+        return result
+
+    except ValueError as e:
+        logger.error(
+            f"Validation error in {{task_name}} task",
+            extra={
+                "job_id": job_id,
+                "job_try": job_try,
+                "error": str(e)
+            },
+            exc_info=True
+        )
+        raise
+
+    except Exception as e:
+        logger.error(
+            f"Error executing {{task_name}} task",
+            extra={
+                "job_id": job_id,
+                "job_try": job_try,
+                "error": str(e)
+            },
+            exc_info=True
+        )
+
+        # Return partial result on error
+        return {{task_name}}Result(
+            success=False,
+            {{#each outputs}}
+            {{name}}={{error_default}},
+            {{/each}}
+        )
+
+
+# Optional: Scheduled/Cron task variant
+async def {{task_name}}_scheduled(ctx: Dict[str, Any]) -> None:
+    """
+    Scheduled variant of {{task_name}} that runs on a cron schedule.
+
+    This task runs automatically based on the cron expression defined
+    in WorkerSettings.cron_jobs.
+
+    Args:
+        ctx: ARQ context containing Redis connection
+
+    Example:
+        # In arq worker settings:
+        cron_jobs = [
+            cron({{task_name}}_scheduled, hour=0, minute=0)  # Daily at midnight
+        ]
+    """
+    logger.info("Starting scheduled {{task_name}} task")
+
+    try:
+        # TODO: Implement scheduled task logic
+        # Example: Fetch pending items and process them
+        {{scheduled_implementation}}
+
+        logger.info("Completed scheduled {{task_name}} task")
+
+    except Exception as e:
+        logger.error(
+            f"Error in scheduled {{task_name}} task",
+            extra={"error": str(e)},
+            exc_info=True
+        )
+
+
+# Task metadata for worker registration
+TASK_CONFIG = {
+    "name": "{{task_name}}",
+    "max_tries": 3,
+    "timeout": 300,  # 5 minutes
+    "keep_result": 86400,  # 24 hours
+    "retry_delay": 60,  # 1 minute
+}
+
+
+# Helper function to enqueue the task
+async def enqueue_{{task_name}}(
+    redis: ArqRedis,
+    {{#each inputs}}
+    {{name}}: {{type}},
+    {{/each}}
+    delay: Optional[timedelta] = None,
+) -> str:
+    """
+    Helper function to enqueue {{task_name}} task.
+
+    Args:
+        redis: ARQ Redis connection
+        {{#each inputs}}
+        {{name}}: {{description}}
+        {{/each}}
+        delay: Optional delay before task execution
+
+    Returns:
+        str: Job ID
+
+    Example:
+        >>> from arq import create_pool
+        >>> from arq.connections import RedisSettings
+        >>>
+        >>> redis = await create_pool(RedisSettings())
+        >>> job_id = await enqueue_{{task_name}}(
+        ...     redis,
+        ...     {{#each inputs}}{{name}}={{example}},{{/each}}
+        ... )
+        >>> print(f"Enqueued job: {job_id}")
+    """
+    job = await redis.enqueue_job(
+        "{{task_name}}",
+        {{#each inputs}}
+        {{name}},
+        {{/each}}
+        _defer_by=delay,
+    )
+
+    logger.info(
+        f"Enqueued {{task_name}} task",
+        extra={
+            "job_id": str(job.job_id),
+            {{#each inputs}}
+            "{{name}}": {{name}},
+            {{/each}}
+        }
+    )
+
+    return str(job.job_id)
+
+
+# Helper function to get task result
+async def get_{{task_name}}_result(
+    redis: ArqRedis,
+    job_id: str,
+) -> Optional[{{task_name}}Result]:
+    """
+    Retrieve the result of a {{task_name}} task.
+
+    Args:
+        redis: ARQ Redis connection
+        job_id: Job ID from enqueue operation
+
+    Returns:
+        Optional[{{task_name}}Result]: Task result if available
+
+    Example:
+        >>> result = await get_{{task_name}}_result(redis, job_id)
+        >>> if result:
+        ...     print(f"Task success: {result.success}")
+    """
+    result_json = await redis.get(f"task_result:{{task_name}}:{job_id}")
+
+    if result_json:
+        return {{task_name}}Result.model_validate_json(result_json)
+
+    return None

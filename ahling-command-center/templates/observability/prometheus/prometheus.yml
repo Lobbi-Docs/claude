@@ -1,0 +1,375 @@
+# Prometheus Configuration for Ahling Command Center
+# Production-ready scrape configs for ACC infrastructure monitoring
+
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'acc-homelab'
+    environment: 'production'
+    region: 'home'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+      timeout: 10s
+      api_version: v2
+
+# Load rules
+rule_files:
+  - '/etc/prometheus/alerts/*.yml'
+  - '/etc/prometheus/recording_rules/*.yml'
+
+# Scrape configurations
+scrape_configs:
+  # ============================================================================
+  # Prometheus Self-Monitoring
+  # ============================================================================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          layer: 'observability'
+
+  # ============================================================================
+  # Node Exporter - Host System Metrics
+  # ============================================================================
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+          layer: 'infrastructure'
+          instance: 'proxmox-host'
+
+  # ============================================================================
+  # cAdvisor - Container Metrics
+  # ============================================================================
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'cadvisor'
+          layer: 'observability'
+
+  # ============================================================================
+  # Docker Engine Metrics
+  # ============================================================================
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['host.docker.internal:9323']
+        labels:
+          service: 'docker-daemon'
+          layer: 'infrastructure'
+
+  # ============================================================================
+  # Foundation Stack Services
+  # ============================================================================
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8080']
+        labels:
+          service: 'traefik'
+          layer: 'foundation'
+          component: 'reverse-proxy'
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgresql'
+          layer: 'foundation'
+          component: 'database'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          layer: 'foundation'
+          component: 'cache'
+
+  - job_name: 'minio'
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ['minio:9000']
+        labels:
+          service: 'minio'
+          layer: 'foundation'
+          component: 'object-storage'
+
+  - job_name: 'vault'
+    metrics_path: /v1/sys/metrics
+    params:
+      format: ['prometheus']
+    static_configs:
+      - targets: ['vault:8200']
+        labels:
+          service: 'vault'
+          layer: 'foundation'
+          component: 'secrets'
+
+  # ============================================================================
+  # Observability Stack
+  # ============================================================================
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+        labels:
+          service: 'grafana'
+          layer: 'observability'
+          component: 'visualization'
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']
+        labels:
+          service: 'loki'
+          layer: 'observability'
+          component: 'logs'
+
+  - job_name: 'tempo'
+    static_configs:
+      - targets: ['tempo:3200']
+        labels:
+          service: 'tempo'
+          layer: 'observability'
+          component: 'tracing'
+
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['alertmanager:9093']
+        labels:
+          service: 'alertmanager'
+          layer: 'observability'
+          component: 'alerting'
+
+  # ============================================================================
+  # AI Core Services
+  # ============================================================================
+  - job_name: 'ollama'
+    static_configs:
+      - targets: ['ollama:11434']
+        labels:
+          service: 'ollama'
+          layer: 'ai-core'
+          component: 'llm-runtime'
+    scrape_interval: 30s
+
+  - job_name: 'open-webui'
+    static_configs:
+      - targets: ['open-webui:8080']
+        labels:
+          service: 'open-webui'
+          layer: 'ai-core'
+          component: 'ui'
+
+  - job_name: 'qdrant'
+    static_configs:
+      - targets: ['qdrant:6333']
+        labels:
+          service: 'qdrant'
+          layer: 'ai-core'
+          component: 'vector-db'
+
+  - job_name: 'chroma'
+    static_configs:
+      - targets: ['chroma:8000']
+        labels:
+          service: 'chroma'
+          layer: 'ai-core'
+          component: 'vector-db'
+
+  # ============================================================================
+  # Home Automation
+  # ============================================================================
+  - job_name: 'home-assistant'
+    metrics_path: /api/prometheus
+    bearer_token: '${HOME_ASSISTANT_TOKEN}'
+    static_configs:
+      - targets: ['homeassistant:8123']
+        labels:
+          service: 'home-assistant'
+          layer: 'home-automation'
+    scrape_interval: 60s
+    scrape_timeout: 30s
+
+  - job_name: 'zigbee2mqtt'
+    static_configs:
+      - targets: ['zigbee2mqtt:9000']
+        labels:
+          service: 'zigbee2mqtt'
+          layer: 'home-automation'
+          component: 'zigbee-bridge'
+
+  - job_name: 'mosquitto'
+    static_configs:
+      - targets: ['mosquitto-exporter:9234']
+        labels:
+          service: 'mosquitto'
+          layer: 'home-automation'
+          component: 'mqtt-broker'
+
+  - job_name: 'esphome'
+    static_configs:
+      - targets: ['esphome:6052']
+        labels:
+          service: 'esphome'
+          layer: 'home-automation'
+          component: 'device-manager'
+
+  # ============================================================================
+  # Media Services
+  # ============================================================================
+  - job_name: 'plex'
+    static_configs:
+      - targets: ['plex-exporter:9594']
+        labels:
+          service: 'plex'
+          layer: 'media'
+          component: 'server'
+
+  - job_name: 'jellyfin'
+    static_configs:
+      - targets: ['jellyfin:8096']
+        labels:
+          service: 'jellyfin'
+          layer: 'media'
+          component: 'server'
+
+  # ============================================================================
+  # Intelligence Services
+  # ============================================================================
+  - job_name: 'n8n'
+    static_configs:
+      - targets: ['n8n:5678']
+        labels:
+          service: 'n8n'
+          layer: 'intelligence'
+          component: 'workflow-automation'
+
+  - job_name: 'activepieces'
+    static_configs:
+      - targets: ['activepieces:80']
+        labels:
+          service: 'activepieces'
+          layer: 'intelligence'
+          component: 'workflow-automation'
+
+  # ============================================================================
+  # Developer Tools
+  # ============================================================================
+  - job_name: 'gitea'
+    static_configs:
+      - targets: ['gitea:3000']
+        labels:
+          service: 'gitea'
+          layer: 'developer'
+          component: 'git-server'
+
+  - job_name: 'drone'
+    static_configs:
+      - targets: ['drone:80']
+        labels:
+          service: 'drone'
+          layer: 'developer'
+          component: 'ci-cd'
+
+  # ============================================================================
+  # Blackbox Probes - Endpoint Monitoring
+  # ============================================================================
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://grafana.${DOMAIN:-ahling.local}
+          - https://prometheus.${DOMAIN:-ahling.local}
+          - https://traefik.${DOMAIN:-ahling.local}
+          - https://auth.${DOMAIN:-ahling.local}
+          - https://vault.${DOMAIN:-ahling.local}
+          - https://minio.${DOMAIN:-ahling.local}
+          - https://ollama.${DOMAIN:-ahling.local}
+          - https://homeassistant.${DOMAIN:-ahling.local}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  - job_name: 'blackbox-tcp'
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]
+    static_configs:
+      - targets:
+          - postgres:5432
+          - redis:6379
+          - vault:8200
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # ============================================================================
+  # Service Discovery - Docker
+  # ============================================================================
+  - job_name: 'docker-sd'
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 30s
+    relabel_configs:
+      # Only scrape containers with prometheus.io/scrape=true label
+      - source_labels: [__meta_docker_container_label_prometheus_io_scrape]
+        action: keep
+        regex: true
+      # Use custom scrape path if set
+      - source_labels: [__meta_docker_container_label_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      # Use custom port if set
+      - source_labels: [__address__, __meta_docker_container_label_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      # Add container labels as prometheus labels
+      - source_labels: [__meta_docker_container_name]
+        action: replace
+        regex: /(.*)
+        target_label: container
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        action: replace
+        target_label: service
+      - source_labels: [__meta_docker_container_label_com_docker_compose_project]
+        action: replace
+        target_label: project
+
+# Remote write (optional - for long-term storage)
+# remote_write:
+#   - url: http://mimir:9009/api/v1/push
+#     queue_config:
+#       capacity: 10000
+#       max_shards: 50
+#       min_shards: 1
+#       max_samples_per_send: 5000
+#       batch_send_deadline: 5s
+#       min_backoff: 30ms
+#       max_backoff: 100ms
+
+# Remote read (optional - for federated queries)
+# remote_read:
+#   - url: http://mimir:9009/prometheus
+#     read_recent: true

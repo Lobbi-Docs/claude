@@ -1,0 +1,132 @@
+# Wyoming Satellite Voice Pipeline Configuration
+# Documentation: https://github.com/rhasspy/wyoming-satellite
+
+# Microphone configuration
+microphone:
+  command: arecord -r 16000 -c 1 -f S16_LE -t raw
+  command_rate: 16000
+  noise_suppression: 2  # 0-4, higher = more suppression
+  auto_gain: 5  # 0-31, automatic gain control
+  volume_multiplier: 1.0
+
+# Speaker configuration
+speaker:
+  command: aplay -r 22050 -c 1 -f S16_LE -t raw
+  command_rate: 22050
+  volume_multiplier: 1.0
+
+# Voice Activity Detection
+vad:
+  enabled: true
+  threshold: 0.5
+  trigger_level: 1
+  buffer_seconds: 2
+
+# Wake word detection (optional)
+wake:
+  enabled: false
+  # Uncomment to enable wake word
+  # uri: "tcp://openwakeword:10400"
+  # names:
+  #   - "hey_jarvis"
+  #   - "ok_nabu"
+  refractory_seconds: 5
+
+# Speech-to-Text
+stt:
+  uri: "tcp://whisper:10300"
+  language: "en"
+  # Alternative: external Home Assistant instance
+  # uri: "tcp://homeassistant.local:10300"
+
+# Text-to-Speech
+tts:
+  uri: "tcp://piper:10200"
+  voice: "en_US-lessac-medium"
+  # Alternative voices:
+  # - "en_US-amy-medium"
+  # - "en_GB-alan-medium"
+  # - "en_US-libritts-high"
+
+# Intent handling
+intent:
+  # Use MQTT for intent publishing
+  mqtt:
+    enabled: true
+    host: "${MQTT_HOST}"
+    port: 1883
+    username: "${MQTT_USERNAME}"
+    password: "${MQTT_PASSWORD}"
+    topic: "hermes/intent/#"
+  # Alternative: Home Assistant webhooks
+  # webhook:
+  #   url: "http://homeassistant:8123/api/webhook/wyoming"
+  #   token: "${HA_WEBHOOK_TOKEN}"
+
+# Audio enhancements
+audio:
+  # Noise suppression (RNNoise)
+  noise_suppression:
+    enabled: true
+    intensity: 2  # 0-3
+  # Automatic gain control
+  auto_gain:
+    enabled: true
+    target_level: 5  # 0-31
+  # Echo cancellation
+  echo_cancellation:
+    enabled: false
+
+# Event handling
+events:
+  # Publish events to MQTT
+  mqtt:
+    enabled: true
+    topic_prefix: "wyoming/satellite"
+  # Event types to publish
+  types:
+    - wake
+    - speech_start
+    - speech_stop
+    - intent
+    - error
+    - synthesis_start
+    - synthesis_stop
+
+# Satellite identification
+satellite:
+  name: "${HOSTNAME}"
+  area: "default"
+  # Additional metadata
+  metadata:
+    location: "home"
+    room: "living_room"
+
+# Pipeline timing
+timing:
+  # Speech timeout (seconds)
+  speech_timeout: 30
+  # Silence timeout after speech (seconds)
+  silence_timeout: 2
+  # Wake word timeout (seconds)
+  wake_timeout: 5
+
+# Debugging
+debug:
+  enabled: false
+  # Save audio samples
+  save_audio: false
+  audio_dir: "/tmp/wyoming-audio"
+  # Log all events
+  log_events: true
+
+# Advanced settings
+advanced:
+  # Command timeout (seconds)
+  command_timeout: 30
+  # Restart on error
+  restart_on_error: true
+  # Maximum restart attempts
+  max_restart_attempts: 3
+  # UDP chunk size for audio streaming
+  udp_chunk_size: 1024

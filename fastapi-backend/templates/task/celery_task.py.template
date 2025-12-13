@@ -1,0 +1,465 @@
+"""
+Celery Background Task: {{task_name}}
+
+This module defines a Celery task with retry logic, error handling,
+rate limiting, and comprehensive logging.
+
+Celery Documentation: https://docs.celeryq.dev/
+"""
+
+import logging
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
+
+from celery import Task, current_app, states
+from celery.exceptions import MaxRetriesExceededError, Retry
+from pydantic import BaseModel, Field, ValidationError
+
+logger = logging.getLogger(__name__)
+
+
+class {{task_name}}Input(BaseModel):
+    """Input schema for {{task_name}} task."""
+
+    {{#each inputs}}
+    {{name}}: {{type}} = Field(..., description="{{description}}")
+    {{/each}}
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                {{#each inputs}}
+                "{{name}}": {{example}},
+                {{/each}}
+            }
+        }
+
+
+class {{task_name}}Result(BaseModel):
+    """Result schema for {{task_name}} task."""
+
+    success: bool = Field(..., description="Whether the task completed successfully")
+    {{#each outputs}}
+    {{name}}: {{type}} = Field(..., description="{{description}}")
+    {{/each}}
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    task_id: Optional[str] = Field(None, description="Celery task ID")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "success": True,
+                {{#each outputs}}
+                "{{name}}": {{example}},
+                {{/each}}
+                "timestamp": "2024-01-15T10:30:00Z",
+                "task_id": "abc123-def456-ghi789"
+            }
+        }
+
+
+class {{task_name}}Task(Task):
+    """
+    Custom Celery task class for {{task_name}}.
+
+    Provides custom error handling, retry logic, and state management.
+    """
+
+    name = "{{module_path}}.{{task_name}}"
+    max_retries = 3
+    default_retry_delay = 60  # seconds
+    rate_limit = "{{rate_limit}}"  # e.g., "10/m" for 10 per minute
+    time_limit = 300  # 5 minutes hard timeout
+    soft_time_limit = 240  # 4 minutes soft timeout
+
+    def on_failure(self, exc: Exception, task_id: str, args: tuple, kwargs: dict, einfo: Any) -> None:
+        """
+        Handle task failure.
+
+        Args:
+            exc: Exception that caused the failure
+            task_id: Unique task identifier
+            args: Task positional arguments
+            kwargs: Task keyword arguments
+            einfo: Exception info object
+        """
+        logger.error(
+            f"Task {{task_name}} failed",
+            extra={
+                "task_id": task_id,
+                "exception": str(exc),
+                "args": args,
+                "kwargs": kwargs,
+            },
+            exc_info=einfo
+        )
+
+        # TODO: Add custom failure handling
+        # Examples:
+        # - Send notification to monitoring service
+        # - Update database record with error status
+        # - Trigger compensating transaction
+
+    def on_retry(self, exc: Exception, task_id: str, args: tuple, kwargs: dict, einfo: Any) -> None:
+        """
+        Handle task retry.
+
+        Args:
+            exc: Exception that triggered the retry
+            task_id: Unique task identifier
+            args: Task positional arguments
+            kwargs: Task keyword arguments
+            einfo: Exception info object
+        """
+        logger.warning(
+            f"Task {{task_name}} retrying",
+            extra={
+                "task_id": task_id,
+                "exception": str(exc),
+                "retry_count": self.request.retries,
+                "args": args,
+                "kwargs": kwargs,
+            }
+        )
+
+    def on_success(self, retval: Any, task_id: str, args: tuple, kwargs: dict) -> None:
+        """
+        Handle task success.
+
+        Args:
+            retval: Return value from task
+            task_id: Unique task identifier
+            args: Task positional arguments
+            kwargs: Task keyword arguments
+        """
+        logger.info(
+            f"Task {{task_name}} completed successfully",
+            extra={
+                "task_id": task_id,
+                "result": retval,
+                "args": args,
+                "kwargs": kwargs,
+            }
+        )
+
+
+@current_app.task(
+    bind=True,
+    base={{task_name}}Task,
+    autoretry_for=(ConnectionError, TimeoutError),
+    retry_backoff=True,
+    retry_backoff_max=600,  # 10 minutes max backoff
+    retry_jitter=True,
+    acks_late=True,  # Acknowledge after task completes
+    reject_on_worker_lost=True,
+)
+def {{task_name}}(
+    self: {{task_name}}Task,
+    {{#each inputs}}
+    {{name}}: {{type}},
+    {{/each}}
+) -> Dict[str, Any]:
+    """
+    {{task_description}}
+
+    Args:
+        self: Task instance
+        {{#each inputs}}
+        {{name}}: {{description}}
+        {{/each}}
+
+    Returns:
+        Dict[str, Any]: Task result as dictionary
+
+    Raises:
+        ValidationError: If input validation fails
+        MaxRetriesExceededError: If task fails after all retries
+        Retry: If task should be retried
+
+    Example:
+        >>> # Call synchronously (blocking)
+        >>> result = {{task_name}}.apply(
+        ...     args=[{{#each inputs}}{{example}},{{/each}}]
+        ... )
+        >>>
+        >>> # Call asynchronously
+        >>> async_result = {{task_name}}.apply_async(
+        ...     args=[{{#each inputs}}{{example}},{{/each}}],
+        ...     countdown=60  # Execute after 60 seconds
+        ... )
+        >>>
+        >>> # Get result
+        >>> result = async_result.get(timeout=10)
+    """
+    task_id = self.request.id
+    retry_count = self.request.retries
+
+    logger.info(
+        f"Starting {{task_name}} task",
+        extra={
+            "task_id": task_id,
+            "retry_count": retry_count,
+            {{#each inputs}}
+            "{{name}}": {{name}},
+            {{/each}}
+        }
+    )
+
+    try:
+        # Validate input
+        input_data = {{task_name}}Input(
+            {{#each inputs}}
+            {{name}}={{name}},
+            {{/each}}
+        )
+
+        # Update task state to PROGRESS
+        self.update_state(
+            state=states.STARTED,
+            meta={
+                "current": 0,
+                "total": 100,
+                "status": "Processing {{task_name}}..."
+            }
+        )
+
+        # TODO: Implement your task logic here
+        # Example: Process data, call external APIs, update database
+        {{task_implementation}}
+
+        # Update progress
+        self.update_state(
+            state=states.STARTED,
+            meta={
+                "current": 50,
+                "total": 100,
+                "status": "Halfway through processing..."
+            }
+        )
+
+        # TODO: Continue implementation
+        {{task_implementation_continued}}
+
+        # Create result
+        result = {{task_name}}Result(
+            success=True,
+            {{#each outputs}}
+            {{name}}={{output_value}},
+            {{/each}}
+            task_id=task_id
+        )
+
+        # Update final state
+        self.update_state(
+            state=states.SUCCESS,
+            meta={
+                "current": 100,
+                "total": 100,
+                "status": "Completed successfully",
+                "result": result.model_dump()
+            }
+        )
+
+        logger.info(
+            f"Completed {{task_name}} task successfully",
+            extra={
+                "task_id": task_id,
+                "retry_count": retry_count,
+                "result": result.model_dump()
+            }
+        )
+
+        return result.model_dump()
+
+    except ValidationError as e:
+        logger.error(
+            f"Validation error in {{task_name}} task",
+            extra={
+                "task_id": task_id,
+                "retry_count": retry_count,
+                "error": str(e)
+            },
+            exc_info=True
+        )
+
+        # Update state to FAILURE (don't retry validation errors)
+        self.update_state(
+            state=states.FAILURE,
+            meta={
+                "error": "Validation error",
+                "details": str(e)
+            }
+        )
+
+        raise
+
+    except (ConnectionError, TimeoutError) as e:
+        logger.warning(
+            f"Recoverable error in {{task_name}} task, will retry",
+            extra={
+                "task_id": task_id,
+                "retry_count": retry_count,
+                "error": str(e)
+            }
+        )
+
+        # These are automatically retried by autoretry_for
+        raise
+
+    except Exception as e:
+        logger.error(
+            f"Error executing {{task_name}} task",
+            extra={
+                "task_id": task_id,
+                "retry_count": retry_count,
+                "error": str(e)
+            },
+            exc_info=True
+        )
+
+        # Retry with exponential backoff
+        try:
+            raise self.retry(exc=e, countdown=2 ** retry_count * 60)
+        except MaxRetriesExceededError:
+            logger.error(
+                f"Max retries exceeded for {{task_name}} task",
+                extra={
+                    "task_id": task_id,
+                    "retry_count": retry_count
+                }
+            )
+
+            # Return error result
+            error_result = {{task_name}}Result(
+                success=False,
+                {{#each outputs}}
+                {{name}}={{error_default}},
+                {{/each}}
+                task_id=task_id
+            )
+
+            return error_result.model_dump()
+
+
+# Periodic task variant (requires celery beat)
+@current_app.task(
+    bind=True,
+    name="{{module_path}}.{{task_name}}_periodic"
+)
+def {{task_name}}_periodic(self: Task) -> Dict[str, Any]:
+    """
+    Periodic variant of {{task_name}} that runs on a schedule.
+
+    Configure in celery beat schedule:
+    ```python
+    from celery.schedules import crontab
+
+    app.conf.beat_schedule = {
+        "{{task_name}}_periodic": {
+            "task": "{{module_path}}.{{task_name}}_periodic",
+            "schedule": crontab(hour=0, minute=0),  # Daily at midnight
+        }
+    }
+    ```
+
+    Returns:
+        Dict[str, Any]: Task result
+    """
+    logger.info("Starting periodic {{task_name}} task")
+
+    try:
+        # TODO: Implement periodic task logic
+        # Example: Fetch pending items and process them
+        {{periodic_implementation}}
+
+        logger.info("Completed periodic {{task_name}} task")
+
+        return {"success": True, "timestamp": datetime.utcnow().isoformat()}
+
+    except Exception as e:
+        logger.error(
+            f"Error in periodic {{task_name}} task",
+            extra={"error": str(e)},
+            exc_info=True
+        )
+        raise
+
+
+# Task group/chain helpers
+def create_{{task_name}}_workflow(
+    {{#each inputs}}
+    {{name}}_list: list[{{type}}],
+    {{/each}}
+) -> Any:
+    """
+    Create a workflow of multiple {{task_name}} tasks.
+
+    This demonstrates Celery's workflow primitives:
+    - group: Execute tasks in parallel
+    - chain: Execute tasks sequentially
+    - chord: Execute tasks in parallel, then call a callback
+
+    Args:
+        {{#each inputs}}
+        {{name}}_list: List of {{name}} values to process
+        {{/each}}
+
+    Returns:
+        GroupResult: Result object for the task group
+
+    Example:
+        >>> from celery import group, chain, chord
+        >>>
+        >>> # Execute tasks in parallel
+        >>> job = create_{{task_name}}_workflow([{{#each inputs}}{{example}},{{/each}}])
+        >>> results = job.get(timeout=60)
+        >>>
+        >>> # Chain tasks sequentially
+        >>> workflow = chain(
+        ...     {{task_name}}.s({{#each inputs}}{{example}},{{/each}}),
+        ...     process_result.s(),
+        ...     send_notification.s()
+        ... )
+        >>> workflow.apply_async()
+    """
+    from celery import group
+
+    # Create a group of tasks to execute in parallel
+    job = group(
+        {{task_name}}.s({{#each inputs}}{{name}},{{/each}})
+        for {{#first inputs}}{{name}}{{/first}} in {{#first inputs}}{{name}}_list{{/first}}
+    )
+
+    return job.apply_async()
+
+
+# Helper to check task status
+def get_task_status(task_id: str) -> Dict[str, Any]:
+    """
+    Get the status and result of a task.
+
+    Args:
+        task_id: Celery task ID
+
+    Returns:
+        Dict[str, Any]: Task status information
+
+    Example:
+        >>> status = get_task_status("abc123-def456")
+        >>> print(f"State: {status['state']}")
+        >>> if status['state'] == 'SUCCESS':
+        ...     print(f"Result: {status['result']}")
+    """
+    from celery.result import AsyncResult
+
+    result = AsyncResult(task_id, app=current_app)
+
+    return {
+        "task_id": task_id,
+        "state": result.state,
+        "result": result.result if result.successful() else None,
+        "info": result.info,
+        "ready": result.ready(),
+        "successful": result.successful(),
+        "failed": result.failed(),
+    }

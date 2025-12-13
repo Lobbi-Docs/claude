@@ -1,0 +1,500 @@
+# Home Assistant Configuration
+# Production-ready configuration for Ahling Command Center
+# Documentation: https://www.home-assistant.io/docs/configuration/
+
+# Core Configuration
+homeassistant:
+  name: Ahling Command Center
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
+  unit_system: metric
+  time_zone: America/New_York
+  currency: USD
+  country: US
+
+  # Customize entities
+  customize: !include customize.yaml
+
+  # Allowlist for external directories
+  allowlist_external_dirs:
+    - /config
+    - /media
+    - /backup
+
+  # Allowlist for external URLs
+  allowlist_external_urls:
+    - http://localhost:8123
+
+  # Auth providers
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - 172.22.0.0/16
+        - 172.20.0.0/16
+        - 172.21.0.0/16
+        - 192.168.1.0/24
+      trusted_users:
+        192.168.1.0/24:
+          - !secret admin_user_id
+      allow_bypass_login: true
+
+# Frontend Configuration
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /local/custom-cards/card-mod.js
+
+# Lovelace
+lovelace:
+  mode: yaml
+  resources: !include lovelace/resources.yaml
+  dashboards:
+    lovelace-mobile:
+      mode: yaml
+      title: Mobile
+      icon: mdi:cellphone
+      show_in_sidebar: true
+      filename: lovelace/mobile.yaml
+
+# Enable configuration panel
+config:
+
+# System Health
+system_health:
+
+# My Home Assistant
+my:
+
+# HTTP Configuration (handled by reverse proxy)
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.20.0.0/16
+    - 172.21.0.0/16
+    - 172.22.0.0/16
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+  cors_allowed_origins:
+    - https://home.ahling.local
+    - https://grafana.ahling.local
+
+# Advanced logging
+logger:
+  default: info
+  logs:
+    homeassistant.core: warning
+    homeassistant.components.mqtt: info
+    homeassistant.components.automation: info
+    homeassistant.components.http: warning
+    homeassistant.components.websocket_api: warning
+    custom_components: debug
+
+# Recorder - Store history in PostgreSQL
+recorder:
+  db_url: !secret postgres_url
+  purge_keep_days: 30
+  commit_interval: 30
+  auto_purge: true
+  auto_repack: true
+  exclude:
+    domains:
+      - automation
+      - updater
+      - camera
+    entity_globs:
+      - sensor.weather_*
+    entities:
+      - sun.sun
+      - sensor.last_boot
+      - sensor.date
+  include:
+    domains:
+      - sensor
+      - light
+      - switch
+      - binary_sensor
+      - climate
+      - cover
+      - lock
+      - media_player
+
+# History
+history:
+  exclude:
+    domains:
+      - automation
+      - updater
+    entity_globs:
+      - sensor.weather_*
+
+# InfluxDB Integration for long-term storage
+influxdb:
+  host: influxdb-ha
+  port: 8086
+  token: !secret influxdb_token
+  organization: ahling-home
+  bucket: homeassistant
+  api_version: 2
+  ssl: false
+  verify_ssl: false
+  max_retries: 5
+  default_measurement: state
+  exclude:
+    domains:
+      - automation
+      - updater
+    entity_globs:
+      - sensor.weather_*
+
+# Logbook
+logbook:
+  exclude:
+    domains:
+      - automation
+      - script
+    entities:
+      - sensor.last_boot
+      - sensor.date
+
+# Enable the sun component
+sun:
+
+# Weather
+weather:
+  - platform: met
+    name: Home Weather
+
+# Mobile App
+mobile_app:
+
+# Cloud (optional - disable if not using Nabu Casa)
+# cloud:
+
+# Updater
+updater:
+  reporting: false
+
+# Discovery
+discovery:
+  ignore:
+    - igd
+
+# SSDP
+ssdp:
+
+# Zeroconf
+zeroconf:
+
+# Person tracking
+person:
+
+# Zone configuration
+zone:
+  - name: Home
+    latitude: !secret latitude
+    longitude: !secret longitude
+    radius: 100
+    icon: mdi:home
+
+  - name: Work
+    latitude: !secret work_latitude
+    longitude: !secret work_longitude
+    radius: 250
+    icon: mdi:briefcase
+
+# MQTT Configuration
+mqtt:
+  broker: mosquitto
+  port: 1883
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  discovery: true
+  discovery_prefix: homeassistant
+  birth_message:
+    topic: "homeassistant/status"
+    payload: "online"
+  will_message:
+    topic: "homeassistant/status"
+    payload: "offline"
+
+# Zigbee2MQTT Integration (via MQTT)
+# Devices will auto-discover via MQTT
+
+# Automation
+automation: !include automations.yaml
+
+# Scripts
+script: !include scripts.yaml
+
+# Scenes
+scene: !include scenes.yaml
+
+# Input Boolean
+input_boolean: !include input_boolean.yaml
+
+# Input Number
+input_number: !include input_number.yaml
+
+# Input Select
+input_select: !include input_select.yaml
+
+# Input Text
+input_text: !include input_text.yaml
+
+# Input Datetime
+input_datetime: !include input_datetime.yaml
+
+# Counter
+counter: !include counter.yaml
+
+# Timer
+timer: !include timer.yaml
+
+# ============================================================================
+# Notifications
+# ============================================================================
+notify:
+  - name: persistent_notification
+    platform: persistent_notification
+
+  - name: mobile_app
+    platform: group
+    services:
+      - service: mobile_app_admin_phone
+
+# ============================================================================
+# Text-to-Speech
+# ============================================================================
+tts:
+  - platform: google_translate
+    service_name: google_say
+    language: 'en'
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+
+# ============================================================================
+# Media Players
+# ============================================================================
+media_player:
+  - platform: universal
+    name: Living Room
+    children:
+      - media_player.living_room_tv
+      - media_player.living_room_speaker
+    commands:
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.living_room_av_power
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.living_room_av_power
+
+# ============================================================================
+# Sensors
+# ============================================================================
+sensor:
+  # System Monitor
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /
+      - type: memory_use_percent
+      - type: processor_use
+      - type: processor_temperature
+      - type: last_boot
+
+  # Time & Date
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'date'
+      - 'date_time'
+      - 'time_date'
+
+  # Version
+  - platform: version
+    name: HA Version
+
+  # Template sensors
+  - platform: template
+    sensors:
+      people_home:
+        friendly_name: "People Home"
+        value_template: >
+          {{ states.person | selectattr('state', 'eq', 'home') | list | count }}
+        icon_template: mdi:account-multiple
+
+# ============================================================================
+# Binary Sensors
+# ============================================================================
+binary_sensor:
+  # Ping
+  - platform: ping
+    host: 8.8.8.8
+    name: "Internet Connection"
+    count: 2
+    scan_interval: 60
+
+# ============================================================================
+# Camera
+# ============================================================================
+camera:
+  # Frigate cameras auto-discover via MQTT
+  - platform: mqtt
+    name: "Frigate Events"
+    topic: frigate/events
+
+# ============================================================================
+# Device Tracker
+# ============================================================================
+device_tracker:
+  - platform: composite
+    name: admin_device_tracker
+    time_as: device_or_local
+    entity_id:
+      - device_tracker.admin_phone_wifi
+      - device_tracker.admin_phone_gps
+
+# ============================================================================
+# Energy Management
+# ============================================================================
+# energy:
+
+# ============================================================================
+# Presence Detection
+# ============================================================================
+proximity:
+  home:
+    zone: home
+    devices:
+      - person.admin
+    tolerance: 50
+    unit_of_measurement: km
+
+# ============================================================================
+# Smart Home Integrations
+# ============================================================================
+
+# Philips Hue (auto-discovered)
+# hue:
+
+# Sonoff/Tasmota devices (via MQTT)
+# tasmota:
+#   discovery_prefix: tasmota/discovery
+
+# ESPHome
+esphome:
+
+# ============================================================================
+# Advanced Features
+# ============================================================================
+
+# Stream component for camera streams
+stream:
+  ll_hls: true
+  part_duration: 0.75
+  segment_duration: 6
+
+# FFmpeg
+ffmpeg:
+  ffmpeg_bin: /usr/bin/ffmpeg
+
+# Shopping List
+shopping_list:
+
+# Image Processing
+image_processing:
+
+# Python Scripts
+python_script:
+
+# RESTful commands
+rest_command: !include rest_commands.yaml
+
+# Shell commands
+shell_command: !include shell_commands.yaml
+
+# Wake on LAN
+wake_on_lan:
+
+# ============================================================================
+# Backup & Recovery
+# ============================================================================
+backup:
+  # Automatic backups at 3 AM daily
+  # Stored in /backup volume
+
+# ============================================================================
+# Security
+# ============================================================================
+
+# Failed login attempts
+# Handled by http component with ip_ban_enabled
+
+# ============================================================================
+# Custom Integrations
+# ============================================================================
+
+# HACS - Home Assistant Community Store
+# Managed via custom_components directory
+
+# ============================================================================
+# Dashboard Optimizations
+# ============================================================================
+# panel_custom: !include panel_custom.yaml
+
+# ============================================================================
+# Voice Assistants (Optional)
+# ============================================================================
+
+# Alexa
+# alexa:
+#   smart_home:
+
+# Google Assistant
+# google_assistant:
+#   project_id: !secret google_project_id
+#   service_account: !secret google_service_account
+#   report_state: true
+
+# ============================================================================
+# Advanced Automations
+# ============================================================================
+
+# AppDaemon (optional)
+# Run as separate container if needed
+
+# ============================================================================
+# Browser Mod for browser control
+# ============================================================================
+# browser_mod:
+
+# ============================================================================
+# Utility Meter for tracking usage
+# ============================================================================
+utility_meter:
+  daily_energy:
+    source: sensor.total_energy
+    cycle: daily
+  monthly_energy:
+    source: sensor.total_energy
+    cycle: monthly
+
+# ============================================================================
+# Telegram Bot (Optional)
+# ============================================================================
+# telegram_bot:
+#   - platform: polling
+#     api_key: !secret telegram_api_key
+#     allowed_chat_ids:
+#       - !secret telegram_chat_id
+
+# ============================================================================
+# Custom Components Placeholder
+# ============================================================================
+# Add custom integrations here or via HACS

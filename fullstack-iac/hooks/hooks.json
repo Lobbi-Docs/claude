@@ -1,0 +1,408 @@
+{
+  "PreToolUse": [
+    {
+      "name": "python-lint",
+      "description": "Lint Python files before writing to ensure PEP 8 compliance and catch common errors",
+      "trigger": {
+        "tool": "Write",
+        "condition": {
+          "file_pattern": "**/*.py"
+        }
+      },
+      "actions": [
+        {
+          "type": "validate",
+          "validator": "python-syntax",
+          "on_error": "warn"
+        },
+        {
+          "type": "lint",
+          "linter": "ruff",
+          "rules": ["F", "E", "W", "I", "N"],
+          "on_error": "suggest_fix",
+          "auto_fix": false
+        },
+        {
+          "type": "format_check",
+          "formatter": "black",
+          "line_length": 100,
+          "on_error": "suggest_fix"
+        }
+      ],
+      "message": "Python file will be validated for syntax, style (PEP 8), and common issues before writing."
+    },
+    {
+      "name": "typescript-lint",
+      "description": "Lint TypeScript/JavaScript files before writing to ensure code quality",
+      "trigger": {
+        "tool": "Write",
+        "condition": {
+          "file_pattern": "**/*.{ts,tsx,js,jsx}"
+        }
+      },
+      "actions": [
+        {
+          "type": "validate",
+          "validator": "typescript-syntax",
+          "on_error": "warn"
+        },
+        {
+          "type": "lint",
+          "linter": "eslint",
+          "config": ".eslintrc.json",
+          "on_error": "suggest_fix",
+          "auto_fix": false
+        },
+        {
+          "type": "format_check",
+          "formatter": "prettier",
+          "on_error": "suggest_fix"
+        }
+      ],
+      "message": "TypeScript/JavaScript file will be validated for syntax, ESLint rules, and formatting before writing."
+    },
+    {
+      "name": "terraform-validate",
+      "description": "Validate Terraform configuration before writing to catch syntax and configuration errors",
+      "trigger": {
+        "tool": "Write",
+        "condition": {
+          "file_pattern": "**/*.tf"
+        }
+      },
+      "actions": [
+        {
+          "type": "validate",
+          "validator": "terraform-syntax",
+          "on_error": "error"
+        },
+        {
+          "type": "validate",
+          "validator": "terraform-fmt",
+          "on_error": "suggest_fix",
+          "auto_fix": false
+        },
+        {
+          "type": "security_scan",
+          "scanner": "tfsec",
+          "severity": "medium",
+          "on_error": "warn"
+        }
+      ],
+      "message": "Terraform file will be validated for syntax, formatting, and security issues before writing."
+    },
+    {
+      "name": "kubernetes-validate",
+      "description": "Validate Kubernetes manifests before writing to ensure proper YAML structure and API compliance",
+      "trigger": {
+        "tool": "Write",
+        "condition": {
+          "file_pattern": "**/k8s/**/*.{yaml,yml}",
+          "or": {
+            "file_pattern": "**/kubernetes/**/*.{yaml,yml}"
+          }
+        }
+      },
+      "actions": [
+        {
+          "type": "validate",
+          "validator": "yaml-syntax",
+          "on_error": "error"
+        },
+        {
+          "type": "validate",
+          "validator": "kubectl-dry-run",
+          "on_error": "warn"
+        },
+        {
+          "type": "security_scan",
+          "scanner": "kubesec",
+          "on_error": "warn"
+        }
+      ],
+      "message": "Kubernetes manifest will be validated for YAML syntax, API compliance, and security before writing."
+    },
+    {
+      "name": "docker-validate",
+      "description": "Validate Dockerfile before writing to ensure best practices and security",
+      "trigger": {
+        "tool": "Write",
+        "condition": {
+          "file_pattern": "**/Dockerfile*"
+        }
+      },
+      "actions": [
+        {
+          "type": "validate",
+          "validator": "dockerfile-syntax",
+          "on_error": "error"
+        },
+        {
+          "type": "lint",
+          "linter": "hadolint",
+          "on_error": "warn"
+        },
+        {
+          "type": "security_scan",
+          "scanner": "dockerfile-security",
+          "checks": ["exposed_ports", "root_user", "package_updates"],
+          "on_error": "warn"
+        }
+      ],
+      "message": "Dockerfile will be validated for syntax, best practices, and security before writing."
+    },
+    {
+      "name": "sql-validate",
+      "description": "Validate SQL migration files before writing",
+      "trigger": {
+        "tool": "Write",
+        "condition": {
+          "file_pattern": "**/migrations/**/*.sql",
+          "or": {
+            "file_pattern": "**/alembic/versions/**/*.py"
+          }
+        }
+      },
+      "actions": [
+        {
+          "type": "validate",
+          "validator": "sql-syntax",
+          "dialect": "postgresql",
+          "on_error": "warn"
+        },
+        {
+          "type": "check",
+          "checks": ["has_rollback", "idempotent", "no_destructive_ops"],
+          "on_error": "warn"
+        }
+      ],
+      "message": "SQL migration will be validated for syntax and migration best practices before writing."
+    }
+  ],
+  "PostToolUse": [
+    {
+      "name": "post-scaffold-fastapi",
+      "description": "Provide next steps after scaffolding a FastAPI application",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*scaffold-fastapi*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ FastAPI application scaffolded successfully!\n\nNext steps:\n1. Install dependencies: cd {app_name} && pip install -r requirements.txt\n2. Set up environment: cp .env.example .env (then edit with your values)\n3. Run migrations: alembic upgrade head\n4. Start dev server: uvicorn app.main:app --reload\n5. View API docs: http://localhost:8000/docs\n\nOptional:\n- Add tests: pytest tests/ -v --cov=app\n- Add Docker: docker-compose up -d\n- Deploy: Use /zenith-deploy or /scaffold-kubernetes"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/scaffold-ci-github --app {app_name}",
+            "/scaffold-kubernetes --app {app_name}",
+            "/scaffold-terraform --provider aws"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-scaffold-react",
+      "description": "Provide next steps after scaffolding a React application",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*scaffold-react-vite*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ React + Vite application scaffolded successfully!\n\nNext steps:\n1. Install dependencies: cd {app_name} && npm install\n2. Start dev server: npm run dev\n3. View application: http://localhost:5173\n4. Build for production: npm run build\n\nOptional:\n- Add tests: npm run test\n- Add backend: /scaffold-fastapi --name {app_name}-api\n- Configure CI/CD: /scaffold-ci-github --app {app_name}\n- Preview production build: npm run preview"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/scaffold-fastapi --name {app_name}-api",
+            "/scaffold-ci-github --app {app_name}",
+            "/scaffold-kubernetes --app {app_name}"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-scaffold-fullstack",
+      "description": "Provide comprehensive next steps after scaffolding a full-stack application",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*scaffold-fullstack*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ Full-stack application scaffolded successfully!\n\nYour project structure:\n{app_name}/\n├── frontend/    (React + Vite)\n├── backend/     (FastAPI)\n├── infrastructure/ (Docker Compose)\n└── .github/workflows/ (CI/CD)\n\nQuick start:\n1. Start all services: docker-compose up -d\n2. Frontend: http://localhost:5173\n3. Backend API: http://localhost:8000\n4. API docs: http://localhost:8000/docs\n\nDevelopment workflow:\n1. Frontend dev: cd frontend && npm run dev\n2. Backend dev: cd backend && uvicorn app.main:app --reload\n3. Run tests: npm test (frontend), pytest (backend)\n\nNext steps:\n- Add infrastructure: /scaffold-kubernetes or /scaffold-terraform\n- Set up CI/CD: /scaffold-ci-github (already included!)\n- Deploy: /zenith-deploy --app {app_name} --env staging"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/scaffold-kubernetes --app {app_name} --replicas 3",
+            "/scaffold-terraform --provider aws --modules vpc,rds,s3",
+            "/zenith-deploy --app {app_name} --env staging --cloud aws"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-scaffold-kubernetes",
+      "description": "Provide deployment instructions after scaffolding Kubernetes manifests",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*scaffold-kubernetes*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ Kubernetes manifests generated successfully!\n\nGenerated files:\n- k8s/deployment.yaml (application deployment)\n- k8s/service.yaml (service exposure)\n- k8s/ingress.yaml (external access)\n- k8s/configmap.yaml (configuration)\n- k8s/secret.yaml (secrets - remember to fill in!)\n- helm/ (Helm chart for easy deployment)\n\nDeploy to cluster:\n1. Create namespace: kubectl create namespace {namespace}\n2. Create secrets: kubectl apply -f k8s/secret.yaml -n {namespace}\n3. Deploy app: kubectl apply -f k8s/ -n {namespace}\n4. Check status: kubectl get all -n {namespace}\n\nOr use Helm:\n1. helm install {app_name} ./helm/{app_name} -n {namespace}\n2. Check status: helm status {app_name} -n {namespace}\n\nVerify deployment:\n- kubectl logs -n {namespace} -l app={app_name} -f\n- kubectl get ingress -n {namespace}"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/zenith-status --app {app_name}",
+            "/scaffold-terraform --provider aws --modules eks",
+            "/zenith-deploy --app {app_name} --env production"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-scaffold-terraform",
+      "description": "Provide provisioning instructions after scaffolding Terraform modules",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*scaffold-terraform*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ Terraform infrastructure modules generated!\n\nGenerated modules:\n{modules_list}\n\nSetup:\n1. Configure backend: Edit terraform/backend.tf\n2. Set variables: Edit terraform/terraform.tfvars\n3. Initialize: cd terraform && terraform init\n\nPlan and apply:\n1. Preview changes: terraform plan\n2. Review the plan carefully!\n3. Apply changes: terraform apply\n4. Verify: terraform show\n\nBest practices:\n- Use remote state (S3/Azure/GCS)\n- Enable state locking\n- Use workspaces for environments\n- Never commit secrets or .tfstate files\n\nCleanup:\n- terraform destroy (when you want to tear down)"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/zenith-audit --app {app_name} --terraform",
+            "/scaffold-ansible --target terraform-provisioned",
+            "/scaffold-kubernetes --app {app_name}"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-deploy",
+      "description": "Provide verification steps after deployment",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*zenith-deploy*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ Deployment completed!\n\nVerification checklist:\n□ Application health: /zenith-status --app {app_name} --env {env}\n□ Check logs: kubectl logs -n {namespace} -l app={app_name} --tail=100\n□ Test endpoints: curl https://{app_name}.{domain}/health\n□ Monitor metrics: Check your monitoring dashboard\n□ Run smoke tests: (if configured)\n\nRollback if needed:\n- /zenith-rollback --app {app_name} --env {env} --version {previous_version}\n\nNext steps:\n- Set up monitoring alerts\n- Configure autoscaling\n- Review security audit: /zenith-audit --app {app_name}\n- Document deployment in Obsidian vault"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/zenith-status --app {app_name} --env {env}",
+            "/zenith-audit --app {app_name}",
+            "/zenith-rollback --app {app_name} --env {env}"
+          ]
+        },
+        {
+          "type": "check",
+          "checks": [
+            {
+              "name": "deployment_health",
+              "command": "kubectl get pods -n {namespace} -l app={app_name}",
+              "expected": "Running"
+            },
+            {
+              "name": "service_endpoints",
+              "command": "kubectl get endpoints -n {namespace} {app_name}",
+              "expected": "has_addresses"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-ci-scaffold",
+      "description": "Provide next steps after scaffolding CI/CD pipelines",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*scaffold-ci-*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ CI/CD pipeline configuration generated!\n\nGenerated files:\n{pipeline_files}\n\nSetup:\n1. Review pipeline configuration\n2. Add required secrets to your CI/CD platform:\n   - Cloud credentials (AWS_ACCESS_KEY_ID, etc.)\n   - Docker registry credentials\n   - Kubernetes cluster access\n   - Application secrets\n3. Commit and push: git add . && git commit -m \"Add CI/CD pipeline\" && git push\n\nPipeline stages:\n- Test: Run unit and integration tests\n- Build: Build Docker images\n- Security: Scan for vulnerabilities\n- Deploy: Deploy to target environment\n\nFirst run:\n1. Push to trigger pipeline\n2. Monitor pipeline execution\n3. Review test results and security scans\n4. Approve deployment to production (if manual approval required)"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/zenith-deploy --app {app_name} --env staging",
+            "/zenith-audit --app {app_name} --cicd",
+            "/scaffold-kubernetes --app {app_name}"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-audit",
+      "description": "Provide remediation guidance after security audit",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*zenith-audit*"
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ Security audit completed!\n\nReview the audit report for:\n- Dependency vulnerabilities\n- Container security issues\n- Infrastructure misconfigurations\n- Secret exposure risks\n- Compliance gaps\n\nRemediation priority:\n1. Critical vulnerabilities (immediate action)\n2. High severity issues (within 24 hours)\n3. Medium severity issues (within 1 week)\n4. Low severity issues (backlog)\n\nNext steps:\n1. Review detailed findings\n2. Update dependencies with vulnerabilities\n3. Fix configuration issues\n4. Re-run audit to verify fixes\n5. Document remediation in Obsidian vault"
+        },
+        {
+          "type": "suggest_commands",
+          "commands": [
+            "/zenith-audit --app {app_name} --full --recheck"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-database-scaffold",
+      "description": "Provide setup instructions after scaffolding database configuration",
+      "trigger": {
+        "tool": "Bash",
+        "condition": {
+          "command_pattern": "*scaffold*",
+          "and": {
+            "file_created_pattern": "**/migrations/**"
+          }
+        }
+      },
+      "actions": [
+        {
+          "type": "message",
+          "content": "✓ Database configuration generated!\n\nSetup:\n1. Start database: docker-compose up -d db\n2. Create database: (usually auto-created by docker-compose)\n3. Run migrations: alembic upgrade head (for PostgreSQL)\n4. Verify: psql -h localhost -U {db_user} -d {db_name} -c '\\dt'\n\nDevelopment workflow:\n- Create migration: alembic revision --autogenerate -m \"description\"\n- Apply migration: alembic upgrade head\n- Rollback: alembic downgrade -1\n- Check status: alembic current\n\nBest practices:\n- Always test migrations on staging first\n- Create backup before production migrations\n- Migrations should be idempotent\n- Include both upgrade and downgrade paths"
+        }
+      ]
+    }
+  ]
+}

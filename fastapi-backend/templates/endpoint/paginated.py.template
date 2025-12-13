@@ -1,0 +1,265 @@
+"""
+{{module_name}} - Paginated List Endpoint
+
+This module provides paginated list operations for {{resource_name}}.
+"""
+
+from typing import List, Optional, Any, Dict
+from fastapi import APIRouter, HTTPException, status, Query
+from pydantic import BaseModel, Field
+from beanie import PydanticObjectId
+from beanie.operators import In, RegEx
+
+from models.{{model_file}} import {{model_name}}
+from schemas.{{schema_file}} import {{model_name}}Response
+
+
+class PaginationMetadata(BaseModel):
+    """Pagination metadata."""
+
+    total: int = Field(..., description="Total number of items")
+    page: int = Field(..., description="Current page number")
+    page_size: int = Field(..., description="Items per page")
+    total_pages: int = Field(..., description="Total number of pages")
+    has_next: bool = Field(..., description="Whether there is a next page")
+    has_previous: bool = Field(..., description="Whether there is a previous page")
+
+
+class PaginatedResponse(BaseModel):
+    """Paginated response wrapper."""
+
+    items: List[{{model_name}}Response] = Field(..., description="List of items")
+    metadata: PaginationMetadata = Field(..., description="Pagination metadata")
+
+
+class SortOrder(str):
+    """Sort order enum."""
+
+    ASC = "asc"
+    DESC = "desc"
+
+
+router = APIRouter(
+    prefix="/{{resource_path}}",
+    tags=["{{resource_tag}}"],
+)
+
+
+@router.get(
+    "/",
+    response_model=PaginatedResponse,
+    summary="List {{resource_name}} (paginated)",
+    description="Retrieve a paginated list of {{resource_name}} with filtering and sorting.",
+)
+async def list_{{resource_name}}_paginated(
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    sort_by: Optional[str] = Query(None, description="Field to sort by"),
+    sort_order: Optional[str] = Query("asc", regex="^(asc|desc)$", description="Sort order"),
+    search: Optional[str] = Query(None, description="Search term"),
+    {{filter_field}}: Optional[str] = Query(None, description="Filter by {{filter_field}}"),
+) -> PaginatedResponse:
+    """
+    List {{resource_name}} with pagination, filtering, and sorting.
+
+    Args:
+        page: Page number (starts from 1)
+        page_size: Number of items per page (1-100)
+        sort_by: Field name to sort by
+        sort_order: Sort order ('asc' or 'desc')
+        search: Search term to filter results
+        {{filter_field}}: Filter by {{filter_field}}
+
+    Returns:
+        Paginated response with items and metadata
+
+    Raises:
+        HTTPException: If query fails
+    """
+    try:
+        # Build query
+        query: Dict[str, Any] = {}
+
+        # Add search filter
+        if search:
+            query["$or"] = [
+                {"{{search_field_1}}": RegEx(search, "i")},
+                {"{{search_field_2}}": RegEx(search, "i")},
+            ]
+
+        # Add specific filters
+        if {{filter_field}}:
+            query["{{filter_field}}"] = {{filter_field}}
+
+        # Get total count
+        total = await {{model_name}}.find(query).count()
+
+        # Calculate pagination
+        skip = (page - 1) * page_size
+        total_pages = (total + page_size - 1) // page_size
+
+        # Build query with pagination
+        find_query = {{model_name}}.find(query).skip(skip).limit(page_size)
+
+        # Add sorting
+        if sort_by:
+            sort_direction = 1 if sort_order == "asc" else -1
+            find_query = find_query.sort((sort_by, sort_direction))
+
+        # Execute query
+        documents = await find_query.to_list()
+
+        # Build response
+        items = [{{model_name}}Response(**doc.model_dump()) for doc in documents]
+
+        metadata = PaginationMetadata(
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            has_next=page < total_pages,
+            has_previous=page > 1,
+        )
+
+        return PaginatedResponse(items=items, metadata=metadata)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve {{resource_name}}: {str(e)}",
+        )
+
+
+@router.get(
+    "/search",
+    response_model=PaginatedResponse,
+    summary="Search {{resource_name}}",
+    description="Full-text search across {{resource_name}}.",
+)
+async def search_{{resource_name}}(
+    q: str = Query(..., min_length=1, description="Search query"),
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+) -> PaginatedResponse:
+    """
+    Search {{resource_name}} using full-text search.
+
+    Args:
+        q: Search query string
+        page: Page number
+        page_size: Items per page
+
+    Returns:
+        Paginated search results
+
+    Raises:
+        HTTPException: If search fails
+    """
+    try:
+        # MongoDB text search (requires text index)
+        query = {"$text": {"$search": q}}
+
+        # Get total count
+        total = await {{model_name}}.find(query).count()
+
+        # Calculate pagination
+        skip = (page - 1) * page_size
+        total_pages = (total + page_size - 1) // page_size
+
+        # Execute search with pagination
+        documents = (
+            await {{model_name}}
+            .find(query)
+            .skip(skip)
+            .limit(page_size)
+            .to_list()
+        )
+
+        # Build response
+        items = [{{model_name}}Response(**doc.model_dump()) for doc in documents]
+
+        metadata = PaginationMetadata(
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            has_next=page < total_pages,
+            has_previous=page > 1,
+        )
+
+        return PaginatedResponse(items=items, metadata=metadata)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Search failed: {str(e)}",
+        )
+
+
+@router.post(
+    "/filter",
+    response_model=PaginatedResponse,
+    summary="Advanced filter {{resource_name}}",
+    description="Advanced filtering with complex criteria.",
+)
+async def filter_{{resource_name}}(
+    filters: Dict[str, Any],
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    sort_by: Optional[str] = Query(None, description="Field to sort by"),
+    sort_order: Optional[str] = Query("asc", regex="^(asc|desc)$", description="Sort order"),
+) -> PaginatedResponse:
+    """
+    Filter {{resource_name}} with advanced criteria.
+
+    Args:
+        filters: Dictionary of filter criteria
+        page: Page number
+        page_size: Items per page
+        sort_by: Field to sort by
+        sort_order: Sort order
+
+    Returns:
+        Paginated filtered results
+
+    Raises:
+        HTTPException: If filtering fails
+    """
+    try:
+        # Get total count
+        total = await {{model_name}}.find(filters).count()
+
+        # Calculate pagination
+        skip = (page - 1) * page_size
+        total_pages = (total + page_size - 1) // page_size
+
+        # Build query
+        find_query = {{model_name}}.find(filters).skip(skip).limit(page_size)
+
+        # Add sorting
+        if sort_by:
+            sort_direction = 1 if sort_order == "asc" else -1
+            find_query = find_query.sort((sort_by, sort_direction))
+
+        # Execute query
+        documents = await find_query.to_list()
+
+        # Build response
+        items = [{{model_name}}Response(**doc.model_dump()) for doc in documents]
+
+        metadata = PaginationMetadata(
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            has_next=page < total_pages,
+            has_previous=page > 1,
+        )
+
+        return PaginatedResponse(items=items, metadata=metadata)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Filter failed: {str(e)}",
+        )

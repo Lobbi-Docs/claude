@@ -1,0 +1,306 @@
+# Zigbee2MQTT Configuration
+# Production-ready configuration for Ahling Command Center
+# Documentation: https://www.zigbee2mqtt.io/guide/configuration/
+
+# ============================================================================
+# Home Assistant Integration
+# ============================================================================
+homeassistant:
+  # Enable Home Assistant discovery
+  discovery_topic: homeassistant
+  status_topic: homeassistant/status
+  # Use legacy entity attributes (disable for new installations)
+  legacy_entity_attributes: false
+  # Use legacy triggers (disable for new installations)
+  legacy_triggers: false
+
+# ============================================================================
+# MQTT Broker Configuration
+# ============================================================================
+mqtt:
+  # MQTT broker URL
+  server: mqtt://mosquitto:1883
+  # MQTT base topic
+  base_topic: zigbee2mqtt
+  # Include device information in published messages
+  include_device_information: true
+  # Force disable retain flag for messages
+  force_disable_retain: false
+  # MQTT version (3, 4, or 5)
+  version: 5
+  # Keep alive interval (seconds)
+  keepalive: 60
+  # Reject unauthorized TLS connections
+  reject_unauthorized: true
+  # Client ID
+  client_id: zigbee2mqtt
+  # Username (set via environment variable)
+  # user: mqtt_user
+  # Password (set via environment variable)
+  # password: mqtt_password
+
+# ============================================================================
+# Serial Port Configuration
+# ============================================================================
+serial:
+  # Serial port path
+  port: /dev/ttyUSB0
+  # Disable LED on coordinator (optional)
+  disable_led: false
+  # Adapter type (auto-detect or specify)
+  # Options: zstack, deconz, zigate, ezsp, auto
+  adapter: auto
+  # Baud rate (default for most adapters)
+  # baudrate: 115200
+  # RTS/CTS hardware flow control
+  # rtscts: false
+
+# ============================================================================
+# Advanced Serial Configuration
+# ============================================================================
+advanced:
+  # Pan ID (0x6754 is recommended, change if you have multiple networks)
+  pan_id: 6754
+  # Extended Pan ID (GENERATE_NEW for new network)
+  ext_pan_id: [0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xDD]
+  # Network channel (11-26, avoid WiFi channels)
+  channel: 15
+  # Network key (GENERATE for new network, or specify 16 bytes)
+  network_key: GENERATE
+
+  # Logging level (debug, info, warn, error)
+  log_level: info
+  # Log to syslog
+  log_syslog: {}
+  # Log directory
+  log_directory: /app/data/log/%TIMESTAMP%
+  # Output log to file
+  log_output: ['console', 'file']
+  # Symlink current log
+  log_symlink_current: true
+  # Log debug messages for namespaces
+  # log_debug_to_mqtt_frontend: false
+  # log_debug_namespace_ignore: ''
+
+  # Zigbee Herdsman settings
+  # Transmit power (0-20 for CC2652/CC1352, 0-8 for CC2530/CC2531)
+  transmit_power: 20
+
+  # Homeassistant legacy entity attributes
+  homeassistant_legacy_entity_attributes: false
+  # Legacy API
+  legacy_api: false
+  # Legacy availability payload
+  legacy_availability_payload: false
+
+  # Cache state in memory
+  cache_state: true
+  # Persist cache state to file
+  cache_state_persistent: true
+  # Send cached state on startup
+  cache_state_send_on_startup: true
+
+  # Elapsed time
+  elapsed: false
+
+  # Last seen (disable, ISO_8601, ISO_8601_local, epoch)
+  last_seen: ISO_8601
+
+  # Timestamp format
+  timestamp_format: YYYY-MM-DD HH:mm:ss
+
+  # Output options
+  output: json
+
+  # MQTT settings
+  # Report when device is offline
+  availability_timeout: 0
+  availability_blocklist: []
+  availability_passlist: []
+  availability_blacklist: []
+  availability_whitelist: []
+
+# ============================================================================
+# Frontend Configuration
+# ============================================================================
+frontend:
+  # Enable web frontend
+  port: 8080
+  # Host to bind to (0.0.0.0 for all interfaces)
+  host: 0.0.0.0
+  # Authentication token (optional)
+  # auth_token: your-secret-token
+  # URL for accessing frontend (used in MQTT messages)
+  url: http://zigbee.ahling.local
+
+# ============================================================================
+# Device & Group Configuration
+# ============================================================================
+
+# Devices configuration (friendly names and settings)
+devices:
+  # Example device configuration
+  # '0x00158d0001a2b3c4':
+  #   friendly_name: living_room/motion_sensor
+  #   retain: true
+  #   qos: 1
+  #   debounce: 0.5
+  #   debounce_ignore:
+  #     - action
+  #   filtered_attributes:
+  #     - temperature
+  #     - humidity
+
+  # Device-specific overrides
+  # Use devices.yaml for better organization
+  # devices.yaml
+
+# Groups configuration
+groups:
+  # Example group configuration
+  # '1':
+  #   friendly_name: living_room/all_lights
+  #   retain: false
+  #   devices:
+  #     - living_room/bulb_1
+  #     - living_room/bulb_2
+  #   optimistic: true
+
+  # Use groups.yaml for better organization
+  # groups.yaml
+
+# ============================================================================
+# Device Options
+# ============================================================================
+device_options:
+  # Legacy options (deprecated, use per-device config)
+  # retain: false
+  # qos: 0
+
+  # Simulated brightness (for devices that don't support it)
+  # simulated_brightness:
+  #   delta: 20
+  #   interval: 200
+
+# ============================================================================
+# Passlist/Blocklist
+# ============================================================================
+
+# Permit join configuration
+permit_join: false
+# Automatically enable permit join on startup
+# permit_join_timeout: 0
+
+# Blocklist (devices that should not be allowed to join)
+blocklist: []
+
+# Passlist (only these devices are allowed to join)
+passlist: []
+
+# ============================================================================
+# External Converters
+# ============================================================================
+
+# External converters directory for custom device support
+# external_converters:
+#   - devices.js
+
+# ============================================================================
+# Map Options
+# ============================================================================
+map_options:
+  # Graphviz engine (neato, circo, fdp)
+  graphviz:
+    colors:
+      fill:
+        enddevice: '#fff8ce'
+        coordinator: '#e04e5d'
+        router: '#4ea3e0'
+      font:
+        coordinator: '#ffffff'
+        router: '#ffffff'
+        enddevice: '#000000'
+      line:
+        active: '#009900'
+        inactive: '#994444'
+
+# ============================================================================
+# OTA Updates
+# ============================================================================
+ota:
+  # Disable automatic OTA update checks
+  disable_automatic_update_check: false
+  # IKEA OTA index
+  ikea_ota_use_test_url: false
+  # Update check interval (minutes)
+  update_check_interval: 1440
+  # Zigbee OTA repository URL
+  # zigbee_ota_override_index_location: https://example.com/index.json
+
+# ============================================================================
+# Experimental Features
+# ============================================================================
+experimental:
+  # New API (recommended for new installations)
+  new_api: true
+  # Output mode (attribute_and_json, attribute, json)
+  # output: attribute_and_json
+  # Transmit power (dBm)
+  # transmit_power: 20
+
+# ============================================================================
+# Advanced Network Settings
+# ============================================================================
+# advanced:
+  # Adapter concurrent requests
+  # adapter_concurrent: null
+  # Adapter delay
+  # adapter_delay: 0
+
+  # Network settings
+  # network_key: GENERATE
+  # pan_id: GENERATE
+  # ext_pan_id: GENERATE
+  # channel: 11
+
+  # Security settings
+  # security_policy:
+  #   default: ['install_code']
+
+  # Soft reset timeout (milliseconds)
+  # soft_reset_timeout: 0
+
+  # Report (enable device reporting)
+  # report: false
+
+# ============================================================================
+# Touchlink Configuration
+# ============================================================================
+# touchlink:
+#   enabled: false
+#   scan_timeout: 30
+#   identify_timeout: 10
+
+# ============================================================================
+# Availability Configuration
+# ============================================================================
+availability:
+  # Active availability check
+  active:
+    # Timeout in seconds (default: 10 minutes)
+    timeout: 600
+  # Passive availability check
+  passive:
+    # Timeout in seconds (default: 25 hours)
+    timeout: 90000
+
+# ============================================================================
+# External Configuration Files
+# ============================================================================
+# You can split configuration into multiple files for better organization:
+# devices: devices.yaml
+# groups: groups.yaml
+
+# ============================================================================
+# End of Configuration
+# ============================================================================

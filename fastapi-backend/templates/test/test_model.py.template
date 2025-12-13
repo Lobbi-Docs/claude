@@ -1,0 +1,675 @@
+"""
+Tests for {{model_name}} Beanie model.
+
+This module contains comprehensive tests for the {{model_name}} database model,
+including CRUD operations, validation, indexes, and lifecycle hooks.
+
+Beanie Documentation: https://beanie-odm.dev/
+"""
+
+import pytest
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+from unittest.mock import AsyncMock, patch
+
+from beanie import PydanticObjectId
+from beanie.exceptions import DocumentNotFound
+from pydantic import ValidationError
+from pymongo.errors import DuplicateKeyError
+
+from app.models.{{model_module}} import {{model_name}}, {{model_name}}Status
+{{#if has_embedded_models}}
+from app.models.{{model_module}} import {{#each embedded_models}}{{name}}, {{/each}}
+{{/if}}
+
+
+class Test{{model_name}}Creation:
+    """Tests for {{model_name}} creation and validation"""
+
+    @pytest.mark.asyncio
+    async def test_create_{{model_lower}}_success(
+        self,
+        {{model_lower}}_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test successful creation of a {{model_name}}.
+
+        Given: Valid {{model_name}} data
+        When: {{model_name}} is created and saved
+        Then: Document is persisted with correct values
+        """
+        # Act
+        {{model_lower}} = {{model_name}}(**{{model_lower}}_data)
+        await {{model_lower}}.insert()
+
+        # Assert
+        assert {{model_lower}}.id is not None
+        {{#each assertions}}
+        assert {{model_lower}}.{{field}} == {{expected}}
+        {{/each}}
+
+        # Verify in database
+        db_{{model_lower}} = await {{model_name}}.get({{model_lower}}.id)
+        assert db_{{model_lower}} is not None
+        assert db_{{model_lower}}.id == {{model_lower}}.id
+
+    @pytest.mark.asyncio
+    async def test_create_{{model_lower}}_with_defaults(self) -> None:
+        """
+        Test creation with default values.
+
+        Given: Minimal required data
+        When: {{model_name}} is created
+        Then: Default values are populated
+        """
+        # Arrange
+        minimal_data = {
+            {{#each required_fields}}
+            "{{name}}": {{example}},
+            {{/each}}
+        }
+
+        # Act
+        {{model_lower}} = {{model_name}}(**minimal_data)
+        await {{model_lower}}.insert()
+
+        # Assert
+        {{#each default_fields}}
+        assert {{model_lower}}.{{name}} == {{default_value}}
+        {{/each}}
+        assert {{model_lower}}.created_at is not None
+        assert {{model_lower}}.updated_at is not None
+
+    @pytest.mark.asyncio
+    async def test_create_{{model_lower}}_validation_error(self) -> None:
+        """
+        Test creation with invalid data.
+
+        Given: Invalid {{model_name}} data
+        When: {{model_name}} creation is attempted
+        Then: ValidationError is raised
+        """
+        # Arrange
+        invalid_data = {
+            {{#each invalid_fields}}
+            "{{name}}": {{invalid_value}},
+            {{/each}}
+        }
+
+        # Act & Assert
+        with pytest.raises(ValidationError) as exc_info:
+            {{model_name}}(**invalid_data)
+
+        # Verify error details
+        errors = exc_info.value.errors()
+        {{#each expected_errors}}
+        assert any(error["loc"] == ("{{field}}",) for error in errors)
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_create_{{model_lower}}_unique_constraint(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test unique constraint enforcement.
+
+        Given: Existing {{model_name}} with unique field
+        When: Another {{model_name}} with same unique field is created
+        Then: DuplicateKeyError is raised
+        """
+        # Arrange
+        duplicate_data = test_{{model_lower}}.model_dump()
+        duplicate_data.pop("id", None)
+        duplicate_data["{{unique_field}}"] = test_{{model_lower}}.{{unique_field}}
+
+        # Act & Assert
+        duplicate_{{model_lower}} = {{model_name}}(**duplicate_data)
+
+        with pytest.raises(DuplicateKeyError):
+            await duplicate_{{model_lower}}.insert()
+
+
+class Test{{model_name}}Retrieval:
+    """Tests for {{model_name}} retrieval operations"""
+
+    @pytest.mark.asyncio
+    async def test_get_{{model_lower}}_by_id(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test retrieval by ID.
+
+        Given: Existing {{model_name}}
+        When: Retrieved by ID
+        Then: Returns correct document
+        """
+        # Act
+        result = await {{model_name}}.get(test_{{model_lower}}.id)
+
+        # Assert
+        assert result is not None
+        assert result.id == test_{{model_lower}}.id
+        {{#each id_assertions}}
+        assert result.{{field}} == test_{{model_lower}}.{{field}}
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_get_{{model_lower}}_not_found(self) -> None:
+        """
+        Test retrieval of non-existent document.
+
+        Given: Invalid ID
+        When: Retrieved by ID
+        Then: Returns None
+        """
+        # Arrange
+        invalid_id = PydanticObjectId()
+
+        # Act
+        result = await {{model_name}}.get(invalid_id)
+
+        # Assert
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_find_{{model_lower}}_by_field(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test finding by specific field.
+
+        Given: {{model_name}} with known field value
+        When: Searched by that field
+        Then: Returns matching document(s)
+        """
+        # Act
+        result = await {{model_name}}.find_one(
+            {{model_name}}.{{search_field}} == test_{{model_lower}}.{{search_field}}
+        )
+
+        # Assert
+        assert result is not None
+        assert result.id == test_{{model_lower}}.id
+
+    @pytest.mark.asyncio
+    async def test_find_all_{{model_lower}}s(
+        self,
+        test_{{model_lower}}_list: List[{{model_name}}],
+    ) -> None:
+        """
+        Test finding all documents with pagination.
+
+        Given: Multiple {{model_name}} documents
+        When: Find all with skip/limit
+        Then: Returns paginated results
+        """
+        # Act
+        results = await {{model_name}}.find_all().skip(0).limit(10).to_list()
+
+        # Assert
+        assert len(results) > 0
+        assert len(results) <= 10
+        assert all(isinstance(item, {{model_name}}) for item in results)
+
+    @pytest.mark.asyncio
+    async def test_find_with_filter(
+        self,
+        test_{{model_lower}}_list: List[{{model_name}}],
+    ) -> None:
+        """
+        Test finding with complex filter.
+
+        Given: Multiple {{model_name}} documents with different statuses
+        When: Filtered by status
+        Then: Returns only matching documents
+        """
+        # Arrange
+        target_status = {{model_name}}Status.{{target_status}}
+
+        # Act
+        results = await {{model_name}}.find(
+            {{model_name}}.status == target_status
+        ).to_list()
+
+        # Assert
+        assert all(item.status == target_status for item in results)
+
+    @pytest.mark.asyncio
+    async def test_find_with_aggregation(
+        self,
+        test_{{model_lower}}_list: List[{{model_name}}],
+    ) -> None:
+        """
+        Test aggregation pipeline.
+
+        Given: Multiple {{model_name}} documents
+        When: Aggregation is performed
+        Then: Returns aggregated results
+        """
+        # Act
+        pipeline = [
+            {"$group": {
+                "_id": "$status",
+                "count": {"$sum": 1}
+            }},
+            {"$sort": {"count": -1}}
+        ]
+
+        results = await {{model_name}}.aggregate(pipeline).to_list()
+
+        # Assert
+        assert len(results) > 0
+        assert all("_id" in item and "count" in item for item in results)
+
+
+class Test{{model_name}}Update:
+    """Tests for {{model_name}} update operations"""
+
+    @pytest.mark.asyncio
+    async def test_update_{{model_lower}}_field(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test updating a single field.
+
+        Given: Existing {{model_name}}
+        When: Field is updated
+        Then: Document is updated in database
+        """
+        # Arrange
+        new_value = "{{new_value}}"
+        original_updated_at = test_{{model_lower}}.updated_at
+
+        # Act
+        test_{{model_lower}}.{{update_field}} = new_value
+        await test_{{model_lower}}.save()
+
+        # Assert
+        updated = await {{model_name}}.get(test_{{model_lower}}.id)
+        assert updated.{{update_field}} == new_value
+        assert updated.updated_at > original_updated_at
+
+    @pytest.mark.asyncio
+    async def test_update_{{model_lower}}_multiple_fields(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test updating multiple fields.
+
+        Given: Existing {{model_name}}
+        When: Multiple fields are updated
+        Then: All changes are persisted
+        """
+        # Arrange
+        updates = {
+            {{#each update_fields}}
+            "{{name}}": {{new_value}},
+            {{/each}}
+        }
+
+        # Act
+        await test_{{model_lower}}.set(updates)
+
+        # Assert
+        updated = await {{model_name}}.get(test_{{model_lower}}.id)
+        {{#each update_fields}}
+        assert updated.{{name}} == {{new_value}}
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_update_{{model_lower}}_upsert(
+        self,
+        {{model_lower}}_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test upsert operation (update or insert).
+
+        Given: Possibly non-existent {{model_name}}
+        When: Upsert is performed
+        Then: Document is created or updated
+        """
+        # Arrange
+        filter_criteria = {"{{unique_field}}": {{model_lower}}_data["{{unique_field}}"]}
+
+        # Act
+        result = await {{model_name}}.find_one(filter_criteria).upsert(
+            {"$set": {{model_lower}}_data},
+            on_insert={{model_name}}(**{{model_lower}}_data)
+        )
+
+        # Assert
+        assert result is not None
+        assert result.{{unique_field}} == {{model_lower}}_data["{{unique_field}}"]
+
+    @pytest.mark.asyncio
+    async def test_update_{{model_lower}}_atomic_increment(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test atomic increment operation.
+
+        Given: {{model_name}} with numeric field
+        When: Field is atomically incremented
+        Then: Value is incremented correctly
+        """
+        # Arrange
+        original_value = test_{{model_lower}}.{{numeric_field}}
+
+        # Act
+        await {{model_name}}.find_one(
+            {{model_name}}.id == test_{{model_lower}}.id
+        ).inc({{{model_name}}.{{numeric_field}}: 1})
+
+        # Assert
+        updated = await {{model_name}}.get(test_{{model_lower}}.id)
+        assert updated.{{numeric_field}} == original_value + 1
+
+
+class Test{{model_name}}Delete:
+    """Tests for {{model_name}} deletion operations"""
+
+    @pytest.mark.asyncio
+    async def test_delete_{{model_lower}}_hard_delete(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test hard deletion.
+
+        Given: Existing {{model_name}}
+        When: Hard delete is performed
+        Then: Document is removed from database
+        """
+        # Arrange
+        {{model_lower}}_id = test_{{model_lower}}.id
+
+        # Act
+        await test_{{model_lower}}.delete()
+
+        # Assert
+        result = await {{model_name}}.get({{model_lower}}_id)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_delete_{{model_lower}}_soft_delete(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test soft deletion.
+
+        Given: Existing {{model_name}}
+        When: Soft delete is performed
+        Then: Document is marked as deleted but not removed
+        """
+        # Act
+        test_{{model_lower}}.deleted_at = datetime.utcnow()
+        test_{{model_lower}}.is_deleted = True
+        await test_{{model_lower}}.save()
+
+        # Assert
+        result = await {{model_name}}.get(test_{{model_lower}}.id)
+        assert result is not None
+        assert result.is_deleted is True
+        assert result.deleted_at is not None
+
+    @pytest.mark.asyncio
+    async def test_delete_many_{{model_lower}}s(
+        self,
+        test_{{model_lower}}_list: List[{{model_name}}],
+    ) -> None:
+        """
+        Test bulk deletion.
+
+        Given: Multiple {{model_name}} documents
+        When: Bulk delete is performed
+        Then: All matching documents are deleted
+        """
+        # Arrange
+        ids_to_delete = [item.id for item in test_{{model_lower}}_list[:3]]
+
+        # Act
+        result = await {{model_name}}.find(
+            {"_id": {"$in": ids_to_delete}}
+        ).delete()
+
+        # Assert
+        assert result.deleted_count == 3
+
+        # Verify deletion
+        remaining = await {{model_name}}.find(
+            {"_id": {"$in": ids_to_delete}}
+        ).to_list()
+        assert len(remaining) == 0
+
+
+class Test{{model_name}}Lifecycle:
+    """Tests for {{model_name}} lifecycle hooks and methods"""
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_before_save_hook(
+        self,
+        {{model_lower}}_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test before_save lifecycle hook.
+
+        Given: {{model_name}} with before_save hook
+        When: Document is saved
+        Then: Hook modifications are applied
+        """
+        # Act
+        {{model_lower}} = {{model_name}}(**{{model_lower}}_data)
+        await {{model_lower}}.insert()
+
+        # Assert
+        {{#each before_save_assertions}}
+        assert {{model_lower}}.{{field}} {{operator}} {{expected}}
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_after_insert_hook(
+        self,
+        {{model_lower}}_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test after_insert lifecycle hook.
+
+        Given: {{model_name}} with after_insert hook
+        When: Document is inserted
+        Then: Post-insert actions are performed
+        """
+        # Act
+        {{model_lower}} = {{model_name}}(**{{model_lower}}_data)
+        await {{model_lower}}.insert()
+
+        # Assert
+        # TODO: Verify after_insert side effects
+        # Examples: event published, cache updated, notification sent
+        {{after_insert_assertions}}
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_custom_method(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test custom model method.
+
+        Given: {{model_name}} with custom method
+        When: Method is called
+        Then: Expected behavior occurs
+        """
+        # Act
+        result = await test_{{model_lower}}.{{custom_method}}({{method_args}})
+
+        # Assert
+        {{#each method_assertions}}
+        assert {{assertion}}
+        {{/each}}
+
+
+class Test{{model_name}}Indexes:
+    """Tests for {{model_name}} database indexes"""
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_indexes_created(self) -> None:
+        """
+        Test that required indexes are created.
+
+        Given: {{model_name}} with index definitions
+        When: Indexes are inspected
+        Then: All required indexes exist
+        """
+        # Act
+        indexes = await {{model_name}}.get_motor_collection().index_information()
+
+        # Assert
+        {{#each indexes}}
+        assert "{{name}}" in indexes or any(
+            "{{field}}" in str(idx.get("key", [])) for idx in indexes.values()
+        )
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_unique_index_enforcement(
+        self,
+        test_{{model_lower}}: {{model_name}},
+        {{model_lower}}_data: Dict[str, Any],
+    ) -> None:
+        """
+        Test unique index enforcement.
+
+        Given: Document with unique indexed field
+        When: Duplicate value is inserted
+        Then: DuplicateKeyError is raised
+        """
+        # Arrange
+        {{model_lower}}_data["{{unique_field}}"] = test_{{model_lower}}.{{unique_field}}
+        duplicate = {{model_name}}(**{{model_lower}}_data)
+
+        # Act & Assert
+        with pytest.raises(DuplicateKeyError):
+            await duplicate.insert()
+
+
+class Test{{model_name}}Relationships:
+    """Tests for {{model_name}} relationships with other models"""
+
+    {{#if has_references}}
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_{{reference_name}}_relationship(
+        self,
+        test_{{model_lower}}: {{model_name}},
+        test_{{reference_name}}: {{reference_model}},
+    ) -> None:
+        """
+        Test relationship with {{reference_model}}.
+
+        Given: {{model_name}} with {{reference_model}} reference
+        When: Reference is fetched
+        Then: Related document is loaded
+        """
+        # Arrange
+        test_{{model_lower}}.{{reference_field}} = test_{{reference_name}}.id
+        await test_{{model_lower}}.save()
+
+        # Act
+        await test_{{model_lower}}.fetch_link({{model_name}}.{{reference_field}})
+
+        # Assert
+        assert test_{{model_lower}}.{{reference_field}}.id == test_{{reference_name}}.id
+    {{/if}}
+
+    {{#if has_embedded}}
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_embedded_documents(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test embedded document handling.
+
+        Given: {{model_name}} with embedded documents
+        When: Embedded document is accessed
+        Then: Data is properly structured
+        """
+        # Assert
+        {{#each embedded_fields}}
+        assert isinstance(test_{{model_lower}}.{{name}}, {{type}})
+        {{/each}}
+    {{/if}}
+
+
+class Test{{model_name}}Serialization:
+    """Tests for {{model_name}} serialization and deserialization"""
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_to_dict(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test serialization to dictionary.
+
+        Given: {{model_name}} instance
+        When: Converted to dict
+        Then: All fields are properly serialized
+        """
+        # Act
+        data = test_{{model_lower}}.model_dump()
+
+        # Assert
+        assert isinstance(data, dict)
+        {{#each serialization_assertions}}
+        assert "{{field}}" in data
+        {{/each}}
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_to_json(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test serialization to JSON.
+
+        Given: {{model_name}} instance
+        When: Converted to JSON
+        Then: Valid JSON string is produced
+        """
+        # Act
+        json_str = test_{{model_lower}}.model_dump_json()
+
+        # Assert
+        assert isinstance(json_str, str)
+        assert "{" in json_str
+
+        # Verify can be deserialized
+        from_json = {{model_name}}.model_validate_json(json_str)
+        assert from_json.id == test_{{model_lower}}.id
+
+    @pytest.mark.asyncio
+    async def test_{{model_lower}}_exclude_fields(
+        self,
+        test_{{model_lower}}: {{model_name}},
+    ) -> None:
+        """
+        Test selective field exclusion during serialization.
+
+        Given: {{model_name}} instance
+        When: Serialized with excluded fields
+        Then: Excluded fields are not present
+        """
+        # Act
+        data = test_{{model_lower}}.model_dump(exclude={{#if exclude_fields}}{{{#each exclude_fields}}"{{.}}", {{/each}}}{{else}}{"{{default_exclude_field}}"}{{/if}})
+
+        # Assert
+        {{#each exclude_fields}}
+        assert "{{.}}" not in data
+        {{/each}}

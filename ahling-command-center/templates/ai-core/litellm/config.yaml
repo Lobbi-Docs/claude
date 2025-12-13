@@ -1,0 +1,481 @@
+# LiteLLM Proxy Configuration
+# Unified gateway for local (Ollama) and cloud LLMs
+# Provides OpenAI-compatible API with model routing, fallbacks, and observability
+
+# ============================================================================
+# Model List - Define all available LLM endpoints
+# ============================================================================
+model_list:
+  # --------------------------------------------------------------------------
+  # Local Models (Ollama) - Primary inference
+  # --------------------------------------------------------------------------
+
+  # Fast inference - 7B models
+  - model_name: fast
+    litellm_params:
+      model: ollama/llama3.2:7b
+      api_base: http://ollama:11434
+      stream: true
+      timeout: 300
+    model_info:
+      mode: chat
+      max_tokens: 8192
+      max_input_tokens: 8192
+      max_output_tokens: 8192
+      supports_function_calling: true
+      supports_vision: false
+      supports_parallel_function_calling: false
+
+  - model_name: llama3.2-7b
+    litellm_params:
+      model: ollama/llama3.2:7b
+      api_base: http://ollama:11434
+      stream: true
+    model_info:
+      mode: chat
+      max_tokens: 8192
+
+  - model_name: llama3.1-8b
+    litellm_params:
+      model: ollama/llama3.1:8b
+      api_base: http://ollama:11434
+      stream: true
+    model_info:
+      mode: chat
+      max_tokens: 8192
+
+  # Smart reasoning - 70B models
+  - model_name: smart
+    litellm_params:
+      model: ollama/llama3.2:70b
+      api_base: http://ollama:11434
+      stream: true
+      timeout: 600
+    model_info:
+      mode: chat
+      max_tokens: 8192
+      supports_function_calling: true
+
+  - model_name: llama3.2-70b
+    litellm_params:
+      model: ollama/llama3.2:70b
+      api_base: http://ollama:11434
+      stream: true
+    model_info:
+      mode: chat
+      max_tokens: 8192
+
+  # Code generation - specialized models
+  - model_name: code
+    litellm_params:
+      model: ollama/codellama:34b
+      api_base: http://ollama:11434
+      stream: true
+      timeout: 600
+    model_info:
+      mode: chat
+      max_tokens: 16384
+      supports_function_calling: false
+
+  - model_name: codellama-34b
+    litellm_params:
+      model: ollama/codellama:34b
+      api_base: http://ollama:11434
+      stream: true
+    model_info:
+      mode: chat
+      max_tokens: 16384
+
+  - model_name: deepseek-coder-33b
+    litellm_params:
+      model: ollama/deepseek-coder:33b
+      api_base: http://ollama:11434
+      stream: true
+    model_info:
+      mode: chat
+      max_tokens: 16384
+
+  # Embeddings
+  - model_name: embed
+    litellm_params:
+      model: ollama/nomic-embed-text
+      api_base: http://ollama:11434
+    model_info:
+      mode: embedding
+      output_vector_size: 768
+      max_input_tokens: 8192
+
+  - model_name: nomic-embed-text
+    litellm_params:
+      model: ollama/nomic-embed-text
+      api_base: http://ollama:11434
+    model_info:
+      mode: embedding
+      output_vector_size: 768
+
+  - model_name: mxbai-embed-large
+    litellm_params:
+      model: ollama/mxbai-embed-large
+      api_base: http://ollama:11434
+    model_info:
+      mode: embedding
+      output_vector_size: 1024
+
+  # Vision models
+  - model_name: vision
+    litellm_params:
+      model: ollama/llava:13b
+      api_base: http://ollama:11434
+      stream: true
+    model_info:
+      mode: chat
+      supports_vision: true
+      max_tokens: 4096
+
+  # --------------------------------------------------------------------------
+  # External Models (Fallbacks) - Cloud providers
+  # Requires API keys in environment variables
+  # --------------------------------------------------------------------------
+
+  # OpenAI
+  - model_name: gpt-4o
+    litellm_params:
+      model: gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 128000
+      supports_function_calling: true
+      supports_vision: true
+
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 128000
+
+  - model_name: o1
+    litellm_params:
+      model: o1
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 100000
+
+  - model_name: text-embedding-3-large
+    litellm_params:
+      model: text-embedding-3-large
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: embedding
+      output_vector_size: 3072
+
+  # Anthropic
+  - model_name: claude-opus-4
+    litellm_params:
+      model: claude-opus-4-20250514
+      api_key: os.environ/ANTHROPIC_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 200000
+      supports_function_calling: true
+      supports_vision: true
+
+  - model_name: claude-sonnet-4
+    litellm_params:
+      model: claude-sonnet-4-20250514
+      api_key: os.environ/ANTHROPIC_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 200000
+
+  # Google
+  - model_name: gemini-2.0-flash
+    litellm_params:
+      model: gemini/gemini-2.0-flash-exp
+      api_key: os.environ/GOOGLE_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 8192
+      supports_vision: true
+
+# ============================================================================
+# Router Settings - Model selection and fallback strategies
+# ============================================================================
+router_settings:
+  # Routing strategy
+  routing_strategy: simple-shuffle  # Options: simple-shuffle, least-busy, latency-based-routing, cost-based-routing
+
+  # Retry failed requests
+  num_retries: 2
+  retry_after: 10  # seconds
+
+  # Timeout settings
+  timeout: 600  # seconds
+  stream_timeout: 1200  # seconds for streaming requests
+
+  # Model aliases for easy switching
+  model_group_alias:
+    # Task-based routing
+    fast:
+      - llama3.2-7b
+      - llama3.1-8b
+      - gpt-4o-mini
+
+    smart:
+      - llama3.2-70b
+      - gpt-4o
+      - claude-sonnet-4
+
+    best:
+      - claude-opus-4
+      - o1
+      - llama3.2-70b
+
+    code:
+      - codellama-34b
+      - deepseek-coder-33b
+      - gpt-4o
+
+    embed:
+      - nomic-embed-text
+      - mxbai-embed-large
+      - text-embedding-3-large
+
+    vision:
+      - llava:13b
+      - gpt-4o
+      - claude-opus-4
+      - gemini-2.0-flash
+
+  # Fallback configuration
+  fallbacks:
+    - model: llama3.2-70b
+      fallback_models: [gpt-4o, claude-sonnet-4]
+
+    - model: llama3.2-7b
+      fallback_models: [llama3.1-8b, gpt-4o-mini]
+
+    - model: codellama-34b
+      fallback_models: [deepseek-coder-33b, gpt-4o]
+
+    - model: nomic-embed-text
+      fallback_models: [mxbai-embed-large, text-embedding-3-large]
+
+  # Context window fallbacks (auto-switch to larger context models)
+  enable_pre_call_checks: true
+
+# ============================================================================
+# LiteLLM Settings - Core behavior
+# ============================================================================
+litellm_settings:
+  # Drop unsupported parameters
+  drop_params: true
+
+  # Logging
+  set_verbose: false
+  json_logs: true
+
+  # Caching
+  cache: true
+  cache_params:
+    type: redis
+    host: redis
+    port: 6379
+    password: os.environ/REDIS_PASSWORD
+    ttl: 3600  # 1 hour cache
+    namespace: litellm
+
+  # Success/failure callbacks
+  success_callback:
+    - langfuse
+    - prometheus
+
+  failure_callback:
+    - langfuse
+
+  # Callbacks config
+  langfuse_public_key: os.environ/LANGFUSE_PUBLIC_KEY
+  langfuse_secret_key: os.environ/LANGFUSE_SECRET_KEY
+  langfuse_host: os.environ/LANGFUSE_HOST
+
+  # Cost tracking
+  track_cost_callback: true
+
+  # Request/response modification
+  modify_params: false
+
+  # Default max tokens if not specified
+  default_max_tokens: 4096
+
+  # Allow streaming
+  stream: true
+
+# ============================================================================
+# General Settings - Server configuration
+# ============================================================================
+general_settings:
+  # Master key for authentication
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+  # Database for logging, caching, user management
+  database_url: os.environ/DATABASE_URL
+
+  # Store model config in DB
+  store_model_in_db: true
+
+  # Background health checks
+  health_check_interval: 300  # 5 minutes
+
+  # Alerting
+  alerting: []
+  # - slack
+  # - email
+  alerting_threshold: 300  # seconds
+
+  # Rate limiting
+  max_parallel_requests: 100
+  max_internal_user_budget: null  # unlimited
+
+  # CORS
+  allowed_origins: ["*"]
+
+  # Request logging
+  request_logging: true
+  detailed_debug: false
+
+  # Metrics
+  prometheus_metrics: true
+
+  # API base
+  api_base: null
+
+  # UI settings
+  ui_logo: ""
+  ui_custom_styling: {}
+
+# ============================================================================
+# Budget & Cost Management
+# ============================================================================
+budget_settings:
+  # Global budget
+  global_max_budget: null  # unlimited
+
+  # Per-user budget tracking
+  user_api_key_budget:
+    enabled: true
+    default_max_budget: null
+
+  # Cost tracking
+  track_cost: true
+
+  # Budget alerts
+  budget_alert_ttl: 86400  # 24 hours
+
+# ============================================================================
+# Security Settings
+# ============================================================================
+security_settings:
+  # API key auth
+  api_key_auth: true
+
+  # Virtual keys
+  virtual_keys: true
+
+  # User management
+  user_management: true
+
+  # CORS security
+  cors_policy:
+    allow_credentials: true
+    max_age: 86400
+
+  # Rate limiting per key
+  rate_limit:
+    enabled: true
+    rpm: 60  # requests per minute
+    tpm: 100000  # tokens per minute
+
+# ============================================================================
+# Model-specific Settings
+# ============================================================================
+model_settings:
+  # Default temperature
+  default_temperature: 0.7
+
+  # Default top_p
+  default_top_p: 1.0
+
+  # Default presence_penalty
+  default_presence_penalty: 0.0
+
+  # Default frequency_penalty
+  default_frequency_penalty: 0.0
+
+# ============================================================================
+# Proxy Admin UI
+# ============================================================================
+ui_settings:
+  # Enable admin UI
+  enable_ui: true
+
+  # UI username/password (set via environment)
+  ui_username: admin
+  ui_password: os.environ/LITELLM_UI_PASSWORD
+
+  # UI logo and branding
+  ui_logo_url: ""
+  ui_title: "Ahling Command Center - AI Core"
+  ui_description: "LLM Gateway for homelab AI services"
+
+# ============================================================================
+# Monitoring & Observability
+# ============================================================================
+monitoring:
+  # Prometheus metrics endpoint
+  prometheus:
+    enabled: true
+    port: 4000
+    path: /metrics
+
+  # Health check endpoint
+  health:
+    enabled: true
+    path: /health
+
+  # OpenTelemetry
+  otel:
+    enabled: false
+    # endpoint: http://otel-collector:4317
+
+  # Sentry error tracking
+  sentry:
+    enabled: false
+    # dsn: os.environ/SENTRY_DSN
+
+# ============================================================================
+# Feature Flags
+# ============================================================================
+feature_flags:
+  # Enable streaming
+  streaming: true
+
+  # Enable function calling
+  function_calling: true
+
+  # Enable vision
+  vision: true
+
+  # Enable embeddings
+  embeddings: true
+
+  # Enable model fallbacks
+  fallbacks: true
+
+  # Enable caching
+  caching: true
+
+  # Enable load balancing
+  load_balancing: true

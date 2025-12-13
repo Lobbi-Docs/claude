@@ -1,0 +1,443 @@
+{
+  "$schema": "../../.claude/schemas/plugin.schema.json",
+  "name": "ahling-command-center",
+  "version": "1.0.0",
+  "description": "Comprehensive deployment and orchestration plugin for the Ahling Command Center - 70+ self-hosted services with deep Ollama, Home Assistant, and Microsoft Agent Framework integration",
+  "author": {
+    "name": "Markus Ahling",
+    "email": "markus@ahling.io"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Lobbi-Docs/claude",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lobbi-Docs/claude.git"
+  },
+  "keywords": [
+    "self-hosted",
+    "infrastructure",
+    "ollama",
+    "home-assistant",
+    "microsoft-agents",
+    "autogen",
+    "semantic-kernel",
+    "docker",
+    "vault",
+    "ai-orchestration",
+    "voice-assistant",
+    "smart-home",
+    "neo4j",
+    "qdrant",
+    "frigate",
+    "whisper",
+    "piper",
+    "vllm",
+    "litellm"
+  ],
+  "engines": {
+    "claude-code": ">=1.0.0"
+  },
+  "categories": [
+    "Infrastructure",
+    "AI/ML",
+    "IoT",
+    "Automation",
+    "DevOps",
+    "Smart-Home"
+  ],
+  "agents": [
+    {
+      "name": "infrastructure-architect",
+      "description": "Design deployment plans, analyze dependencies, and architect the full ACC infrastructure",
+      "path": "agents/infrastructure-architect.md"
+    },
+    {
+      "name": "config-generator",
+      "description": "Generate service configurations with Vault secret integration",
+      "path": "agents/config-generator.md"
+    },
+    {
+      "name": "compose-builder",
+      "description": "Create Docker Compose files from service specifications",
+      "path": "agents/compose-builder.md"
+    },
+    {
+      "name": "vault-manager",
+      "description": "Manage HashiCorp Vault secrets, policies, and dynamic credentials",
+      "path": "agents/vault-manager.md"
+    },
+    {
+      "name": "health-monitor",
+      "description": "Monitor service health, detect issues, and report status",
+      "path": "agents/health-monitor.md"
+    },
+    {
+      "name": "troubleshooter",
+      "description": "Diagnose and fix service issues with root cause analysis",
+      "path": "agents/troubleshooter.md"
+    },
+    {
+      "name": "resource-optimizer",
+      "description": "Optimize resource allocation for specific hardware configurations",
+      "path": "agents/resource-optimizer.md"
+    },
+    {
+      "name": "ollama-orchestrator",
+      "description": "Manage Ollama models, GPU scheduling, and multi-model orchestration",
+      "path": "agents/ollama-orchestrator.md"
+    },
+    {
+      "name": "ha-coordinator",
+      "description": "Coordinate Home Assistant automations, presence, and energy optimization",
+      "path": "agents/ha-coordinator.md"
+    },
+    {
+      "name": "agent-architect",
+      "description": "Design and deploy Microsoft Agent Framework multi-agent systems",
+      "path": "agents/agent-architect.md"
+    }
+  ],
+  "commands": [
+    {
+      "name": "acc-init",
+      "description": "Initialize the Ahling Command Center project structure",
+      "path": "commands/acc-init.md"
+    },
+    {
+      "name": "acc-repo",
+      "description": "Scaffold a new service repository with templates",
+      "path": "commands/acc-repo.md"
+    },
+    {
+      "name": "acc-config",
+      "description": "Generate service configuration with Vault integration",
+      "path": "commands/acc-config.md"
+    },
+    {
+      "name": "acc-compose",
+      "description": "Generate Docker Compose files for services",
+      "path": "commands/acc-compose.md"
+    },
+    {
+      "name": "acc-vault",
+      "description": "Manage Vault secrets (set, get, list, rotate)",
+      "path": "commands/acc-vault.md"
+    },
+    {
+      "name": "acc-deploy",
+      "description": "Deploy services by phase or individually",
+      "path": "commands/acc-deploy.md"
+    },
+    {
+      "name": "acc-status",
+      "description": "Check infrastructure health and service status",
+      "path": "commands/acc-status.md"
+    },
+    {
+      "name": "acc-logs",
+      "description": "View service logs with filtering",
+      "path": "commands/acc-logs.md"
+    },
+    {
+      "name": "acc-ollama",
+      "description": "Manage Ollama models and GPU allocation",
+      "path": "commands/acc-ollama.md"
+    },
+    {
+      "name": "acc-ha",
+      "description": "Control Home Assistant entities and automations",
+      "path": "commands/acc-ha.md"
+    },
+    {
+      "name": "acc-agent",
+      "description": "Create and manage Microsoft Agent Framework agents",
+      "path": "commands/acc-agent.md"
+    },
+    {
+      "name": "acc-voice",
+      "description": "Test and configure the voice pipeline",
+      "path": "commands/acc-voice.md"
+    },
+    {
+      "name": "acc-knowledge",
+      "description": "Query and update the knowledge graph",
+      "path": "commands/acc-knowledge.md"
+    },
+    {
+      "name": "acc-orchestrate",
+      "description": "Run multi-agent workflows",
+      "path": "commands/acc-orchestrate.md"
+    },
+    {
+      "name": "acc-resource",
+      "description": "Check and optimize resource allocation",
+      "path": "commands/acc-resource.md"
+    }
+  ],
+  "hooks": {
+    "path": "hooks/hooks.json",
+    "events": [
+      "pre-deploy-validation",
+      "post-deploy-health",
+      "resource-warning",
+      "compose-validation",
+      "vault-secret-check"
+    ]
+  },
+  "skills": [
+    {
+      "name": "infrastructure-foundation",
+      "description": "Core infrastructure patterns: Vault, Traefik, Authentik, Postgres, Redis, MinIO",
+      "path": "skills/infrastructure-foundation/SKILL.md"
+    },
+    {
+      "name": "home-automation",
+      "description": "Home Assistant, MQTT, Zigbee2MQTT integration patterns",
+      "path": "skills/home-automation/SKILL.md"
+    },
+    {
+      "name": "ai-core",
+      "description": "LiteLLM, vLLM, Ollama, Qdrant, LangFuse patterns",
+      "path": "skills/ai-core/SKILL.md"
+    },
+    {
+      "name": "perception-pipeline",
+      "description": "Frigate, DoubleTake, Whisper, Piper, Wyoming voice pipeline",
+      "path": "skills/perception-pipeline/SKILL.md"
+    },
+    {
+      "name": "intelligence-layer",
+      "description": "CrewAI, Neo4j, Temporal, AnythingLLM patterns",
+      "path": "skills/intelligence-layer/SKILL.md"
+    },
+    {
+      "name": "ollama-mastery",
+      "description": "Deep Ollama integration: models, GPU optimization, custom modelfiles",
+      "path": "skills/ollama-mastery/SKILL.md"
+    },
+    {
+      "name": "home-assistant-brain",
+      "description": "Full HA REST/WebSocket, Wyoming voice, automations",
+      "path": "skills/home-assistant-brain/SKILL.md"
+    },
+    {
+      "name": "microsoft-agents",
+      "description": "AutoGen, Semantic Kernel, multi-agent orchestration",
+      "path": "skills/microsoft-agents/SKILL.md"
+    }
+  ],
+  "templates": [
+    {
+      "name": "foundation",
+      "description": "Foundation services: Vault, Traefik, Authentik, Postgres, Redis, MinIO",
+      "path": "templates/foundation/"
+    },
+    {
+      "name": "home-automation",
+      "description": "Home Assistant, MQTT, Zigbee2MQTT",
+      "path": "templates/home-automation/"
+    },
+    {
+      "name": "observability",
+      "description": "Prometheus, Grafana, Loki",
+      "path": "templates/observability/"
+    },
+    {
+      "name": "ai-core",
+      "description": "LiteLLM, vLLM, Ollama, Qdrant, LangFuse, n8n",
+      "path": "templates/ai-core/"
+    },
+    {
+      "name": "perception",
+      "description": "Frigate, DoubleTake, CompreFace, Whisper, Piper, Wyoming",
+      "path": "templates/perception/"
+    },
+    {
+      "name": "intelligence",
+      "description": "CrewAI, Neo4j, Temporal, AnythingLLM",
+      "path": "templates/intelligence/"
+    },
+    {
+      "name": "developer",
+      "description": "Tabby, Aider, Open Interpreter, Backstage",
+      "path": "templates/developer/"
+    },
+    {
+      "name": "productivity",
+      "description": "Nextcloud, Paperless-ngx, Immich",
+      "path": "templates/productivity/"
+    },
+    {
+      "name": "media",
+      "description": "Jellyfin, Navidrome",
+      "path": "templates/media/"
+    }
+  ],
+  "mcp": {
+    "server": {
+      "name": "acc-mcp-server",
+      "description": "Intelligence Trinity MCP server: Ollama (LLM) + Home Assistant (IoT) + Knowledge Stack (RAG)",
+      "path": "mcp-server/",
+      "transport": "stdio",
+      "toolCount": 32
+    },
+    "tools": [
+      "docker_ps",
+      "docker_logs",
+      "docker_stats",
+      "docker_compose_up",
+      "docker_compose_down",
+      "docker_health",
+      "ollama_generate",
+      "ollama_chat",
+      "ollama_embed",
+      "ollama_models",
+      "ollama_pull",
+      "ollama_gpu_status",
+      "ha_get_state",
+      "ha_set_state",
+      "ha_call_service",
+      "ha_list_entities",
+      "ha_subscribe_events",
+      "ha_create_automation",
+      "ha_voice_pipeline",
+      "ha_health_check",
+      "ha_get_services",
+      "ha_get_areas",
+      "ha_get_devices",
+      "vault_read",
+      "vault_write",
+      "vault_list",
+      "vault_delete",
+      "neo4j_query",
+      "qdrant_search",
+      "rag_query",
+      "knowledge_ingest",
+      "orchestrate_trinity"
+    ],
+    "resources": [
+      "vault://secrets",
+      "ha://entities",
+      "ha://areas",
+      "neo4j://graph",
+      "qdrant://collections",
+      "ollama://models",
+      "docker://containers"
+    ],
+    "prompts": [
+      "automation_wizard",
+      "knowledge_query",
+      "device_control",
+      "system_status"
+    ]
+  },
+  "dependencies": {
+    "external": [
+      {
+        "name": "docker",
+        "version": ">=24.0.0",
+        "required": true
+      },
+      {
+        "name": "docker-compose",
+        "version": ">=2.20.0",
+        "required": true
+      },
+      {
+        "name": "vault",
+        "version": ">=1.15.0",
+        "required": true
+      },
+      {
+        "name": "ollama",
+        "version": ">=0.3.0",
+        "required": true
+      },
+      {
+        "name": "home-assistant",
+        "version": ">=2025.1.0",
+        "required": false
+      }
+    ],
+    "plugins": []
+  },
+  "configuration": {
+    "env": [
+      {
+        "name": "ACC_PROJECT_ROOT",
+        "description": "Root directory for Ahling Command Center",
+        "required": true
+      },
+      {
+        "name": "VAULT_ADDR",
+        "description": "HashiCorp Vault address",
+        "required": true,
+        "default": "http://vault.local:8200"
+      },
+      {
+        "name": "VAULT_TOKEN",
+        "description": "Vault access token",
+        "required": true,
+        "sensitive": true
+      },
+      {
+        "name": "OLLAMA_URL",
+        "description": "Ollama API URL",
+        "required": true,
+        "default": "http://localhost:11434"
+      },
+      {
+        "name": "HA_URL",
+        "description": "Home Assistant URL",
+        "required": false,
+        "default": "http://homeassistant.local:8123"
+      },
+      {
+        "name": "HA_TOKEN",
+        "description": "Home Assistant long-lived access token",
+        "required": false,
+        "sensitive": true
+      },
+      {
+        "name": "NEO4J_URL",
+        "description": "Neo4j database URL",
+        "required": false,
+        "default": "bolt://neo4j.local:7687"
+      },
+      {
+        "name": "QDRANT_URL",
+        "description": "Qdrant vector database URL",
+        "required": false,
+        "default": "http://qdrant.local:6333"
+      }
+    ]
+  },
+  "hardware": {
+    "target": {
+      "cpu_cores": 24,
+      "ram_gb": 61,
+      "gpu": "RX 7900 XTX",
+      "vram_gb": 24
+    },
+    "allocation": {
+      "services": {
+        "cpu": "8-10",
+        "ram": 20
+      },
+      "llms": {
+        "cpu": "14",
+        "ram": 30,
+        "vram": 16
+      },
+      "video": {
+        "vram": 4
+      },
+      "voice": {
+        "vram": 2
+      },
+      "embeddings": {
+        "vram": 2
+      }
+    }
+  }
+}

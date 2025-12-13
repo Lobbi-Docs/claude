@@ -1,0 +1,165 @@
+{
+  "name": "fastapi-backend",
+  "version": "0.1.0",
+  "description": "Comprehensive FastAPI backend development plugin with MongoDB/Beanie, Keycloak auth, Docker/K8s deployment, background tasks, caching, observability, and real-time features",
+  "author": {
+    "name": "Markus Ahling",
+    "email": "markus@brooksidebi.com"
+  },
+  "keywords": [
+    "fastapi",
+    "mongodb",
+    "beanie",
+    "keycloak",
+    "kubernetes",
+    "docker",
+    "async",
+    "python",
+    "backend",
+    "api",
+    "websocket",
+    "redis",
+    "celery",
+    "arq",
+    "observability"
+  ],
+  "repository": "https://github.com/Lobbi-Docs/claude",
+  "license": "MIT",
+  "skills": {
+    "fastapi-patterns": {
+      "path": "skills/fastapi-patterns/SKILL.md",
+      "description": "Core FastAPI async patterns, dependency injection, and middleware",
+      "triggers": ["fastapi", "async route", "dependency injection", "middleware"]
+    },
+    "beanie-odm": {
+      "path": "skills/beanie-odm/SKILL.md",
+      "description": "MongoDB/Beanie ODM patterns for document models",
+      "triggers": ["mongodb", "beanie", "document model", "odm"]
+    },
+    "keycloak-fastapi": {
+      "path": "skills/keycloak-fastapi/SKILL.md",
+      "description": "Keycloak OIDC authentication integration",
+      "triggers": ["keycloak", "oidc", "jwt", "authentication"]
+    },
+    "fastapi-k8s": {
+      "path": "skills/fastapi-k8s/SKILL.md",
+      "description": "Docker and Kubernetes deployment patterns",
+      "triggers": ["docker", "kubernetes", "k8s", "helm", "deploy"]
+    },
+    "fastapi-background": {
+      "path": "skills/fastapi-background/SKILL.md",
+      "description": "Background task processing with ARQ, Celery, Dramatiq",
+      "triggers": ["background task", "celery", "arq", "async job"]
+    },
+    "fastapi-caching": {
+      "path": "skills/fastapi-caching/SKILL.md",
+      "description": "Redis caching patterns and strategies",
+      "triggers": ["cache", "redis", "caching"]
+    },
+    "fastapi-observability": {
+      "path": "skills/fastapi-observability/SKILL.md",
+      "description": "Logging, metrics, and distributed tracing",
+      "triggers": ["logging", "metrics", "prometheus", "tracing", "observability"]
+    },
+    "fastapi-realtime": {
+      "path": "skills/fastapi-realtime/SKILL.md",
+      "description": "WebSocket, file uploads, and notifications",
+      "triggers": ["websocket", "file upload", "s3", "notifications"]
+    }
+  },
+  "commands": {
+    "endpoint": {
+      "path": "commands/endpoint.md",
+      "description": "Generate complete CRUD endpoint",
+      "usage": "/fastapi:endpoint [resource] [--fields] [--auth]"
+    },
+    "model": {
+      "path": "commands/model.md",
+      "description": "Generate Beanie document model",
+      "usage": "/fastapi:model [name] [--fields] [--indexes]"
+    },
+    "test": {
+      "path": "commands/test.md",
+      "description": "Generate pytest test suite",
+      "usage": "/fastapi:test [target] [--unit] [--integration]"
+    },
+    "dev": {
+      "path": "commands/dev.md",
+      "description": "Start development server",
+      "usage": "/fastapi:dev [--port] [--reload]"
+    },
+    "docker": {
+      "path": "commands/docker.md",
+      "description": "Build and manage Docker containers",
+      "usage": "/fastapi:docker [build|run|push]"
+    },
+    "deploy": {
+      "path": "commands/deploy.md",
+      "description": "Deploy to Kubernetes with Helm",
+      "usage": "/fastapi:deploy [--namespace] [--values]"
+    },
+    "task": {
+      "path": "commands/task.md",
+      "description": "Generate background task",
+      "usage": "/fastapi:task [name] [--framework arq|celery]"
+    },
+    "ws": {
+      "path": "commands/ws.md",
+      "description": "Generate WebSocket endpoint",
+      "usage": "/fastapi:ws [name] [--auth] [--rooms]"
+    },
+    "migrate": {
+      "path": "commands/migrate.md",
+      "description": "Run Beanie/MongoDB migrations",
+      "usage": "/fastapi:migrate [create|run|status]"
+    },
+    "scaffold": {
+      "path": "commands/scaffold.md",
+      "description": "Generate complete project structure",
+      "usage": "/fastapi:scaffold [name] [--template full|minimal]"
+    }
+  },
+  "agents": {
+    "api-architect": {
+      "path": "agents/api-architect.md",
+      "description": "API architecture and design specialist",
+      "model": "sonnet"
+    },
+    "test-generator": {
+      "path": "agents/test-generator.md",
+      "description": "Automated pytest test suite generator",
+      "model": "sonnet"
+    },
+    "security-reviewer": {
+      "path": "agents/security-reviewer.md",
+      "description": "Security-focused code reviewer",
+      "model": "sonnet"
+    },
+    "performance-optimizer": {
+      "path": "agents/performance-optimizer.md",
+      "description": "Performance optimization specialist",
+      "model": "sonnet"
+    }
+  },
+  "hooks": {
+    "pre-commit": {
+      "path": "hooks/pre-commit.md",
+      "script": "hooks/scripts/pre-commit.sh",
+      "trigger": "pre-commit",
+      "enabled": true
+    },
+    "post-endpoint": {
+      "path": "hooks/post-endpoint.md",
+      "script": "hooks/scripts/post-endpoint.sh",
+      "trigger": "post-file-write",
+      "pattern": "**/router.py",
+      "enabled": true
+    },
+    "pre-deploy": {
+      "path": "hooks/pre-deploy.md",
+      "script": "hooks/scripts/pre-deploy.sh",
+      "trigger": "pre-deploy",
+      "enabled": true
+    }
+  }
+}

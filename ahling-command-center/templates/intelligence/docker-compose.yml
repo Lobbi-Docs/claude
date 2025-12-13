@@ -1,0 +1,345 @@
+version: '3.8'
+
+services:
+  # Neo4j - Knowledge Graph Database
+  neo4j:
+    container_name: neo4j
+    image: neo4j:5.15-enterprise
+    restart: unless-stopped
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+      - neo4j-import:/var/lib/neo4j/import
+      - neo4j-plugins:/plugins
+      - ./neo4j/neo4j.conf:/var/lib/neo4j/conf/neo4j.conf:ro
+    environment:
+      # Authentication
+      - NEO4J_AUTH=neo4j/vault://secrets/neo4j/password
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+
+      # Memory configuration
+      - NEO4J_server_memory_heap_initial__size=2G
+      - NEO4J_server_memory_heap_max__size=4G
+      - NEO4J_server_memory_pagecache_size=2G
+
+      # Network configuration
+      - NEO4J_server_default__listen__address=0.0.0.0
+      - NEO4J_server_bolt_listen__address=:7687
+      - NEO4J_server_http_listen__address=:7474
+
+      # Security
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,algo.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*,algo.*
+
+      # APOC configuration
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+
+      # GDS (Graph Data Science) configuration
+      - NEO4J_gds_enterprise_license__file=/licenses/gds.license
+
+      # Performance
+      - NEO4J_dbms_transaction_timeout=60s
+      - NEO4J_dbms_lock_acquisition_timeout=60s
+      - NEO4J_dbms_checkpoint_interval_time=15m
+
+      # Metrics and monitoring
+      - NEO4J_metrics_enabled=true
+      - NEO4J_metrics_prometheus_enabled=true
+      - NEO4J_metrics_prometheus_endpoint=0.0.0.0:2004
+    networks:
+      - traefik_public
+      - intelligence
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.neo4j.rule=Host(`neo4j.${DOMAIN}`)"
+      - "traefik.http.routers.neo4j.entrypoints=websecure"
+      - "traefik.http.routers.neo4j.tls.certresolver=letsencrypt"
+      - "traefik.http.services.neo4j.loadbalancer.server.port=7474"
+      - "traefik.docker.network=traefik_public"
+    ports:
+      - "7687:7687"  # Bolt protocol
+      - "7474:7474"  # HTTP
+      - "2004:2004"  # Prometheus metrics
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "${NEO4J_PASSWORD}", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Temporal Server - Workflow orchestration
+  temporal:
+    container_name: temporal
+    image: temporalio/auto-setup:1.22.4
+    restart: unless-stopped
+    depends_on:
+      - temporal-postgresql
+      - temporal-elasticsearch
+    volumes:
+      - ./temporal/dynamicconfig.yaml:/etc/temporal/config/dynamicconfig/development-sql.yaml:ro
+    environment:
+      # Database configuration
+      - DB=postgresql12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=vault://secrets/temporal/db_password
+      - POSTGRES_SEEDS=temporal-postgresql
+
+      # Elasticsearch configuration
+      - ENABLE_ES=true
+      - ES_SEEDS=temporal-elasticsearch
+      - ES_VERSION=v7
+      - ES_VIS_INDEX=temporal_visibility_v1_dev
+
+      # Dynamic configuration
+      - DYNAMIC_CONFIG_FILE_PATH=/etc/temporal/config/dynamicconfig/development-sql.yaml
+
+      # Server configuration
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+      - TEMPORAL_ADDRESS=temporal:7233
+
+      # Metrics
+      - PROMETHEUS_ENDPOINT=0.0.0.0:8000
+    networks:
+      - traefik_public
+      - intelligence
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.temporal.rule=Host(`temporal.${DOMAIN}`)"
+      - "traefik.http.routers.temporal.entrypoints=websecure"
+      - "traefik.http.routers.temporal.tls.certresolver=letsencrypt"
+      - "traefik.http.services.temporal.loadbalancer.server.port=7233"
+      - "traefik.docker.network=traefik_public"
+    ports:
+      - "7233:7233"  # gRPC
+      - "8000:8000"  # Prometheus metrics
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "tctl", "--address", "temporal:7233", "cluster", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Temporal Web UI
+  temporal-ui:
+    container_name: temporal-ui
+    image: temporalio/ui:2.21.3
+    restart: unless-stopped
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=https://temporal-ui.${DOMAIN}
+      - TEMPORAL_UI_PORT=8080
+    networks:
+      - traefik_public
+      - intelligence
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.temporal-ui.rule=Host(`temporal-ui.${DOMAIN}`)"
+      - "traefik.http.routers.temporal-ui.entrypoints=websecure"
+      - "traefik.http.routers.temporal-ui.tls.certresolver=letsencrypt"
+      - "traefik.http.services.temporal-ui.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik_public"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL for Temporal
+  temporal-postgresql:
+    container_name: temporal-postgresql
+    image: postgres:15-alpine
+    restart: unless-stopped
+    volumes:
+      - temporal-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=temporal
+      - POSTGRES_PASSWORD=vault://secrets/temporal/db_password
+      - POSTGRES_DB=temporal
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8
+    networks:
+      - intelligence
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Elasticsearch for Temporal visibility
+  temporal-elasticsearch:
+    container_name: temporal-elasticsearch
+    image: elasticsearch:7.17.15
+    restart: unless-stopped
+    volumes:
+      - temporal-es-data:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - cluster.name=temporal-cluster
+      - node.name=temporal-es-node
+    networks:
+      - intelligence
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Redis for caching and pub/sub
+  intelligence-redis:
+    container_name: intelligence-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass vault://secrets/redis/password --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - intelligence-redis-data:/data
+    networks:
+      - intelligence
+    ports:
+      - "6380:6379"  # Non-standard port to avoid conflicts
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana for Neo4j and Temporal monitoring
+  intelligence-grafana:
+    container_name: intelligence-grafana
+    image: grafana/grafana:10.2.3
+    restart: unless-stopped
+    volumes:
+      - intelligence-grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=vault://secrets/grafana/admin_password
+      - GF_SERVER_ROOT_URL=https://intelligence-grafana.${DOMAIN}
+      - GF_INSTALL_PLUGINS=neo4j-datasource,redis-datasource
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - traefik_public
+      - intelligence
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.intelligence-grafana.rule=Host(`intelligence-grafana.${DOMAIN}`)"
+      - "traefik.http.routers.intelligence-grafana.entrypoints=websecure"
+      - "traefik.http.routers.intelligence-grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.services.intelligence-grafana.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik_public"
+    depends_on:
+      - neo4j
+      - temporal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prometheus for metrics collection
+  intelligence-prometheus:
+    container_name: intelligence-prometheus
+    image: prom/prometheus:v2.48.1
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - intelligence-prometheus-data:/prometheus
+    networks:
+      - intelligence
+    ports:
+      - "9091:9090"  # Non-standard port to avoid conflicts
+    depends_on:
+      - neo4j
+      - temporal
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  neo4j-data:
+    driver: local
+  neo4j-logs:
+    driver: local
+  neo4j-import:
+    driver: local
+  neo4j-plugins:
+    driver: local
+  temporal-db:
+    driver: local
+  temporal-es-data:
+    driver: local
+  intelligence-redis-data:
+    driver: local
+  intelligence-grafana-data:
+    driver: local
+  intelligence-prometheus-data:
+    driver: local
+
+networks:
+  traefik_public:
+    external: true
+  intelligence:
+    driver: bridge

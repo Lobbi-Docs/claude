@@ -1,0 +1,53 @@
+{
+  "name": "ahling-command-center-mcp",
+  "version": "1.0.0",
+  "description": "Central MCP Server for Ahling Command Center - orchestrates Home Assistant, Vault, Neo4j, Qdrant, and Ollama",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "mcp",
+    "command-center",
+    "orchestration",
+    "home-assistant",
+    "vault",
+    "neo4j",
+    "qdrant",
+    "ollama",
+    "claude",
+    "llm"
+  ],
+  "author": "Ahling Tech",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "dockerode": "^4.0.2",
+    "axios": "^1.6.5",
+    "neo4j-driver": "^5.16.0",
+    "@qdrant/js-client-rest": "^1.8.2",
+    "ws": "^8.16.0",
+    "zod": "^3.22.4",
+    "node-vault": "^0.10.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/ws": "^8.5.10",
+    "@types/dockerode": "^3.3.23",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

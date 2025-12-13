@@ -1,0 +1,419 @@
+"""
+{{module_name}} - Keycloak-Protected Endpoint
+
+This module provides Keycloak-authenticated CRUD operations for {{resource_name}}.
+"""
+
+from typing import List, Optional, Annotated
+from fastapi import APIRouter, HTTPException, status, Query, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from beanie import PydanticObjectId
+import httpx
+from functools import lru_cache
+from pydantic import BaseModel
+
+from models.{{model_file}} import {{model_name}}
+from schemas.{{schema_file}} import (
+    {{model_name}}Create,
+    {{model_name}}Update,
+    {{model_name}}Response,
+)
+from core.config import settings
+
+
+class TokenData(BaseModel):
+    """Decoded token data."""
+
+    sub: str  # Subject (user ID)
+    email: Optional[str] = None
+    preferred_username: Optional[str] = None
+    realm_access: Optional[dict] = None
+    resource_access: Optional[dict] = None
+    email_verified: bool = False
+
+
+class KeycloakAuth:
+    """Keycloak authentication handler."""
+
+    def __init__(self, realm: str, server_url: str, client_id: str):
+        """
+        Initialize Keycloak auth.
+
+        Args:
+            realm: Keycloak realm name
+            server_url: Keycloak server URL
+            client_id: Client ID
+        """
+        self.realm = realm
+        self.server_url = server_url
+        self.client_id = client_id
+        self.certs_url = (
+            f"{server_url}/realms/{realm}/protocol/openid-connect/certs"
+        )
+        self.introspect_url = (
+            f"{server_url}/realms/{realm}/protocol/openid-connect/token/introspect"
+        )
+
+    async def verify_token(self, token: str) -> TokenData:
+        """
+        Verify JWT token with Keycloak.
+
+        Args:
+            token: JWT token string
+
+        Returns:
+            Decoded token data
+
+        Raises:
+            HTTPException: If token is invalid
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    self.introspect_url,
+                    data={
+                        "token": token,
+                        "client_id": self.client_id,
+                    },
+                )
+
+                if response.status_code != 200:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid authentication credentials",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+
+                data = response.json()
+
+                if not data.get("active"):
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Token is not active",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+
+                return TokenData(**data)
+
+        except httpx.HTTPError as e:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Keycloak service unavailable: {str(e)}",
+            )
+
+    def has_role(self, token_data: TokenData, role: str, client: Optional[str] = None) -> bool:
+        """
+        Check if user has a specific role.
+
+        Args:
+            token_data: Decoded token data
+            role: Role name to check
+            client: Optional client ID for client roles
+
+        Returns:
+            True if user has the role
+        """
+        if client:
+            # Check client-specific role
+            if token_data.resource_access and client in token_data.resource_access:
+                roles = token_data.resource_access[client].get("roles", [])
+                return role in roles
+        else:
+            # Check realm role
+            if token_data.realm_access:
+                roles = token_data.realm_access.get("roles", [])
+                return role in roles
+
+        return False
+
+
+@lru_cache()
+def get_keycloak_auth() -> KeycloakAuth:
+    """Get cached Keycloak auth instance."""
+    return KeycloakAuth(
+        realm=settings.KEYCLOAK_REALM,
+        server_url=settings.KEYCLOAK_SERVER_URL,
+        client_id=settings.KEYCLOAK_CLIENT_ID,
+    )
+
+
+security = HTTPBearer()
+
+
+async def get_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    keycloak: Annotated[KeycloakAuth, Depends(get_keycloak_auth)],
+) -> TokenData:
+    """
+    Get current authenticated user from token.
+
+    Args:
+        credentials: HTTP authorization credentials
+        keycloak: Keycloak auth instance
+
+    Returns:
+        Decoded token data
+
+    Raises:
+        HTTPException: If authentication fails
+    """
+    return await keycloak.verify_token(credentials.credentials)
+
+
+async def require_role(
+    required_role: str,
+    client: Optional[str] = None,
+):
+    """
+    Dependency to require a specific role.
+
+    Args:
+        required_role: Role name required
+        client: Optional client ID for client roles
+
+    Returns:
+        Dependency function
+    """
+    async def role_checker(
+        current_user: Annotated[TokenData, Depends(get_current_user)],
+        keycloak: Annotated[KeycloakAuth, Depends(get_keycloak_auth)],
+    ) -> TokenData:
+        if not keycloak.has_role(current_user, required_role, client):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Insufficient permissions. Required role: {required_role}",
+            )
+        return current_user
+
+    return role_checker
+
+
+router = APIRouter(
+    prefix="/{{resource_path}}",
+    tags=["{{resource_tag}}"],
+    dependencies=[Depends(get_current_user)],  # All endpoints require authentication
+)
+
+
+@router.post(
+    "/",
+    response_model={{model_name}}Response,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create {{resource_name_singular}} (authenticated)",
+    description="Create a new {{resource_name_singular}}. Requires authentication.",
+    dependencies=[Depends(require_role("{{create_role}}"))],
+)
+async def create_{{resource_name_singular}}(
+    data: {{model_name}}Create,
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+) -> {{model_name}}Response:
+    """
+    Create a new {{resource_name_singular}}.
+
+    Args:
+        data: The {{resource_name_singular}} creation data
+        current_user: Current authenticated user
+
+    Returns:
+        The created {{resource_name_singular}}
+
+    Raises:
+        HTTPException: If creation fails
+    """
+    try:
+        document_data = data.model_dump()
+        document_data["created_by"] = current_user.sub
+        document_data["owner_id"] = current_user.sub
+
+        document = {{model_name}}(**document_data)
+        await document.insert()
+        return {{model_name}}Response(**document.model_dump())
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create {{resource_name_singular}}: {str(e)}",
+        )
+
+
+@router.get(
+    "/",
+    response_model=List[{{model_name}}Response],
+    summary="List {{resource_name}} (authenticated)",
+    description="Retrieve a list of {{resource_name}}. Users see only their own data unless they have admin role.",
+)
+async def list_{{resource_name}}(
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+    keycloak: Annotated[KeycloakAuth, Depends(get_keycloak_auth)],
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(100, ge=1, le=1000, description="Maximum number of records to return"),
+) -> List[{{model_name}}Response]:
+    """
+    List {{resource_name}} with access control.
+
+    Args:
+        current_user: Current authenticated user
+        keycloak: Keycloak auth instance
+        skip: Number of records to skip
+        limit: Maximum number of records to return
+
+    Returns:
+        List of {{resource_name}} accessible to the user
+    """
+    # Admins can see all, regular users see only their own
+    query = {}
+    if not keycloak.has_role(current_user, "{{admin_role}}"):
+        query["owner_id"] = current_user.sub
+
+    documents = await {{model_name}}.find(query).skip(skip).limit(limit).to_list()
+    return [{{model_name}}Response(**doc.model_dump()) for doc in documents]
+
+
+@router.get(
+    "/{id}",
+    response_model={{model_name}}Response,
+    summary="Get {{resource_name_singular}} (authenticated)",
+    description="Retrieve a specific {{resource_name_singular}}. Users can only access their own data unless they have admin role.",
+)
+async def get_{{resource_name_singular}}(
+    id: PydanticObjectId,
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+    keycloak: Annotated[KeycloakAuth, Depends(get_keycloak_auth)],
+) -> {{model_name}}Response:
+    """
+    Get a {{resource_name_singular}} by ID with access control.
+
+    Args:
+        id: The {{resource_name_singular}} ID
+        current_user: Current authenticated user
+        keycloak: Keycloak auth instance
+
+    Returns:
+        The {{resource_name_singular}} data
+
+    Raises:
+        HTTPException: If {{resource_name_singular}} not found or access denied
+    """
+    document = await {{model_name}}.get(id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{{model_name}} with id {id} not found",
+        )
+
+    # Check ownership or admin role
+    is_admin = keycloak.has_role(current_user, "{{admin_role}}")
+    is_owner = getattr(document, "owner_id", None) == current_user.sub
+
+    if not (is_admin or is_owner):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this resource",
+        )
+
+    return {{model_name}}Response(**document.model_dump())
+
+
+@router.put(
+    "/{id}",
+    response_model={{model_name}}Response,
+    summary="Update {{resource_name_singular}} (authenticated)",
+    description="Update a {{resource_name_singular}}. Users can only update their own data unless they have admin role.",
+    dependencies=[Depends(require_role("{{update_role}}"))],
+)
+async def update_{{resource_name_singular}}(
+    id: PydanticObjectId,
+    data: {{model_name}}Update,
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+    keycloak: Annotated[KeycloakAuth, Depends(get_keycloak_auth)],
+) -> {{model_name}}Response:
+    """
+    Update a {{resource_name_singular}} with access control.
+
+    Args:
+        id: The {{resource_name_singular}} ID
+        data: The update data
+        current_user: Current authenticated user
+        keycloak: Keycloak auth instance
+
+    Returns:
+        The updated {{resource_name_singular}}
+
+    Raises:
+        HTTPException: If {{resource_name_singular}} not found, access denied, or update fails
+    """
+    document = await {{model_name}}.get(id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{{model_name}} with id {id} not found",
+        )
+
+    # Check ownership or admin role
+    is_admin = keycloak.has_role(current_user, "{{admin_role}}")
+    is_owner = getattr(document, "owner_id", None) == current_user.sub
+
+    if not (is_admin or is_owner):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to update this resource",
+        )
+
+    try:
+        update_data = data.model_dump(exclude_unset=True)
+        update_data["updated_by"] = current_user.sub
+        await document.set(update_data)
+        return {{model_name}}Response(**document.model_dump())
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update {{resource_name_singular}}: {str(e)}",
+        )
+
+
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete {{resource_name_singular}} (authenticated)",
+    description="Delete a {{resource_name_singular}}. Users can only delete their own data unless they have admin role.",
+    dependencies=[Depends(require_role("{{delete_role}}"))],
+)
+async def delete_{{resource_name_singular}}(
+    id: PydanticObjectId,
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+    keycloak: Annotated[KeycloakAuth, Depends(get_keycloak_auth)],
+) -> None:
+    """
+    Delete a {{resource_name_singular}} with access control.
+
+    Args:
+        id: The {{resource_name_singular}} ID
+        current_user: Current authenticated user
+        keycloak: Keycloak auth instance
+
+    Raises:
+        HTTPException: If {{resource_name_singular}} not found, access denied, or deletion fails
+    """
+    document = await {{model_name}}.get(id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{{model_name}} with id {id} not found",
+        )
+
+    # Check ownership or admin role
+    is_admin = keycloak.has_role(current_user, "{{admin_role}}")
+    is_owner = getattr(document, "owner_id", None) == current_user.sub
+
+    if not (is_admin or is_owner):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to delete this resource",
+        )
+
+    try:
+        await document.delete()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete {{resource_name_singular}}: {str(e)}",
+        )

@@ -1,0 +1,381 @@
+# GitHub Actions CD Pipeline
+# Multi-environment deployment with approval gates
+# Supports: Docker, Kubernetes, AWS, Azure, GCP
+
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ============================================================================
+  # Build and Push Docker Image
+  # ============================================================================
+
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+            VERSION=${{ steps.meta.outputs.version }}
+
+      - name: Sign the image with cosign
+        run: |
+          echo "${{ secrets.COSIGN_KEY }}" > cosign.key
+          cosign sign --key cosign.key ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+        if: ${{ secrets.COSIGN_KEY != '' }}
+        continue-on-error: true
+
+  # ============================================================================
+  # Deploy to Development
+  # ============================================================================
+
+  deploy-dev:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'dev'
+    environment:
+      name: development
+      url: https://dev.example.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name dev-cluster --region us-east-1
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+
+      - name: Deploy to Kubernetes (Dev)
+        run: |
+          kubectl set image deployment/app app=${{ needs.build-and-push.outputs.image-tag }} -n development
+          kubectl rollout status deployment/app -n development --timeout=5m
+
+      - name: Run smoke tests
+        run: |
+          npm run test:smoke -- --env=dev
+        continue-on-error: true
+
+      - name: Send deployment notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "Deployment to Development: SUCCESS",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment to Development*\n*Status:* ✅ Success\n*Image:* ${{ needs.build-and-push.outputs.image-tag }}\n*URL:* https://dev.example.com"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ============================================================================
+  # Deploy to Staging
+  # ============================================================================
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+      url: https://staging.example.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name staging-cluster --region us-east-1
+
+      - name: Deploy to Kubernetes (Staging) - Blue/Green
+        run: |
+          # Deploy to green environment
+          kubectl set image deployment/app-green app=${{ needs.build-and-push.outputs.image-tag }} -n staging
+          kubectl rollout status deployment/app-green -n staging --timeout=10m
+
+          # Run health checks
+          kubectl wait --for=condition=ready pod -l app=app-green -n staging --timeout=5m
+
+          # Switch traffic to green
+          kubectl patch service app -n staging -p '{"spec":{"selector":{"version":"green"}}}'
+
+          # Keep blue as backup for 5 minutes
+          sleep 300
+
+          # Scale down blue
+          kubectl scale deployment/app-blue -n staging --replicas=0
+
+      - name: Run smoke tests
+        run: |
+          npm run test:smoke -- --env=staging
+
+      - name: Send deployment notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "Deployment to Staging: SUCCESS",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment to Staging*\n*Status:* ✅ Success\n*Strategy:* Blue/Green\n*Image:* ${{ needs.build-and-push.outputs.image-tag }}\n*URL:* https://staging.example.com"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ============================================================================
+  # Deploy to Production
+  # ============================================================================
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-and-push, deploy-staging]
+    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: https://example.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name production-cluster --region us-east-1
+
+      - name: Deploy to Kubernetes (Production) - Canary
+        run: |
+          # Deploy canary (10% traffic)
+          kubectl set image deployment/app-canary app=${{ needs.build-and-push.outputs.image-tag }} -n production
+          kubectl rollout status deployment/app-canary -n production --timeout=10m
+
+          # Monitor canary for 5 minutes
+          sleep 300
+
+          # Check error rate
+          ERROR_RATE=$(kubectl exec -n production deploy/monitoring -- curl -s http://prometheus:9090/api/v1/query?query=rate\(http_requests_total{status=~\"5..\",deployment=\"app-canary\"}\[5m]\) | jq -r '.data.result[0].value[1]')
+
+          if (( $(echo "$ERROR_RATE > 0.01" | bc -l) )); then
+            echo "Canary error rate too high: $ERROR_RATE"
+            kubectl rollout undo deployment/app-canary -n production
+            exit 1
+          fi
+
+          # Gradually increase traffic: 10% -> 25% -> 50% -> 100%
+          for percent in 25 50 100; do
+            kubectl patch deployment/app -n production -p "{\"spec\":{\"replicas\":$((100-percent))}}"
+            kubectl patch deployment/app-canary -n production -p "{\"spec\":{\"replicas\":$percent}}"
+            sleep 300
+          done
+
+          # Promote canary to stable
+          kubectl set image deployment/app app=${{ needs.build-and-push.outputs.image-tag }} -n production
+          kubectl rollout status deployment/app -n production
+
+      - name: Run smoke tests
+        run: |
+          npm run test:smoke -- --env=production
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            ## Deployment Information
+            - **Image:** ${{ needs.build-and-push.outputs.image-tag }}
+            - **Digest:** ${{ needs.build-and-push.outputs.image-digest }}
+            - **Deployed:** ${{ github.event.head_commit.timestamp }}
+            - **Strategy:** Canary Deployment
+          draft: false
+          prerelease: false
+
+      - name: Send deployment notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "Deployment to Production: SUCCESS",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment to Production*\n*Status:* ✅ Success\n*Strategy:* Canary\n*Image:* ${{ needs.build-and-push.outputs.image-tag }}\n*URL:* https://example.com"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ============================================================================
+  # Rollback Capability
+  # ============================================================================
+
+  rollback:
+    name: Rollback Deployment
+    runs-on: ubuntu-latest
+    if: failure() && github.event_name == 'workflow_dispatch'
+    environment:
+      name: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Rollback deployment
+        run: |
+          NAMESPACE=${{ github.event.inputs.environment }}
+          kubectl rollout undo deployment/app -n $NAMESPACE
+          kubectl rollout status deployment/app -n $NAMESPACE
+
+      - name: Send rollback notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "ROLLBACK EXECUTED: ${{ github.event.inputs.environment }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "⚠️ *Rollback Executed*\n*Environment:* ${{ github.event.inputs.environment }}\n*Reason:* Deployment failure"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

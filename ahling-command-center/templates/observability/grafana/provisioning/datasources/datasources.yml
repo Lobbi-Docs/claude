@@ -1,0 +1,199 @@
+# Grafana Datasources Configuration for Ahling Command Center
+# Auto-provisioned datasources for metrics, logs, and traces
+
+apiVersion: 1
+
+datasources:
+  # ============================================================================
+  # Prometheus - Primary Metrics Source
+  # ============================================================================
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    uid: prometheus
+    version: 1
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.48.1
+      cacheLevel: High
+      incrementalQuerying: true
+      incrementalQueryOverlapWindow: 10m
+      queryTimeout: 60s
+      timeInterval: 15s
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo
+          urlDisplayLabel: View Trace
+    secureJsonData:
+      httpHeaderValue1: ''
+
+  # ============================================================================
+  # Loki - Log Aggregation
+  # ============================================================================
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: false
+    uid: loki
+    version: 1
+    jsonData:
+      httpMethod: POST
+      maxLines: 1000
+      derivedFields:
+        - datasourceUid: tempo
+          matcherRegex: "trace_id=(\\w+)"
+          name: TraceID
+          url: '$${__value.raw}'
+          urlDisplayLabel: View Trace
+        - datasourceUid: prometheus
+          matcherRegex: "container_name=(\\w+)"
+          name: Container
+          url: ''
+          urlDisplayLabel: View Metrics
+      timeout: 60
+
+  # ============================================================================
+  # Tempo - Distributed Tracing
+  # ============================================================================
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    editable: false
+    uid: tempo
+    version: 1
+    jsonData:
+      httpMethod: GET
+      tracesToLogs:
+        datasourceUid: loki
+        tags: ['job', 'instance', 'pod', 'namespace', 'container']
+        mappedTags: [{ key: 'service.name', value: 'service' }]
+        mapTagNamesEnabled: true
+        spanStartTimeShift: 1h
+        spanEndTimeShift: -1h
+        filterByTraceID: true
+        filterBySpanID: false
+      tracesToMetrics:
+        datasourceUid: prometheus
+        tags: [{ key: 'service.name', value: 'service' }]
+        queries:
+          - name: Request Rate
+            query: sum(rate(traces_spanmetrics_latency_count{$$__tags}[5m]))
+          - name: Error Rate
+            query: sum(rate(traces_spanmetrics_latency_count{status_code="STATUS_CODE_ERROR",$$__tags}[5m]))
+          - name: Duration
+            query: histogram_quantile(0.95, sum(rate(traces_spanmetrics_latency_bucket{$$__tags}[5m])) by (le))
+      serviceMap:
+        datasourceUid: prometheus
+      nodeGraph:
+        enabled: true
+      search:
+        hide: false
+      lokiSearch:
+        datasourceUid: loki
+
+  # ============================================================================
+  # PostgreSQL - Direct Database Access (Optional)
+  # ============================================================================
+  - name: PostgreSQL
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    database: ${POSTGRES_DB:-acc_main}
+    user: ${POSTGRES_USER:-postgres}
+    editable: false
+    uid: postgresql
+    version: 1
+    jsonData:
+      sslmode: disable
+      maxOpenConns: 100
+      maxIdleConns: 100
+      connMaxLifetime: 14400
+      postgresVersion: 1600
+      timescaledb: false
+    secureJsonData:
+      password: ${GRAFANA_DB_PASSWORD}
+
+  # ============================================================================
+  # Redis (via Prometheus)
+  # ============================================================================
+  - name: Redis Metrics
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    editable: false
+    uid: redis-metrics
+    version: 1
+    jsonData:
+      httpMethod: POST
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo
+      timeInterval: 15s
+    # Query filters for Redis-specific metrics
+    # Use with query like: redis_up{service="redis"}
+
+  # ============================================================================
+  # Node Exporter Metrics
+  # ============================================================================
+  - name: Node Metrics
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    editable: false
+    uid: node-metrics
+    version: 1
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s
+    # Pre-filtered for node_exporter metrics
+    # Use with query like: node_cpu_seconds_total{instance="proxmox-host"}
+
+  # ============================================================================
+  # Docker/Container Metrics
+  # ============================================================================
+  - name: Container Metrics
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    editable: false
+    uid: container-metrics
+    version: 1
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s
+    # Pre-filtered for cAdvisor metrics
+    # Use with query like: container_cpu_usage_seconds_total
+
+  # ============================================================================
+  # AlertManager
+  # ============================================================================
+  - name: AlertManager
+    type: alertmanager
+    access: proxy
+    url: http://alertmanager:9093
+    editable: false
+    uid: alertmanager
+    version: 1
+    jsonData:
+      implementation: prometheus
+      handleGrafanaManagedAlerts: true
+
+  # ============================================================================
+  # TestData (for dashboard development)
+  # ============================================================================
+  - name: TestData
+    type: testdata
+    uid: testdata
+    editable: false
+    version: 1
+
+deleteDatasources:
+  - name: TestData
+    orgId: 1

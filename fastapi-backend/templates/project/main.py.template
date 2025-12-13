@@ -1,0 +1,299 @@
+"""
+{{project_name}} FastAPI Application
+
+Production-ready FastAPI application with:
+- Beanie ODM for MongoDB
+- Keycloak OIDC authentication
+- Health checks and monitoring
+- CORS and security middleware
+- Async lifespan management
+
+Generated with FastAPI Backend Plugin.
+"""
+
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from fastapi import FastAPI, Request, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.responses import JSONResponse
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+import logging
+
+from app.config import settings
+from app.models import get_document_models
+from app.routers import {{router_imports}}
+from app.middleware.auth import KeycloakAuthMiddleware
+from app.middleware.logging import RequestLoggingMiddleware
+from app.middleware.error_handler import ErrorHandlerMiddleware
+
+# Configure logging
+logging.basicConfig(
+    level=getattr(logging, settings.LOG_LEVEL),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """
+    Async lifespan context manager for FastAPI application.
+
+    Handles startup and shutdown events:
+    - Startup: Initialize database connection and Beanie ODM
+    - Shutdown: Close database connection
+
+    Args:
+        app: FastAPI application instance
+
+    Yields:
+        None during application runtime
+    """
+    # Startup
+    logger.info("Starting {{project_name}} application...")
+
+    try:
+        # Initialize MongoDB connection
+        logger.info(f"Connecting to MongoDB at {settings.MONGODB_URL}")
+        app.state.mongodb_client = AsyncIOMotorClient(
+            settings.MONGODB_URL,
+            serverSelectionTimeoutMS=settings.MONGODB_TIMEOUT_MS,
+        )
+
+        # Ping MongoDB to verify connection
+        await app.state.mongodb_client.admin.command('ping')
+        logger.info("MongoDB connection established")
+
+        # Initialize Beanie with document models
+        database = app.state.mongodb_client[settings.MONGODB_DB_NAME]
+        document_models = get_document_models()
+
+        await init_beanie(
+            database=database,
+            document_models=document_models,
+        )
+        logger.info(f"Beanie initialized with {len(document_models)} document models")
+
+        # Additional startup tasks
+        if settings.ENVIRONMENT == "production":
+            logger.info("Running in PRODUCTION mode")
+        else:
+            logger.info(f"Running in {settings.ENVIRONMENT.upper()} mode")
+
+    except Exception as e:
+        logger.error(f"Failed to initialize application: {e}")
+        raise
+
+    yield  # Application runs here
+
+    # Shutdown
+    logger.info("Shutting down {{project_name}} application...")
+
+    try:
+        # Close MongoDB connection
+        if hasattr(app.state, "mongodb_client"):
+            app.state.mongodb_client.close()
+            logger.info("MongoDB connection closed")
+
+    except Exception as e:
+        logger.error(f"Error during shutdown: {e}")
+
+
+# Initialize FastAPI application
+app = FastAPI(
+    title="{{project_name}}",
+    description="{{project_description}}",
+    version="{{project_version}}",
+    lifespan=lifespan,
+    docs_url="/api/docs" if settings.ENABLE_DOCS else None,
+    redoc_url="/api/redoc" if settings.ENABLE_DOCS else None,
+    openapi_url="/api/openapi.json" if settings.ENABLE_DOCS else None,
+)
+
+
+# Middleware Configuration (Order matters - first added = outermost layer)
+
+# 1. Trusted Host Middleware (security)
+if settings.ALLOWED_HOSTS:
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=settings.ALLOWED_HOSTS,
+    )
+    logger.info(f"Trusted hosts: {settings.ALLOWED_HOSTS}")
+
+# 2. CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
+    allow_methods=settings.CORS_ALLOW_METHODS,
+    allow_headers=settings.CORS_ALLOW_HEADERS,
+)
+logger.info(f"CORS enabled for origins: {settings.CORS_ORIGINS}")
+
+# 3. GZip Compression
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1000,  # Only compress responses larger than 1KB
+)
+
+# 4. Error Handler Middleware
+app.add_middleware(ErrorHandlerMiddleware)
+
+# 5. Request Logging Middleware
+app.add_middleware(RequestLoggingMiddleware)
+
+# 6. Keycloak Authentication Middleware (if enabled)
+if settings.KEYCLOAK_ENABLED:
+    app.add_middleware(
+        KeycloakAuthMiddleware,
+        keycloak_url=settings.KEYCLOAK_URL,
+        realm=settings.KEYCLOAK_REALM,
+        client_id=settings.KEYCLOAK_CLIENT_ID,
+        client_secret=settings.KEYCLOAK_CLIENT_SECRET,
+    )
+    logger.info(f"Keycloak authentication enabled for realm: {settings.KEYCLOAK_REALM}")
+
+
+# Exception Handlers
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+    """Handle ValueError exceptions."""
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": str(exc)},
+    )
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Handle unexpected exceptions."""
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal server error"},
+    )
+
+
+# Health Check Endpoints
+
+@app.get("/health", tags=["Health"])
+async def health_check() -> dict:
+    """
+    Basic health check endpoint.
+
+    Returns:
+        dict: Health status
+    """
+    return {
+        "status": "healthy",
+        "service": "{{project_name}}",
+        "version": "{{project_version}}",
+    }
+
+
+@app.get("/health/ready", tags=["Health"])
+async def readiness_check(request: Request) -> dict:
+    """
+    Readiness check endpoint - verifies all dependencies are ready.
+
+    Checks:
+    - MongoDB connection
+
+    Returns:
+        dict: Readiness status
+
+    Raises:
+        500: If any dependency is not ready
+    """
+    checks = {
+        "status": "ready",
+        "checks": {}
+    }
+
+    # Check MongoDB
+    try:
+        if hasattr(request.app.state, "mongodb_client"):
+            await request.app.state.mongodb_client.admin.command('ping')
+            checks["checks"]["mongodb"] = "connected"
+        else:
+            checks["checks"]["mongodb"] = "not_initialized"
+            checks["status"] = "not_ready"
+    except Exception as e:
+        logger.error(f"MongoDB health check failed: {e}")
+        checks["checks"]["mongodb"] = "disconnected"
+        checks["status"] = "not_ready"
+
+    # Additional checks can be added here
+    # e.g., external APIs, cache servers, etc.
+
+    if checks["status"] != "ready":
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=checks,
+        )
+
+    return checks
+
+
+@app.get("/health/live", tags=["Health"])
+async def liveness_check() -> dict:
+    """
+    Liveness check endpoint - verifies the application is running.
+
+    Returns:
+        dict: Liveness status
+    """
+    return {
+        "status": "alive",
+        "service": "{{project_name}}",
+    }
+
+
+# API Routers
+
+app.include_router(
+    {{router_name}}.router,
+    prefix="/api/v1/{{router_path}}",
+    tags=["{{router_tag}}"],
+)
+
+# Add more routers here
+# app.include_router(other_router.router, prefix="/api/v1/other", tags=["Other"])
+
+
+# Root Endpoint
+
+@app.get("/", tags=["Root"])
+async def root() -> dict:
+    """
+    Root endpoint with API information.
+
+    Returns:
+        dict: API metadata
+    """
+    return {
+        "name": "{{project_name}}",
+        "version": "{{project_version}}",
+        "description": "{{project_description}}",
+        "docs_url": "/api/docs" if settings.ENABLE_DOCS else None,
+        "health_url": "/health",
+    }
+
+
+# Development server (not used in production)
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level=settings.LOG_LEVEL.lower(),
+    )

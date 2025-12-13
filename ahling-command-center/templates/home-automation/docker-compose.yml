@@ -1,0 +1,430 @@
+---
+# Ahling Command Center - Home Automation Stack
+# Production-ready home automation services for self-hosted homelab
+# Hardware: Proxmox with 24 cores, 61GB RAM, RX 7900 XTX
+# Includes: Home Assistant, Mosquitto MQTT, Zigbee2MQTT, Node-RED
+
+version: '3.8'
+
+networks:
+  acc-frontend:
+    external: true
+  acc-backend:
+    external: true
+  home-automation:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+
+volumes:
+  homeassistant_config:
+    driver: local
+  mosquitto_data:
+    driver: local
+  mosquitto_logs:
+    driver: local
+  zigbee2mqtt_data:
+    driver: local
+  nodered_data:
+    driver: local
+  esphome_config:
+    driver: local
+  frigate_media:
+    driver: local
+  frigate_config:
+    driver: local
+
+services:
+  # ============================================================================
+  # Home Assistant - Home Automation Hub
+  # ============================================================================
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2024.12
+    container_name: homeassistant
+    hostname: homeassistant
+    restart: unless-stopped
+    privileged: true
+    network_mode: host  # Required for mDNS discovery and integrations
+    environment:
+      TZ: "${TZ:-America/New_York}"
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+    volumes:
+      - homeassistant_config:/config
+      - ./homeassistant/configuration.yaml:/config/configuration.yaml:ro
+      - ./homeassistant/automations.yaml:/config/automations.yaml
+      - ./homeassistant/scripts.yaml:/config/scripts.yaml
+      - ./homeassistant/scenes.yaml:/config/scenes.yaml
+      - ./homeassistant/custom_components:/config/custom_components
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0  # Zigbee coordinator (if using HA Zigbee)
+      - /dev/ttyUSB1:/dev/ttyUSB1  # Z-Wave stick (optional)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '2'
+          memory: 1G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`home.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.homeassistant.entrypoints=websecure"
+      - "traefik.http.routers.homeassistant.tls.certresolver=letsencrypt"
+      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+      - "traefik.http.routers.homeassistant.middlewares=secure-headers@file"
+      # WebSocket support
+      - "traefik.http.middlewares.homeassistant-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.homeassistant-headers.headers.customrequestheaders.Upgrade=websocket"
+
+  # ============================================================================
+  # Eclipse Mosquitto - MQTT Broker
+  # ============================================================================
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto
+    hostname: mosquitto
+    restart: unless-stopped
+    networks:
+      - home-automation
+      - acc-backend
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
+      - "${MQTT_WS_PORT:-9001}:9001"
+    environment:
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/passwd:/mosquitto/config/passwd:ro
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    labels:
+      - "traefik.enable=true"
+      # MQTT over WebSocket
+      - "traefik.http.routers.mosquitto-ws.rule=Host(`mqtt.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.mosquitto-ws.entrypoints=websecure"
+      - "traefik.http.routers.mosquitto-ws.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mosquitto-ws.loadbalancer.server.port=9001"
+      - "traefik.http.routers.mosquitto-ws.middlewares=secure-headers@file"
+
+  # ============================================================================
+  # Zigbee2MQTT - Zigbee to MQTT Bridge
+  # ============================================================================
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:1.40.2
+    container_name: zigbee2mqtt
+    hostname: zigbee2mqtt
+    restart: unless-stopped
+    networks:
+      - home-automation
+      - acc-frontend
+    ports:
+      - "${ZIGBEE2MQTT_PORT:-8080}:8080"
+    environment:
+      TZ: "${TZ:-America/New_York}"
+      ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mosquitto:1883"
+      ZIGBEE2MQTT_CONFIG_MQTT_USER: "${MQTT_USER}"
+      ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD: "${MQTT_PASSWORD}"
+      ZIGBEE2MQTT_CONFIG_FRONTEND_PORT: 8080
+      ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_LEVEL: "${ZIGBEE2MQTT_LOG_LEVEL:-info}"
+    volumes:
+      - zigbee2mqtt_data:/app/data
+      - ./zigbee2mqtt/configuration.yaml:/app/data/configuration.yaml
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0  # Zigbee coordinator USB device
+    group_add:
+      - dialout  # Required for serial port access
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zigbee2mqtt.rule=Host(`zigbee.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.zigbee2mqtt.entrypoints=websecure"
+      - "traefik.http.routers.zigbee2mqtt.tls.certresolver=letsencrypt"
+      - "traefik.http.services.zigbee2mqtt.loadbalancer.server.port=8080"
+      - "traefik.http.routers.zigbee2mqtt.middlewares=auth@file,secure-headers@file"
+
+  # ============================================================================
+  # Node-RED - Flow-based Automation
+  # ============================================================================
+  nodered:
+    image: nodered/node-red:4.0
+    container_name: nodered
+    hostname: nodered
+    restart: unless-stopped
+    networks:
+      - home-automation
+      - acc-backend
+      - acc-frontend
+    ports:
+      - "${NODERED_PORT:-1880}:1880"
+    environment:
+      TZ: "${TZ:-America/New_York}"
+      NODE_RED_ENABLE_PROJECTS: "true"
+      NODE_RED_CREDENTIAL_SECRET: "${NODERED_CREDENTIAL_SECRET}"
+    volumes:
+      - nodered_data:/data
+      - ./nodered/settings.js:/data/settings.js
+      - ./nodered/flows.json:/data/flows.json
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:1880"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nodered.rule=Host(`nodered.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.nodered.entrypoints=websecure"
+      - "traefik.http.routers.nodered.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nodered.loadbalancer.server.port=1880"
+      - "traefik.http.routers.nodered.middlewares=auth@file,secure-headers@file"
+
+  # ============================================================================
+  # ESPHome - ESP Device Management
+  # ============================================================================
+  esphome:
+    image: ghcr.io/esphome/esphome:2024.12
+    container_name: esphome
+    hostname: esphome
+    restart: unless-stopped
+    privileged: true
+    network_mode: host  # Required for mDNS discovery
+    environment:
+      TZ: "${TZ:-America/New_York}"
+      ESPHOME_DASHBOARD_USE_PING: "true"
+    volumes:
+      - esphome_config:/config
+      - ./esphome/secrets.yaml:/config/secrets.yaml:ro
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6052/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.esphome.rule=Host(`esphome.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.esphome.entrypoints=websecure"
+      - "traefik.http.routers.esphome.tls.certresolver=letsencrypt"
+      - "traefik.http.services.esphome.loadbalancer.server.port=6052"
+      - "traefik.http.routers.esphome.middlewares=auth@file,secure-headers@file"
+
+  # ============================================================================
+  # Frigate - NVR with AI Object Detection
+  # ============================================================================
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:0.14.1
+    container_name: frigate
+    hostname: frigate
+    restart: unless-stopped
+    privileged: true
+    shm_size: "256mb"  # Increase if using many cameras
+    networks:
+      - home-automation
+      - acc-frontend
+    ports:
+      - "${FRIGATE_HTTP_PORT:-5000}:5000"
+      - "${FRIGATE_RTSP_PORT:-8554}:8554"  # RTSP feeds
+      - "${FRIGATE_WEBRTC_PORT:-8555}:8555/tcp"  # WebRTC
+      - "${FRIGATE_WEBRTC_PORT:-8555}:8555/udp"  # WebRTC
+    environment:
+      TZ: "${TZ:-America/New_York}"
+      FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PASSWORD}"
+    volumes:
+      - frigate_config:/config
+      - frigate_media:/media/frigate
+      - ./frigate/config.yml:/config/config.yml:ro
+      - /etc/localtime:/etc/localtime:ro
+      - type: tmpfs  # Reduce SSD wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000  # 1GB
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128  # AMD GPU for hardware acceleration
+      - /dev/dri/card0:/dev/dri/card0
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 8G
+        reservations:
+          cpus: '4'
+          memory: 4G
+        # GPU reservation for AMD RX 7900 XTX
+        reservations:
+          devices:
+            - driver: amd
+              capabilities: [gpu]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frigate.rule=Host(`frigate.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.frigate.entrypoints=websecure"
+      - "traefik.http.routers.frigate.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frigate.loadbalancer.server.port=5000"
+      - "traefik.http.routers.frigate.middlewares=auth@file,secure-headers@file"
+
+  # ============================================================================
+  # InfluxDB - Time-Series Database for Sensor Data
+  # ============================================================================
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: influxdb-ha
+    hostname: influxdb-ha
+    restart: unless-stopped
+    networks:
+      - home-automation
+      - acc-backend
+    ports:
+      - "${INFLUXDB_PORT:-8086}:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: "${INFLUXDB_ADMIN_USER}"
+      DOCKER_INFLUXDB_INIT_PASSWORD: "${INFLUXDB_ADMIN_PASSWORD}"
+      DOCKER_INFLUXDB_INIT_ORG: "${INFLUXDB_ORG:-ahling-home}"
+      DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUXDB_BUCKET:-homeassistant}"
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_ADMIN_TOKEN}"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - ./influxdb/data:/var/lib/influxdb2
+      - ./influxdb/config:/etc/influxdb2
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.influxdb.rule=Host(`influx.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.influxdb.entrypoints=websecure"
+      - "traefik.http.routers.influxdb.tls.certresolver=letsencrypt"
+      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
+      - "traefik.http.routers.influxdb.middlewares=auth@file,secure-headers@file"
+
+  # ============================================================================
+  # Grafana - Visualization for Home Automation Metrics
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: grafana-ha
+    hostname: grafana-ha
+    restart: unless-stopped
+    networks:
+      - home-automation
+      - acc-backend
+      - acc-frontend
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SERVER_ROOT_URL: "https://grafana.${DOMAIN:-ahling.local}"
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD}"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_INSTALL_PLUGINS: "${GRAFANA_INSTALL_PLUGINS:-}"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      TZ: "${TZ:-America/New_York}"
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana-ha.rule=Host(`grafana.${DOMAIN:-ahling.local}`)"
+      - "traefik.http.routers.grafana-ha.entrypoints=websecure"
+      - "traefik.http.routers.grafana-ha.tls.certresolver=letsencrypt"
+      - "traefik.http.services.grafana-ha.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana-ha.middlewares=secure-headers@file"

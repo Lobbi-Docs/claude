@@ -1,0 +1,195 @@
+"""
+{{model_name}} Embedded Document Model
+
+Beanie embedded document for nested data structures.
+Generated with FastAPI Backend Plugin.
+"""
+
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+from uuid import UUID
+
+from pydantic import BaseModel, Field, ConfigDict, field_validator
+
+
+class {{model_name}}(BaseModel):
+    """
+    {{model_description}}
+
+    Embedded document that can be nested within other documents.
+    Does not have its own collection in MongoDB.
+
+    Attributes:
+        {{attribute_list}}
+    """
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                {{example_fields}}
+            }
+        },
+        # Validate on assignment for immediate feedback
+        validate_assignment=True,
+        # Allow population by field name
+        populate_by_name=True,
+    )
+
+    # Core fields
+    {{field_definitions}}
+
+    # Metadata
+    created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
+    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+
+    # Field validators
+
+    @field_validator('{{validated_field}}')
+    @classmethod
+    def validate_{{validated_field}}(cls, v: str) -> str:
+        """
+        Validate {{validated_field}} field.
+
+        Args:
+            v: The value to validate
+
+        Returns:
+            The validated value
+
+        Raises:
+            ValueError: If validation fails
+        """
+        if not v or not v.strip():
+            raise ValueError("{{validated_field}} cannot be empty")
+        return v.strip()
+
+    # Helper methods
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the embedded document to a dictionary.
+
+        Returns:
+            Dictionary representation of the document
+        """
+        return self.model_dump(mode='json')
+
+    def update_timestamp(self) -> None:
+        """Update the updated_at timestamp to current time."""
+        self.updated_at = datetime.utcnow()
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "{{model_name}}":
+        """
+        Create an embedded document from a dictionary.
+
+        Args:
+            data: Dictionary containing document data
+
+        Returns:
+            New {{model_name}} instance
+        """
+        return cls(**data)
+
+
+class {{model_name}}List(BaseModel):
+    """
+    Container for a list of {{model_name}} embedded documents.
+
+    Useful for managing collections of embedded documents with
+    additional metadata and helper methods.
+    """
+
+    items: List[{{model_name}}] = Field(default_factory=list, description="List of {{model_name}} items")
+    total: int = Field(default=0, description="Total number of items")
+
+    def add(self, item: {{model_name}}) -> None:
+        """
+        Add an item to the list.
+
+        Args:
+            item: The {{model_name}} to add
+        """
+        self.items.append(item)
+        self.total = len(self.items)
+
+    def remove(self, index: int) -> Optional[{{model_name}}]:
+        """
+        Remove an item at the specified index.
+
+        Args:
+            index: The index of the item to remove
+
+        Returns:
+            The removed item, or None if index is invalid
+        """
+        if 0 <= index < len(self.items):
+            item = self.items.pop(index)
+            self.total = len(self.items)
+            return item
+        return None
+
+    def get(self, index: int) -> Optional[{{model_name}}]:
+        """
+        Get an item at the specified index.
+
+        Args:
+            index: The index of the item
+
+        Returns:
+            The item, or None if index is invalid
+        """
+        if 0 <= index < len(self.items):
+            return self.items[index]
+        return None
+
+    def clear(self) -> None:
+        """Clear all items from the list."""
+        self.items.clear()
+        self.total = 0
+
+    def filter(self, predicate) -> List[{{model_name}}]:
+        """
+        Filter items based on a predicate function.
+
+        Args:
+            predicate: Function that takes an item and returns bool
+
+        Returns:
+            List of items matching the predicate
+        """
+        return [item for item in self.items if predicate(item)]
+
+    def to_dict_list(self) -> List[Dict[str, Any]]:
+        """
+        Convert all items to a list of dictionaries.
+
+        Returns:
+            List of dictionary representations
+        """
+        return [item.to_dict() for item in self.items]
+
+
+# Example usage in a parent document:
+"""
+from beanie import Document
+from typing import List
+
+class ParentDocument(Document):
+    name: str
+    embedded_items: List[{{model_name}}] = Field(default_factory=list)
+
+    async def add_embedded(self, item: {{model_name}}) -> None:
+        '''Add an embedded document and save.'''
+        self.embedded_items.append(item)
+        await self.save()
+
+    async def remove_embedded(self, index: int) -> None:
+        '''Remove an embedded document by index and save.'''
+        if 0 <= index < len(self.embedded_items):
+            self.embedded_items.pop(index)
+            await self.save()
+
+    class Settings:
+        name = "parent_collection"
+"""

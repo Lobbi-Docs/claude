@@ -1,0 +1,198 @@
+# Frigate NVR Configuration
+# Documentation: https://docs.frigate.video/
+
+mqtt:
+  enabled: true
+  host: mosquitto
+  port: 1883
+  topic_prefix: frigate
+  user: "{FRIGATE_MQTT_USERNAME}"
+  password: "{FRIGATE_MQTT_PASSWORD}"
+
+detectors:
+  rocm:
+    type: rocm
+    device: 0
+
+# GPU-accelerated object detection model
+model:
+  width: 320
+  height: 320
+  labelmap_path: /labelmap/coco-80.txt
+
+# Database configuration
+database:
+  path: /db/frigate.db
+
+# Recording and snapshot retention
+record:
+  enabled: true
+  retain:
+    days: 7
+    mode: motion
+  events:
+    retain:
+      default: 14
+      mode: motion
+      objects:
+        person: 30
+        car: 14
+
+snapshots:
+  enabled: true
+  clean_copy: true
+  timestamp: false
+  bounding_box: true
+  crop: false
+  retain:
+    default: 14
+    objects:
+      person: 30
+      car: 14
+
+# Object detection configuration
+objects:
+  track:
+    - person
+    - car
+    - dog
+    - cat
+  filters:
+    person:
+      min_area: 2500
+      max_area: 100000
+      threshold: 0.7
+      min_score: 0.5
+    car:
+      min_area: 5000
+      threshold: 0.7
+    dog:
+      min_area: 1000
+      threshold: 0.6
+    cat:
+      min_area: 1000
+      threshold: 0.6
+
+# Motion detection
+motion:
+  threshold: 30
+  contour_area: 10
+  delta_alpha: 0.2
+  frame_alpha: 0.01
+  frame_height: 100
+  improve_contrast: true
+
+# Camera configuration examples
+cameras:
+  # Example: RTSP camera
+  front_door:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD}@192.168.1.100:554/stream1
+          roles:
+            - detect
+            - record
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD}@192.168.1.100:554/stream2
+          roles:
+            - rtmp
+      hwaccel_args: preset-vaapi
+      input_args: preset-rtsp-restream
+      output_args:
+        record: preset-record-generic-audio-copy
+    detect:
+      width: 1280
+      height: 720
+      fps: 5
+      enabled: true
+      max_disappeared: 25
+    objects:
+      track:
+        - person
+        - car
+        - dog
+        - cat
+      filters:
+        person:
+          min_area: 2500
+          max_area: 100000
+          threshold: 0.75
+    motion:
+      mask:
+        - 0,0,0,200,200,200,200,0  # Example mask for timestamp area
+    zones:
+      porch:
+        coordinates: 100,100,500,100,500,400,100,400
+        objects:
+          - person
+      driveway:
+        coordinates: 600,200,1200,200,1200,700,600,700
+        objects:
+          - person
+          - car
+    record:
+      enabled: true
+      retain:
+        days: 10
+        mode: motion
+      events:
+        retain:
+          default: 21
+          mode: motion
+    snapshots:
+      enabled: true
+      timestamp: false
+      bounding_box: true
+      crop: true
+      retain:
+        default: 21
+
+  # Example: USB/V4L2 camera
+  # workshop:
+  #   enabled: false
+  #   ffmpeg:
+  #     inputs:
+  #       - path: /dev/video0
+  #         input_args: preset-http-jpeg-generic
+  #         roles:
+  #           - detect
+  #   detect:
+  #     width: 640
+  #     height: 480
+  #     fps: 5
+
+# UI Configuration
+ui:
+  live_mode: mse
+  timezone: America/New_York
+  use_experimental: false
+  strftime_fmt: "%Y-%m-%d %H:%M"
+
+# Telemetry
+telemetry:
+  enabled: false
+
+# Version check
+version_check:
+  enabled: true
+
+# Logging
+logger:
+  default: info
+  logs:
+    frigate.event: debug
+    frigate.mqtt: info
+    frigate.object_processing: info
+    frigate.video: warning
+    frigate.detector: info
+
+# Go2RTC for low-latency streaming
+go2rtc:
+  streams:
+    front_door:
+      - rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD}@192.168.1.100:554/stream1
+    front_door_hq:
+      - rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD}@192.168.1.100:554/stream2
+  webrtc:
+    candidates:
+      - stun:8555

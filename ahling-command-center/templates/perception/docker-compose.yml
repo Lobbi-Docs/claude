@@ -1,0 +1,278 @@
+version: '3.8'
+
+services:
+  # Frigate NVR - AI-powered video surveillance
+  frigate:
+    container_name: frigate
+    image: ghcr.io/blakeblackshear/frigate:stable-rocm
+    restart: unless-stopped
+    shm_size: 256mb
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128  # AMD GPU for ROCm
+      - /dev/kfd:/dev/kfd
+    volumes:
+      - ./frigate/config.yml:/config/config.yml:ro
+      - frigate-media:/media/frigate
+      - frigate-db:/db
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - FRIGATE_RTSP_PASSWORD=vault://secrets/frigate/rtsp_password
+      - FRIGATE_MQTT_PASSWORD=vault://secrets/mqtt/password
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0  # AMD GPU compatibility
+      - ROCM_PATH=/opt/rocm
+    networks:
+      - traefik_public
+      - perception
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frigate.rule=Host(`frigate.${DOMAIN}`)"
+      - "traefik.http.routers.frigate.entrypoints=websecure"
+      - "traefik.http.routers.frigate.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frigate.loadbalancer.server.port=5000"
+      - "traefik.docker.network=traefik_public"
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5000/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # DoubleTake - Facial recognition for camera feeds
+  doubletake:
+    container_name: doubletake
+    image: jakowenko/double-take:latest
+    restart: unless-stopped
+    volumes:
+      - doubletake-data:/.storage
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_USERNAME=vault://secrets/mqtt/username
+      - MQTT_PASSWORD=vault://secrets/mqtt/password
+      - FRIGATE_URL=http://frigate:5000
+      - COMPREFACE_URL=http://compreface-api:8000
+      - COMPREFACE_KEY=vault://secrets/compreface/api_key
+    networks:
+      - traefik_public
+      - perception
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.doubletake.rule=Host(`doubletake.${DOMAIN}`)"
+      - "traefik.http.routers.doubletake.entrypoints=websecure"
+      - "traefik.http.routers.doubletake.tls.certresolver=letsencrypt"
+      - "traefik.http.services.doubletake.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik_public"
+    depends_on:
+      - frigate
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # CompreFace - Face recognition backend for DoubleTake
+  compreface-postgres:
+    container_name: compreface-postgres
+    image: postgres:15-alpine
+    restart: unless-stopped
+    volumes:
+      - compreface-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=vault://secrets/compreface/db_password
+      - POSTGRES_DB=frs
+    networks:
+      - perception
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  compreface-api:
+    container_name: compreface-api
+    image: exadel/compreface-core:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_URL=jdbc:postgresql://compreface-postgres:5432/frs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=vault://secrets/compreface/db_password
+      - ENABLE_EMAIL_SERVER=false
+      - API_JAVA_OPTS=-Xmx2g
+    networks:
+      - perception
+    depends_on:
+      - compreface-postgres
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  compreface-ui:
+    container_name: compreface-ui
+    image: exadel/compreface-fe:latest
+    restart: unless-stopped
+    environment:
+      - API_URL=http://compreface-api:8000
+    networks:
+      - traefik_public
+      - perception
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.compreface.rule=Host(`compreface.${DOMAIN}`)"
+      - "traefik.http.routers.compreface.entrypoints=websecure"
+      - "traefik.http.routers.compreface.tls.certresolver=letsencrypt"
+      - "traefik.http.services.compreface.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik_public"
+    depends_on:
+      - compreface-api
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Whisper - Speech-to-Text via Wyoming Protocol
+  whisper:
+    container_name: whisper
+    image: rhasspy/wyoming-whisper:latest
+    restart: unless-stopped
+    command: --model medium --language en --device rocm
+    volumes:
+      - whisper-models:/data
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/kfd:/dev/kfd
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0
+      - ROCM_PATH=/opt/rocm
+    networks:
+      - perception
+    ports:
+      - "10300:10300"  # Wyoming protocol port
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "10300"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Piper - Text-to-Speech via Wyoming Protocol
+  piper:
+    container_name: piper
+    image: rhasspy/wyoming-piper:latest
+    restart: unless-stopped
+    command: --voice en_US-lessac-medium --device rocm
+    volumes:
+      - piper-voices:/data
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/kfd:/dev/kfd
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0
+      - ROCM_PATH=/opt/rocm
+    networks:
+      - perception
+    ports:
+      - "10200:10200"  # Wyoming protocol port
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "10200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Wyoming Satellite - Voice pipeline coordinator
+  wyoming-satellite:
+    container_name: wyoming-satellite
+    image: rhasspy/wyoming-satellite:latest
+    restart: unless-stopped
+    volumes:
+      - ./wyoming/config.yaml:/config/config.yaml:ro
+    environment:
+      - WYOMING_WHISPER_URI=tcp://whisper:10300
+      - WYOMING_PIPER_URI=tcp://piper:10200
+      - MQTT_HOST=mosquitto
+      - MQTT_USERNAME=vault://secrets/mqtt/username
+      - MQTT_PASSWORD=vault://secrets/mqtt/password
+    networks:
+      - perception
+    depends_on:
+      - whisper
+      - piper
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "10400"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  frigate-media:
+    driver: local
+  frigate-db:
+    driver: local
+  doubletake-data:
+    driver: local
+  compreface-db:
+    driver: local
+  whisper-models:
+    driver: local
+  piper-voices:
+    driver: local
+
+networks:
+  traefik_public:
+    external: true
+  perception:
+    driver: bridge

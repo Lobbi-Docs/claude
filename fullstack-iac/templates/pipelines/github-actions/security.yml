@@ -1,0 +1,426 @@
+# GitHub Actions Security Pipeline
+# Comprehensive security scanning and vulnerability detection
+# Includes: SAST, dependency scanning, container scanning, secret detection
+
+name: Security Scanning
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  # ============================================================================
+  # Secret Detection
+  # ============================================================================
+
+  secret-detection:
+    name: Detect Secrets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for secret scanning
+
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+
+      - name: Gitleaks Secret Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload secret scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: secret-scan-results
+          path: |
+            gitleaks-report.json
+            trufflehog-results.json
+          retention-days: 30
+
+  # ============================================================================
+  # Dependency Scanning
+  # ============================================================================
+
+  dependency-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+        if: hashFiles('package.json') != ''
+
+      - name: Install npm-audit-resolver
+        run: npm install -g npm-audit-resolver better-npm-audit
+        if: hashFiles('package.json') != ''
+
+      - name: Run npm audit
+        run: |
+          npm audit --json > npm-audit.json || true
+          better-npm-audit audit --level=moderate
+        if: hashFiles('package.json') != ''
+        continue-on-error: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+        if: hashFiles('requirements.txt') != '' || hashFiles('pyproject.toml') != ''
+
+      - name: Install safety
+        run: pip install safety
+        if: hashFiles('requirements.txt') != '' || hashFiles('pyproject.toml') != ''
+
+      - name: Run Python safety check
+        run: |
+          safety check --json > safety-report.json || true
+          safety check --bare
+        if: hashFiles('requirements.txt') != ''
+        continue-on-error: true
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: ${{ github.repository }}
+          path: '.'
+          format: 'HTML'
+          args: >
+            --enableRetired
+            --enableExperimental
+
+      - name: Upload dependency scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-scan-results
+          path: |
+            npm-audit.json
+            safety-report.json
+            dependency-check-report.html
+          retention-days: 30
+
+  # ============================================================================
+  # SAST (Static Application Security Testing)
+  # ============================================================================
+
+  sast-scan:
+    name: SAST Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for Sonar
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
+            -Dsonar.organization=${{ github.repository_owner }}
+            -Dsonar.sources=src/,app/
+            -Dsonar.tests=tests/,test/
+            -Dsonar.coverage.exclusions=**/*.test.ts,**/*.spec.ts
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        continue-on-error: true
+
+      - name: Semgrep SAST Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+            p/javascript
+            p/typescript
+            p/python
+          generateSarif: true
+
+      - name: Upload Semgrep SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+        if: always()
+
+  # ============================================================================
+  # CodeQL Analysis
+  # ============================================================================
+
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript, python]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  # ============================================================================
+  # Container Image Scanning
+  # ============================================================================
+
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ github.repository }}:${{ github.sha }} .
+        if: hashFiles('Dockerfile') != ''
+
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ github.repository }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+        if: hashFiles('Dockerfile') != ''
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+        if: hashFiles('Dockerfile') != ''
+
+      - name: Anchore Container Scan
+        uses: anchore/scan-action@v3
+        with:
+          image: ${{ github.repository }}:${{ github.sha }}
+          fail-build: false
+          severity-cutoff: high
+        if: hashFiles('Dockerfile') != ''
+
+      - name: Upload Anchore SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+        if: hashFiles('Dockerfile') != ''
+
+      - name: Grype vulnerability scan
+        uses: anchore/grype-action@v0.5
+        with:
+          image: ${{ github.repository }}:${{ github.sha }}
+          fail-build: false
+          output-format: sarif
+        if: hashFiles('Dockerfile') != ''
+
+  # ============================================================================
+  # Infrastructure as Code Security
+  # ============================================================================
+
+  iac-scan:
+    name: IaC Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkov IaC Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform,kubernetes,dockerfile,github_actions
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+          soft_fail: true
+
+      - name: Upload Checkov SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: checkov-results.sarif
+        if: always()
+
+      - name: tfsec Terraform Security
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: .
+          format: sarif
+          sarif_file: tfsec-results.sarif
+        if: hashFiles('**/*.tf') != ''
+        continue-on-error: true
+
+      - name: Upload tfsec SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: tfsec-results.sarif
+        if: hashFiles('**/*.tf') != ''
+
+  # ============================================================================
+  # License Compliance
+  # ============================================================================
+
+  license-scan:
+    name: License Compliance Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+        if: hashFiles('package.json') != ''
+
+      - name: Install license-checker
+        run: npm install -g license-checker
+        if: hashFiles('package.json') != ''
+
+      - name: Check Node.js licenses
+        run: |
+          license-checker --json > licenses.json
+          license-checker --summary
+        if: hashFiles('package.json') != ''
+        continue-on-error: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+        if: hashFiles('requirements.txt') != ''
+
+      - name: Install pip-licenses
+        run: pip install pip-licenses
+        if: hashFiles('requirements.txt') != ''
+
+      - name: Check Python licenses
+        run: |
+          pip-licenses --format=json > python-licenses.json
+          pip-licenses --summary
+        if: hashFiles('requirements.txt') != ''
+        continue-on-error: true
+
+      - name: Upload license reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: license-reports
+          path: |
+            licenses.json
+            python-licenses.json
+          retention-days: 30
+
+  # ============================================================================
+  # Security Summary
+  # ============================================================================
+
+  security-summary:
+    name: Security Scan Summary
+    runs-on: ubuntu-latest
+    needs: [secret-detection, dependency-scan, sast-scan, codeql-analysis, container-scan, iac-scan, license-scan]
+    if: always()
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate security report
+        run: |
+          echo "# Security Scan Summary" > security-report.md
+          echo "" >> security-report.md
+          echo "## Scan Results" >> security-report.md
+          echo "- Secret Detection: ${{ needs.secret-detection.result }}" >> security-report.md
+          echo "- Dependency Scan: ${{ needs.dependency-scan.result }}" >> security-report.md
+          echo "- SAST Scan: ${{ needs.sast-scan.result }}" >> security-report.md
+          echo "- CodeQL Analysis: ${{ needs.codeql-analysis.result }}" >> security-report.md
+          echo "- Container Scan: ${{ needs.container-scan.result }}" >> security-report.md
+          echo "- IaC Scan: ${{ needs.iac-scan.result }}" >> security-report.md
+          echo "- License Scan: ${{ needs.license-scan.result }}" >> security-report.md
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.md
+          retention-days: 90
+
+      - name: Send security notification
+        uses: slackapi/slack-github-action@v1
+        if: failure()
+        with:
+          payload: |
+            {
+              "text": "Security Scan Alert: ${{ github.repository }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "⚠️ *Security Scan Issues Detected*\n*Repository:* ${{ github.repository }}\n*Branch:* ${{ github.ref_name }}\n*View Results:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Check for critical vulnerabilities
+        run: |
+          CRITICAL_FOUND=false
+
+          # Check if any scan failed
+          if [[ "${{ needs.secret-detection.result }}" == "failure" ]] || \
+             [[ "${{ needs.dependency-scan.result }}" == "failure" ]] || \
+             [[ "${{ needs.container-scan.result }}" == "failure" ]]; then
+            CRITICAL_FOUND=true
+          fi
+
+          if [ "$CRITICAL_FOUND" = true ]; then
+            echo "Critical security issues found!"
+            exit 1
+          fi
+
+          echo "Security scans completed successfully"

@@ -1,0 +1,212 @@
+{
+  "$schema": "../../../.claude/schemas/hooks.schema.json",
+  "version": "1.0.0",
+  "description": "Event hooks for the Ahling Command Center plugin",
+
+  "hooks": [
+    {
+      "name": "pre-deploy-validation",
+      "description": "Validate deployment prerequisites before starting services",
+      "event": "pre-deploy",
+      "script": "scripts/pre-deploy-validation.sh",
+      "timeout": 60,
+      "failOnError": true,
+      "checks": [
+        {
+          "name": "docker-available",
+          "command": "docker info > /dev/null 2>&1",
+          "message": "Docker daemon must be running"
+        },
+        {
+          "name": "compose-available",
+          "command": "docker-compose version > /dev/null 2>&1",
+          "message": "Docker Compose must be installed"
+        },
+        {
+          "name": "vault-unsealed",
+          "command": "curl -s ${VAULT_ADDR}/v1/sys/health | jq -e '.sealed == false'",
+          "message": "Vault must be initialized and unsealed",
+          "optional": true
+        },
+        {
+          "name": "gpu-available",
+          "command": "rocm-smi > /dev/null 2>&1 || nvidia-smi > /dev/null 2>&1",
+          "message": "GPU driver (ROCm or NVIDIA) must be available for AI services",
+          "optional": true
+        },
+        {
+          "name": "network-exists",
+          "command": "docker network ls | grep -q acc-backend",
+          "message": "ACC networks must exist (run acc-init first)"
+        }
+      ]
+    },
+    {
+      "name": "post-deploy-health",
+      "description": "Verify service health after deployment",
+      "event": "post-deploy",
+      "script": "scripts/post-deploy-health.sh",
+      "timeout": 300,
+      "failOnError": false,
+      "retries": 3,
+      "retryDelay": 10,
+      "healthChecks": [
+        {
+          "service": "vault",
+          "endpoint": "${VAULT_ADDR}/v1/sys/health",
+          "expectedStatus": 200
+        },
+        {
+          "service": "traefik",
+          "endpoint": "http://traefik:8080/api/overview",
+          "expectedStatus": 200
+        },
+        {
+          "service": "postgres",
+          "command": "pg_isready -h postgres -U postgres",
+          "expectedExitCode": 0
+        },
+        {
+          "service": "redis",
+          "command": "redis-cli -a ${REDIS_PASSWORD} ping",
+          "expectedOutput": "PONG"
+        },
+        {
+          "service": "ollama",
+          "endpoint": "${OLLAMA_URL}/api/tags",
+          "expectedStatus": 200
+        },
+        {
+          "service": "homeassistant",
+          "endpoint": "${HA_URL}/api/",
+          "expectedStatus": 200,
+          "headers": {
+            "Authorization": "Bearer ${HA_TOKEN}"
+          },
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "resource-warning",
+      "description": "Alert when resources exceed thresholds",
+      "event": "resource-check",
+      "script": "scripts/resource-warning.sh",
+      "schedule": "*/5 * * * *",
+      "thresholds": {
+        "cpu_percent": 80,
+        "memory_percent": 85,
+        "disk_percent": 90,
+        "gpu_memory_percent": 90,
+        "container_restart_count": 3
+      },
+      "notifications": {
+        "gotify": {
+          "url": "${GOTIFY_URL}",
+          "token": "${GOTIFY_TOKEN}",
+          "priority": 5
+        },
+        "homeassistant": {
+          "service": "notify.mobile_app",
+          "data": {
+            "title": "ACC Resource Warning",
+            "message": "Resource threshold exceeded"
+          }
+        }
+      }
+    },
+    {
+      "name": "compose-validation",
+      "description": "Validate Docker Compose files before deployment",
+      "event": "pre-compose",
+      "script": "scripts/compose-validation.sh",
+      "timeout": 30,
+      "validations": [
+        {
+          "name": "yaml-syntax",
+          "command": "docker-compose -f ${COMPOSE_FILE} config --quiet"
+        },
+        {
+          "name": "image-exists",
+          "command": "docker-compose -f ${COMPOSE_FILE} config --images | xargs -I {} docker pull {} --quiet"
+        },
+        {
+          "name": "volume-paths",
+          "description": "Verify host volume paths exist"
+        },
+        {
+          "name": "port-conflicts",
+          "description": "Check for port conflicts with existing services"
+        },
+        {
+          "name": "env-vars",
+          "description": "Verify all required environment variables are set"
+        }
+      ]
+    },
+    {
+      "name": "vault-secret-check",
+      "description": "Verify required secrets exist before service start",
+      "event": "pre-service-start",
+      "script": "scripts/vault-secret-check.sh",
+      "timeout": 30,
+      "secretPaths": {
+        "foundation": [
+          "secret/data/acc/foundation/postgres",
+          "secret/data/acc/foundation/redis",
+          "secret/data/acc/foundation/minio"
+        ],
+        "homeautomation": [
+          "secret/data/acc/homeautomation/homeassistant",
+          "secret/data/acc/homeautomation/mqtt"
+        ],
+        "aicore": [
+          "secret/data/acc/aicore/ollama",
+          "secret/data/acc/aicore/qdrant"
+        ],
+        "perception": [
+          "secret/data/acc/perception/frigate",
+          "secret/data/acc/perception/compreface"
+        ],
+        "intelligence": [
+          "secret/data/acc/intelligence/neo4j",
+          "secret/data/acc/intelligence/temporal"
+        ]
+      }
+    }
+  ],
+
+  "scripts": {
+    "pre-deploy-validation.sh": {
+      "description": "Run all pre-deployment checks",
+      "template": "#!/bin/bash\nset -e\n\necho \"Running pre-deploy validation...\"\n\n# Check Docker\nif ! docker info > /dev/null 2>&1; then\n  echo \"ERROR: Docker daemon is not running\"\n  exit 1\nfi\n\n# Check Docker Compose\nif ! docker-compose version > /dev/null 2>&1; then\n  echo \"ERROR: Docker Compose is not installed\"\n  exit 1\nfi\n\n# Check networks\nif ! docker network ls | grep -q acc-backend; then\n  echo \"Creating ACC networks...\"\n  docker network create acc-backend\n  docker network create acc-frontend\nfi\n\necho \"Pre-deploy validation passed!\""
+    },
+    "post-deploy-health.sh": {
+      "description": "Run health checks after deployment",
+      "template": "#!/bin/bash\n\necho \"Running post-deploy health checks...\"\n\nSERVICES=(\"vault\" \"traefik\" \"postgres\" \"redis\" \"ollama\")\nFAILED=0\n\nfor service in \"${SERVICES[@]}\"; do\n  if docker ps | grep -q $service; then\n    echo \"✓ $service is running\"\n  else\n    echo \"✗ $service is not running\"\n    FAILED=$((FAILED+1))\n  fi\ndone\n\nif [ $FAILED -gt 0 ]; then\n  echo \"WARNING: $FAILED services are not running\"\n  exit 1\nfi\n\necho \"All services healthy!\""
+    },
+    "resource-warning.sh": {
+      "description": "Check resource utilization and alert",
+      "template": "#!/bin/bash\n\n# CPU check\nCPU=$(top -bn1 | grep 'Cpu(s)' | awk '{print $2}')\nif (( $(echo \"$CPU > 80\" | bc -l) )); then\n  echo \"WARNING: CPU usage is $CPU%\"\nfi\n\n# Memory check\nMEM=$(free | grep Mem | awk '{print $3/$2 * 100.0}')\nif (( $(echo \"$MEM > 85\" | bc -l) )); then\n  echo \"WARNING: Memory usage is $MEM%\"\nfi\n\n# GPU check (ROCm)\nif command -v rocm-smi &> /dev/null; then\n  GPU_MEM=$(rocm-smi --showmeminfo vram | grep Used | awk '{print $3/$5 * 100}')\n  if (( $(echo \"$GPU_MEM > 90\" | bc -l) )); then\n    echo \"WARNING: GPU memory usage is $GPU_MEM%\"\n  fi\nfi"
+    },
+    "compose-validation.sh": {
+      "description": "Validate Docker Compose files",
+      "template": "#!/bin/bash\nset -e\n\nCOMPOSE_FILE=$1\n\nif [ -z \"$COMPOSE_FILE\" ]; then\n  echo \"Usage: compose-validation.sh <compose-file>\"\n  exit 1\nfi\n\necho \"Validating $COMPOSE_FILE...\"\n\n# Check YAML syntax\ndocker-compose -f $COMPOSE_FILE config --quiet\nif [ $? -eq 0 ]; then\n  echo \"✓ YAML syntax valid\"\nelse\n  echo \"✗ YAML syntax error\"\n  exit 1\nfi\n\necho \"Validation passed!\""
+    },
+    "vault-secret-check.sh": {
+      "description": "Verify Vault secrets exist",
+      "template": "#!/bin/bash\n\nPHASE=$1\nMISSING=0\n\ncase $PHASE in\n  foundation)\n    SECRETS=(\"postgres\" \"redis\" \"minio\")\n    ;;\n  homeautomation)\n    SECRETS=(\"homeassistant\" \"mqtt\")\n    ;;\n  aicore)\n    SECRETS=(\"ollama\" \"qdrant\")\n    ;;\n  *)\n    echo \"Unknown phase: $PHASE\"\n    exit 1\n    ;;\nesac\n\nfor secret in \"${SECRETS[@]}\"; do\n  if vault kv get secret/acc/$PHASE/$secret > /dev/null 2>&1; then\n    echo \"✓ secret/acc/$PHASE/$secret exists\"\n  else\n    echo \"✗ secret/acc/$PHASE/$secret missing\"\n    MISSING=$((MISSING+1))\n  fi\ndone\n\nif [ $MISSING -gt 0 ]; then\n  echo \"ERROR: $MISSING secrets missing\"\n  exit 1\nfi\n\necho \"All secrets verified!\""
+    }
+  },
+
+  "eventTypes": {
+    "pre-deploy": "Before any deployment operation",
+    "post-deploy": "After deployment completes",
+    "pre-service-start": "Before starting a specific service",
+    "post-service-start": "After a service starts",
+    "pre-compose": "Before running docker-compose",
+    "resource-check": "Periodic resource monitoring",
+    "secret-rotation": "When secrets need rotation",
+    "backup-trigger": "When backup should run"
+  }
+}

@@ -1,0 +1,224 @@
+"""
+{{module_name}} - Basic CRUD Endpoint
+
+This module provides basic CRUD operations for {{resource_name}}.
+"""
+
+from typing import List, Optional
+from fastapi import APIRouter, HTTPException, status, Query
+from beanie import PydanticObjectId
+
+from models.{{model_file}} import {{model_name}}
+from schemas.{{schema_file}} import (
+    {{model_name}}Create,
+    {{model_name}}Update,
+    {{model_name}}Response,
+)
+
+router = APIRouter(
+    prefix="/{{resource_path}}",
+    tags=["{{resource_tag}}"],
+)
+
+
+@router.post(
+    "/",
+    response_model={{model_name}}Response,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create {{resource_name_singular}}",
+    description="Create a new {{resource_name_singular}} with the provided data.",
+)
+async def create_{{resource_name_singular}}(
+    data: {{model_name}}Create,
+) -> {{model_name}}Response:
+    """
+    Create a new {{resource_name_singular}}.
+
+    Args:
+        data: The {{resource_name_singular}} creation data
+
+    Returns:
+        The created {{resource_name_singular}}
+
+    Raises:
+        HTTPException: If creation fails
+    """
+    try:
+        document = {{model_name}}(**data.model_dump())
+        await document.insert()
+        return {{model_name}}Response(**document.model_dump())
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create {{resource_name_singular}}: {str(e)}",
+        )
+
+
+@router.get(
+    "/",
+    response_model=List[{{model_name}}Response],
+    summary="List {{resource_name}}",
+    description="Retrieve a list of all {{resource_name}}.",
+)
+async def list_{{resource_name}}(
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(100, ge=1, le=1000, description="Maximum number of records to return"),
+) -> List[{{model_name}}Response]:
+    """
+    List all {{resource_name}} with optional pagination.
+
+    Args:
+        skip: Number of records to skip (default: 0)
+        limit: Maximum number of records to return (default: 100)
+
+    Returns:
+        List of {{resource_name}}
+    """
+    documents = await {{model_name}}.find_all().skip(skip).limit(limit).to_list()
+    return [{{model_name}}Response(**doc.model_dump()) for doc in documents]
+
+
+@router.get(
+    "/{id}",
+    response_model={{model_name}}Response,
+    summary="Get {{resource_name_singular}}",
+    description="Retrieve a specific {{resource_name_singular}} by ID.",
+)
+async def get_{{resource_name_singular}}(
+    id: PydanticObjectId,
+) -> {{model_name}}Response:
+    """
+    Get a {{resource_name_singular}} by ID.
+
+    Args:
+        id: The {{resource_name_singular}} ID
+
+    Returns:
+        The {{resource_name_singular}} data
+
+    Raises:
+        HTTPException: If {{resource_name_singular}} not found
+    """
+    document = await {{model_name}}.get(id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{{model_name}} with id {id} not found",
+        )
+    return {{model_name}}Response(**document.model_dump())
+
+
+@router.put(
+    "/{id}",
+    response_model={{model_name}}Response,
+    summary="Update {{resource_name_singular}}",
+    description="Update an existing {{resource_name_singular}}.",
+)
+async def update_{{resource_name_singular}}(
+    id: PydanticObjectId,
+    data: {{model_name}}Update,
+) -> {{model_name}}Response:
+    """
+    Update a {{resource_name_singular}}.
+
+    Args:
+        id: The {{resource_name_singular}} ID
+        data: The update data
+
+    Returns:
+        The updated {{resource_name_singular}}
+
+    Raises:
+        HTTPException: If {{resource_name_singular}} not found or update fails
+    """
+    document = await {{model_name}}.get(id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{{model_name}} with id {id} not found",
+        )
+
+    try:
+        update_data = data.model_dump(exclude_unset=True)
+        await document.set(update_data)
+        return {{model_name}}Response(**document.model_dump())
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update {{resource_name_singular}}: {str(e)}",
+        )
+
+
+@router.patch(
+    "/{id}",
+    response_model={{model_name}}Response,
+    summary="Partial update {{resource_name_singular}}",
+    description="Partially update an existing {{resource_name_singular}}.",
+)
+async def partial_update_{{resource_name_singular}}(
+    id: PydanticObjectId,
+    data: {{model_name}}Update,
+) -> {{model_name}}Response:
+    """
+    Partially update a {{resource_name_singular}}.
+
+    Args:
+        id: The {{resource_name_singular}} ID
+        data: The partial update data
+
+    Returns:
+        The updated {{resource_name_singular}}
+
+    Raises:
+        HTTPException: If {{resource_name_singular}} not found or update fails
+    """
+    document = await {{model_name}}.get(id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{{model_name}} with id {id} not found",
+        )
+
+    try:
+        update_data = data.model_dump(exclude_unset=True)
+        await document.set(update_data)
+        return {{model_name}}Response(**document.model_dump())
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update {{resource_name_singular}}: {str(e)}",
+        )
+
+
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete {{resource_name_singular}}",
+    description="Delete a {{resource_name_singular}} by ID.",
+)
+async def delete_{{resource_name_singular}}(
+    id: PydanticObjectId,
+) -> None:
+    """
+    Delete a {{resource_name_singular}}.
+
+    Args:
+        id: The {{resource_name_singular}} ID
+
+    Raises:
+        HTTPException: If {{resource_name_singular}} not found or deletion fails
+    """
+    document = await {{model_name}}.get(id)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{{model_name}} with id {id} not found",
+        )
+
+    try:
+        await document.delete()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete {{resource_name_singular}}: {str(e)}",
+        )

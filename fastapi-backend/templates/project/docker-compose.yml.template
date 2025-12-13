@@ -1,0 +1,308 @@
+# Docker Compose Configuration for {{project_name}}
+# Generated with FastAPI Backend Plugin
+#
+# Usage:
+#   Development: docker-compose up -d
+#   Production: Use docker-compose.prod.yml
+#   Specific services: docker-compose up -d mongodb redis
+#   View logs: docker-compose logs -f [service_name]
+#   Stop: docker-compose down
+#   Clean up: docker-compose down -v (removes volumes)
+
+version: '3.9'
+
+services:
+  # ============================================================================
+  # FastAPI Application
+  # ============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: {{project_name}}-api
+    ports:
+      - "{{app_port}}:{{app_port}}"
+    environment:
+      - ENVIRONMENT=development
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DB_NAME={{mongodb_db_name}}
+      - REDIS_URL=redis://redis:6379/0
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM={{keycloak_realm}}
+      - KEYCLOAK_CLIENT_ID={{keycloak_client_id}}
+      - KEYCLOAK_CLIENT_SECRET={{keycloak_client_secret}}
+    env_file:
+      - .env
+    volumes:
+      # Mount source code for hot-reload in development
+      - ./app:/app/app
+      - ./tests:/app/tests
+      # Persist uploads
+      - uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:{{app_port}}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================================================
+  # MongoDB Database
+  # ============================================================================
+  mongodb:
+    image: mongo:7.0
+    container_name: {{project_name}}-mongodb
+    ports:
+      - "{{mongodb_port}}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: {{mongodb_db_name}}
+    volumes:
+      # Persist database data
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+      # Init scripts (optional)
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: mongod --auth
+
+  # ============================================================================
+  # MongoDB Express (Database Admin UI)
+  # ============================================================================
+  mongo-express:
+    image: mongo-express:latest
+    container_name: {{project_name}}-mongo-express
+    ports:
+      - "{{mongo_express_port}}:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-admin123}
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin123@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD:-admin}
+    depends_on:
+      - mongodb
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # Redis Cache
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: {{project_name}}-redis
+    ports:
+      - "{{redis_port}}:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  # ============================================================================
+  # Keycloak OIDC Provider
+  # ============================================================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0
+    container_name: {{project_name}}-keycloak
+    ports:
+      - "{{keycloak_port}}:8080"
+      - "{{keycloak_https_port}}:8443"
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+      KC_HOSTNAME: localhost
+      KC_HTTP_ENABLED: true
+      KC_PROXY: edge
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+    command: start-dev
+    volumes:
+      # Import realm configuration (optional)
+      - ./keycloak/realms:/opt/keycloak/data/import:ro
+
+  # ============================================================================
+  # Keycloak Database (PostgreSQL)
+  # ============================================================================
+  keycloak-db:
+    image: postgres:15-alpine
+    container_name: {{project_name}}-keycloak-db
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: ${KEYCLOAK_DB_USER:-keycloak}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Celery Worker (Optional - for async tasks)
+  # ============================================================================
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: {{project_name}}-celery-worker
+    environment:
+      - ENVIRONMENT=development
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DB_NAME={{mongodb_db_name}}
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - mongodb
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+    command: celery -A app.tasks worker --loglevel=info
+
+  # ============================================================================
+  # Flower (Celery Monitoring - Optional)
+  # ============================================================================
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: {{project_name}}-flower
+    ports:
+      - "{{flower_port}}:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - redis
+      - celery-worker
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+    command: celery -A app.tasks flower
+
+  # ============================================================================
+  # Nginx Reverse Proxy (Optional)
+  # ============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: {{project_name}}-nginx
+    ports:
+      - "{{nginx_http_port}}:80"
+      - "{{nginx_https_port}}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+    networks:
+      - {{project_name}}-network
+    restart: unless-stopped
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+  {{project_name}}-network:
+    driver: bridge
+    name: {{project_name}}-network
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  mongodb-data:
+    name: {{project_name}}-mongodb-data
+  mongodb-config:
+    name: {{project_name}}-mongodb-config
+  redis-data:
+    name: {{project_name}}-redis-data
+  keycloak-db-data:
+    name: {{project_name}}-keycloak-db-data
+  uploads:
+    name: {{project_name}}-uploads
+
+# ============================================================================
+# Additional Commands
+# ============================================================================
+
+# Start all services:
+#   docker-compose up -d
+
+# Start specific services:
+#   docker-compose up -d mongodb redis
+
+# View logs:
+#   docker-compose logs -f api
+#   docker-compose logs -f mongodb
+
+# Execute commands in containers:
+#   docker-compose exec api bash
+#   docker-compose exec mongodb mongosh
+
+# Run tests:
+#   docker-compose run --rm api pytest
+
+# Scale services:
+#   docker-compose up -d --scale celery-worker=3
+
+# Stop all services:
+#   docker-compose down
+
+# Stop and remove volumes:
+#   docker-compose down -v
+
+# Rebuild containers:
+#   docker-compose up -d --build
+
+# Service URLs (default):
+#   API: http://localhost:{{app_port}}
+#   API Docs: http://localhost:{{app_port}}/api/docs
+#   MongoDB: mongodb://localhost:{{mongodb_port}}
+#   Mongo Express: http://localhost:{{mongo_express_port}}
+#   Redis: redis://localhost:{{redis_port}}
+#   Keycloak: http://localhost:{{keycloak_port}}
+#   Flower: http://localhost:{{flower_port}}
