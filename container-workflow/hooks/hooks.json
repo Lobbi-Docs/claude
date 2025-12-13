@@ -1,0 +1,114 @@
+{
+  "PreToolUse": [
+    {
+      "matcher": {
+        "tool": "Write",
+        "filePattern": "**/Dockerfile*"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Before writing this Dockerfile, validate:\n\n1. **Base Image Security**\n   - Using official/verified base images?\n   - Specific version tags (not 'latest')?\n   - Minimal base image (alpine, distroless)?\n\n2. **Build Best Practices**\n   - Multi-stage builds for size optimization?\n   - Proper layer caching (COPY package files before code)?\n   - Non-root user configured?\n   - .dockerignore present?\n\n3. **Security Concerns**\n   - No hardcoded secrets/credentials?\n   - No sensitive files in build context?\n   - Proper file permissions?\n\n4. **Optimization**\n   - Minimal layers (combine RUN commands)?\n   - Clean up package caches?\n   - HEALTHCHECK defined?\n\nIf any issues found, suggest improvements before writing."
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Edit",
+        "filePattern": "**/Dockerfile*"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Before editing this Dockerfile, review the changes for:\n\n1. **Security Impact**\n   - Are new secrets/credentials being added?\n   - Does the change increase attack surface?\n   - Are file permissions still secure?\n\n2. **Build Efficiency**\n   - Will this break layer caching?\n   - Should this be a separate stage?\n   - Is the layer order optimal?\n\n3. **Best Practices**\n   - Still following multi-stage patterns?\n   - Maintaining non-root user?\n   - HEALTHCHECK still present?\n\nValidate changes align with container security and optimization standards."
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Write",
+        "filePattern": "**/docker-compose*.yml"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Before writing this docker-compose file, validate:\n\n1. **Security**\n   - No hardcoded secrets in environment variables?\n   - Using secrets or env_file for sensitive data?\n   - Proper network isolation configured?\n   - Resource limits defined (mem_limit, cpus)?\n\n2. **Configuration**\n   - Service dependencies properly defined (depends_on)?\n   - Health checks configured for critical services?\n   - Volumes properly mapped (named volumes vs bind mounts)?\n   - Restart policies appropriate for each service?\n\n3. **Development vs Production**\n   - Is this for dev, staging, or production?\n   - Environment-specific overrides needed?\n   - Ports exposed securely?\n\n4. **Best Practices**\n   - Using version 3.x syntax?\n   - Service names descriptive and consistent?\n   - Networks properly segmented?\n\nSuggest improvements if needed before writing."
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Edit",
+        "filePattern": "**/docker-compose*.yml"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Before editing docker-compose configuration:\n\n1. **Secret Safety Check**\n   - Are environment variables exposing secrets?\n   - Should use docker secrets or vault instead?\n\n2. **Service Impact Analysis**\n   - Will changes affect dependent services?\n   - Need to update health checks?\n   - Resource limits still appropriate?\n\n3. **Network & Volume Changes**\n   - Network isolation maintained?\n   - Volume mounts still correct?\n   - Data persistence preserved?\n\nValidate changes won't break existing services or expose vulnerabilities."
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Write",
+        "filePattern": "**/.dockerignore"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Before writing .dockerignore, ensure it includes:\n\n**Required Exclusions:**\n- .git/ .gitignore\n- node_modules/ (or language-specific deps)\n- .env .env.* (environment files)\n- **/*.log (log files)\n- tmp/ temp/ cache/\n- .vscode/ .idea/ (IDE configs)\n- README.md LICENSE (documentation)\n- tests/ *.test.* (test files)\n\n**Security-Critical:**\n- **/*secret* **/*credential* **/*password*\n- *.pem *.key *.crt (certificates/keys)\n- .npmrc .yarnrc (may contain tokens)\n\n**Build Artifacts:**\n- dist/ build/ target/\n- *.pyc __pycache__/\n- *.swp *.swo (editor temp files)\n\nCustomize based on project language and structure."
+        }
+      ]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": {
+        "tool": "Bash",
+        "commandPattern": "docker build.*"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Docker build completed. Recommended next steps:\n\n1. **Security Scan** (CRITICAL for production)\n   ```bash\n   trivy image <image-name>:<tag>\n   ```\n   - Scan for CVEs and vulnerabilities\n   - Check for HIGH/CRITICAL severity issues\n   - Review base image security\n\n2. **Image Analysis**\n   ```bash\n   docker images <image-name> --format '{{.Size}}'\n   docker history <image-name>:<tag>\n   ```\n   - Verify image size is optimized\n   - Review layer composition\n\n3. **Test Container**\n   ```bash\n   docker run --rm <image-name>:<tag> <health-check-command>\n   ```\n   - Validate container starts correctly\n   - Test health endpoints if defined\n\n4. **Compliance Check** (if available)\n   ```bash\n   docker-bench-security\n   ```\n\nWould you like me to run any of these validation steps?"
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Bash",
+        "commandPattern": "docker-compose up.*"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Docker Compose stack started. Validation checklist:\n\n1. **Service Health**\n   ```bash\n   docker-compose ps\n   docker-compose logs --tail=50\n   ```\n   - Verify all services are running\n   - Check for startup errors\n\n2. **Network Connectivity**\n   ```bash\n   docker network ls\n   docker network inspect <network-name>\n   ```\n   - Confirm services can communicate\n   - Validate network isolation\n\n3. **Volume Mounts**\n   ```bash\n   docker volume ls\n   docker-compose exec <service> ls -la <mount-path>\n   ```\n   - Verify volumes mounted correctly\n   - Check file permissions\n\n4. **Resource Usage**\n   ```bash\n   docker stats\n   ```\n   - Monitor CPU/memory consumption\n   - Ensure within defined limits\n\nWould you like to run health checks or view logs?"
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Bash",
+        "commandPattern": "docker push.*"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Image pushed to registry. Post-push recommendations:\n\n1. **Verify Push**\n   - Check registry UI for new image\n   - Verify all tags pushed correctly\n   - Confirm image manifest and layers\n\n2. **Tag Management**\n   - Consider creating semantic version tags (v1.2.3)\n   - Tag stable releases as 'latest' or 'stable'\n   - Use commit SHA tags for traceability\n\n3. **Registry Security Scan**\n   - Many registries auto-scan on push\n   - Review scan results in registry UI\n   - Address any vulnerabilities found\n\n4. **Documentation**\n   - Update deployment docs with new tag\n   - Document breaking changes if any\n   - Update CHANGELOG.md\n\n5. **Deployment**\n   - Ready to deploy to environments?\n   - Need to update Kubernetes/Helm manifests?\n   - Trigger CI/CD pipeline?\n\nNext actions needed?"
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Write",
+        "filePattern": "**/Dockerfile*"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "Dockerfile created/updated. Recommended validation:\n\n1. **Build Test**\n   ```bash\n   docker build -t test-image:local .\n   ```\n   - Verify build succeeds\n   - Check for build warnings\n\n2. **Lint Dockerfile** (if hadolint installed)\n   ```bash\n   hadolint Dockerfile\n   ```\n   - Catch common issues\n   - Validate best practices\n\n3. **Security Pre-Check**\n   - Review any secrets/credentials\n   - Validate base image provenance\n   - Check .dockerignore coverage\n\n4. **Size Estimation**\n   - Predict final image size\n   - Consider multi-stage optimization\n\nShould I validate the Dockerfile or proceed with a test build?"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "container-workflow",
+  "version": "1.0.0",
+  "description": "Comprehensive Docker/Container workflow automation plugin providing CI/CD pipeline management, code review, testing, release automation, and security scanning for containerized applications.",
+  "author": {
+    "name": "Markus Ahling",
+    "email": "markus@brooksidebi.com"
+  },
+  "homepage": "https://github.com/Lobbi-Docs/claude",
+  "repository": "https://github.com/Lobbi-Docs/claude",
+  "license": "MIT",
+  "keywords": [
+    "docker",
+    "container",
+    "ci-cd",
+    "workflow",
+    "devops",
+    "security",
+    "testing",
+    "deployment",
+    "automation",
+    "trivy",
+    "github-actions",
+    "gitlab-ci",
+    "azure-pipelines"
+  ]
+}
