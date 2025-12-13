@@ -1,13 +1,15 @@
 {
-  "PreToolUse": [
-    {
-      "matcher": "Write|Edit",
-      "hooks": [
-        {
-          "type": "prompt",
-          "prompt": "Before writing or editing TSX/JSX files in component directories, validate:\n\n1. **Chakra UI Imports**: If this is a UI component file (in components/, src/components/, or similar), ensure proper Chakra UI imports are present:\n   - Check for '@chakra-ui/react' imports\n   - Verify imported components are used\n   - Confirm no duplicate or unused Chakra imports\n\n2. **Accessibility Attributes**: For any JSX elements being written, verify:\n   - Images have alt attributes: <Image alt=\"...\" /> or <img alt=\"...\" />\n   - Icon-only buttons have aria-label: <IconButton aria-label=\"...\" />\n   - Form inputs have associated labels: <FormLabel htmlFor=\"...\"> or aria-label\n   - Interactive elements without visible text have aria-label\n   - Custom components with specific roles have appropriate ARIA attributes\n\n3. **TypeScript Patterns**: For component files, ensure:\n   - Props interfaces are defined (export interface ComponentNameProps)\n   - Proper TypeScript types are used for Chakra components\n   - forwardRef is used with proper typing when refs need to be forwarded\n\n**Validation Scope**:\n- Only validate files in component directories (paths containing 'component', 'Component', 'ui', 'UI')\n- Skip validation for non-component files (utils, hooks, services, etc.)\n- Focus on accessibility and Chakra UI best practices\n\n**Action**:\n- If validation fails, suggest corrections before proceeding\n- If file is not a component file, proceed without validation\n- If all checks pass, proceed with the write/edit operation\n\nIs this file a component file? Does it pass the validation checks above?"
-        }
-      ]
-    }
-  ]
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before writing or editing TSX/JSX files in component directories, validate:\n\n1. **Chakra UI Imports**: If this is a UI component file (in components/, src/components/, or similar), ensure proper Chakra UI imports are present:\n   - Check for '@chakra-ui/react' imports\n   - Verify imported components are used\n   - Confirm no duplicate or unused Chakra imports\n\n2. **Accessibility Attributes**: For any JSX elements being written, verify:\n   - Images have alt attributes: <Image alt=\"...\" /> or <img alt=\"...\" />\n   - Icon-only buttons have aria-label: <IconButton aria-label=\"...\" />\n   - Form inputs have associated labels: <FormLabel htmlFor=\"...\"> or aria-label\n   - Interactive elements without visible text have aria-label\n   - Custom components with specific roles have appropriate ARIA attributes\n\n3. **TypeScript Patterns**: For component files, ensure:\n   - Props interfaces are defined (export interface ComponentNameProps)\n   - Proper TypeScript types are used for Chakra components\n   - forwardRef is used with proper typing when refs need to be forwarded\n\n**Validation Scope**:\n- Only validate files in component directories (paths containing 'component', 'Component', 'ui', 'UI')\n- Skip validation for non-component files (utils, hooks, services, etc.)\n- Focus on accessibility and Chakra UI best practices\n\n**Action**:\n- If validation fails, suggest corrections before proceeding\n- If file is not a component file, proceed without validation\n- If all checks pass, proceed with the write/edit operation\n\nIs this file a component file? Does it pass the validation checks above?"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -6,6 +6,8 @@
     "name": "Golden Armada",
     "email": "architect@goldenarmada.io"
   },
+  "license": "MIT",
+  "repository": "https://github.com/the-Lobbi/iac-golden-architect",
   "keywords": [
     "terraform",
     "terraformer",
@@ -22,154 +24,95 @@
     "devops",
     "gitops"
   ],
-  "categories": [
-    "infrastructure",
-    "devops",
-    "compliance",
-    "multi-cloud"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/the-Lobbi/iac-golden-architect"
-  },
-  "license": "MIT",
-  "engines": {
-    "claude-code": ">=1.0.0"
-  },
-  "commands": {
-    "/iac:tf-init": {
+  "commands": [
+    {
+      "name": "iac:tf-init",
       "description": "Initialize Terraform with best practices (backend, providers, security)",
-      "handler": "commands/tf-init.md"
+      "source": "commands/tf-init.md"
     },
-    "/iac:tf-plan": {
+    {
+      "name": "iac:tf-plan",
       "description": "Run plan with security and cost validation",
-      "handler": "commands/tf-plan.md"
+      "source": "commands/tf-plan.md"
     },
-    "/iac:tf-apply": {
+    {
+      "name": "iac:tf-apply",
       "description": "Safe apply with drift check and rollback preparation",
-      "handler": "commands/tf-apply.md"
+      "source": "commands/tf-apply.md"
     },
-    "/iac:harness-pipeline": {
+    {
+      "name": "iac:harness-pipeline",
       "description": "Create and manage Harness NextGen CD pipelines",
-      "handler": "commands/harness-pipeline.md"
+      "source": "commands/harness-pipeline.md"
     },
-    "/iac:vault-secrets": {
+    {
+      "name": "iac:vault-secrets",
       "description": "Manage HashiCorp Vault secrets and dynamic credentials",
-      "handler": "commands/vault-secrets.md"
+      "source": "commands/vault-secrets.md"
     },
-    "/iac:validate": {
+    {
+      "name": "iac:validate",
       "description": "Comprehensive IaC validation (security, cost, compliance)",
-      "handler": "commands/validate.md"
+      "source": "commands/validate.md"
     },
-    "/iac:drift-detect": {
+    {
+      "name": "iac:drift-detect",
       "description": "Detect and report infrastructure drift",
-      "handler": "commands/drift-detect.md"
+      "source": "commands/drift-detect.md"
     },
-    "/iac:module-scaffold": {
+    {
+      "name": "iac:module-scaffold",
       "description": "Scaffold new Terraform modules with best practices",
-      "handler": "commands/module-scaffold.md"
+      "source": "commands/module-scaffold.md"
     }
-  },
-  "agents": {
-    "terraform-architect": {
+  ],
+  "agents": [
+    {
+      "name": "terraform-architect",
       "description": "Expert Terraform architect for code review, module design, and optimization",
-      "model": "opus",
-      "handler": "agents/terraform-architect.md"
+      "source": "agents/terraform-architect.md"
     },
-    "security-compliance": {
+    {
+      "name": "security-compliance",
       "description": "Validates infrastructure against SOC2, CIS benchmarks, and security best practices",
-      "model": "sonnet",
-      "handler": "agents/security-compliance.md"
+      "source": "agents/security-compliance.md"
     },
-    "cost-optimizer": {
+    {
+      "name": "cost-optimizer",
       "description": "Analyzes resources for cost savings and right-sizing opportunities",
-      "model": "sonnet",
-      "handler": "agents/cost-optimizer.md"
+      "source": "agents/cost-optimizer.md"
     },
-    "iac-reviewer": {
+    {
+      "name": "iac-reviewer",
       "description": "Proactively reviews IaC changes for quality, security, and compliance",
-      "model": "haiku",
-      "handler": "agents/iac-reviewer.md"
+      "source": "agents/iac-reviewer.md"
     }
-  },
-  "skills": {
-    "terraform-enterprise": {
+  ],
+  "skills": [
+    {
+      "name": "terraform-enterprise",
       "description": "Advanced Terraform patterns: workspaces, remote state, policy-as-code, module design",
-      "handler": "skills/terraform-enterprise/SKILL.md"
+      "source": "skills/terraform-enterprise/SKILL.md"
     },
-    "harness-cd": {
+    {
+      "name": "harness-cd",
       "description": "Harness NextGen pipelines, GitOps, deployment strategies, triggers",
-      "handler": "skills/harness-cd/SKILL.md"
+      "source": "skills/harness-cd/SKILL.md"
     },
-    "vault-operations": {
+    {
+      "name": "vault-operations",
       "description": "HashiCorp Vault secrets engines, auth methods, dynamic credentials",
-      "handler": "skills/vault-operations/SKILL.md"
+      "source": "skills/vault-operations/SKILL.md"
     },
-    "iac-architecture": {
+    {
+      "name": "iac-architecture",
       "description": "Cross-cutting concerns: security, compliance, cost optimization, multi-cloud patterns",
-      "handler": "skills/iac-architecture/SKILL.md"
+      "source": "skills/iac-architecture/SKILL.md"
     },
-    "terraformer": {
+    {
+      "name": "terraformer",
       "description": "Reverse-engineer existing infrastructure into Terraform code",
-      "handler": "skills/terraformer/SKILL.md"
+      "source": "skills/terraformer/SKILL.md"
     }
-  },
-  "hooks": {
-    "tf-pre-apply": {
-      "description": "Security and compliance validation before terraform apply",
-      "event": "Bash",
-      "pattern": "terraform\\s+apply",
-      "handler": "hooks/hooks.json#tf-pre-apply"
-    },
-    "tf-format-check": {
-      "description": "Ensure Terraform files are properly formatted before git commit",
-      "event": "Bash",
-      "pattern": "git\\s+commit.*\\.tf",
-      "handler": "hooks/hooks.json#tf-format-check"
-    }
-  },
-  "configuration": {
-    "localConfig": ".claude/iac-golden-architect.local.md",
-    "requiredEnvVars": [],
-    "optionalEnvVars": [
-      "AWS_ACCESS_KEY_ID",
-      "AWS_SECRET_ACCESS_KEY",
-      "AWS_REGION",
-      "ARM_SUBSCRIPTION_ID",
-      "ARM_TENANT_ID",
-      "ARM_CLIENT_ID",
-      "ARM_CLIENT_SECRET",
-      "GOOGLE_CREDENTIALS",
-      "GOOGLE_PROJECT",
-      "VAULT_ADDR",
-      "VAULT_TOKEN",
-      "HARNESS_API_KEY",
-      "HARNESS_ACCOUNT_ID",
-      "TF_BACKEND_BUCKET",
-      "TF_STATE_LOCK_TABLE"
-    ]
-  },
-  "resources": {
-    "targetClouds": [
-      "aws",
-      "azure",
-      "gcp"
-    ],
-    "complianceFrameworks": [
-      "SOC2",
-      "CIS"
-    ],
-    "securityScanners": [
-      "tfsec",
-      "checkov",
-      "trivy",
-      "terrascan"
-    ],
-    "requiredTools": {
-      "terraform": ">=1.5.0",
-      "terraformer": ">=0.8.0",
-      "tfsec": ">=1.28.0",
-      "checkov": ">=2.3.0"
-    }
-  }
+  ]
 }

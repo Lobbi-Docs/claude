@@ -1,206 +1,45 @@
 {
-  "$schema": "https://claude.ai/schemas/hooks.json",
-  "version": "1.0.0",
-  "description": "Team Accelerator Plugin Hooks - Quality gates and automation for team workflows",
-  "config": {
-    "strictMode": false,
-    "enableNotifications": true,
-    "logLevel": "info",
-    "timeout": 30000
-  },
-  "hooks": [
-    {
-      "id": "pre-commit-validator",
-      "event": "PreToolUse",
-      "matcher": "Write|Edit",
-      "description": "Validate code quality before changes are written",
-      "enabled": true,
-      "hook": {
-        "type": "prompt",
-        "prompt": "Before writing or editing files, ensure:\n\n1. **Code Quality Checks:**\n   - No hardcoded secrets (API keys, passwords, tokens)\n   - No console.log/print statements in production code\n   - Proper error handling for async operations\n   - No TODO/FIXME comments without associated issues\n\n2. **Security Validation:**\n   - No SQL injection vulnerabilities\n   - No XSS vulnerabilities in user inputs\n   - Proper input validation and sanitization\n   - No insecure dependencies\n\n3. **Best Practices:**\n   - Follow project coding standards\n   - Maintain consistent formatting\n   - Add appropriate comments for complex logic\n   - Ensure type safety (TypeScript/type hints)\n\n4. **File-Specific Rules:**\n   - Package files: Validate semver, check for vulnerable deps\n   - Config files: Validate JSON/YAML syntax\n   - Source files: Check for unused imports, variables\n   - Test files: Ensure proper assertions and coverage\n\nIf running in **strict mode**, block the operation if issues are found. In **advisory mode**, warn but allow the operation.\n\nFor additional validation, run: ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/validate-code.sh --file \"${file_path}\" --mode ${config.strictMode ? 'strict' : 'advisory'}\n\nRespond with:\n- ✅ PASS: No issues found\n- ⚠️ WARN: Issues found (advisory mode)\n- ❌ BLOCK: Critical issues (strict mode)"
-      },
-      "config": {
-        "timeout": 15000,
-        "strictMode": "${env.HOOK_STRICT_MODE:-false}",
-        "blockOnFailure": false
-      }
-    },
-    {
-      "id": "post-deploy-notifier",
-      "event": "PostToolUse",
-      "matcher": "Bash",
-      "description": "Notify team on deployment-related actions",
-      "enabled": true,
-      "hook": {
-        "type": "script",
-        "script": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/notify-deploy.sh",
-        "args": [
-          "--command",
-          "${tool.command}",
-          "--user",
-          "${env.USER}",
-          "--timestamp",
-          "${timestamp}",
-          "--project",
-          "${env.PROJECT_NAME:-unknown}"
-        ]
-      },
-      "config": {
-        "timeout": 10000,
-        "triggers": [
-          "deploy",
-          "kubectl",
-          "helm",
-          "docker push",
-          "docker build",
-          "npm publish",
-          "terraform apply"
-        ],
-        "notificationChannels": [
-          "log",
-          "webhook"
-        ],
-        "webhookUrl": "${env.DEPLOY_WEBHOOK_URL}"
-      },
-      "condition": {
-        "type": "regex",
-        "pattern": "(deploy|kubectl|helm|docker\\s+(push|build)|npm\\s+publish|terraform\\s+apply)"
-      }
-    },
-    {
-      "id": "test-analyzer",
-      "event": "Stop",
-      "description": "Summarize test results at task completion",
-      "enabled": true,
-      "hook": {
-        "type": "composite",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
         "hooks": [
           {
-            "type": "script",
-            "script": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/analyze-tests.sh",
-            "args": [
-              "--workspace",
-              "${workspace}",
-              "--task-id",
-              "${task.id}",
-              "--output-format",
-              "markdown"
-            ]
-          },
+            "type": "prompt",
+            "prompt": "Before writing or editing files, ensure:\n\n1. **Code Quality Checks:**\n   - No hardcoded secrets (API keys, passwords, tokens)\n   - No console.log/print statements in production code\n   - Proper error handling for async operations\n   - No TODO/FIXME comments without associated issues\n\n2. **Security Validation:**\n   - No SQL injection vulnerabilities\n   - No XSS vulnerabilities in user inputs\n   - Proper input validation and sanitization\n   - No insecure dependencies\n\n3. **Best Practices:**\n   - Follow project coding standards\n   - Maintain consistent formatting\n   - Add appropriate comments for complex logic\n   - Ensure type safety (TypeScript/type hints)\n\n4. **File-Specific Rules:**\n   - Package files: Validate semver, check for vulnerable deps\n   - Config files: Validate JSON/YAML syntax\n   - Source files: Check for unused imports, variables\n   - Test files: Ensure proper assertions and coverage\n\nRespond with:\n- ✅ PASS: No issues found\n- ⚠️ WARN: Issues found (advisory mode)\n- ❌ BLOCK: Critical issues (strict mode)"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
           {
             "type": "prompt",
-            "prompt": "Task completion summary:\n\n**Test Analysis Required:**\n\nReview the test output from this session and provide:\n\n1. **Test Execution Summary:**\n   - Total tests run\n   - Passed/Failed/Skipped counts\n   - Execution time\n   - Coverage percentage (if available)\n\n2. **Quality Metrics:**\n   - Code quality score\n   - New issues introduced\n   - Issues resolved\n   - Technical debt changes\n\n3. **Recommendations:**\n   - Areas needing additional testing\n   - Flaky tests to investigate\n   - Coverage gaps\n   - Performance concerns\n\n4. **Action Items:**\n   - Required fixes before merge\n   - Optional improvements\n   - Documentation updates needed\n\nFormat the response as a concise summary suitable for team review.\n\nIf tests were run, the script output will be available. Otherwise, note that no tests were executed in this session."
+            "prompt": "Bash command executed. If this was a deployment-related action (deploy, kubectl, helm, docker push/build, npm publish, terraform apply), consider:\n\n1. **Notification**: Team should be notified of deployment actions\n2. **Verification**: Validate the operation completed successfully\n3. **Documentation**: Log significant changes\n\nWas this a deployment action that needs follow-up?"
           }
         ]
       },
-      "config": {
-        "timeout": 20000,
-        "generateReport": true,
-        "reportPath": "${workspace}/.claude/reports/test-summary-${timestamp}.md",
-        "includeRecommendations": true
-      }
-    },
-    {
-      "id": "docs-sync",
-      "event": "PostToolUse",
-      "matcher": "Write",
-      "description": "Auto-update documentation when code changes",
-      "enabled": true,
-      "hook": {
-        "type": "composite",
+      {
+        "matcher": "Write",
         "hooks": [
           {
-            "type": "script",
-            "script": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/docs-sync.sh",
-            "args": [
-              "--file",
-              "${tool.file_path}",
-              "--project-root",
-              "${env.PROJECT_ROOT}",
-              "--obsidian-vault",
-              "${env.OBSIDIAN_VAULT_PATH}"
-            ]
-          },
-          {
             "type": "prompt",
-            "prompt": "A source file has been modified: ${tool.file_path}\n\n**Documentation Sync Check:**\n\n1. **Identify Related Documentation:**\n   - README files\n   - API documentation\n   - Architecture diagrams\n   - User guides\n   - Obsidian vault entries\n\n2. **Assess Impact:**\n   - Does this change affect public APIs?\n   - Are there new features requiring documentation?\n   - Have function signatures changed?\n   - Are there breaking changes?\n\n3. **Required Updates:**\n   - List specific documentation files that need updates\n   - Highlight breaking changes\n   - Note new features to document\n\n4. **Sync to Obsidian:**\n   - If this is significant, update the repository documentation in Obsidian\n   - Create ADRs for architectural changes\n   - Log important discoveries in Research notes\n\nProvide a checklist of documentation tasks, or confirm no documentation updates are needed."
+            "prompt": "A source file has been modified. Consider:\n\n1. **Documentation Impact**: Does this change require documentation updates?\n2. **API Changes**: Are there breaking changes to document?\n3. **Obsidian Sync**: Should this be logged in the knowledge base?\n\nProvide a checklist of documentation tasks, or confirm no updates are needed."
           }
         ]
-      },
-      "config": {
-        "timeout": 15000,
-        "sourcePatterns": [
-          "**/*.ts",
-          "**/*.tsx",
-          "**/*.js",
-          "**/*.jsx",
-          "**/*.py",
-          "**/*.go",
-          "**/*.rs",
-          "**/*.java"
-        ],
-        "excludePatterns": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**",
-          "**/*.test.*",
-          "**/*.spec.*"
-        ],
-        "syncToObsidian": true,
-        "createADRs": false,
-        "autoCommitDocs": false
-      },
-      "condition": {
-        "type": "filePattern",
-        "include": [
-          "**/*.ts",
-          "**/*.tsx",
-          "**/*.js",
-          "**/*.jsx",
-          "**/*.py",
-          "**/*.go",
-          "**/*.rs",
-          "**/*.java"
-        ],
-        "exclude": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**",
-          "**/*.test.*",
-          "**/*.spec.*"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Task completion summary:\n\n**Review the session and provide:**\n\n1. **Test Execution Summary** (if tests were run):\n   - Total tests run, passed/failed/skipped counts\n   - Coverage percentage (if available)\n\n2. **Quality Metrics:**\n   - Code quality observations\n   - Issues resolved\n   - Technical debt changes\n\n3. **Recommendations:**\n   - Areas needing additional testing\n   - Documentation updates needed\n\nFormat as a concise summary suitable for team review."
+          }
         ]
       }
-    }
-  ],
-  "globalConfig": {
-    "environment": {
-      "HOOK_STRICT_MODE": "${env.HOOK_STRICT_MODE:-false}",
-      "PROJECT_NAME": "${env.PROJECT_NAME:-team-accelerator}",
-      "PROJECT_ROOT": "${env.PROJECT_ROOT}",
-      "OBSIDIAN_VAULT_PATH": "${env.OBSIDIAN_VAULT_PATH}",
-      "DEPLOY_WEBHOOK_URL": "${env.DEPLOY_WEBHOOK_URL}",
-      "CLAUDE_PLUGIN_ROOT": "${env.CLAUDE_PLUGIN_ROOT}"
-    },
-    "logging": {
-      "enabled": true,
-      "level": "info",
-      "path": "${workspace}/.claude/logs/hooks.log",
-      "format": "json",
-      "includeTimestamp": true,
-      "includeContext": true
-    },
-    "performance": {
-      "maxConcurrentHooks": 3,
-      "defaultTimeout": 30000,
-      "retryOnFailure": false,
-      "retryCount": 0
-    }
-  },
-  "metadata": {
-    "author": "Claude Team Accelerator",
-    "version": "1.0.0",
-    "lastUpdated": "2025-12-12",
-    "repository": "https://github.com/markus41/alpha-0.1",
-    "documentation": "https://github.com/markus41/obsidian/blob/main/System/Claude-Instructions/Hooks.md"
+    ]
   }
 }

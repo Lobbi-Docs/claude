@@ -2,8 +2,11 @@
   "name": "frontend-design-system",
   "version": "1.0.0",
   "description": "263+ design styles with multi-tenant Keycloak theming for AI-powered frontend development",
-  "author": "Markus Ahling",
+  "author": {
+    "name": "Markus Ahling"
+  },
   "license": "MIT",
+  "repository": "https://github.com/markus41/claude/tree/main/frontend-design-system",
   "keywords": [
     "frontend",
     "design-system",
@@ -18,168 +21,110 @@
     "accessibility",
     "responsive-design"
   ],
-  "categories": [
-    "frontend",
-    "design",
-    "authentication",
-    "ui-ux"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/markus41/claude/tree/main/frontend-design-system"
-  },
-  "commands": {
-    "/ds:style": {
+  "commands": [
+    {
+      "name": "ds:style",
       "description": "Apply or search design styles from 263+ design vocabulary",
-      "handler": "commands/style.md"
+      "source": "commands/style.md"
     },
-    "/ds:theme": {
+    {
+      "name": "ds:theme",
       "description": "Generate or customize Keycloak tenant-specific themes",
-      "handler": "commands/theme.md"
+      "source": "commands/theme.md"
     },
-    "/ds:tokens": {
+    {
+      "name": "ds:tokens",
       "description": "Manage design tokens (colors, spacing, typography)",
-      "handler": "commands/tokens.md"
+      "source": "commands/tokens.md"
     },
-    "/ds:component": {
+    {
+      "name": "ds:component",
       "description": "Generate UI components with design system patterns",
-      "handler": "commands/component.md"
+      "source": "commands/component.md"
     },
-    "/ds:palette": {
+    {
+      "name": "ds:palette",
       "description": "Generate color palettes and theme variations",
-      "handler": "commands/palette.md"
+      "source": "commands/palette.md"
     },
-    "/ds:audit": {
+    {
+      "name": "ds:audit",
       "description": "Audit accessibility and design consistency",
-      "handler": "commands/audit.md"
+      "source": "commands/audit.md"
     },
-    "/ds:convert": {
+    {
+      "name": "ds:convert",
       "description": "Convert design tokens between formats (CSS, Tailwind, JS)",
-      "handler": "commands/convert.md"
+      "source": "commands/convert.md"
     },
-    "/ds:keycloak": {
+    {
+      "name": "ds:keycloak",
       "description": "Manage Keycloak theme integration and multi-tenant config",
-      "handler": "commands/keycloak.md"
+      "source": "commands/keycloak.md"
     }
-  },
-  "agents": {
-    "design-architect": {
+  ],
+  "agents": [
+    {
+      "name": "design-architect",
       "description": "Strategic design system architecture and planning",
-      "model": "opus",
-      "handler": "agents/design-architect.md"
+      "source": "agents/design-architect.md"
     },
-    "style-implementer": {
+    {
+      "name": "style-implementer",
       "description": "Implement design styles and CSS from design vocabulary",
-      "model": "sonnet",
-      "handler": "agents/style-implementer.md"
+      "source": "agents/style-implementer.md"
     },
-    "theme-engineer": {
+    {
+      "name": "theme-engineer",
       "description": "Multi-tenant Keycloak theme development and customization",
-      "model": "sonnet",
-      "handler": "agents/theme-engineer.md"
+      "source": "agents/theme-engineer.md"
     },
-    "component-designer": {
+    {
+      "name": "component-designer",
       "description": "UI component design and implementation with design tokens",
-      "model": "sonnet",
-      "handler": "agents/component-designer.md"
+      "source": "agents/component-designer.md"
     },
-    "accessibility-auditor": {
+    {
+      "name": "accessibility-auditor",
       "description": "WCAG compliance and accessibility testing",
-      "model": "sonnet",
-      "handler": "agents/accessibility-auditor.md"
+      "source": "agents/accessibility-auditor.md"
     },
-    "responsive-specialist": {
+    {
+      "name": "responsive-specialist",
       "description": "Responsive design implementation across breakpoints",
-      "model": "haiku",
-      "handler": "agents/responsive-specialist.md"
+      "source": "agents/responsive-specialist.md"
     }
-  },
-  "skills": {
-    "design-styles": {
+  ],
+  "skills": [
+    {
+      "name": "design-styles",
       "description": "263+ design style vocabulary from Obsidian vault",
-      "handler": "skills/design-styles.md"
+      "source": "skills/design-styles.md"
     },
-    "keycloak-theming": {
+    {
+      "name": "keycloak-theming",
       "description": "Multi-tenant Keycloak theme customization and deployment",
-      "handler": "skills/keycloak-theming.md"
+      "source": "skills/keycloak-theming.md"
     },
-    "css-generation": {
+    {
+      "name": "css-generation",
       "description": "Generate CSS, Tailwind, and CSS-in-JS from design tokens",
-      "handler": "skills/css-generation.md"
+      "source": "skills/css-generation.md"
     },
-    "component-patterns": {
+    {
+      "name": "component-patterns",
       "description": "Reusable component patterns and composition strategies",
-      "handler": "skills/component-patterns.md"
+      "source": "skills/component-patterns.md"
     },
-    "design-tokens": {
+    {
+      "name": "design-tokens",
       "description": "Design token management and transformation",
-      "handler": "skills/design-tokens.md"
+      "source": "skills/design-tokens.md"
     },
-    "accessibility": {
+    {
+      "name": "accessibility",
       "description": "WCAG 2.1 compliance and accessibility best practices",
-      "handler": "skills/accessibility.md"
+      "source": "skills/accessibility.md"
     }
-  },
-  "hooks": {
-    "style-consistency-checker": {
-      "description": "Validate design style consistency across components",
-      "event": "PreToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "\\.(css|scss|tsx|jsx)$",
-      "handler": "hooks/scripts/check-style-consistency.sh"
-    },
-    "accessibility-validator": {
-      "description": "Run accessibility checks on modified components",
-      "event": "PreToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "\\.(tsx|jsx)$",
-      "handler": "hooks/scripts/validate-accessibility.sh"
-    },
-    "theme-sync": {
-      "description": "Sync design tokens to Keycloak theme files",
-      "event": "PostToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "(theme|tokens).*\\.(ts|json|css)$",
-      "handler": "hooks/scripts/sync-themes.sh"
-    },
-    "design-token-updater": {
-      "description": "Update design tokens from Obsidian design styles",
-      "event": "PostToolUse",
-      "toolPattern": "Edit",
-      "filePattern": "design-tokens\\.(json|ts)$",
-      "handler": "hooks/scripts/update-tokens.sh"
-    }
-  },
-  "workflows": {
-    "new-theme": {
-      "description": "Create new multi-tenant theme from scratch",
-      "handler": "workflows/new-theme.md"
-    },
-    "component-library": {
-      "description": "Build comprehensive component library with design system",
-      "handler": "workflows/component-library.md"
-    },
-    "accessibility-remediation": {
-      "description": "Identify and fix accessibility issues",
-      "handler": "workflows/accessibility-remediation.md"
-    }
-  },
-  "dependencies": {
-    "obsidian-mcp": ">=1.0.0",
-    "context7-mcp": ">=1.0.0"
-  },
-  "configuration": {
-    "localConfig": ".claude/frontend-design-system.local.md",
-    "requiredEnvVars": [],
-    "optionalEnvVars": [
-      "KEYCLOAK_URL",
-      "KEYCLOAK_REALM",
-      "DESIGN_SYSTEM_PATH"
-    ]
-  },
-  "resources": {
-    "obsidianVault": "C:\\Users\\MarkusAhling\\obsidian",
-    "designStylesPath": "System/Design-Styles",
-    "keycloakThemesPath": "Resources/Keycloak-Themes"
-  }
+  ]
 }
