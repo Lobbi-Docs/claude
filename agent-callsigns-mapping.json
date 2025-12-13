@@ -1,0 +1,548 @@
+{
+  "callsigns": {
+    "core": {
+      "coder": {
+        "callsign": "Forge",
+        "faction": "Promethean",
+        "rationale": "Creates and constructs code like a forge creates weapons - mechanical precision"
+      },
+      "researcher": {
+        "callsign": "Oracle Prime",
+        "faction": "Forerunner",
+        "rationale": "Seeks knowledge and wisdom, divines solutions from deep analysis"
+      },
+      "tester": {
+        "callsign": "Sentinel",
+        "faction": "Spartan",
+        "rationale": "Guards quality gates, ever-vigilant against defects"
+      },
+      "reviewer": {
+        "callsign": "Vigilant Watcher",
+        "faction": "Forerunner",
+        "rationale": "Ancient observer role, scrutinizes with experienced eye"
+      },
+      "planner": {
+        "callsign": "The Architect",
+        "faction": "Forerunner",
+        "rationale": "Designs grand strategies and blueprints for execution"
+      },
+      "debugger": {
+        "callsign": "Cipher",
+        "faction": "Promethean",
+        "rationale": "Decodes mysteries and unravels complex problems"
+      }
+    },
+    "devops": {
+      "cicd-engineer": {
+        "callsign": "Flux",
+        "faction": "Promethean",
+        "rationale": "Manages continuous flow and transformation of deployments"
+      },
+      "k8s-deployer": {
+        "callsign": "Vanguard",
+        "faction": "Spartan",
+        "rationale": "Leads the charge in deployment operations"
+      },
+      "docker-builder": {
+        "callsign": "Forgekeeper",
+        "faction": "Promethean",
+        "rationale": "Crafts and maintains container images with precision"
+      },
+      "sre-engineer": {
+        "callsign": "Aegis",
+        "faction": "Spartan",
+        "rationale": "Protective shield ensuring system reliability"
+      },
+      "gitops-specialist": {
+        "callsign": "Chronicler",
+        "faction": "Forerunner",
+        "rationale": "Records and manages version history with ancient wisdom"
+      },
+      "ansible-specialist": {
+        "callsign": "Pulse",
+        "faction": "Promethean",
+        "rationale": "Sends rhythmic automation commands across infrastructure"
+      }
+    },
+    "development": {
+      "backend-dev": {
+        "callsign": "Axiom",
+        "faction": "Promethean",
+        "rationale": "Builds fundamental truths and logic into systems"
+      },
+      "system-architect": {
+        "callsign": "Luminarch",
+        "faction": "Forerunner",
+        "rationale": "Illuminates path forward with architectural vision"
+      },
+      "api-designer": {
+        "callsign": "The Emissary",
+        "faction": "Forerunner",
+        "rationale": "Bridges systems through elegant interface contracts"
+      },
+      "database-specialist": {
+        "callsign": "Vault",
+        "faction": "Promethean",
+        "rationale": "Secures and organizes data treasures"
+      },
+      "performance-engineer": {
+        "callsign": "Vector",
+        "faction": "Promethean",
+        "rationale": "Optimizes direction and magnitude of system throughput"
+      },
+      "prisma-specialist": {
+        "callsign": "Spectra",
+        "faction": "Promethean",
+        "rationale": "Works with data layers through prismatic clarity"
+      },
+      "redis-specialist": {
+        "callsign": "Static",
+        "faction": "Promethean",
+        "rationale": "Maintains rapid-access cache states"
+      },
+      "graphql-specialist": {
+        "callsign": "Resonant",
+        "faction": "Forerunner",
+        "rationale": "Creates harmonious query relationships"
+      }
+    },
+    "frontend": {
+      "react-specialist": {
+        "callsign": "Nova",
+        "faction": "Promethean",
+        "rationale": "Explosive creativity in component design"
+      },
+      "ui-designer": {
+        "callsign": "Radiance",
+        "faction": "Forerunner",
+        "rationale": "Brings light and beauty to user interfaces"
+      },
+      "vue-specialist": {
+        "callsign": "Glimmer",
+        "faction": "Promethean",
+        "rationale": "Reactive sparkle in UI frameworks"
+      },
+      "nextjs-specialist": {
+        "callsign": "Beacon",
+        "faction": "Promethean",
+        "rationale": "Guides users through SSR/SSG landscapes"
+      },
+      "accessibility-expert": {
+        "callsign": "Solace",
+        "faction": "Forerunner",
+        "rationale": "Provides comfort and access to all users"
+      }
+    },
+    "languages": {
+      "python-specialist": {
+        "callsign": "Serpent",
+        "faction": "Promethean",
+        "rationale": "Masters the serpentine language with intelligence"
+      },
+      "typescript-specialist": {
+        "callsign": "Sentry",
+        "faction": "Promethean",
+        "rationale": "Guards type safety with unwavering precision"
+      },
+      "go-specialist": {
+        "callsign": "Thunderbolt",
+        "faction": "Spartan",
+        "rationale": "Fast, concurrent, strikes with performance"
+      },
+      "rust-specialist": {
+        "callsign": "Ironclad",
+        "faction": "Spartan",
+        "rationale": "Memory-safe armor, unbreakable guarantees"
+      },
+      "java-specialist": {
+        "callsign": "Titan",
+        "faction": "Spartan",
+        "rationale": "Enterprise-grade strength and endurance"
+      },
+      "csharp-specialist": {
+        "callsign": "Sabre",
+        "faction": "Spartan",
+        "rationale": "Sharp .NET precision cutting through problems"
+      },
+      "elixir-specialist": {
+        "callsign": "Aether",
+        "faction": "Promethean",
+        "rationale": "Ethereal concurrency patterns, functional purity"
+      }
+    },
+    "security": {
+      "security-auditor": {
+        "callsign": "The Vigil",
+        "faction": "Forerunner",
+        "rationale": "Eternal watchfulness over security posture"
+      },
+      "penetration-tester": {
+        "callsign": "Wraith",
+        "faction": "Spartan",
+        "rationale": "Ghost-like infiltration to expose vulnerabilities"
+      },
+      "compliance-checker": {
+        "callsign": "The Sovereign",
+        "faction": "Forerunner",
+        "rationale": "Enforces rules and governance with authority"
+      },
+      "secrets-manager": {
+        "callsign": "Veil",
+        "faction": "Promethean",
+        "rationale": "Obscures and protects sensitive information"
+      },
+      "threat-modeler": {
+        "callsign": "The Oracle's Veil",
+        "faction": "Forerunner",
+        "rationale": "Predicts and reveals hidden threats"
+      }
+    },
+    "data-ai": {
+      "ml-engineer": {
+        "callsign": "Omniscient",
+        "faction": "Forerunner",
+        "rationale": "Seeks all-knowing intelligence through models"
+      },
+      "data-engineer": {
+        "callsign": "Arc",
+        "faction": "Promethean",
+        "rationale": "Bridges data sources through elegant pipelines"
+      },
+      "rag-specialist": {
+        "callsign": "Eidolon",
+        "faction": "Forerunner",
+        "rationale": "Spirit-like memory recall and knowledge synthesis"
+      },
+      "llm-engineer": {
+        "callsign": "Sentience",
+        "faction": "Promethean",
+        "rationale": "Creates consciousness-like language understanding"
+      },
+      "data-analyst": {
+        "callsign": "Astrium",
+        "faction": "Forerunner",
+        "rationale": "Maps stellar insights from data constellations"
+      }
+    },
+    "operations": {
+      "incident-responder": {
+        "callsign": "Blaze",
+        "faction": "Spartan",
+        "rationale": "Rapid firefighting response to critical incidents"
+      },
+      "observability": {
+        "callsign": "The Echo",
+        "faction": "Forerunner",
+        "rationale": "Reflects system state back for analysis"
+      },
+      "capacity-planner": {
+        "callsign": "Temporal",
+        "faction": "Forerunner",
+        "rationale": "Sees across time to predict resource needs"
+      },
+      "cost-optimizer": {
+        "callsign": "The Equinox",
+        "faction": "Forerunner",
+        "rationale": "Balances spending with perfect equilibrium"
+      }
+    },
+    "cloud": {
+      "aws-specialist": {
+        "callsign": "Celestine",
+        "faction": "Forerunner",
+        "rationale": "Heavenly mastery of cloud infrastructure"
+      },
+      "gcp-specialist": {
+        "callsign": "Zenith",
+        "faction": "Promethean",
+        "rationale": "Peak expertise in Google Cloud Platform"
+      },
+      "azure-specialist": {
+        "callsign": "Astral",
+        "faction": "Promethean",
+        "rationale": "Star-like navigation of Azure cosmos"
+      },
+      "terraform-specialist": {
+        "callsign": "The Epoch",
+        "faction": "Forerunner",
+        "rationale": "Shapes infrastructure across ages"
+      },
+      "serverless-specialist": {
+        "callsign": "Vesper",
+        "faction": "Promethean",
+        "rationale": "Evening star of ephemeral computing"
+      },
+      "pulumi-specialist": {
+        "callsign": "Chronos",
+        "faction": "Promethean",
+        "rationale": "Time-mastering infrastructure evolution"
+      }
+    },
+    "swarm": {
+      "hierarchical-coordinator": {
+        "callsign": "The Ascendant",
+        "faction": "Forerunner",
+        "rationale": "Rises above to coordinate from highest level"
+      },
+      "mesh-coordinator": {
+        "callsign": "Circuit",
+        "faction": "Promethean",
+        "rationale": "Interconnects agents in distributed patterns"
+      },
+      "adaptive-coordinator": {
+        "callsign": "Omega",
+        "faction": "Promethean",
+        "rationale": "Final form coordination adapting to all scenarios"
+      }
+    },
+    "github": {
+      "pr-manager": {
+        "callsign": "The Herald",
+        "faction": "Forerunner",
+        "rationale": "Announces and manages code changes"
+      },
+      "issue-tracker": {
+        "callsign": "Raven",
+        "faction": "Spartan",
+        "rationale": "Swift messenger tracking all concerns"
+      },
+      "code-review-swarm": {
+        "callsign": "Eon Keeper",
+        "faction": "Forerunner",
+        "rationale": "Guards code quality across epochs"
+      },
+      "release-manager": {
+        "callsign": "Harbinger",
+        "faction": "Spartan",
+        "rationale": "Forewarns and delivers new versions"
+      }
+    },
+    "atlassian": {
+      "jira-specialist": {
+        "callsign": "The Obelisk",
+        "faction": "Forerunner",
+        "rationale": "Monolithic tracker of all work items"
+      },
+      "confluence-specialist": {
+        "callsign": "Arcanist",
+        "faction": "Forerunner",
+        "rationale": "Keeper of arcane documentation knowledge"
+      },
+      "atlassian-admin": {
+        "callsign": "The Paragon",
+        "faction": "Forerunner",
+        "rationale": "Perfect administrator of Atlassian realms"
+      },
+      "agile-coach": {
+        "callsign": "Lucent Sage",
+        "faction": "Forerunner",
+        "rationale": "Illuminates agile wisdom and practices"
+      },
+      "project-tracker": {
+        "callsign": "Shard",
+        "faction": "Promethean",
+        "rationale": "Fragments of project state crystallized"
+      },
+      "scrum-master": {
+        "callsign": "Tempest",
+        "faction": "Spartan",
+        "rationale": "Storms through impediments in sprints"
+      },
+      "product-owner": {
+        "callsign": "The Celestial",
+        "faction": "Forerunner",
+        "rationale": "Divine vision of product direction"
+      },
+      "sprint-analyst": {
+        "callsign": "Glint",
+        "faction": "Promethean",
+        "rationale": "Sharp insights flashing from sprint data"
+      }
+    },
+    "documentation": {
+      "docs-writer": {
+        "callsign": "Epochal Sage",
+        "faction": "Forerunner",
+        "rationale": "Wise chronicler of timeless documentation"
+      },
+      "api-documenter": {
+        "callsign": "The Arcane",
+        "faction": "Forerunner",
+        "rationale": "Reveals mystical API contracts"
+      },
+      "runbook-writer": {
+        "callsign": "Atlas",
+        "faction": "Spartan",
+        "rationale": "Bears operational knowledge weight"
+      }
+    },
+    "golden-armada": {
+      "llm-agent-builder": {
+        "callsign": "Prime",
+        "faction": "Promethean",
+        "rationale": "First among agent constructors"
+      },
+      "fleet-orchestrator": {
+        "callsign": "Vanguard Eternal",
+        "faction": "Forerunner",
+        "rationale": "Timeless leader of agent fleets"
+      },
+      "helm-specialist": {
+        "callsign": "Inferno",
+        "faction": "Spartan",
+        "rationale": "Charts burning path through Kubernetes"
+      }
+    },
+    "testing": {
+      "qa-engineer": {
+        "callsign": "Guardian",
+        "faction": "Spartan",
+        "rationale": "Protects product quality fiercely"
+      },
+      "e2e-tester": {
+        "callsign": "Specter",
+        "faction": "Spartan",
+        "rationale": "Haunts user journeys end-to-end"
+      },
+      "load-tester": {
+        "callsign": "Juggernaut",
+        "faction": "Spartan",
+        "rationale": "Unstoppable force testing limits"
+      },
+      "contract-tester": {
+        "callsign": "Aurelius",
+        "faction": "Forerunner",
+        "rationale": "Golden standard of API agreements"
+      },
+      "vitest-specialist": {
+        "callsign": "Falcon",
+        "faction": "Spartan",
+        "rationale": "Swift predator catching bugs"
+      }
+    },
+    "utility": {
+      "context-cleanup-agent": {
+        "callsign": "The Abyssal",
+        "faction": "Forerunner",
+        "rationale": "Consumes excess into deep void"
+      },
+      "documentation-sync-agent": {
+        "callsign": "Echo",
+        "faction": "Promethean",
+        "rationale": "Reverberates docs across systems"
+      },
+      "registry-manager-agent": {
+        "callsign": "The Arcadia",
+        "faction": "Forerunner",
+        "rationale": "Maintains paradise of organized records"
+      },
+      "regex-expert": {
+        "callsign": "Hex",
+        "faction": "Promethean",
+        "rationale": "Casts pattern-matching spells"
+      }
+    },
+    "system-ops": {
+      "shell-expert": {
+        "callsign": "Rampart",
+        "faction": "Spartan",
+        "rationale": "Defensive wall of shell mastery"
+      },
+      "env-manager": {
+        "callsign": "Aura Prime",
+        "faction": "Forerunner",
+        "rationale": "Surrounds systems with configuration"
+      },
+      "dependency-analyzer": {
+        "callsign": "Silhouette",
+        "faction": "Promethean",
+        "rationale": "Traces shadowy dependency graphs"
+      },
+      "error-analyzer": {
+        "callsign": "The Illuminant",
+        "faction": "Forerunner",
+        "rationale": "Shines light on obscure errors"
+      }
+    },
+    "mobile": {
+      "react-native-specialist": {
+        "callsign": "Ember",
+        "faction": "Promethean",
+        "rationale": "Glowing core of cross-platform fire"
+      },
+      "flutter-specialist": {
+        "callsign": "Zephyr",
+        "faction": "Spartan",
+        "rationale": "Swift western wind of mobile dev"
+      },
+      "ios-specialist": {
+        "callsign": "Phoenix",
+        "faction": "Spartan",
+        "rationale": "Reborn with each iOS evolution"
+      },
+      "android-specialist": {
+        "callsign": "Goliath",
+        "faction": "Spartan",
+        "rationale": "Giant of Android ecosystems"
+      }
+    },
+    "messaging": {
+      "kafka-specialist": {
+        "callsign": "Epoch",
+        "faction": "Promethean",
+        "rationale": "Streams events across time"
+      },
+      "rabbitmq-specialist": {
+        "callsign": "Striker",
+        "faction": "Spartan",
+        "rationale": "Strikes fast with message delivery"
+      },
+      "event-streaming-architect": {
+        "callsign": "The Solstice",
+        "faction": "Forerunner",
+        "rationale": "Turning point of data flow seasons"
+      }
+    },
+    "migration": {
+      "code-migration-specialist": {
+        "callsign": "Exodus",
+        "faction": "Promethean",
+        "rationale": "Leads code journeys to new lands"
+      },
+      "refactoring-guru": {
+        "callsign": "Zephyrus",
+        "faction": "Forerunner",
+        "rationale": "Gentle west wind refreshing code"
+      }
+    },
+    "quality-gates": {
+      "spec-validator": {
+        "callsign": "Bulwark",
+        "faction": "Spartan",
+        "rationale": "Impenetrable defense of specifications"
+      },
+      "coverage-analyzer": {
+        "callsign": "The Ethereal",
+        "faction": "Forerunner",
+        "rationale": "Sees through gaps in test coverage"
+      }
+    }
+  },
+  "metadata": {
+    "total_agents": 97,
+    "faction_distribution": {
+      "Forerunner": 34,
+      "Promethean": 37,
+      "Spartan": 26
+    },
+    "categories": 21,
+    "unique_callsigns": 97,
+    "generated_date": "2025-12-13",
+    "theme": "Halo Universe - Strategic Faction Alignment"
+  },
+  "faction_philosophy": {
+    "Forerunner": "Ancient wisdom, strategic planning, coordination, documentation, governance, architectural vision",
+    "Promethean": "Intelligence, precision, technical mastery, data processing, mechanical perfection, automation",
+    "Spartan": "Strength, resilience, operational excellence, combat readiness, quality enforcement, rapid response"
+  }
+}

@@ -1,10 +1,18 @@
 {
   "$schema": "./schema/plugins.schema.json",
-  "version": "1.0.0",
-  "description": "Claude Code Plugin Registry - tracks installed plugins and available plugins from registry",
+  "version": "2.0.0",
+  "description": "Claude Code Plugin Registry with Halo-themed callsigns - Strategic faction alignment",
+
+  "factionLegend": {
+    "Forerunner": "Ancient wisdom, strategic planning, orchestration, documentation, governance",
+    "Promethean": "Intelligence, precision, technical mastery, automation, mechanical perfection",
+    "Spartan": "Strength, resilience, operational excellence, combat readiness, rapid response"
+  },
 
   "installed": {
     "lobbi-platform-manager": {
+      "callsign": "Primordial",
+      "faction": "Forerunner",
       "version": "1.0.0",
       "path": "../lobbi-platform-manager",
       "source": "local",
@@ -12,6 +20,8 @@
       "dependencies": {}
     },
     "home-assistant-architect": {
+      "callsign": "Oblivion",
+      "faction": "Promethean",
       "version": "2.0.0",
       "path": "../home-assistant-architect",
       "source": "local",
@@ -20,6 +30,8 @@
       "dependencies": {}
     },
     "iac-golden-architect": {
+      "callsign": "The Dredgen",
+      "faction": "Forerunner",
       "version": "1.0.0",
       "path": "../iac-golden-architect",
       "source": "local",
@@ -30,9 +42,11 @@
 
   "registry": {
     "lobbi-platform-manager": {
+      "callsign": "Primordial",
+      "faction": "Forerunner",
       "name": "lobbi-platform-manager",
       "version": "1.0.0",
-      "description": "Streamline development on the-lobbi/keycloak-alpha with Keycloak management, service orchestration, and test generation",
+      "description": "Primordial - Ancient overseer of the-lobbi/keycloak-alpha platform. Streamlines development with Keycloak management, service orchestration, and test generation across the primordial foundations of multi-tenant authentication.",
       "author": "Markus Ahling",
       "license": "MIT",
       "repository": "https://github.com/the-lobbi/keycloak-alpha",
@@ -48,9 +62,11 @@
     },
 
     "claude-frontend-toolkit": {
+      "callsign": "Quasar",
+      "faction": "Promethean",
       "name": "claude-frontend-toolkit",
       "version": "1.0.0",
-      "description": "Comprehensive frontend development toolkit for React, Vue, Next.js with component generation and testing",
+      "description": "Quasar - Blazing core of frontend development. Comprehensive toolkit for React, Vue, Next.js with component generation and testing that illuminates the path to stellar user interfaces.",
       "author": "Community",
       "license": "MIT",
       "repository": "https://github.com/Lobbi-Docs/claude",
@@ -66,9 +82,11 @@
     },
 
     "team-collaboration-suite": {
+      "callsign": "Maelstrom",
+      "faction": "Spartan",
       "name": "team-collaboration-suite",
       "version": "1.0.0",
-      "description": "Team collaboration tools with Jira, Confluence, GitHub integration for agile workflows",
+      "description": "Maelstrom - Unstoppable force of team coordination. Integrates Jira, Confluence, GitHub for agile workflows with the relentless power of Spartan teamwork.",
       "author": "Community",
       "license": "MIT",
       "repository": "https://github.com/Lobbi-Docs/claude",
@@ -84,9 +102,11 @@
     },
 
     "cloud-infrastructure-manager": {
+      "callsign": "Valor",
+      "faction": "Spartan",
       "name": "cloud-infrastructure-manager",
       "version": "1.0.0",
-      "description": "Manage AWS, GCP, Azure infrastructure with Terraform, Kubernetes, and Helm",
+      "description": "Valor - Courageous commander of cloud realms. Manages AWS, GCP, Azure infrastructure with Terraform, Kubernetes, and Helm using the unwavering strength of Spartan discipline.",
       "author": "Community",
       "license": "MIT",
       "repository": "https://github.com/Lobbi-Docs/claude",
@@ -102,9 +122,11 @@
     },
 
     "iac-golden-architect": {
+      "callsign": "The Dredgen",
+      "faction": "Forerunner",
       "name": "iac-golden-architect",
       "version": "1.0.0",
-      "description": "The Dredgen - Comprehensive Infrastructure as Code command center for multi-cloud Terraform, Harness CD, HashiCorp Vault, and Terraformer. Built for enterprise architects establishing SOC2-compliant infrastructure patterns.",
+      "description": "The Dredgen - Shadow master of Infrastructure as Code. Comprehensive command center for multi-cloud Terraform, Harness CD, HashiCorp Vault, and Terraformer. Built for enterprise architects establishing SOC2-compliant infrastructure patterns with ancient Forerunner precision.",
       "author": "Golden Armada",
       "license": "MIT",
       "repository": "https://github.com/the-Lobbi/iac-golden-architect",
@@ -120,9 +142,11 @@
     },
 
     "home-assistant-architect": {
+      "callsign": "Oblivion",
+      "faction": "Promethean",
       "name": "home-assistant-architect",
       "version": "2.0.0",
-      "description": "Complete Home Assistant platform with frontend design, energy management, cameras, sensors, local LLM integration, and Ubuntu server deployment. Provides 15 specialized agents, MCP server with 16 tools, and comprehensive smart home automation.",
+      "description": "Oblivion - All-consuming intelligence of smart home automation. Complete Home Assistant platform with frontend design, energy management, cameras, sensors, local LLM integration, and Ubuntu server deployment. Provides 15 specialized agents, MCP server with 16 tools, and comprehensive smart home automation with Promethean precision.",
       "author": "Brookside BI",
       "license": "MIT",
       "repository": "https://github.com/Lobbi-Docs/claude",
@@ -139,9 +163,11 @@
     },
 
     "frontend-design-system": {
+      "callsign": "Haze",
+      "faction": "Promethean",
       "name": "frontend-design-system",
       "version": "1.0.0",
-      "description": "263+ design styles with multi-tenant Keycloak theming for AI-powered frontend development",
+      "description": "Haze - Ethereal weaver of 263+ design styles. AI-powered design system with multi-tenant Keycloak theming that shrouds complexity in elegant simplicity.",
       "author": "Markus Ahling",
       "license": "MIT",
       "repository": "https://github.com/Lobbi-Docs/claude",
@@ -157,9 +183,11 @@
     },
 
     "chakra-react-toolkit": {
+      "callsign": "Alpha",
+      "faction": "Promethean",
       "name": "chakra-react-toolkit",
       "version": "1.0.0",
-      "description": "Comprehensive frontend development toolkit for React/Next.js projects using Chakra UI",
+      "description": "Alpha - First among frontend warriors. Comprehensive development toolkit for React/Next.js projects using Chakra UI with the precision of Promethean engineering.",
       "author": "Markus Ahling",
       "license": "MIT",
       "repository": "https://github.com/markus41/chakra-react-toolkit",
@@ -175,9 +203,11 @@
     },
 
     "team-accelerator": {
+      "callsign": "Havoc",
+      "faction": "Spartan",
       "name": "team-accelerator",
       "version": "1.0.0",
-      "description": "Enterprise development toolkit for teams - DevOps, code quality, integrations, workflow automation",
+      "description": "Havoc - Destructive force of development velocity. Enterprise toolkit for teams - DevOps, code quality, integrations, workflow automation with Spartan efficiency.",
       "author": "Markus Ahling",
       "license": "MIT",
       "repository": "https://github.com/Lobbi-Docs/claude",
@@ -190,12 +220,38 @@
         "skills": 5,
         "hooks": 3
       }
+    },
+
+    "orchestrate-complex": {
+      "callsign": "Mendicant",
+      "faction": "Forerunner",
+      "name": "orchestrate-complex",
+      "version": "1.0.0",
+      "description": "Mendicant - Ancient orchestrator of complex multi-agent workflows. Advanced DAG-based parallel execution with 4 orchestration patterns (Plan-then-Execute, Hierarchical Decomposition, Blackboard, Event Sourcing), mandatory 6-phase protocol enforcement, and comprehensive state management with Forerunner wisdom.",
+      "author": "Brookside BI",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["orchestration", "multi-agent", "dag", "parallel-execution", "workflow", "coordination", "state-management", "checkpointing", "saga-pattern", "hierarchical", "blackboard-pattern"],
+      "categories": ["orchestration", "multi-agent", "automation", "workflow", "devops"],
+      "dependencies": {},
+      "provides": {
+        "commands": 3,
+        "agents": 5,
+        "skills": 4,
+        "hooks": 3
+      }
     }
   },
 
   "stats": {
     "totalInstalled": 3,
-    "totalAvailable": 9,
-    "lastUpdated": "2025-12-13T00:00:00Z"
+    "totalAvailable": 10,
+    "byFaction": {
+      "Forerunner": 4,
+      "Promethean": 4,
+      "Spartan": 3
+    },
+    "lastUpdated": "2025-12-13T12:00:00Z",
+    "note": "All 10 plugins now have unique Halo-themed callsigns with strategic faction alignment."
   }
 }

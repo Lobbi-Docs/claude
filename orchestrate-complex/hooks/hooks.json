@@ -1,0 +1,54 @@
+{
+  "$schema": "https://claude.ai/schemas/hooks.v1.json",
+  "version": "1.0.0",
+  "description": "Orchestration protocol enforcement hooks for the orchestrate-complex plugin",
+
+  "hooks": [
+    {
+      "event": "PreToolUse",
+      "name": "orchestration-protocol-enforcer",
+      "description": "Enforces the mandatory 6-phase protocol and sub-agent requirements for complex tasks",
+      "matcher": {
+        "toolName": "Task"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "## Orchestration Protocol Enforcement\n\nBefore proceeding with this Task tool invocation, verify:\n\n### Sub-Agent Requirements\n- [ ] Minimum 3 sub-agents for complex tasks\n- [ ] Maximum 13 sub-agents per orchestration\n- [ ] Recommended: 5-7 sub-agents for optimal performance\n\n### Phase Compliance\nEnsure the work follows the mandatory 6-phase protocol:\n1. **EXPLORE** (2+ agents) - Research and context gathering\n2. **PLAN** (1-2 agents) - Strategy and architecture\n3. **CODE** (2-4 agents) - Implementation\n4. **TEST** (2-3 agents) - Validation (REQUIRED)\n5. **FIX** (1-2 agents) - Issue resolution\n6. **DOCUMENT** (1-2 agents) - Knowledge transfer (REQUIRED)\n\n### Quality Gates\n- Testing phase cannot be skipped\n- Documentation is mandatory\n- All phases must be tracked\n\n### Warnings\n- If spawning single agent for complex work → WARN\n- If skipping TEST phase → BLOCK\n- If skipping DOCUMENT phase → BLOCK\n\nProceed with awareness of these requirements."
+        }
+      ]
+    },
+    {
+      "event": "PostToolUse",
+      "name": "phase-transition-validator",
+      "description": "Validates phase completion and creates checkpoints at phase boundaries",
+      "matcher": {
+        "toolName": "Task"
+      },
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "## Phase Transition Validation\n\nThe Task tool has completed. Perform the following checks:\n\n### Checkpoint Creation\nIf a phase has completed, create a checkpoint:\n- Archive phase outputs to Obsidian vault\n- Save orchestration state\n- Prepare context for next phase\n\n### Exit Criteria Verification\n\n**EXPLORE Phase Exit:**\n- [ ] Requirements documented\n- [ ] Codebase context gathered\n- [ ] Risks identified\n- [ ] Dependencies mapped\n\n**PLAN Phase Exit:**\n- [ ] Architecture defined\n- [ ] DAG created\n- [ ] Agents assigned\n- [ ] Estimates provided\n\n**CODE Phase Exit:**\n- [ ] All tasks completed\n- [ ] Unit tests written\n- [ ] Code compiles\n- [ ] No lint errors\n\n**TEST Phase Exit:**\n- [ ] All tests executed\n- [ ] Coverage measured (target: 80%)\n- [ ] Security scan complete\n- [ ] Issues catalogued\n\n**FIX Phase Exit:**\n- [ ] All tests passing\n- [ ] No regressions\n- [ ] Security issues resolved\n\n**DOCUMENT Phase Exit:**\n- [ ] README updated\n- [ ] ADRs created\n- [ ] Vault synced\n- [ ] Ready for commit\n\n### Context Management\n- Current context usage: Check if > 75%\n- If > 75%: Trigger compression and archival\n- If > 90%: Emergency checkpoint required"
+        }
+      ]
+    },
+    {
+      "event": "Stop",
+      "name": "orchestration-completion-validator",
+      "description": "Ensures all phases completed and documentation synced before ending orchestration",
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "## Orchestration Completion Validation\n\nBefore completing this orchestration, verify ALL requirements are met:\n\n### Mandatory Phase Completion\n- [ ] EXPLORE phase completed with outputs archived\n- [ ] PLAN phase completed with DAG created\n- [ ] CODE phase completed with all tasks done\n- [ ] TEST phase completed with all tests passing\n- [ ] FIX phase completed with no blocking issues\n- [ ] DOCUMENT phase completed with vault synced\n\n### Quality Assurance\n- [ ] Test coverage meets threshold (80% for new code)\n- [ ] No security vulnerabilities\n- [ ] No lint or type errors\n- [ ] All acceptance criteria met\n\n### Documentation Requirements\n- [ ] README/docs updated for changes\n- [ ] ADRs created for architectural decisions\n- [ ] Obsidian vault synced with final outputs\n- [ ] Commit message prepared\n\n### Final Checklist\n- [ ] All agents properly terminated\n- [ ] Final checkpoint created\n- [ ] Context archived to vault\n- [ ] No orphaned tasks or resources\n\n### BLOCKING CONDITIONS\nDO NOT mark orchestration complete if:\n- Any tests are failing\n- Documentation not synced to vault\n- Required phases were skipped\n- Blocking issues remain unresolved\n\nIf all checks pass, the orchestration may complete successfully."
+        }
+      ]
+    }
+  ],
+
+  "metadata": {
+    "plugin": "orchestrate-complex",
+    "author": "Brookside BI",
+    "created": "2025-12-13",
+    "lastUpdated": "2025-12-13"
+  }
+}

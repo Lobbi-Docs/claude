@@ -88,6 +88,28 @@
       },
       "source": "./container-workflow",
       "category": "devops"
+    },
+    {
+      "name": "ahling-command-center",
+      "description": "Comprehensive self-hosted infrastructure orchestration for 70+ services with deep Ollama, Home Assistant, and Microsoft Agent Framework integration. 10 agents, 15 commands, 8 skills, 32 MCP tools targeting 24-core/61GB RAM/RX 7900 XTX hardware.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Markus Ahling",
+        "email": "markus@ahling.io"
+      },
+      "source": "./ahling-command-center",
+      "category": "infrastructure"
+    },
+    {
+      "name": "fastapi-backend",
+      "description": "Production-ready FastAPI backend development toolkit with MongoDB/Beanie ODM, Keycloak authentication, Docker/K8s deployment, background tasks, caching, observability, and WebSocket support. 4 agents, 10 commands, 8 skills.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Markus Ahling",
+        "email": "markus@brooksidebi.com"
+      },
+      "source": "./fastapi-backend",
+      "category": "backend"
     }
   ]
 }

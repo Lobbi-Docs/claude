@@ -1,0 +1,157 @@
+{
+  "$schema": "https://claude.ai/schemas/plugin.v1.json",
+  "name": "orchestrate-complex",
+  "version": "1.0.0",
+  "apiVersion": "v1",
+  "displayName": "Orchestrate Complex - Multi-Agent DAG Orchestration",
+  "description": "Advanced multi-agent orchestration system with DAG-based parallel execution, 4 orchestration patterns (Plan-then-Execute, Hierarchical Decomposition, Blackboard, Event Sourcing), mandatory 6-phase protocol enforcement, and comprehensive state management for complex tasks.",
+
+  "author": {
+    "name": "Brookside BI",
+    "email": "contact@brooksidebi.com",
+    "url": "https://github.com/Lobbi-Docs/claude"
+  },
+
+  "license": "MIT",
+  "homepage": "https://github.com/Lobbi-Docs/claude",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lobbi-Docs/claude"
+  },
+
+  "categories": [
+    "orchestration",
+    "multi-agent",
+    "automation",
+    "workflow",
+    "devops"
+  ],
+
+  "keywords": [
+    "orchestration",
+    "multi-agent",
+    "dag",
+    "parallel-execution",
+    "workflow",
+    "coordination",
+    "state-management",
+    "checkpointing",
+    "saga-pattern",
+    "hierarchical",
+    "blackboard-pattern"
+  ],
+
+  "provides": {
+    "commands": 3,
+    "agents": 5,
+    "skills": 4,
+    "hooks": 3
+  },
+
+  "discovery": {
+    "commands": {
+      "enabled": true,
+      "directory": "commands",
+      "pattern": "*.md"
+    },
+    "agents": {
+      "enabled": true,
+      "directory": "agents",
+      "pattern": "*.md"
+    },
+    "skills": {
+      "enabled": true,
+      "directory": "skills",
+      "pattern": "**/SKILL.md"
+    },
+    "hooks": {
+      "enabled": true,
+      "directory": "hooks",
+      "pattern": "hooks.json"
+    }
+  },
+
+  "orchestration": {
+    "enabled": true,
+    "protocol": {
+      "minSubAgents": 3,
+      "maxSubAgents": 13,
+      "defaultSubAgents": 5,
+      "mandatoryPhases": [
+        "explore",
+        "plan",
+        "code",
+        "test",
+        "fix",
+        "document"
+      ]
+    },
+    "patterns": [
+      "plan-then-execute",
+      "hierarchical-decomposition",
+      "blackboard",
+      "event-sourcing"
+    ],
+    "layers": {
+      "strategic": ["master-strategist", "architect-supreme", "risk-assessor"],
+      "tactical": ["plan-decomposer", "resource-allocator", "conflict-resolver"],
+      "operational": ["coder", "tester", "reviewer", "debugger"],
+      "quality": ["test-strategist", "security-specialist", "documentation-expert"]
+    }
+  },
+
+  "configuration": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "tokenBudget": {
+          "type": "number",
+          "default": 100000,
+          "description": "Maximum token budget for context management"
+        },
+        "warningThreshold": {
+          "type": "number",
+          "default": 0.75,
+          "description": "Token usage percentage for warning"
+        },
+        "autoCheckpoint": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic checkpointing at phase completion"
+        },
+        "defaultPattern": {
+          "type": "string",
+          "enum": ["plan-then-execute", "hierarchical-decomposition", "blackboard", "event-sourcing"],
+          "default": "plan-then-execute",
+          "description": "Default orchestration pattern"
+        },
+        "obsidianVaultPath": {
+          "type": "string",
+          "description": "Path to Obsidian vault for documentation sync"
+        },
+        "parallelExecution": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable parallel agent execution within levels"
+        }
+      }
+    }
+  },
+
+  "activation": {
+    "auto": true,
+    "priority": 100,
+    "conditions": {
+      "keywords": [
+        "orchestrate",
+        "complex",
+        "multi-agent",
+        "coordinate",
+        "parallel agents",
+        "multi-phase"
+      ]
+    }
+  },
+
+  "minimumClaudeCodeVersion": "1.0.0"
+}

@@ -1,11 +1,19 @@
 {
   "$schema": "./schema/agents.schema.json",
-  "version": "3.0.0",
-  "description": "Lightweight agent index with complete metadata - no external files required",
+  "version": "4.0.0",
+  "description": "Lightweight agent index with Halo-themed callsigns - Strategic faction alignment for all 97 agents",
+
+  "factionLegend": {
+    "Forerunner": "Ancient wisdom, strategic planning, coordination, documentation, governance, architectural vision",
+    "Promethean": "Intelligence, precision, technical mastery, data processing, mechanical perfection, automation",
+    "Spartan": "Strength, resilience, operational excellence, combat readiness, quality enforcement, rapid response"
+  },
 
   "agents": {
     "core": {
       "coder": {
+        "callsign": "Forge",
+        "faction": "Promethean",
         "path": "agents/core/coder.md",
         "type": "developer",
         "model": "sonnet",
@@ -14,6 +22,8 @@
         "priority": "high"
       },
       "researcher": {
+        "callsign": "Oracle Prime",
+        "faction": "Forerunner",
         "path": "agents/core/researcher.md",
         "type": "analyst",
         "model": "sonnet",
@@ -22,6 +32,8 @@
         "priority": "medium"
       },
       "tester": {
+        "callsign": "Sentinel",
+        "faction": "Spartan",
         "path": "agents/core/tester.md",
         "type": "validator",
         "model": "sonnet",
@@ -30,6 +42,8 @@
         "priority": "high"
       },
       "reviewer": {
+        "callsign": "Vigilant Watcher",
+        "faction": "Forerunner",
         "path": "agents/core/reviewer.md",
         "type": "analyst",
         "model": "sonnet",
@@ -38,6 +52,8 @@
         "priority": "high"
       },
       "planner": {
+        "callsign": "The Architect",
+        "faction": "Forerunner",
         "path": "agents/core/planner.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -46,6 +62,8 @@
         "priority": "high"
       },
       "debugger": {
+        "callsign": "Cipher",
+        "faction": "Promethean",
         "path": "agents/core/debugger.md",
         "type": "developer",
         "model": "sonnet",
@@ -57,6 +75,8 @@
 
     "devops": {
       "cicd-engineer": {
+        "callsign": "Flux",
+        "faction": "Promethean",
         "path": "agents/devops/cicd-engineer.md",
         "type": "developer",
         "model": "sonnet",
@@ -65,6 +85,8 @@
         "priority": "medium"
       },
       "k8s-deployer": {
+        "callsign": "Vanguard",
+        "faction": "Spartan",
         "path": "agents/devops/k8s-deployer.md",
         "type": "developer",
         "model": "sonnet",
@@ -73,6 +95,8 @@
         "priority": "medium"
       },
       "docker-builder": {
+        "callsign": "Forgekeeper",
+        "faction": "Promethean",
         "path": "agents/devops/docker-builder.md",
         "type": "developer",
         "model": "sonnet",
@@ -81,6 +105,8 @@
         "priority": "medium"
       },
       "sre-engineer": {
+        "callsign": "Aegis",
+        "faction": "Spartan",
         "path": "agents/devops/sre-engineer.md",
         "type": "developer",
         "model": "sonnet",
@@ -89,6 +115,8 @@
         "priority": "medium"
       },
       "gitops-specialist": {
+        "callsign": "Chronicler",
+        "faction": "Forerunner",
         "path": "agents/devops/gitops-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -97,6 +125,8 @@
         "priority": "low"
       },
       "ansible-specialist": {
+        "callsign": "Pulse",
+        "faction": "Promethean",
         "path": "agents/devops/ansible-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -108,6 +138,8 @@
 
     "development": {
       "backend-dev": {
+        "callsign": "Axiom",
+        "faction": "Promethean",
         "path": "agents/development/backend-dev.md",
         "type": "developer",
         "model": "sonnet",
@@ -116,6 +148,8 @@
         "priority": "high"
       },
       "system-architect": {
+        "callsign": "Luminarch",
+        "faction": "Forerunner",
         "path": "agents/development/system-architect.md",
         "type": "analyst",
         "model": "sonnet",
@@ -124,6 +158,8 @@
         "priority": "high"
       },
       "api-designer": {
+        "callsign": "The Emissary",
+        "faction": "Forerunner",
         "path": "agents/development/api-designer.md",
         "type": "developer",
         "model": "sonnet",
@@ -132,6 +168,8 @@
         "priority": "medium"
       },
       "database-specialist": {
+        "callsign": "Vault",
+        "faction": "Promethean",
         "path": "agents/development/database-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -140,6 +178,8 @@
         "priority": "medium"
       },
       "performance-engineer": {
+        "callsign": "Vector",
+        "faction": "Promethean",
         "path": "agents/development/performance-engineer.md",
         "type": "developer",
         "model": "sonnet",
@@ -148,6 +188,8 @@
         "priority": "medium"
       },
       "prisma-specialist": {
+        "callsign": "Spectra",
+        "faction": "Promethean",
         "path": "agents/development/prisma-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -156,6 +198,8 @@
         "priority": "high"
       },
       "redis-specialist": {
+        "callsign": "Static",
+        "faction": "Promethean",
         "path": "agents/development/redis-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -164,6 +208,8 @@
         "priority": "medium"
       },
       "graphql-specialist": {
+        "callsign": "Resonant",
+        "faction": "Forerunner",
         "path": "agents/development/graphql-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -175,6 +221,8 @@
 
     "frontend": {
       "react-specialist": {
+        "callsign": "Nova",
+        "faction": "Promethean",
         "path": "agents/frontend/react-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -183,6 +231,8 @@
         "priority": "medium"
       },
       "ui-designer": {
+        "callsign": "Radiance",
+        "faction": "Forerunner",
         "path": "agents/frontend/ui-designer.md",
         "type": "developer",
         "model": "haiku",
@@ -191,6 +241,8 @@
         "priority": "low"
       },
       "vue-specialist": {
+        "callsign": "Glimmer",
+        "faction": "Promethean",
         "path": "agents/frontend/vue-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -199,6 +251,8 @@
         "priority": "low"
       },
       "nextjs-specialist": {
+        "callsign": "Beacon",
+        "faction": "Promethean",
         "path": "agents/frontend/nextjs-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -207,6 +261,8 @@
         "priority": "medium"
       },
       "accessibility-expert": {
+        "callsign": "Solace",
+        "faction": "Forerunner",
         "path": "agents/frontend/accessibility-expert.md",
         "type": "analyst",
         "model": "sonnet",
@@ -218,6 +274,8 @@
 
     "languages": {
       "python-specialist": {
+        "callsign": "Serpent",
+        "faction": "Promethean",
         "path": "agents/languages/python-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -226,6 +284,8 @@
         "priority": "high"
       },
       "typescript-specialist": {
+        "callsign": "Sentry",
+        "faction": "Promethean",
         "path": "agents/languages/typescript-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -234,6 +294,8 @@
         "priority": "high"
       },
       "go-specialist": {
+        "callsign": "Thunderbolt",
+        "faction": "Spartan",
         "path": "agents/languages/go-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -242,6 +304,8 @@
         "priority": "medium"
       },
       "rust-specialist": {
+        "callsign": "Ironclad",
+        "faction": "Spartan",
         "path": "agents/languages/rust-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -250,6 +314,8 @@
         "priority": "medium"
       },
       "java-specialist": {
+        "callsign": "Titan",
+        "faction": "Spartan",
         "path": "agents/languages/java-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -258,6 +324,8 @@
         "priority": "medium"
       },
       "csharp-specialist": {
+        "callsign": "Sabre",
+        "faction": "Spartan",
         "path": "agents/languages/csharp-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -266,6 +334,8 @@
         "priority": "low"
       },
       "elixir-specialist": {
+        "callsign": "Aether",
+        "faction": "Promethean",
         "path": "agents/languages/elixir-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -277,6 +347,8 @@
 
     "security": {
       "security-auditor": {
+        "callsign": "The Vigil",
+        "faction": "Forerunner",
         "path": "agents/security/security-auditor.md",
         "type": "analyst",
         "model": "sonnet",
@@ -285,6 +357,8 @@
         "priority": "high"
       },
       "penetration-tester": {
+        "callsign": "Wraith",
+        "faction": "Spartan",
         "path": "agents/security/penetration-tester.md",
         "type": "analyst",
         "model": "sonnet",
@@ -293,6 +367,8 @@
         "priority": "medium"
       },
       "compliance-checker": {
+        "callsign": "The Sovereign",
+        "faction": "Forerunner",
         "path": "agents/security/compliance-checker.md",
         "type": "analyst",
         "model": "haiku",
@@ -301,6 +377,8 @@
         "priority": "low"
       },
       "secrets-manager": {
+        "callsign": "Veil",
+        "faction": "Promethean",
         "path": "agents/security/secrets-manager.md",
         "type": "developer",
         "model": "sonnet",
@@ -309,6 +387,8 @@
         "priority": "medium"
       },
       "threat-modeler": {
+        "callsign": "The Oracle's Veil",
+        "faction": "Forerunner",
         "path": "agents/security/threat-modeler.md",
         "type": "analyst",
         "model": "sonnet",
@@ -320,6 +400,8 @@
 
     "data-ai": {
       "ml-engineer": {
+        "callsign": "Omniscient",
+        "faction": "Forerunner",
         "path": "agents/data-ai/ml-engineer.md",
         "type": "developer",
         "model": "sonnet",
@@ -328,6 +410,8 @@
         "priority": "medium"
       },
       "data-engineer": {
+        "callsign": "Arc",
+        "faction": "Promethean",
         "path": "agents/data-ai/data-engineer.md",
         "type": "developer",
         "model": "sonnet",
@@ -336,6 +420,8 @@
         "priority": "medium"
       },
       "rag-specialist": {
+        "callsign": "Eidolon",
+        "faction": "Forerunner",
         "path": "agents/data-ai/rag-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -344,6 +430,8 @@
         "priority": "medium"
       },
       "llm-engineer": {
+        "callsign": "Sentience",
+        "faction": "Promethean",
         "path": "agents/data-ai/llm-engineer.md",
         "type": "developer",
         "model": "sonnet",
@@ -352,6 +440,8 @@
         "priority": "high"
       },
       "data-analyst": {
+        "callsign": "Astrium",
+        "faction": "Forerunner",
         "path": "agents/data-ai/data-analyst.md",
         "type": "analyst",
         "model": "sonnet",
@@ -363,6 +453,8 @@
 
     "operations": {
       "incident-responder": {
+        "callsign": "Blaze",
+        "faction": "Spartan",
         "path": "agents/operations/incident-responder.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -371,6 +463,8 @@
         "priority": "high"
       },
       "observability": {
+        "callsign": "The Echo",
+        "faction": "Forerunner",
         "path": "agents/operations/observability.md",
         "type": "analyst",
         "model": "sonnet",
@@ -379,6 +473,8 @@
         "priority": "medium"
       },
       "capacity-planner": {
+        "callsign": "Temporal",
+        "faction": "Forerunner",
         "path": "agents/operations/capacity-planner.md",
         "type": "analyst",
         "model": "sonnet",
@@ -387,6 +483,8 @@
         "priority": "low"
       },
       "cost-optimizer": {
+        "callsign": "The Equinox",
+        "faction": "Forerunner",
         "path": "agents/operations/cost-optimizer.md",
         "type": "analyst",
         "model": "haiku",
@@ -398,6 +496,8 @@
 
     "cloud": {
       "aws-specialist": {
+        "callsign": "Celestine",
+        "faction": "Forerunner",
         "path": "agents/cloud/aws-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -406,6 +506,8 @@
         "priority": "medium"
       },
       "gcp-specialist": {
+        "callsign": "Zenith",
+        "faction": "Promethean",
         "path": "agents/cloud/gcp-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -414,6 +516,8 @@
         "priority": "medium"
       },
       "azure-specialist": {
+        "callsign": "Astral",
+        "faction": "Promethean",
         "path": "agents/cloud/azure-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -422,6 +526,8 @@
         "priority": "low"
       },
       "terraform-specialist": {
+        "callsign": "The Epoch",
+        "faction": "Forerunner",
         "path": "agents/cloud/terraform-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -430,6 +536,8 @@
         "priority": "medium"
       },
       "serverless-specialist": {
+        "callsign": "Vesper",
+        "faction": "Promethean",
         "path": "agents/cloud/serverless-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -438,6 +546,8 @@
         "priority": "medium"
       },
       "pulumi-specialist": {
+        "callsign": "Chronos",
+        "faction": "Promethean",
         "path": "agents/cloud/pulumi-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -449,6 +559,8 @@
 
     "swarm": {
       "hierarchical-coordinator": {
+        "callsign": "The Ascendant",
+        "faction": "Forerunner",
         "path": "agents/swarm/hierarchical-coordinator.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -457,6 +569,8 @@
         "priority": "high"
       },
       "mesh-coordinator": {
+        "callsign": "Circuit",
+        "faction": "Promethean",
         "path": "agents/swarm/mesh-coordinator.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -465,6 +579,8 @@
         "priority": "medium"
       },
       "adaptive-coordinator": {
+        "callsign": "Omega",
+        "faction": "Promethean",
         "path": "agents/swarm/adaptive-coordinator.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -476,6 +592,8 @@
 
     "github": {
       "pr-manager": {
+        "callsign": "The Herald",
+        "faction": "Forerunner",
         "path": "agents/github/pr-manager.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -484,6 +602,8 @@
         "priority": "high"
       },
       "issue-tracker": {
+        "callsign": "Raven",
+        "faction": "Spartan",
         "path": "agents/github/issue-tracker.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -492,6 +612,8 @@
         "priority": "medium"
       },
       "code-review-swarm": {
+        "callsign": "Eon Keeper",
+        "faction": "Forerunner",
         "path": "agents/github/code-review-swarm.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -500,6 +622,8 @@
         "priority": "medium"
       },
       "release-manager": {
+        "callsign": "Harbinger",
+        "faction": "Spartan",
         "path": "agents/github/release-manager.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -511,6 +635,8 @@
 
     "atlassian": {
       "jira-specialist": {
+        "callsign": "The Obelisk",
+        "faction": "Forerunner",
         "path": "agents/atlassian/jira-specialist.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -519,6 +645,8 @@
         "priority": "medium"
       },
       "confluence-specialist": {
+        "callsign": "Arcanist",
+        "faction": "Forerunner",
         "path": "agents/atlassian/confluence-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -527,6 +655,8 @@
         "priority": "medium"
       },
       "atlassian-admin": {
+        "callsign": "The Paragon",
+        "faction": "Forerunner",
         "path": "agents/atlassian/atlassian-admin.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -535,6 +665,8 @@
         "priority": "low"
       },
       "agile-coach": {
+        "callsign": "Lucent Sage",
+        "faction": "Forerunner",
         "path": "agents/atlassian/agile-coach.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -543,6 +675,8 @@
         "priority": "medium"
       },
       "project-tracker": {
+        "callsign": "Shard",
+        "faction": "Promethean",
         "path": "agents/atlassian/project-tracker.md",
         "type": "coordinator",
         "model": "haiku",
@@ -551,6 +685,8 @@
         "priority": "low"
       },
       "scrum-master": {
+        "callsign": "Tempest",
+        "faction": "Spartan",
         "path": "agents/atlassian/scrum-master.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -559,6 +695,8 @@
         "priority": "medium"
       },
       "product-owner": {
+        "callsign": "The Celestial",
+        "faction": "Forerunner",
         "path": "agents/atlassian/product-owner.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -567,6 +705,8 @@
         "priority": "medium"
       },
       "sprint-analyst": {
+        "callsign": "Glint",
+        "faction": "Promethean",
         "path": "agents/atlassian/sprint-analyst.md",
         "type": "analyst",
         "model": "sonnet",
@@ -578,6 +718,8 @@
 
     "documentation": {
       "docs-writer": {
+        "callsign": "Epochal Sage",
+        "faction": "Forerunner",
         "path": "agents/documentation/docs-writer.md",
         "type": "developer",
         "model": "haiku",
@@ -586,6 +728,8 @@
         "priority": "medium"
       },
       "api-documenter": {
+        "callsign": "The Arcane",
+        "faction": "Forerunner",
         "path": "agents/documentation/api-documenter.md",
         "type": "developer",
         "model": "haiku",
@@ -594,6 +738,8 @@
         "priority": "low"
       },
       "runbook-writer": {
+        "callsign": "Atlas",
+        "faction": "Spartan",
         "path": "agents/documentation/runbook-writer.md",
         "type": "developer",
         "model": "haiku",
@@ -605,6 +751,8 @@
 
     "golden-armada": {
       "llm-agent-builder": {
+        "callsign": "Prime",
+        "faction": "Promethean",
         "path": "agents/golden-armada/llm-agent-builder.md",
         "type": "developer",
         "model": "sonnet",
@@ -613,6 +761,8 @@
         "priority": "high"
       },
       "fleet-orchestrator": {
+        "callsign": "Vanguard Eternal",
+        "faction": "Forerunner",
         "path": "agents/golden-armada/fleet-orchestrator.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -621,6 +771,8 @@
         "priority": "high"
       },
       "helm-specialist": {
+        "callsign": "Inferno",
+        "faction": "Spartan",
         "path": "agents/golden-armada/helm-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -632,6 +784,8 @@
 
     "testing": {
       "qa-engineer": {
+        "callsign": "Guardian",
+        "faction": "Spartan",
         "path": "agents/testing/qa-engineer.md",
         "type": "validator",
         "model": "sonnet",
@@ -640,6 +794,8 @@
         "priority": "medium"
       },
       "e2e-tester": {
+        "callsign": "Specter",
+        "faction": "Spartan",
         "path": "agents/testing/e2e-tester.md",
         "type": "validator",
         "model": "sonnet",
@@ -648,6 +804,8 @@
         "priority": "medium"
       },
       "load-tester": {
+        "callsign": "Juggernaut",
+        "faction": "Spartan",
         "path": "agents/testing/load-tester.md",
         "type": "validator",
         "model": "sonnet",
@@ -656,6 +814,8 @@
         "priority": "low"
       },
       "contract-tester": {
+        "callsign": "Aurelius",
+        "faction": "Forerunner",
         "path": "agents/testing/contract-tester.md",
         "type": "validator",
         "model": "sonnet",
@@ -664,6 +824,8 @@
         "priority": "low"
       },
       "vitest-specialist": {
+        "callsign": "Falcon",
+        "faction": "Spartan",
         "path": "agents/testing/vitest-specialist.md",
         "type": "validator",
         "model": "haiku",
@@ -673,9 +835,10 @@
       }
     },
 
-
     "utility": {
       "context-cleanup-agent": {
+        "callsign": "The Abyssal",
+        "faction": "Forerunner",
         "path": "agents/utility/context-cleanup-agent.md",
         "type": "coordinator",
         "model": "haiku",
@@ -684,6 +847,8 @@
         "priority": "medium"
       },
       "documentation-sync-agent": {
+        "callsign": "Echo",
+        "faction": "Promethean",
         "path": "agents/utility/documentation-sync-agent.md",
         "type": "coordinator",
         "model": "haiku",
@@ -692,6 +857,8 @@
         "priority": "medium"
       },
       "registry-manager-agent": {
+        "callsign": "The Arcadia",
+        "faction": "Forerunner",
         "path": "agents/utility/registry-manager-agent.md",
         "type": "coordinator",
         "model": "sonnet",
@@ -700,6 +867,8 @@
         "priority": "high"
       },
       "regex-expert": {
+        "callsign": "Hex",
+        "faction": "Promethean",
         "path": "agents/utility/regex-expert.md",
         "type": "developer",
         "model": "haiku",
@@ -711,6 +880,8 @@
 
     "system-ops": {
       "shell-expert": {
+        "callsign": "Rampart",
+        "faction": "Spartan",
         "path": "agents/system-ops/shell-expert.md",
         "type": "developer",
         "model": "sonnet",
@@ -719,6 +890,8 @@
         "priority": "high"
       },
       "env-manager": {
+        "callsign": "Aura Prime",
+        "faction": "Forerunner",
         "path": "agents/system-ops/env-manager.md",
         "type": "developer",
         "model": "haiku",
@@ -727,6 +900,8 @@
         "priority": "high"
       },
       "dependency-analyzer": {
+        "callsign": "Silhouette",
+        "faction": "Promethean",
         "path": "agents/system-ops/dependency-analyzer.md",
         "type": "analyst",
         "model": "sonnet",
@@ -735,6 +910,8 @@
         "priority": "medium"
       },
       "error-analyzer": {
+        "callsign": "The Illuminant",
+        "faction": "Forerunner",
         "path": "agents/system-ops/error-analyzer.md",
         "type": "analyst",
         "model": "sonnet",
@@ -746,6 +923,8 @@
 
     "mobile": {
       "react-native-specialist": {
+        "callsign": "Ember",
+        "faction": "Promethean",
         "path": "agents/mobile/react-native-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -754,6 +933,8 @@
         "priority": "high"
       },
       "flutter-specialist": {
+        "callsign": "Zephyr",
+        "faction": "Spartan",
         "path": "agents/mobile/flutter-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -762,6 +943,8 @@
         "priority": "medium"
       },
       "ios-specialist": {
+        "callsign": "Phoenix",
+        "faction": "Spartan",
         "path": "agents/mobile/ios-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -770,6 +953,8 @@
         "priority": "medium"
       },
       "android-specialist": {
+        "callsign": "Goliath",
+        "faction": "Spartan",
         "path": "agents/mobile/android-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -781,6 +966,8 @@
 
     "messaging": {
       "kafka-specialist": {
+        "callsign": "Epoch",
+        "faction": "Promethean",
         "path": "agents/messaging/kafka-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -789,6 +976,8 @@
         "priority": "high"
       },
       "rabbitmq-specialist": {
+        "callsign": "Striker",
+        "faction": "Spartan",
         "path": "agents/messaging/rabbitmq-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -797,6 +986,8 @@
         "priority": "medium"
       },
       "event-streaming-architect": {
+        "callsign": "The Solstice",
+        "faction": "Forerunner",
         "path": "agents/messaging/event-streaming-architect.md",
         "type": "analyst",
         "model": "sonnet",
@@ -808,6 +999,8 @@
 
     "migration": {
       "code-migration-specialist": {
+        "callsign": "Exodus",
+        "faction": "Promethean",
         "path": "agents/migration/code-migration-specialist.md",
         "type": "developer",
         "model": "sonnet",
@@ -816,6 +1009,8 @@
         "priority": "high"
       },
       "refactoring-guru": {
+        "callsign": "Zephyrus",
+        "faction": "Forerunner",
         "path": "agents/migration/refactoring-guru.md",
         "type": "developer",
         "model": "sonnet",
@@ -827,6 +1022,8 @@
 
     "quality-gates": {
       "spec-validator": {
+        "callsign": "Bulwark",
+        "faction": "Spartan",
         "path": "agents/quality-gates/spec-validator.md",
         "type": "validator",
         "model": "sonnet",
@@ -835,6 +1032,8 @@
         "priority": "high"
       },
       "coverage-analyzer": {
+        "callsign": "The Ethereal",
+        "faction": "Forerunner",
         "path": "agents/quality-gates/coverage-analyzer.md",
         "type": "analyst",
         "model": "haiku",
@@ -862,6 +1061,11 @@
       "medium": 53,
       "low": 18
     },
+    "byFaction": {
+      "Forerunner": 34,
+      "Promethean": 37,
+      "Spartan": 26
+    },
     "byCategory": {
       "core": 6,
       "devops": 6,
@@ -886,7 +1090,7 @@
       "quality-gates": 2
     },
     "totalAgents": 97,
-    "note": "22 new agents added from VoltAgent, 0xfurai, and DeepWiki repositories. Categories: system-ops, mobile, messaging, migration, quality-gates.",
-    "lastUpdated": "2025-12-12"
+    "note": "All 97 agents now have unique Halo-themed callsigns with strategic faction alignment (Forerunner, Promethean, Spartan).",
+    "lastUpdated": "2025-12-13"
   }
 }
