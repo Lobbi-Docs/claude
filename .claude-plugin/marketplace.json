@@ -78,6 +78,16 @@
       },
       "source": "./team-accelerator",
       "category": "devops"
+    },
+    {
+      "name": "container-workflow",
+      "description": "Comprehensive Docker/Container workflow automation with CI/CD pipelines, security scanning (Trivy), release management, and 15 proactive agents for containerized application development",
+      "version": "1.0.0",
+      "author": {
+        "name": "Markus Ahling"
+      },
+      "source": "./container-workflow",
+      "category": "devops"
     }
   ]
 }
