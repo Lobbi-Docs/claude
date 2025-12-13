@@ -1,0 +1,46 @@
+{
+  "name": "data-processor",
+  "version": "1.0.0",
+  "description": "Data transformation and processing plugin template with validation, batch processing, and progress reporting",
+  "category": "data",
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "keywords": ["data", "transform", "processing", "etl", "batch"],
+  "variables": [
+    {
+      "name": "pluginName",
+      "type": "string",
+      "prompt": "Plugin name (kebab-case):",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]*$"
+    },
+    {
+      "name": "dataType",
+      "type": "string",
+      "prompt": "Type of data to process:",
+      "required": true,
+      "description": "e.g., CSV, JSON, XML"
+    },
+    {
+      "name": "features",
+      "type": "multi-choice",
+      "prompt": "Include features:",
+      "choices": ["validation", "streaming", "batch", "progress", "error-recovery"],
+      "default": ["validation", "batch", "progress"]
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "prompt": "Author name:",
+      "default": "Your Name"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "prompt": "Plugin description:",
+      "required": true
+    }
+  ],
+  "dependencies": [],
+  "files": ["templates/**/*"]
+}

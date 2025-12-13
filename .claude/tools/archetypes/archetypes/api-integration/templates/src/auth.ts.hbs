@@ -1,0 +1,45 @@
+import type { AxiosInstance } from 'axios';
+import type { {{pascalCase apiName}}Config } from './types.js';
+
+export function createAuthInterceptor(client: AxiosInstance, config: {{pascalCase apiName}}Config): void {
+  {{#if (eq authType "api-key")}}
+  client.interceptors.request.use(reqConfig => {
+    if (config.apiKey) {
+      reqConfig.headers['Authorization'] = `Bearer ${config.apiKey}`;
+    }
+    return reqConfig;
+  });
+  {{else if (eq authType "oauth")}}
+  let accessToken: string | null = null;
+
+  client.interceptors.request.use(async reqConfig => {
+    if (!accessToken) {
+      accessToken = await getOAuthToken(config.clientId!, config.clientSecret!);
+    }
+    reqConfig.headers['Authorization'] = `Bearer ${accessToken}`;
+    return reqConfig;
+  });
+  {{else if (eq authType "jwt")}}
+  client.interceptors.request.use(reqConfig => {
+    if (config.token) {
+      reqConfig.headers['Authorization'] = `Bearer ${config.token}`;
+    }
+    return reqConfig;
+  });
+  {{else if (eq authType "basic")}}
+  client.interceptors.request.use(reqConfig => {
+    if (config.username && config.password) {
+      const auth = Buffer.from(`${config.username}:${config.password}`).toString('base64');
+      reqConfig.headers['Authorization'] = `Basic ${auth}`;
+    }
+    return reqConfig;
+  });
+  {{/if}}
+}
+
+{{#if (eq authType "oauth")}}
+async function getOAuthToken(clientId: string, clientSecret: string): Promise<string> {
+  // TODO: Implement OAuth token retrieval
+  throw new Error('OAuth token retrieval not implemented');
+}
+{{/if}}

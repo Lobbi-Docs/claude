@@ -1,0 +1,19 @@
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode?: number,
+    public data?: any
+  ) {
+    super(message);
+    this.name = 'ApiError';
+    Object.setPrototypeOf(this, ApiError.prototype);
+  }
+}
+
+export class {{pascalCase apiName}}Error extends ApiError {
+  constructor(message: string, statusCode?: number, data?: any) {
+    super(message, statusCode, data);
+    this.name = '{{pascalCase apiName}}Error';
+    Object.setPrototypeOf(this, {{pascalCase apiName}}Error.prototype);
+  }
+}

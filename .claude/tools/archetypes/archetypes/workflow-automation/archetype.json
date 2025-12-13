@@ -1,0 +1,45 @@
+{
+  "name": "workflow-automation",
+  "version": "1.0.0",
+  "description": "Multi-step workflow automation plugin with state machines, error recovery, and notification integration",
+  "category": "workflow",
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "keywords": ["workflow", "automation", "state-machine", "orchestration"],
+  "variables": [
+    {
+      "name": "pluginName",
+      "type": "string",
+      "prompt": "Plugin name (kebab-case):",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]*$"
+    },
+    {
+      "name": "workflowType",
+      "type": "choice",
+      "prompt": "Workflow type:",
+      "choices": ["sequential", "parallel", "conditional", "state-machine"],
+      "default": "sequential"
+    },
+    {
+      "name": "features",
+      "type": "multi-choice",
+      "prompt": "Include features:",
+      "choices": ["persistence", "retry", "notifications", "logging", "metrics"],
+      "default": ["persistence", "retry", "logging"]
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "prompt": "Author name:"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "prompt": "Workflow description:",
+      "required": true
+    }
+  ],
+  "dependencies": [],
+  "files": ["templates/**/*"]
+}

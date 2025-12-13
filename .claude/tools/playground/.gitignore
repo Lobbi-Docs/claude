@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.js
+*.d.ts
+*.d.ts.map
+*.js.map
+
+# Exclude CLI from gitignore
+!dist/cli.js
+
+# Playground data
+.playground/
+recordings.db
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.local

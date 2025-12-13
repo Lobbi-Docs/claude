@@ -1,0 +1,10 @@
+/**
+ * {{pluginName}} - {{dataType}} Data Processor
+ * {{description}}
+ */
+
+export { DataProcessor } from './processor.js';
+{{#if (includes features "validation")}}
+export { DataValidator } from './validator.js';
+{{/if}}
+export type { ProcessorConfig, ProcessResult } from './types.js';

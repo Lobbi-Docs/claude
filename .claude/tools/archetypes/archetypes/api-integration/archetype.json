@@ -1,0 +1,65 @@
+{
+  "name": "api-integration",
+  "version": "1.0.0",
+  "description": "REST API client plugin template with authentication, rate limiting, and error handling patterns",
+  "category": "integration",
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "keywords": ["api", "rest", "client", "http", "integration", "authentication"],
+  "variables": [
+    {
+      "name": "pluginName",
+      "type": "string",
+      "prompt": "Plugin name (kebab-case):",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]*$",
+      "description": "Name of the API integration plugin"
+    },
+    {
+      "name": "apiName",
+      "type": "string",
+      "prompt": "API service name:",
+      "required": true,
+      "description": "Name of the API service (e.g., GitHub, Stripe, Slack)"
+    },
+    {
+      "name": "baseUrl",
+      "type": "url",
+      "prompt": "API base URL:",
+      "required": true,
+      "description": "Base URL for the API endpoints"
+    },
+    {
+      "name": "authType",
+      "type": "choice",
+      "prompt": "Authentication type:",
+      "required": true,
+      "choices": ["oauth", "api-key", "jwt", "basic", "none"],
+      "default": "api-key",
+      "description": "Authentication method for the API"
+    },
+    {
+      "name": "features",
+      "type": "multi-choice",
+      "prompt": "Include features:",
+      "choices": ["retry", "rate-limit", "caching", "logging", "pagination"],
+      "default": ["retry", "rate-limit", "logging"],
+      "description": "Additional features to include"
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "prompt": "Author name:",
+      "default": "Your Name"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "prompt": "Plugin description:",
+      "required": true
+    }
+  ],
+  "dependencies": [],
+  "files": ["templates/**/*"],
+  "ignore": ["*.test.ts", "*.spec.ts"]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "{{pluginName}}",
+  "version": "1.0.0",
+  "description": "{{description}}",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": ["{{apiName}}", "api", "client", "integration"],
+  "author": "{{author}}",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0"{{#if (includes features "caching")}},
+    "keyv": "^4.5.4"{{/if}}{{#if (includes features "rate-limit")}},
+    "bottleneck": "^2.19.5"{{/if}}
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "typescript": "^5.9.3",
+    "vitest": "^1.0.4",
+    "eslint": "^8.56.0"
+  }
+}

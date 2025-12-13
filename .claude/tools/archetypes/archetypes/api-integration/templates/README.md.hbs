@@ -1,0 +1,105 @@
+# {{pluginName}}
+
+{{description}}
+
+## Installation
+
+```bash
+npm install {{pluginName}}
+```
+
+## Configuration
+
+```typescript
+import { create{{pascalCase apiName}}Client } from '{{pluginName}}';
+
+const client = create{{pascalCase apiName}}Client({
+  {{#if (eq authType "api-key")}}
+  apiKey: process.env.{{uppercase (snakeCase apiName)}}_API_KEY,
+  {{else if (eq authType "oauth")}}
+  clientId: process.env.{{uppercase (snakeCase apiName)}}_CLIENT_ID,
+  clientSecret: process.env.{{uppercase (snakeCase apiName)}}_CLIENT_SECRET,
+  {{else if (eq authType "jwt")}}
+  token: process.env.{{uppercase (snakeCase apiName)}}_TOKEN,
+  {{else if (eq authType "basic")}}
+  username: process.env.{{uppercase (snakeCase apiName)}}_USERNAME,
+  password: process.env.{{uppercase (snakeCase apiName)}}_PASSWORD,
+  {{/if}}
+  baseUrl: '{{baseUrl}}'
+});
+```
+
+## Usage
+
+```typescript
+// Make API requests
+const data = await client.get('/endpoint');
+
+// With parameters
+const filtered = await client.get('/search', {
+  params: { query: 'test' }
+});
+
+// POST request
+const created = await client.post('/items', {
+  name: 'New Item',
+  value: 123
+});
+```
+
+## Features
+
+{{#if (includes features "retry")}}
+- **Automatic Retries**: Failed requests are automatically retried with exponential backoff
+{{/if}}
+{{#if (includes features "rate-limit")}}
+- **Rate Limiting**: Built-in rate limiting to respect API limits
+{{/if}}
+{{#if (includes features "caching")}}
+- **Response Caching**: Cache responses to reduce API calls
+{{/if}}
+{{#if (includes features "logging")}}
+- **Request Logging**: Detailed logging for debugging
+{{/if}}
+{{#if (includes features "pagination")}}
+- **Pagination Support**: Helper methods for paginated endpoints
+{{/if}}
+
+## Error Handling
+
+```typescript
+import { {{pascalCase apiName}}Error } from '{{pluginName}}';
+
+try {
+  const data = await client.get('/endpoint');
+} catch (error) {
+  if (error instanceof {{pascalCase apiName}}Error) {
+    console.error(`API Error: ${error.message}`);
+    console.error(`Status: ${error.statusCode}`);
+  }
+}
+```
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Run tests
+npm test
+
+# Lint
+npm run lint
+```
+
+## License
+
+{{license "MIT"}}
+
+## Author
+
+{{author}}

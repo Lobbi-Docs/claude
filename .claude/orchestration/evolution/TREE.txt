@@ -1,0 +1,25 @@
+Agent Self-Improvement System - File Structure
+===============================================
+
+.claude/
+├── orchestration/
+│   ├── evolution/                                    [NEW DIRECTORY]
+│   │   ├── types.ts                                  [284 lines] Core type definitions
+│   │   ├── performance-tracker.ts                    [441 lines] Performance tracking
+│   │   ├── prompt-optimizer.ts                       [550 lines] A/B testing & UCB1
+│   │   ├── capability-expander.ts                    [602 lines] Gap analysis
+│   │   ├── feedback-loop.ts                          [633 lines] Feedback & reporting
+│   │   ├── index.ts                                  [154 lines] Public API
+│   │   ├── examples.ts                               [350 lines] Usage examples
+│   │   ├── README.md                                 [594 lines] Documentation
+│   │   ├── IMPLEMENTATION_SUMMARY.md                 [150 lines] Quick reference
+│   │   ├── package.json                              [30 lines]  NPM config
+│   │   └── tsconfig.json                             [32 lines]  TS config
+│   │
+│   └── db/
+│       └── evolution.sql                             [400 lines] Database schema
+│
+└── commands/
+    └── evolve-agents.md                              [494 lines] CLI documentation
+
+TOTAL: 13 files, ~4,850 lines of code

@@ -1,0 +1,45 @@
+{
+  "name": "testing-utility",
+  "version": "1.0.0",
+  "description": "Testing utility plugin with mock generators, fixture management, and coverage reporting",
+  "category": "testing",
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "keywords": ["testing", "mocks", "fixtures", "test-helpers", "coverage"],
+  "variables": [
+    {
+      "name": "pluginName",
+      "type": "string",
+      "prompt": "Plugin name (kebab-case):",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]*$"
+    },
+    {
+      "name": "testFramework",
+      "type": "choice",
+      "prompt": "Test framework:",
+      "choices": ["vitest", "jest", "mocha", "ava"],
+      "default": "vitest"
+    },
+    {
+      "name": "features",
+      "type": "multi-choice",
+      "prompt": "Include features:",
+      "choices": ["mock-factory", "fixtures", "snapshots", "coverage", "e2e-helpers"],
+      "default": ["mock-factory", "fixtures", "coverage"]
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "prompt": "Author name:"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "prompt": "Testing utility description:",
+      "required": true
+    }
+  ],
+  "dependencies": [],
+  "files": ["templates/**/*"]
+}

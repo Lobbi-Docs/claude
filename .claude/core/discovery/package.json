@@ -1,0 +1,43 @@
+{
+  "name": "@claude/discovery",
+  "version": "1.0.0",
+  "description": "Intelligent plugin discovery system with semantic search and recommendations",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "cli": "tsx cli.ts",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "build": "tsc",
+    "search": "tsx cli.ts search",
+    "trending": "tsx cli.ts trending",
+    "build-index": "tsx cli.ts build-index",
+    "stats": "tsx cli.ts stats",
+    "analytics": "tsx cli.ts analytics"
+  },
+  "keywords": [
+    "plugin",
+    "discovery",
+    "search",
+    "recommendation",
+    "tf-idf",
+    "semantic-search",
+    "collaborative-filtering",
+    "analytics"
+  ],
+  "author": "Claude Agent System",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^9.2.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  },
+  "bin": {
+    "discovery": "./cli.ts"
+  }
+}

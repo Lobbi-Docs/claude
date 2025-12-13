@@ -1,0 +1,45 @@
+{
+  "name": "analytics-dashboard",
+  "version": "1.0.0",
+  "description": "Analytics dashboard plugin with chart components, data aggregation, and export functionality",
+  "category": "analytics",
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "keywords": ["analytics", "dashboard", "charts", "visualization", "metrics"],
+  "variables": [
+    {
+      "name": "pluginName",
+      "type": "string",
+      "prompt": "Plugin name (kebab-case):",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]*$"
+    },
+    {
+      "name": "chartLibrary",
+      "type": "choice",
+      "prompt": "Chart library:",
+      "choices": ["recharts", "chart.js", "d3", "plotly"],
+      "default": "recharts"
+    },
+    {
+      "name": "features",
+      "type": "multi-choice",
+      "prompt": "Include features:",
+      "choices": ["real-time", "export-pdf", "export-csv", "filters", "date-range"],
+      "default": ["export-csv", "filters", "date-range"]
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "prompt": "Author name:"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "prompt": "Dashboard description:",
+      "required": true
+    }
+  ],
+  "dependencies": [],
+  "files": ["templates/**/*"]
+}

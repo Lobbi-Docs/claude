@@ -1,0 +1,47 @@
+{
+  "name": "@claude/agent-memory",
+  "version": "1.0.0",
+  "description": "Persistent memory system for AI agents with episodic, semantic, and procedural memory",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "test": "echo \"Run tests with your preferred test runner\"",
+    "build": "tsc",
+    "init-db": "node -e \"require('./index.ts').createMemory().initialize()\""
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "memory",
+    "episodic",
+    "semantic",
+    "procedural",
+    "knowledge-graph",
+    "vector-search",
+    "sqlite"
+  ],
+  "author": "Claude Orchestration System",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^9.2.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.6",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lobbi-Docs/claude"
+  },
+  "files": [
+    "*.ts",
+    "README.md",
+    "../db/memory.sql"
+  ]
+}

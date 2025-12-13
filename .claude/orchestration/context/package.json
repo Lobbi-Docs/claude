@@ -1,0 +1,42 @@
+{
+  "name": "@claude-orchestration/context",
+  "version": "1.0.0",
+  "description": "Context Window Optimization Engine for Claude Orchestration",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"**/*.ts\""
+  },
+  "keywords": [
+    "claude",
+    "context",
+    "optimization",
+    "token",
+    "budget",
+    "checkpoint"
+  ],
+  "dependencies": {
+    "better-sqlite3": "^9.2.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.6",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "@vitest/coverage-v8": "^1.1.3",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

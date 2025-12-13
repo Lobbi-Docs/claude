@@ -1,0 +1,33 @@
+export interface {{pascalCase apiName}}Config {
+  baseUrl?: string;
+  {{#if (eq authType "api-key")}}
+  apiKey?: string;
+  {{else if (eq authType "oauth")}}
+  clientId?: string;
+  clientSecret?: string;
+  {{else if (eq authType "jwt")}}
+  token?: string;
+  {{else if (eq authType "basic")}}
+  username?: string;
+  password?: string;
+  {{/if}}
+  timeout?: number;
+  headers?: Record<string, string>;
+  {{#if (includes features "rate-limit")}}
+  maxConcurrent?: number;
+  minTime?: number;
+  {{/if}}
+  {{#if (includes features "caching")}}
+  cacheTtl?: number;
+  {{/if}}
+}
+
+export interface RequestOptions {
+  params?: Record<string, any>;
+  headers?: Record<string, string>;
+  data?: any;
+  {{#if (includes features "retry")}}
+  retry?: boolean;
+  maxRetries?: number;
+  {{/if}}
+}

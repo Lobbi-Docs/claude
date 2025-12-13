@@ -1,0 +1,44 @@
+{
+  "name": "mcp-generator",
+  "version": "1.0.0",
+  "description": "Generate MCP servers from OpenAPI specs and GraphQL schemas",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "mcp-generate": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "openapi",
+    "graphql",
+    "code-generation",
+    "api"
+  ],
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "yaml": "^2.3.4",
+    "graphql": "^16.8.1",
+    "zod": "^4.1.12",
+    "commander": "^11.1.0",
+    "openapi-types": "^12.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "eslint": "^8.56.0",
+    "vitest": "^1.0.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

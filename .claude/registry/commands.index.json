@@ -1,385 +1,862 @@
 {
   "$schema": "./schema/commands.schema.json",
-  "version": "4.1.0",
-  "description": "Slash command registry for Claude Code - 48 commands across 9 categories",
-
+  "version": "5.0.0",
+  "description": "Slash command registry for Claude Code - 60 commands across 10 categories",
   "commands": {
     "core": {
       "init": {
         "path": ".claude/commands/init.md",
         "description": "Initialize project environment and dependencies",
-        "keywords": ["init", "setup", "start", "initialize"],
+        "keywords": [
+          "init",
+          "setup",
+          "start",
+          "initialize"
+        ],
         "usage": "/init",
         "priority": "high"
       },
       "status": {
         "path": ".claude/commands/status.md",
         "description": "Show current project and orchestration status",
-        "keywords": ["status", "health", "check"],
+        "keywords": [
+          "status",
+          "health",
+          "check"
+        ],
         "usage": "/status",
         "priority": "high"
       },
       "project-status": {
         "path": ".claude/commands/project-status.md",
         "description": "Comprehensive project health dashboard",
-        "keywords": ["project", "status", "dashboard", "health"],
+        "keywords": [
+          "project",
+          "status",
+          "dashboard",
+          "health"
+        ],
         "usage": "/project-status",
         "priority": "high"
       },
       "clean": {
         "path": ".claude/commands/clean.md",
         "description": "Clean up temporary files and caches",
-        "keywords": ["clean", "clear", "cache", "temp"],
+        "keywords": [
+          "clean",
+          "clear",
+          "cache",
+          "temp"
+        ],
         "usage": "/clean",
         "priority": "medium"
       }
     },
-
     "development": {
       "test": {
         "path": ".claude/commands/test.md",
         "description": "Run tests with coverage analysis",
-        "keywords": ["test", "coverage", "jest", "vitest", "pytest"],
+        "keywords": [
+          "test",
+          "coverage",
+          "jest",
+          "vitest",
+          "pytest"
+        ],
         "usage": "/test [path] [--coverage]",
         "priority": "high"
       },
       "review": {
         "path": ".claude/commands/review.md",
         "description": "Comprehensive code review",
-        "keywords": ["review", "pr", "code-review", "audit"],
+        "keywords": [
+          "review",
+          "pr",
+          "code-review",
+          "audit"
+        ],
         "usage": "/review [file|pr]",
         "priority": "high"
       },
       "review-all": {
         "path": ".claude/commands/review-all.md",
         "description": "Multi-agent comprehensive review",
-        "keywords": ["review", "all", "comprehensive", "parallel"],
+        "keywords": [
+          "review",
+          "all",
+          "comprehensive",
+          "parallel"
+        ],
         "usage": "/review-all",
         "priority": "high"
       },
       "review-all-v2": {
         "path": ".claude/commands/review-all-v2.md",
         "description": "Enhanced multi-agent review with additional checks",
-        "keywords": ["review", "enhanced", "v2"],
+        "keywords": [
+          "review",
+          "enhanced",
+          "v2"
+        ],
         "usage": "/review-all-v2",
         "priority": "high"
       },
       "generate-tests": {
         "path": ".claude/commands/generate-tests.md",
         "description": "Generate test cases for code",
-        "keywords": ["generate", "tests", "unit", "integration"],
+        "keywords": [
+          "generate",
+          "tests",
+          "unit",
+          "integration"
+        ],
         "usage": "/generate-tests [path]",
         "priority": "medium"
       },
       "optimize-code": {
         "path": ".claude/commands/optimize-code.md",
         "description": "Performance optimization for code",
-        "keywords": ["optimize", "performance", "refactor"],
+        "keywords": [
+          "optimize",
+          "performance",
+          "refactor"
+        ],
         "usage": "/optimize-code [path]",
         "priority": "medium"
       },
       "debug": {
         "path": ".claude/commands/debug.md",
         "description": "Debug issues and trace errors",
-        "keywords": ["debug", "trace", "error", "investigate"],
+        "keywords": [
+          "debug",
+          "trace",
+          "error",
+          "investigate"
+        ],
         "usage": "/debug [issue]",
         "priority": "high"
       },
       "document-api": {
         "path": ".claude/commands/document-api.md",
         "description": "Generate API documentation",
-        "keywords": ["document", "api", "openapi", "swagger"],
+        "keywords": [
+          "document",
+          "api",
+          "openapi",
+          "swagger"
+        ],
         "usage": "/document-api [path]",
         "priority": "medium"
       },
       "update-documentation": {
         "path": ".claude/commands/update-documentation.md",
         "description": "Update project documentation",
-        "keywords": ["update", "docs", "documentation", "readme"],
+        "keywords": [
+          "update",
+          "docs",
+          "documentation",
+          "readme"
+        ],
         "usage": "/update-documentation",
         "priority": "medium"
       }
     },
-
     "deployment": {
       "deploy": {
         "path": ".claude/commands/deploy.md",
         "description": "Deploy to Kubernetes or Vercel",
-        "keywords": ["deploy", "k8s", "vercel", "production"],
+        "keywords": [
+          "deploy",
+          "k8s",
+          "vercel",
+          "production"
+        ],
         "usage": "/deploy [target] [--env=prod|staging]",
         "priority": "high"
       },
       "build-agent": {
         "path": ".claude/commands/build-agent.md",
         "description": "Build Docker image for agent",
-        "keywords": ["build", "docker", "agent", "image"],
+        "keywords": [
+          "build",
+          "docker",
+          "agent",
+          "image"
+        ],
         "usage": "/build-agent [agent-name]",
         "priority": "medium"
       },
       "rollback": {
         "path": ".claude/commands/rollback.md",
         "description": "Rollback to previous deployment",
-        "keywords": ["rollback", "revert", "undo", "previous"],
+        "keywords": [
+          "rollback",
+          "revert",
+          "undo",
+          "previous"
+        ],
         "usage": "/rollback [version]",
         "priority": "high"
       },
       "scale": {
         "path": ".claude/commands/scale.md",
         "description": "Scale services up or down",
-        "keywords": ["scale", "replicas", "horizontal", "vertical"],
+        "keywords": [
+          "scale",
+          "replicas",
+          "horizontal",
+          "vertical"
+        ],
         "usage": "/scale [service] [replicas]",
         "priority": "medium"
       },
       "auto-scale": {
         "path": ".claude/commands/auto-scale.md",
         "description": "Configure auto-scaling policies",
-        "keywords": ["auto-scale", "hpa", "metrics"],
+        "keywords": [
+          "auto-scale",
+          "hpa",
+          "metrics"
+        ],
         "usage": "/auto-scale [service] [--min=N] [--max=N]",
         "priority": "low"
       },
       "logs": {
         "path": ".claude/commands/logs.md",
         "description": "View service logs",
-        "keywords": ["logs", "tail", "stream", "debug"],
+        "keywords": [
+          "logs",
+          "tail",
+          "stream",
+          "debug"
+        ],
         "usage": "/logs [service] [--tail=N]",
         "priority": "medium"
       }
     },
-
     "security": {
       "security-scan": {
         "path": ".claude/commands/security-scan.md",
         "description": "Run security vulnerability scan",
-        "keywords": ["security", "scan", "vulnerability", "cve"],
+        "keywords": [
+          "security",
+          "scan",
+          "vulnerability",
+          "cve"
+        ],
         "usage": "/security-scan [path]",
         "priority": "high"
       },
       "secure-audit": {
         "path": ".claude/commands/secure-audit.md",
         "description": "Comprehensive security audit",
-        "keywords": ["audit", "security", "compliance"],
+        "keywords": [
+          "audit",
+          "security",
+          "compliance"
+        ],
         "usage": "/secure-audit",
         "priority": "high"
       },
       "security-fortress": {
         "path": ".claude/commands/security-fortress.md",
         "description": "Advanced security hardening",
-        "keywords": ["fortress", "hardening", "defense"],
+        "keywords": [
+          "fortress",
+          "hardening",
+          "defense"
+        ],
         "usage": "/security-fortress",
         "priority": "medium"
       },
       "compliance-audit": {
         "path": ".claude/commands/compliance-audit.md",
         "description": "Compliance and regulatory audit",
-        "keywords": ["compliance", "soc2", "gdpr", "hipaa"],
+        "keywords": [
+          "compliance",
+          "soc2",
+          "gdpr",
+          "hipaa"
+        ],
         "usage": "/compliance-audit [standard]",
         "priority": "medium"
       },
       "disaster-recovery": {
         "path": ".claude/commands/disaster-recovery.md",
         "description": "Disaster recovery planning and testing",
-        "keywords": ["disaster", "recovery", "backup", "failover"],
+        "keywords": [
+          "disaster",
+          "recovery",
+          "backup",
+          "failover"
+        ],
         "usage": "/disaster-recovery [--test]",
         "priority": "medium"
       }
     },
-
     "atlassian": {
       "jira-create": {
         "path": ".claude/commands/jira-create.md",
         "description": "Create Jira issue",
-        "keywords": ["jira", "create", "issue", "story", "task"],
+        "keywords": [
+          "jira",
+          "create",
+          "issue",
+          "story",
+          "task"
+        ],
         "usage": "/jira-create [type] [summary]",
         "priority": "medium"
       },
       "jira-status": {
         "path": ".claude/commands/jira-status.md",
         "description": "Check Jira issue status",
-        "keywords": ["jira", "status", "issue"],
+        "keywords": [
+          "jira",
+          "status",
+          "issue"
+        ],
         "usage": "/jira-status [issue-key]",
         "priority": "medium"
       },
       "jira-transition": {
         "path": ".claude/commands/jira-transition.md",
         "description": "Transition Jira issue to new status",
-        "keywords": ["jira", "transition", "move", "status"],
+        "keywords": [
+          "jira",
+          "transition",
+          "move",
+          "status"
+        ],
         "usage": "/jira-transition [issue-key] [status]",
         "priority": "medium"
       },
       "atlassian-sync": {
         "path": ".claude/commands/atlassian-sync.md",
         "description": "Sync with Atlassian tools",
-        "keywords": ["atlassian", "sync", "jira", "confluence"],
+        "keywords": [
+          "atlassian",
+          "sync",
+          "jira",
+          "confluence"
+        ],
         "usage": "/atlassian-sync",
         "priority": "medium"
       },
       "confluence-publish": {
         "path": ".claude/commands/confluence-publish.md",
         "description": "Publish documentation to Confluence",
-        "keywords": ["confluence", "publish", "wiki", "docs"],
+        "keywords": [
+          "confluence",
+          "publish",
+          "wiki",
+          "docs"
+        ],
         "usage": "/confluence-publish [page]",
         "priority": "medium"
       },
       "sprint-plan": {
         "path": ".claude/commands/sprint-plan.md",
         "description": "Plan sprint with backlog refinement",
-        "keywords": ["sprint", "plan", "backlog", "capacity"],
+        "keywords": [
+          "sprint",
+          "plan",
+          "backlog",
+          "capacity"
+        ],
         "usage": "/sprint-plan [sprint-name]",
         "priority": "medium"
       },
       "standup": {
         "path": ".claude/commands/standup.md",
         "description": "Run daily standup ceremony",
-        "keywords": ["standup", "daily", "scrum"],
+        "keywords": [
+          "standup",
+          "daily",
+          "scrum"
+        ],
         "usage": "/standup",
         "priority": "medium"
       },
       "retro": {
         "path": ".claude/commands/retro.md",
         "description": "Run sprint retrospective",
-        "keywords": ["retro", "retrospective", "improve"],
+        "keywords": [
+          "retro",
+          "retrospective",
+          "improve"
+        ],
         "usage": "/retro",
         "priority": "medium"
       },
       "backlog-groom": {
         "path": ".claude/commands/backlog-groom.md",
         "description": "Groom and refine product backlog",
-        "keywords": ["backlog", "groom", "refine", "prioritize"],
+        "keywords": [
+          "backlog",
+          "groom",
+          "refine",
+          "prioritize"
+        ],
         "usage": "/backlog-groom",
         "priority": "medium"
       }
     },
-
     "orchestration": {
       "create-agent": {
         "path": ".claude/commands/create-agent.md",
         "description": "Create new agent definition",
-        "keywords": ["create", "agent", "new", "define"],
+        "keywords": [
+          "create",
+          "agent",
+          "new",
+          "define"
+        ],
         "usage": "/create-agent [name] [type]",
         "priority": "medium"
       },
       "add-command": {
         "path": ".claude/commands/add-command.md",
         "description": "Add new slash command",
-        "keywords": ["add", "command", "new", "custom"],
+        "keywords": [
+          "add",
+          "command",
+          "new",
+          "custom"
+        ],
         "usage": "/add-command [name]",
         "priority": "low"
       },
       "orchestrate-complex": {
         "path": ".claude/commands/orchestrate-complex.md",
         "description": "Orchestrate complex multi-agent task",
-        "keywords": ["orchestrate", "complex", "multi-agent"],
+        "keywords": [
+          "orchestrate",
+          "complex",
+          "multi-agent"
+        ],
         "usage": "/orchestrate-complex [task]",
         "priority": "high"
       },
       "improve-orchestration": {
         "path": ".claude/commands/improve-orchestration.md",
         "description": "Analyze and improve orchestration patterns",
-        "keywords": ["improve", "orchestration", "optimize"],
+        "keywords": [
+          "improve",
+          "orchestration",
+          "optimize"
+        ],
         "usage": "/improve-orchestration [target]",
         "priority": "high"
       },
       "implement-epic": {
         "path": ".claude/commands/implement-epic.md",
         "description": "Implement a full epic with multi-agent coordination",
-        "keywords": ["implement", "epic", "feature", "large"],
+        "keywords": [
+          "implement",
+          "epic",
+          "feature",
+          "large"
+        ],
         "usage": "/implement-epic [epic-key]",
         "priority": "high"
       }
     },
-
     "analysis": {
       "distributed-analysis": {
         "path": ".claude/commands/distributed-analysis.md",
         "description": "Distributed multi-agent codebase analysis",
-        "keywords": ["distributed", "analysis", "parallel", "deep"],
+        "keywords": [
+          "distributed",
+          "analysis",
+          "parallel",
+          "deep"
+        ],
         "usage": "/distributed-analysis [scope]",
         "priority": "medium"
       },
       "knowledge-synthesis": {
         "path": ".claude/commands/knowledge-synthesis.md",
         "description": "Synthesize knowledge across codebase",
-        "keywords": ["knowledge", "synthesis", "understand", "learn"],
+        "keywords": [
+          "knowledge",
+          "synthesis",
+          "understand",
+          "learn"
+        ],
         "usage": "/knowledge-synthesis",
         "priority": "medium"
       },
       "migrate-architecture": {
         "path": ".claude/commands/migrate-architecture.md",
         "description": "Plan and execute architecture migration",
-        "keywords": ["migrate", "architecture", "refactor", "restructure"],
+        "keywords": [
+          "migrate",
+          "architecture",
+          "refactor",
+          "restructure"
+        ],
         "usage": "/migrate-architecture [target]",
         "priority": "medium"
       },
       "performance-surge": {
         "path": ".claude/commands/performance-surge.md",
         "description": "Intensive performance optimization",
-        "keywords": ["performance", "surge", "optimize", "speed"],
+        "keywords": [
+          "performance",
+          "surge",
+          "optimize",
+          "speed"
+        ],
         "usage": "/performance-surge",
         "priority": "medium"
       },
       "chaos-test": {
         "path": ".claude/commands/chaos-test.md",
         "description": "Run chaos engineering tests",
-        "keywords": ["chaos", "test", "resilience", "failure"],
+        "keywords": [
+          "chaos",
+          "test",
+          "resilience",
+          "failure"
+        ],
         "usage": "/chaos-test [scenario]",
         "priority": "low"
       }
     },
-
     "plugin-management": {
       "plugin-install": {
         "path": ".claude/commands/plugin-install.md",
         "description": "Install a Claude Code plugin from name, Git URL, or local path",
-        "keywords": ["plugin", "install", "add", "registry", "git"],
+        "keywords": [
+          "plugin",
+          "install",
+          "add",
+          "registry",
+          "git"
+        ],
         "usage": "/plugin-install <plugin-name|git-url|path> [--dev] [--force]",
         "priority": "high"
       },
       "plugin-uninstall": {
         "path": ".claude/commands/plugin-uninstall.md",
         "description": "Uninstall a Claude Code plugin and clean up registry entries",
-        "keywords": ["plugin", "uninstall", "remove", "delete"],
+        "keywords": [
+          "plugin",
+          "uninstall",
+          "remove",
+          "delete"
+        ],
         "usage": "/plugin-uninstall <plugin-name> [--force] [--keep-config]",
         "priority": "medium"
       },
       "plugin-list": {
         "path": ".claude/commands/plugin-list.md",
         "description": "List installed Claude Code plugins with versions and details",
-        "keywords": ["plugin", "list", "installed", "plugins"],
+        "keywords": [
+          "plugin",
+          "list",
+          "installed",
+          "plugins"
+        ],
         "usage": "/plugin-list [--tree] [--outdated] [--format=table|json|tree]",
         "priority": "medium"
       },
       "plugin-update": {
         "path": ".claude/commands/plugin-update.md",
         "description": "Update Claude Code plugins to latest versions",
-        "keywords": ["plugin", "update", "upgrade", "latest"],
+        "keywords": [
+          "plugin",
+          "update",
+          "upgrade",
+          "latest"
+        ],
         "usage": "/plugin-update [plugin-name|--all] [--major] [--dry-run]",
+        "priority": "medium"
+      },
+      "plugin-search": {
+        "path": ".claude/commands/plugin-search.md",
+        "description": "Search and discover plugins with semantic search and recommendations",
+        "keywords": [
+          "plugin",
+          "search",
+          "discover",
+          "find",
+          "browse"
+        ],
+        "usage": "/plugin-search <query> [--category] [--trending] [--recommend]",
+        "priority": "high"
+      },
+      "plugin-dev": {
+        "path": ".claude/commands/plugin-dev.md",
+        "description": "Plugin development tools and testing utilities",
+        "keywords": [
+          "plugin",
+          "dev",
+          "develop",
+          "create",
+          "test"
+        ],
+        "usage": "/plugin-dev <create|test|validate|package> [options]",
+        "priority": "high"
+      },
+      "plugin-migrate": {
+        "path": ".claude/commands/plugin-migrate.md",
+        "description": "Migrate plugins to new versions or formats",
+        "keywords": [
+          "plugin",
+          "migrate",
+          "upgrade",
+          "convert"
+        ],
+        "usage": "/plugin-migrate <source> <target> [options]",
+        "priority": "medium"
+      }
+    },
+    "ecosystem": {
+      "mcp-generate": {
+        "path": ".claude/commands/mcp-generate.md",
+        "description": "Generate MCP servers from OpenAPI specs or GraphQL schemas",
+        "keywords": [
+          "mcp",
+          "generate",
+          "openapi",
+          "graphql",
+          "api"
+        ],
+        "usage": "/mcp-generate <openapi|graphql> <spec-path> [--output] [--name]",
+        "priority": "high"
+      },
+      "playground": {
+        "path": ".claude/commands/playground.md",
+        "description": "Interactive WebSocket debugging environment for testing agents",
+        "keywords": [
+          "playground",
+          "debug",
+          "test",
+          "websocket",
+          "interactive"
+        ],
+        "usage": "/playground <start|stop|execute|step> [options]",
+        "priority": "high"
+      },
+      "context": {
+        "path": ".claude/commands/context.md",
+        "description": "Manage and optimize context window usage for maximum efficiency",
+        "keywords": [
+          "context",
+          "optimize",
+          "tokens",
+          "budget",
+          "checkpoint"
+        ],
+        "usage": "/context <status|optimize|checkpoint|restore> [options]",
+        "priority": "high"
+      },
+      "archetype": {
+        "path": ".claude/commands/archetype.md",
+        "description": "Create plugins from predefined archetypes/templates",
+        "keywords": [
+          "archetype",
+          "template",
+          "scaffold",
+          "boilerplate"
+        ],
+        "usage": "/archetype <list|create> [name] [options]",
+        "priority": "high"
+      },
+      "secrets": {
+        "path": ".claude/commands/secrets.md",
+        "description": "Manage encrypted secrets and credentials",
+        "keywords": [
+          "secrets",
+          "credentials",
+          "encrypt",
+          "vault",
+          "security"
+        ],
+        "usage": "/secrets <get|set|list|rotate|delete> [key] [options]",
+        "priority": "high"
+      }
+    },
+    "intelligence": {
+      "evolve-agents": {
+        "path": ".claude/commands/evolve-agents.md",
+        "description": "Analyze agent performance and propose capability improvements",
+        "keywords": [
+          "evolve",
+          "agent",
+          "improve",
+          "analyze",
+          "performance"
+        ],
+        "usage": "/evolve-agents <analyze|report|check-thresholds> [options]",
+        "priority": "high"
+      },
+      "memory": {
+        "path": ".claude/commands/memory.md",
+        "description": "Search, store, and manage agent persistent memory",
+        "keywords": [
+          "memory",
+          "search",
+          "store",
+          "recall",
+          "context"
+        ],
+        "usage": "/memory <search|store|recall|stats> [query]",
+        "priority": "high"
+      },
+      "model": {
+        "path": ".claude/commands/model.md",
+        "description": "Manage LLM model selection and routing strategies",
+        "keywords": [
+          "model",
+          "llm",
+          "routing",
+          "selection",
+          "cost"
+        ],
+        "usage": "/model <status|route|configure> [options]",
+        "priority": "medium"
+      },
+      "telemetry": {
+        "path": ".claude/commands/telemetry.md",
+        "description": "View metrics, analytics, and performance telemetry",
+        "keywords": [
+          "telemetry",
+          "metrics",
+          "analytics",
+          "performance",
+          "dashboard"
+        ],
+        "usage": "/telemetry <summary|dashboard|export> [options]",
         "priority": "medium"
       }
     }
   },
-
   "quickLookup": {
     "byKeyword": {
-      "test": ["test", "generate-tests", "chaos-test"],
-      "deploy": ["deploy", "build-agent", "rollback", "scale"],
-      "security": ["security-scan", "secure-audit", "security-fortress", "compliance-audit"],
-      "jira": ["jira-create", "jira-status", "jira-transition", "atlassian-sync"],
-      "review": ["review", "review-all", "review-all-v2"],
-      "orchestrate": ["orchestrate-complex", "improve-orchestration", "implement-epic"],
-      "plugin": ["plugin-install", "plugin-uninstall", "plugin-list", "plugin-update"]
+      "test": [
+        "test",
+        "generate-tests",
+        "chaos-test",
+        "playground"
+      ],
+      "deploy": [
+        "deploy",
+        "build-agent",
+        "rollback",
+        "scale"
+      ],
+      "security": [
+        "security-scan",
+        "secure-audit",
+        "security-fortress",
+        "compliance-audit"
+      ],
+      "jira": [
+        "jira-create",
+        "jira-status",
+        "jira-transition",
+        "atlassian-sync"
+      ],
+      "review": [
+        "review",
+        "review-all",
+        "review-all-v2"
+      ],
+      "orchestrate": [
+        "orchestrate-complex",
+        "improve-orchestration",
+        "implement-epic"
+      ],
+      "plugin": [
+        "plugin-install",
+        "plugin-uninstall",
+        "plugin-list",
+        "plugin-update",
+        "plugin-search",
+        "plugin-dev",
+        "plugin-migrate",
+        "plugin-dev",
+        "plugin-migrate"
+      ],
+      "mcp": [
+        "mcp-generate"
+      ],
+      "context": [
+        "context"
+      ],
+      "debug": [
+        "debug",
+        "playground"
+      ],
+      "intelligence": [
+        "evolve-agents",
+        "memory",
+        "model",
+        "telemetry"
+      ],
+      "archetype": [
+        "archetype"
+      ],
+      "secrets": [
+        "secrets"
+      ]
     },
     "byTask": {
-      "start-project": ["init", "project-status"],
-      "code-quality": ["review", "test", "optimize-code"],
-      "deployment": ["deploy", "rollback", "logs", "scale"],
-      "security": ["security-scan", "secure-audit", "compliance-audit"],
-      "project-management": ["sprint-plan", "standup", "retro", "backlog-groom"],
-      "plugin-management": ["plugin-install", "plugin-list", "plugin-update", "plugin-uninstall"]
+      "start-project": [
+        "init",
+        "project-status"
+      ],
+      "code-quality": [
+        "review",
+        "test",
+        "optimize-code"
+      ],
+      "deployment": [
+        "deploy",
+        "rollback",
+        "logs",
+        "scale"
+      ],
+      "security": [
+        "security-scan",
+        "secure-audit",
+        "compliance-audit"
+      ],
+      "project-management": [
+        "sprint-plan",
+        "standup",
+        "retro",
+        "backlog-groom"
+      ],
+      "plugin-management": [
+        "plugin-install",
+        "plugin-list",
+        "plugin-update",
+        "plugin-uninstall",
+        "plugin-search"
+      ],
+      "ecosystem-tools": [
+        "mcp-generate",
+        "playground",
+        "context",
+        "archetype",
+        "secrets",
+        "archetype",
+        "secrets"
+      ],
+      "intelligence": [
+        "evolve-agents",
+        "memory",
+        "model",
+        "telemetry"
+      ]
     }
   },
-
   "stats": {
-    "totalCommands": 48,
+    "totalCommands": 60,
     "byCategory": {
       "core": 4,
       "development": 9,
@@ -388,10 +865,12 @@
       "atlassian": 9,
       "orchestration": 5,
       "analysis": 5,
-      "plugin-management": 4
+      "plugin-management": 7,
+      "ecosystem": 6,
+      "intelligence": 4
     },
     "byPriority": {
-      "high": 16,
+      "high": 20,
       "medium": 27,
       "low": 4
     }

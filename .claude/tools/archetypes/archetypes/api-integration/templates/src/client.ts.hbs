@@ -1,0 +1,220 @@
+/**
+ * {{apiName}} API Client Implementation
+ */
+
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+{{#if (includes features "rate-limit")}}
+import Bottleneck from 'bottleneck';
+{{/if}}
+{{#if (includes features "caching")}}
+import Keyv from 'keyv';
+{{/if}}
+import type { {{pascalCase apiName}}Config, RequestOptions } from './types.js';
+import { {{pascalCase apiName}}Error } from './errors.js';
+import { createAuthInterceptor } from './auth.js';
+
+export class {{pascalCase apiName}}Client {
+  private client: AxiosInstance;
+  {{#if (includes features "rate-limit")}}
+  private limiter: Bottleneck;
+  {{/if}}
+  {{#if (includes features "caching")}}
+  private cache: Keyv;
+  {{/if}}
+
+  constructor(config: {{pascalCase apiName}}Config) {
+    // Create axios instance
+    this.client = axios.create({
+      baseURL: config.baseUrl || '{{baseUrl}}',
+      timeout: config.timeout || 30000,
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': '{{pluginName}}/1.0.0',
+        ...config.headers
+      }
+    });
+
+    // Add authentication interceptor
+    createAuthInterceptor(this.client, config);
+
+    {{#if (includes features "rate-limit")}}
+    // Setup rate limiting
+    this.limiter = new Bottleneck({
+      maxConcurrent: config.maxConcurrent || 5,
+      minTime: config.minTime || 200 // 200ms between requests
+    });
+    {{/if}}
+
+    {{#if (includes features "caching")}}
+    // Setup caching
+    this.cache = new Keyv({
+      ttl: config.cacheTtl || 60000 // 1 minute default
+    });
+    {{/if}}
+
+    // Add response interceptor for error handling
+    this.client.interceptors.response.use(
+      response => response,
+      error => this.handleError(error)
+    );
+
+    {{#if (includes features "retry")}}
+    // Add retry interceptor
+    this.setupRetryInterceptor();
+    {{/if}}
+
+    {{#if (includes features "logging")}}
+    // Add logging interceptor
+    this.setupLoggingInterceptor();
+    {{/if}}
+  }
+
+  /**
+   * Make a GET request
+   */
+  async get<T = any>(url: string, options?: RequestOptions): Promise<T> {
+    {{#if (includes features "caching")}}
+    const cacheKey = `GET:${url}:${JSON.stringify(options?.params || {})}`;
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return cached as T;
+    }
+    {{/if}}
+
+    const response = await this.request<T>('GET', url, options);
+
+    {{#if (includes features "caching")}}
+    await this.cache.set(cacheKey, response);
+    {{/if}}
+
+    return response;
+  }
+
+  /**
+   * Make a POST request
+   */
+  async post<T = any>(url: string, data?: any, options?: RequestOptions): Promise<T> {
+    return this.request<T>('POST', url, { ...options, data });
+  }
+
+  /**
+   * Make a PUT request
+   */
+  async put<T = any>(url: string, data?: any, options?: RequestOptions): Promise<T> {
+    return this.request<T>('PUT', url, { ...options, data });
+  }
+
+  /**
+   * Make a PATCH request
+   */
+  async patch<T = any>(url: string, data?: any, options?: RequestOptions): Promise<T> {
+    return this.request<T>('PATCH', url, { ...options, data });
+  }
+
+  /**
+   * Make a DELETE request
+   */
+  async delete<T = any>(url: string, options?: RequestOptions): Promise<T> {
+    return this.request<T>('DELETE', url, options);
+  }
+
+  /**
+   * Generic request method
+   */
+  private async request<T>(
+    method: string,
+    url: string,
+    options?: RequestOptions
+  ): Promise<T> {
+    const config: AxiosRequestConfig = {
+      method,
+      url,
+      ...options
+    };
+
+    {{#if (includes features "rate-limit")}}
+    // Use rate limiter
+    const response = await this.limiter.schedule(() => this.client.request<T>(config));
+    {{else}}
+    const response = await this.client.request<T>(config);
+    {{/if}}
+
+    return response.data;
+  }
+
+  {{#if (includes features "retry")}}
+  /**
+   * Setup retry interceptor with exponential backoff
+   */
+  private setupRetryInterceptor(): void {
+    this.client.interceptors.response.use(undefined, async (error) => {
+      const config = error.config;
+
+      if (!config || !config.retry) {
+        return Promise.reject(error);
+      }
+
+      config.retryCount = config.retryCount || 0;
+
+      if (config.retryCount >= (config.maxRetries || 3)) {
+        return Promise.reject(error);
+      }
+
+      config.retryCount += 1;
+
+      // Exponential backoff
+      const delay = Math.pow(2, config.retryCount) * 1000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+
+      return this.client(config);
+    });
+  }
+  {{/if}}
+
+  {{#if (includes features "logging")}}
+  /**
+   * Setup logging interceptor
+   */
+  private setupLoggingInterceptor(): void {
+    this.client.interceptors.request.use(config => {
+      console.log(`[{{apiName}}] ${config.method?.toUpperCase()} ${config.url}`);
+      return config;
+    });
+
+    this.client.interceptors.response.use(
+      response => {
+        console.log(`[{{apiName}}] ${response.status} ${response.config.url}`);
+        return response;
+      },
+      error => {
+        console.error(`[{{apiName}}] Error: ${error.message}`);
+        return Promise.reject(error);
+      }
+    );
+  }
+  {{/if}}
+
+  /**
+   * Handle API errors
+   */
+  private handleError(error: any): never {
+    if (error.response) {
+      throw new {{pascalCase apiName}}Error(
+        error.response.data?.message || error.message,
+        error.response.status,
+        error.response.data
+      );
+    } else if (error.request) {
+      throw new {{pascalCase apiName}}Error('No response received from API', 0);
+    } else {
+      throw new {{pascalCase apiName}}Error(error.message);
+    }
+  }
+}
+
+/**
+ * Create a new {{apiName}} API client
+ */
+export function create{{pascalCase apiName}}Client(config: {{pascalCase apiName}}Config): {{pascalCase apiName}}Client {
+  return new {{pascalCase apiName}}Client(config);
+}

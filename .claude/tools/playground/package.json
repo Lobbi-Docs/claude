@@ -1,0 +1,48 @@
+{
+  "name": "@claude/agent-playground",
+  "version": "1.0.0",
+  "description": "Interactive WebSocket-based debugging environment for testing Claude agents",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "playground": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "claude",
+    "agent",
+    "debugging",
+    "websocket",
+    "playground",
+    "testing"
+  ],
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.18.0",
+    "better-sqlite3": "^11.8.1",
+    "zod": "^3.24.1",
+    "cac": "^6.7.14",
+    "chalk": "^5.4.1",
+    "nanoid": "^5.0.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "@types/better-sqlite3": "^7.6.12",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^9.17.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

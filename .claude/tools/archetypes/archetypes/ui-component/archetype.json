@@ -1,0 +1,55 @@
+{
+  "name": "ui-component",
+  "version": "1.0.0",
+  "description": "Frontend component plugin template with React/Vue/Svelte support, styling patterns, and accessibility compliance",
+  "category": "ui",
+  "author": "Lobbi-Docs",
+  "license": "MIT",
+  "keywords": ["ui", "component", "react", "vue", "svelte", "frontend"],
+  "variables": [
+    {
+      "name": "pluginName",
+      "type": "string",
+      "prompt": "Plugin name (kebab-case):",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]*$"
+    },
+    {
+      "name": "framework",
+      "type": "choice",
+      "prompt": "UI framework:",
+      "required": true,
+      "choices": ["react", "vue", "svelte", "web-components"],
+      "default": "react"
+    },
+    {
+      "name": "styling",
+      "type": "choice",
+      "prompt": "Styling approach:",
+      "required": true,
+      "choices": ["css-modules", "styled-components", "tailwind", "vanilla-css"],
+      "default": "tailwind"
+    },
+    {
+      "name": "features",
+      "type": "multi-choice",
+      "prompt": "Include features:",
+      "choices": ["typescript", "storybook", "a11y", "dark-mode", "theming"],
+      "default": ["typescript", "a11y"]
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "prompt": "Author name:",
+      "default": "Your Name"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "prompt": "Component description:",
+      "required": true
+    }
+  ],
+  "dependencies": [],
+  "files": ["templates/**/*"]
+}
