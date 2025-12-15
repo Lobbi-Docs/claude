@@ -1,0 +1,310 @@
+{
+  "$schema": "../registry/schema/integration-plan.schema.json",
+  "version": "1.0.0",
+  "created": "2025-12-15",
+  "description": "Comprehensive Agent Registry Integration Plan - Unifying 116 user agents with 97 existing registry agents",
+
+  "summary": {
+    "existing_registry_agents": 97,
+    "existing_agent_files": 129,
+    "user_inventory_agents": 116,
+    "overlapping_agents": 28,
+    "net_new_agents": 88,
+    "new_categories_needed": 3,
+    "target_total_agents": 185
+  },
+
+  "category_mapping": {
+    "user_categories_to_registry": {
+      "Workflow Orchestration": {
+        "maps_to": "swarm",
+        "alt_category": "orchestration",
+        "action": "extend",
+        "note": "Add orchestration-specific agents to swarm category"
+      },
+      "Automation DevOps": {
+        "maps_to": "devops",
+        "action": "merge",
+        "note": "Direct mapping - extend existing devops category"
+      },
+      "Business Sales": {
+        "maps_to": "NEW:business-sales",
+        "action": "create",
+        "note": "New category - no existing equivalent"
+      },
+      "Code Quality Testing": {
+        "maps_to": "testing",
+        "alt_category": "quality-gates",
+        "action": "merge",
+        "note": "Merge into testing and quality-gates"
+      },
+      "Data Analytics": {
+        "maps_to": "data-ai",
+        "action": "merge",
+        "note": "Extend existing data-ai category"
+      },
+      "Design UX": {
+        "maps_to": "frontend",
+        "alt_category": "NEW:design-ux",
+        "action": "extend",
+        "note": "Create subcategory under frontend or new category"
+      },
+      "Development Engineering": {
+        "maps_to": "development",
+        "action": "merge",
+        "note": "Direct mapping - extend development category"
+      },
+      "Documentation": {
+        "maps_to": "documentation",
+        "action": "merge",
+        "note": "Direct mapping - extend documentation category"
+      },
+      "Git Workflow": {
+        "maps_to": "github",
+        "action": "merge",
+        "note": "Direct mapping - extend github category"
+      },
+      "Marketing Growth": {
+        "maps_to": "NEW:marketing-growth",
+        "action": "create",
+        "note": "New category - no existing equivalent"
+      },
+      "Project & Product Management": {
+        "maps_to": "atlassian",
+        "alt_category": "NEW:product-management",
+        "action": "extend",
+        "note": "Extend atlassian or create new product-management"
+      },
+      "Security, Compliance & Legal": {
+        "maps_to": "security",
+        "alt_category": "NEW:legal-compliance",
+        "action": "extend",
+        "note": "Extend security with legal subcategory"
+      }
+    }
+  },
+
+  "overlapping_agents": [
+    {"user_agent": "debugger", "existing_agent": "debugger", "callsign": "Cipher", "category": "core", "recommendation": "keep_existing", "priority": "skip"},
+    {"user_agent": "code-review", "existing_agent": "reviewer", "callsign": "Vigilant Watcher", "category": "core", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "code-reviewer", "existing_agent": "reviewer", "callsign": "Vigilant Watcher", "category": "core", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "python-expert", "existing_agent": "python-specialist", "callsign": "Serpent", "category": "languages", "recommendation": "keep_existing", "priority": "skip"},
+    {"user_agent": "flutter-mobile-app-dev", "existing_agent": "flutter-specialist", "callsign": "Zephyr", "category": "mobile", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "react-native-dev", "existing_agent": "react-native-specialist", "callsign": "Ember", "category": "mobile", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "documentation-generator", "existing_agent": "docs-writer", "callsign": "Epochal Sage", "category": "documentation", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "openapi-expert", "existing_agent": "api-documenter", "callsign": "The Arcane", "category": "documentation", "recommendation": "keep_existing", "priority": "skip"},
+    {"user_agent": "ui-designer", "existing_agent": "ui-designer", "callsign": "Radiance", "category": "frontend", "recommendation": "keep_existing", "priority": "skip"},
+    {"user_agent": "audit", "existing_agent": "security-auditor", "callsign": "The Vigil", "category": "security", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "compliance-automation-specialist", "existing_agent": "compliance-checker", "callsign": "The Sovereign", "category": "security", "recommendation": "enhance", "priority": "medium"},
+    {"user_agent": "deployment-engineer", "existing_agent": "k8s-deployer", "callsign": "Vanguard", "category": "devops", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "devops-automator", "existing_agent": "cicd-engineer", "callsign": "Flux", "category": "devops", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "monitoring-observability-specialist", "existing_agent": "observability", "callsign": "The Echo", "category": "operations", "recommendation": "enhance", "priority": "medium"},
+    {"user_agent": "performance-benchmarker", "existing_agent": "performance-engineer", "callsign": "Vector", "category": "development", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "api-tester", "existing_agent": "contract-tester", "callsign": "Aurelius", "category": "testing", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "backend-architect", "existing_agent": "system-architect", "callsign": "Luminarch", "category": "development", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "frontend-developer", "existing_agent": "react-specialist", "callsign": "Nova", "category": "frontend", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "data-scientist", "existing_agent": "data-analyst", "callsign": "Astrium", "category": "data-ai", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "pr-review", "existing_agent": "pr-manager", "callsign": "The Herald", "category": "github", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "create-pr", "existing_agent": "pr-manager", "callsign": "The Herald", "category": "github", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "fix-github-issue", "existing_agent": "issue-tracker", "callsign": "Raven", "category": "github", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "fix-issue", "existing_agent": "issue-tracker", "callsign": "Raven", "category": "github", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "plan", "existing_agent": "planner", "callsign": "The Architect", "category": "core", "recommendation": "alias", "priority": "low"},
+    {"user_agent": "explore", "existing_agent": "researcher", "callsign": "Oracle Prime", "category": "core", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "infrastructure-maintainer", "existing_agent": "terraform-specialist", "callsign": "The Epoch", "category": "cloud", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "changelog-generator", "existing_agent": "release-manager", "callsign": "Harbinger", "category": "github", "recommendation": "keep_both", "priority": "medium"},
+    {"user_agent": "unit-test-generator", "existing_agent": "qa-engineer", "callsign": "Guardian", "category": "testing", "recommendation": "keep_both", "priority": "medium"}
+  ],
+
+  "new_agents": {
+    "orchestration": [
+      {"name": "agent-sdk-dev", "callsign": "Progenitor", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["sdk", "agent", "development", "claude"]},
+      {"name": "pr-review-toolkit", "callsign": "Inquisitor", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["pr", "review", "toolkit", "github"]},
+      {"name": "commit-commands", "callsign": "Scribe", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["commit", "git", "commands"]},
+      {"name": "feature-dev", "callsign": "Genesis", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["feature", "development", "implementation"]},
+      {"name": "security-guidance", "callsign": "Bastion", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["security", "guidance", "best-practices"]},
+      {"name": "angelos-symbo", "callsign": "Angelos", "faction": "Forerunner", "model": "opus", "priority": "high", "keywords": ["orchestration", "symbiotic", "coordination"]},
+      {"name": "ceo-quality-controller-agent", "callsign": "Paramount", "faction": "Forerunner", "model": "opus", "priority": "high", "keywords": ["quality", "executive", "oversight"]},
+      {"name": "claude-desktop-extension", "callsign": "Nexus", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["desktop", "extension", "claude"]},
+      {"name": "lyra", "callsign": "Lyra", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["creative", "assistant", "ai"]},
+      {"name": "model-context-protocol-mcp-expert", "callsign": "Conduit", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["mcp", "protocol", "integration"]},
+      {"name": "problem-solver-specialist", "callsign": "Catalyst", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["problem", "solving", "analysis"]},
+      {"name": "studio-coach", "callsign": "Mentor", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["coaching", "studio", "guidance"]},
+      {"name": "ultrathink", "callsign": "Cognitus", "faction": "Forerunner", "model": "opus", "priority": "high", "keywords": ["thinking", "deep", "reasoning", "extended"]}
+    ],
+    "devops": [
+      {"name": "n8n-workflow-builder", "callsign": "Weaver", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["n8n", "workflow", "automation"]}
+    ],
+    "business-sales": [
+      {"name": "b2b-project-shipper", "callsign": "Voyager", "faction": "Spartan", "model": "sonnet", "priority": "medium", "keywords": ["b2b", "shipping", "projects"]},
+      {"name": "customer-success-manager", "callsign": "Champion", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["customer", "success", "retention"]},
+      {"name": "enterprise-onboarding-specialist", "callsign": "Guide", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["enterprise", "onboarding", "implementation"]},
+      {"name": "finance-tracker", "callsign": "Ledger", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["finance", "tracking", "revenue"]},
+      {"name": "pricing-packaging-specialist", "callsign": "Arbiter", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["pricing", "packaging", "strategy"]},
+      {"name": "product-sales-specialist", "callsign": "Envoy", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["product", "sales", "demo"]},
+      {"name": "support-responder", "callsign": "Warden", "faction": "Spartan", "model": "haiku", "priority": "high", "keywords": ["support", "tickets", "response"]},
+      {"name": "technical-sales-engineer", "callsign": "Ambassador", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["technical", "sales", "engineering"]}
+    ],
+    "testing": [
+      {"name": "bug-detective", "callsign": "Sleuth", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["bug", "detection", "investigation"]},
+      {"name": "code-review-assistant", "callsign": "Scrutineer", "faction": "Spartan", "model": "haiku", "priority": "medium", "keywords": ["review", "assistant", "quick"]},
+      {"name": "database-performance-optimizer", "callsign": "Throttle", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["database", "performance", "optimization"]},
+      {"name": "debug-session", "callsign": "Tracer", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["debug", "session", "interactive"]},
+      {"name": "double-check", "callsign": "Veritas", "faction": "Spartan", "model": "haiku", "priority": "medium", "keywords": ["verification", "double-check", "validate"]},
+      {"name": "optimize", "callsign": "Refiner", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["optimize", "performance", "improve"]},
+      {"name": "refractor", "callsign": "Prism", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["refactor", "clean", "restructure"]},
+      {"name": "test-file", "callsign": "Specimen", "faction": "Spartan", "model": "haiku", "priority": "low", "keywords": ["test", "file", "generation"]},
+      {"name": "test-results-analyzer", "callsign": "Diagnostician", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["test", "results", "analysis"]},
+      {"name": "test-writer-fixer", "callsign": "Mender", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["test", "writing", "fixing"]}
+    ],
+    "data-ai": [
+      {"name": "analytics-reporter", "callsign": "Cipher-Prime", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["analytics", "reports", "dashboards"]},
+      {"name": "experiment-tracker", "callsign": "Hypothesis", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["experiments", "tracking", "a-b-testing"]},
+      {"name": "feedback-synthesizer", "callsign": "Echo-Prime", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["feedback", "synthesis", "analysis"]},
+      {"name": "trend-researcher", "callsign": "Soothsayer", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["trends", "research", "forecasting"]}
+    ],
+    "design-ux": [
+      {"name": "brand-guardian", "callsign": "Aegis-Prime", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["brand", "guidelines", "consistency"]},
+      {"name": "joker", "callsign": "Trickster", "faction": "Promethean", "model": "haiku", "priority": "low", "keywords": ["creative", "unconventional", "experimental"]},
+      {"name": "mobile-ux-optimizer", "callsign": "Touch", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["mobile", "ux", "optimization"]},
+      {"name": "onomastophes", "callsign": "Lexicon", "faction": "Forerunner", "model": "haiku", "priority": "low", "keywords": ["naming", "terminology", "vocabulary"]},
+      {"name": "ux-researcher", "callsign": "Empathist", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["ux", "research", "user-testing"]},
+      {"name": "visual-storyteller", "callsign": "Illustrator", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["visual", "storytelling", "graphics"]},
+      {"name": "whimsy-injector", "callsign": "Spark", "faction": "Promethean", "model": "haiku", "priority": "low", "keywords": ["delight", "whimsy", "micro-interactions"]}
+    ],
+    "development": [
+      {"name": "ai-engineer", "callsign": "Synthetic", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["ai", "ml", "engineering"]},
+      {"name": "api-integration-specialist", "callsign": "Bridge", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["api", "integration", "connectors"]},
+      {"name": "code-architect", "callsign": "Blueprint", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["architecture", "code", "design"]},
+      {"name": "desktop-app-dev", "callsign": "Electron", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["desktop", "electron", "native"]},
+      {"name": "enterprise-integrator-architect", "callsign": "Unifier", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["enterprise", "integration", "architecture"]},
+      {"name": "mobile-app-builder", "callsign": "Swift", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["mobile", "builder", "cross-platform"]},
+      {"name": "project-curator", "callsign": "Librarian", "faction": "Forerunner", "model": "haiku", "priority": "medium", "keywords": ["project", "curation", "organization"]},
+      {"name": "rapid-prototyper", "callsign": "Flash", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["prototype", "rapid", "mvp"]},
+      {"name": "vision-specialist", "callsign": "Seer", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["vision", "computer-vision", "image"]},
+      {"name": "web-dev", "callsign": "Webmaster", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["web", "development", "fullstack"]}
+    ],
+    "documentation": [
+      {"name": "analyze-codebase", "callsign": "Surveyor", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["analyze", "codebase", "structure"]},
+      {"name": "codebase-documenter", "callsign": "Archivist", "faction": "Forerunner", "model": "haiku", "priority": "medium", "keywords": ["codebase", "documentation", "generation"]},
+      {"name": "context7-docs-fetcher", "callsign": "Retriever", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["context7", "docs", "fetching"]},
+      {"name": "generate-api-docs", "callsign": "Scriptor", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["api", "docs", "generation"]},
+      {"name": "update-claudemd", "callsign": "Updater", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["claude", "md", "update"]}
+    ],
+    "github": [
+      {"name": "analyze-issue", "callsign": "Examiner", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["issue", "analysis", "github"]},
+      {"name": "bug-fix", "callsign": "Patcher", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["bug", "fix", "patch"]},
+      {"name": "commit", "callsign": "Chronicler-Prime", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["commit", "git", "message"]},
+      {"name": "create-pull-request", "callsign": "Initiator", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["pr", "create", "github"]},
+      {"name": "create-worktrees", "callsign": "Arborist", "faction": "Promethean", "model": "haiku", "priority": "low", "keywords": ["worktree", "git", "branches"]},
+      {"name": "fix-pr", "callsign": "Resolver", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["pr", "fix", "resolve"]},
+      {"name": "github-issue-fix", "callsign": "Remediate", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["github", "issue", "fix"]},
+      {"name": "husky", "callsign": "Sentinel-Prime", "faction": "Spartan", "model": "haiku", "priority": "medium", "keywords": ["husky", "hooks", "git"]},
+      {"name": "pr-issue-resolve", "callsign": "Mediator", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["pr", "issue", "resolution"]},
+      {"name": "update-branch-name", "callsign": "Nomenclator", "faction": "Promethean", "model": "haiku", "priority": "low", "keywords": ["branch", "naming", "update"]}
+    ],
+    "marketing-growth": [
+      {"name": "app-store-optimizer", "callsign": "Ranker", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["aso", "app-store", "optimization"]},
+      {"name": "content-creator", "callsign": "Wordsmith", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["content", "creation", "copy"]},
+      {"name": "growth-hacker", "callsign": "Accelerant", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["growth", "hacking", "acquisition"]},
+      {"name": "instagram-curator", "callsign": "Aesthete", "faction": "Promethean", "model": "haiku", "priority": "medium", "keywords": ["instagram", "social", "visual"]},
+      {"name": "reddit-community-builder", "callsign": "Redditor", "faction": "Spartan", "model": "haiku", "priority": "medium", "keywords": ["reddit", "community", "engagement"]},
+      {"name": "tiktok-strategist", "callsign": "Viral", "faction": "Promethean", "model": "sonnet", "priority": "medium", "keywords": ["tiktok", "short-form", "video"]},
+      {"name": "twitter-engager", "callsign": "Tweeter", "faction": "Spartan", "model": "haiku", "priority": "medium", "keywords": ["twitter", "x", "engagement"]}
+    ],
+    "product-management": [
+      {"name": "discuss", "callsign": "Dialogist", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["discussion", "collaboration", "ideation"]},
+      {"name": "planning-prd-agent", "callsign": "Strategist", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["prd", "planning", "requirements"]},
+      {"name": "prd-specialist", "callsign": "Specifier", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["prd", "specification", "requirements"]},
+      {"name": "project-shipper", "callsign": "Launcher", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["shipping", "launch", "release"]},
+      {"name": "sprint-prioritizer", "callsign": "Prioritizer", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["sprint", "prioritization", "backlog"]},
+      {"name": "studio-producer", "callsign": "Producer", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["production", "coordination", "studio"]},
+      {"name": "tool-evaluator", "callsign": "Assessor", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["tools", "evaluation", "comparison"]},
+      {"name": "workflow-optimizer", "callsign": "Streamliner", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["workflow", "optimization", "efficiency"]}
+    ],
+    "security": [
+      {"name": "ai-ethics-governance-specialist", "callsign": "Ethicist", "faction": "Forerunner", "model": "sonnet", "priority": "high", "keywords": ["ai", "ethics", "governance"]},
+      {"name": "data-privacy-engineer", "callsign": "Custodian", "faction": "Promethean", "model": "sonnet", "priority": "high", "keywords": ["data", "privacy", "gdpr"]},
+      {"name": "enterprise-security-reviewer", "callsign": "Sentinel-Enterprise", "faction": "Spartan", "model": "sonnet", "priority": "high", "keywords": ["enterprise", "security", "review"]},
+      {"name": "legal-advisor", "callsign": "Counselor", "faction": "Forerunner", "model": "sonnet", "priority": "medium", "keywords": ["legal", "advice", "compliance"]},
+      {"name": "legal-compliance-checker", "callsign": "Auditor-Prime", "faction": "Forerunner", "model": "haiku", "priority": "medium", "keywords": ["legal", "compliance", "check"]}
+    ]
+  },
+
+  "new_categories": [
+    {
+      "name": "business-sales",
+      "description": "Business development, sales operations, and customer success agents for revenue-focused activities",
+      "faction_alignment": "Mixed (Forerunner for strategy, Spartan for execution)",
+      "agent_count": 8
+    },
+    {
+      "name": "marketing-growth",
+      "description": "Marketing, growth hacking, and social media agents for user acquisition and engagement",
+      "faction_alignment": "Promethean (automation) and Spartan (execution)",
+      "agent_count": 7
+    },
+    {
+      "name": "product-management",
+      "description": "Product strategy, PRD development, and project shipping agents for product lifecycle management",
+      "faction_alignment": "Forerunner (strategy) and Spartan (shipping)",
+      "agent_count": 8
+    },
+    {
+      "name": "design-ux",
+      "description": "Design systems, UX research, and visual design agents for user experience optimization",
+      "faction_alignment": "Forerunner (research) and Promethean (implementation)",
+      "agent_count": 7
+    }
+  ],
+
+  "execution_phases": [
+    {
+      "phase": 1,
+      "name": "Category Creation",
+      "tasks": ["Create new category directories", "Update registry schema"],
+      "agent_count": 0
+    },
+    {
+      "phase": 2,
+      "name": "High Priority Agents",
+      "tasks": ["Create agent definitions for priority: high agents"],
+      "agent_count": 45
+    },
+    {
+      "phase": 3,
+      "name": "Medium Priority Agents",
+      "tasks": ["Create agent definitions for priority: medium agents"],
+      "agent_count": 32
+    },
+    {
+      "phase": 4,
+      "name": "Low Priority Agents",
+      "tasks": ["Create agent definitions for priority: low agents"],
+      "agent_count": 11
+    },
+    {
+      "phase": 5,
+      "name": "Registry Update",
+      "tasks": ["Update agents.index.json with all new agents", "Generate statistics"],
+      "agent_count": 0
+    },
+    {
+      "phase": 6,
+      "name": "Documentation",
+      "tasks": ["Document in Obsidian vault", "Create agent catalog"],
+      "agent_count": 0
+    }
+  ],
+
+  "faction_distribution": {
+    "Forerunner": {"count": 38, "percentage": 43, "focus": "Strategic planning, documentation, governance"},
+    "Promethean": {"count": 35, "percentage": 40, "focus": "Technical implementation, automation, precision"},
+    "Spartan": {"count": 15, "percentage": 17, "focus": "Operational execution, resilience, rapid response"}
+  },
+
+  "model_distribution": {
+    "opus": {"count": 3, "percentage": 3, "use_case": "Complex strategic reasoning (ultrathink, angelos-symbo, ceo-quality-controller)"},
+    "sonnet": {"count": 67, "percentage": 76, "use_case": "Standard development, analysis, and coordination tasks"},
+    "haiku": {"count": 18, "percentage": 21, "use_case": "Fast, simple tasks like commits, quick checks, and documentation generation"}
+  }
+}

@@ -1,14 +1,12 @@
 {
   "$schema": "./schema/agents.schema.json",
   "version": "4.0.0",
-  "description": "Lightweight agent index with Halo-themed callsigns - Strategic faction alignment for all 97 agents",
-
+  "description": "Comprehensive agent index with Halo-themed callsigns - Strategic faction alignment for all 202 agents",
   "factionLegend": {
     "Forerunner": "Ancient wisdom, strategic planning, coordination, documentation, governance, architectural vision",
     "Promethean": "Intelligence, precision, technical mastery, data processing, mechanical perfection, automation",
     "Spartan": "Strength, resilience, operational excellence, combat readiness, quality enforcement, rapid response"
   },
-
   "agents": {
     "core": {
       "coder": {
@@ -17,8 +15,19 @@
         "path": "agents/core/coder.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["implement", "code", "write", "create", "build", "develop"],
-        "capabilities": ["code_generation", "refactoring", "optimization"],
+        "keywords": [
+          "implement",
+          "code",
+          "write",
+          "create",
+          "build",
+          "develop"
+        ],
+        "capabilities": [
+          "code_generation",
+          "refactoring",
+          "optimization"
+        ],
         "priority": "high"
       },
       "researcher": {
@@ -27,8 +36,18 @@
         "path": "agents/core/researcher.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["research", "analyze", "investigate", "explore", "find"],
-        "capabilities": ["research", "analysis", "documentation"],
+        "keywords": [
+          "research",
+          "analyze",
+          "investigate",
+          "explore",
+          "find"
+        ],
+        "capabilities": [
+          "research",
+          "analysis",
+          "documentation"
+        ],
         "priority": "medium"
       },
       "tester": {
@@ -37,8 +56,18 @@
         "path": "agents/core/tester.md",
         "type": "validator",
         "model": "sonnet",
-        "keywords": ["test", "validate", "verify", "qa", "quality"],
-        "capabilities": ["testing", "validation", "coverage"],
+        "keywords": [
+          "test",
+          "validate",
+          "verify",
+          "qa",
+          "quality"
+        ],
+        "capabilities": [
+          "testing",
+          "validation",
+          "coverage"
+        ],
         "priority": "high"
       },
       "reviewer": {
@@ -47,8 +76,16 @@
         "path": "agents/core/reviewer.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["review", "check", "audit", "inspect"],
-        "capabilities": ["code_review", "quality_analysis"],
+        "keywords": [
+          "review",
+          "check",
+          "audit",
+          "inspect"
+        ],
+        "capabilities": [
+          "code_review",
+          "quality_analysis"
+        ],
         "priority": "high"
       },
       "planner": {
@@ -57,8 +94,17 @@
         "path": "agents/core/planner.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["plan", "design", "architect", "strategy"],
-        "capabilities": ["planning", "task_breakdown", "coordination"],
+        "keywords": [
+          "plan",
+          "design",
+          "architect",
+          "strategy"
+        ],
+        "capabilities": [
+          "planning",
+          "task_breakdown",
+          "coordination"
+        ],
         "priority": "high"
       },
       "debugger": {
@@ -67,12 +113,21 @@
         "path": "agents/core/debugger.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["debug", "fix", "trace", "error", "bug"],
-        "capabilities": ["debugging", "tracing", "error_analysis"],
+        "keywords": [
+          "debug",
+          "fix",
+          "trace",
+          "error",
+          "bug"
+        ],
+        "capabilities": [
+          "debugging",
+          "tracing",
+          "error_analysis"
+        ],
         "priority": "high"
       }
     },
-
     "devops": {
       "cicd-engineer": {
         "callsign": "Flux",
@@ -80,8 +135,18 @@
         "path": "agents/devops/cicd-engineer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["ci", "cd", "pipeline", "github-actions", "workflow"],
-        "capabilities": ["pipeline_design", "automation", "deployment"],
+        "keywords": [
+          "ci",
+          "cd",
+          "pipeline",
+          "github-actions",
+          "workflow"
+        ],
+        "capabilities": [
+          "pipeline_design",
+          "automation",
+          "deployment"
+        ],
         "priority": "medium"
       },
       "k8s-deployer": {
@@ -90,8 +155,18 @@
         "path": "agents/devops/k8s-deployer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["kubernetes", "k8s", "deploy", "pod", "service"],
-        "capabilities": ["k8s_deployment", "helm", "scaling"],
+        "keywords": [
+          "kubernetes",
+          "k8s",
+          "deploy",
+          "pod",
+          "service"
+        ],
+        "capabilities": [
+          "k8s_deployment",
+          "helm",
+          "scaling"
+        ],
         "priority": "medium"
       },
       "docker-builder": {
@@ -100,8 +175,16 @@
         "path": "agents/devops/docker-builder.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["docker", "container", "image", "dockerfile"],
-        "capabilities": ["containerization", "optimization"],
+        "keywords": [
+          "docker",
+          "container",
+          "image",
+          "dockerfile"
+        ],
+        "capabilities": [
+          "containerization",
+          "optimization"
+        ],
         "priority": "medium"
       },
       "sre-engineer": {
@@ -110,8 +193,18 @@
         "path": "agents/devops/sre-engineer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["sre", "reliability", "slo", "sli", "uptime"],
-        "capabilities": ["reliability", "monitoring", "incident_prevention"],
+        "keywords": [
+          "sre",
+          "reliability",
+          "slo",
+          "sli",
+          "uptime"
+        ],
+        "capabilities": [
+          "reliability",
+          "monitoring",
+          "incident_prevention"
+        ],
         "priority": "medium"
       },
       "gitops-specialist": {
@@ -120,8 +213,17 @@
         "path": "agents/devops/gitops-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["gitops", "argocd", "flux", "declarative"],
-        "capabilities": ["gitops", "argo", "flux"],
+        "keywords": [
+          "gitops",
+          "argocd",
+          "flux",
+          "declarative"
+        ],
+        "capabilities": [
+          "gitops",
+          "argo",
+          "flux"
+        ],
         "priority": "low"
       },
       "ansible-specialist": {
@@ -130,12 +232,22 @@
         "path": "agents/devops/ansible-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["ansible", "automation", "playbook", "configuration", "provisioning", "yaml"],
-        "capabilities": ["ansible_playbooks", "role_creation", "configuration_management"],
+        "keywords": [
+          "ansible",
+          "automation",
+          "playbook",
+          "configuration",
+          "provisioning",
+          "yaml"
+        ],
+        "capabilities": [
+          "ansible_playbooks",
+          "role_creation",
+          "configuration_management"
+        ],
         "priority": "medium"
       }
     },
-
     "development": {
       "backend-dev": {
         "callsign": "Axiom",
@@ -143,8 +255,17 @@
         "path": "agents/development/backend-dev.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["backend", "api", "server", "service"],
-        "capabilities": ["api_development", "database", "integration"],
+        "keywords": [
+          "backend",
+          "api",
+          "server",
+          "service"
+        ],
+        "capabilities": [
+          "api_development",
+          "database",
+          "integration"
+        ],
         "priority": "high"
       },
       "system-architect": {
@@ -153,8 +274,17 @@
         "path": "agents/development/system-architect.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["architecture", "design", "system", "structure"],
-        "capabilities": ["system_design", "architecture", "patterns"],
+        "keywords": [
+          "architecture",
+          "design",
+          "system",
+          "structure"
+        ],
+        "capabilities": [
+          "system_design",
+          "architecture",
+          "patterns"
+        ],
         "priority": "high"
       },
       "api-designer": {
@@ -163,8 +293,17 @@
         "path": "agents/development/api-designer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["api", "rest", "graphql", "openapi"],
-        "capabilities": ["api_design", "schema", "documentation"],
+        "keywords": [
+          "api",
+          "rest",
+          "graphql",
+          "openapi"
+        ],
+        "capabilities": [
+          "api_design",
+          "schema",
+          "documentation"
+        ],
         "priority": "medium"
       },
       "database-specialist": {
@@ -173,8 +312,18 @@
         "path": "agents/development/database-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["database", "sql", "postgres", "mysql", "migration"],
-        "capabilities": ["schema_design", "queries", "optimization"],
+        "keywords": [
+          "database",
+          "sql",
+          "postgres",
+          "mysql",
+          "migration"
+        ],
+        "capabilities": [
+          "schema_design",
+          "queries",
+          "optimization"
+        ],
         "priority": "medium"
       },
       "performance-engineer": {
@@ -183,8 +332,17 @@
         "path": "agents/development/performance-engineer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["performance", "optimization", "profiling", "latency"],
-        "capabilities": ["profiling", "optimization", "benchmarking"],
+        "keywords": [
+          "performance",
+          "optimization",
+          "profiling",
+          "latency"
+        ],
+        "capabilities": [
+          "profiling",
+          "optimization",
+          "benchmarking"
+        ],
         "priority": "medium"
       },
       "prisma-specialist": {
@@ -193,8 +351,19 @@
         "path": "agents/development/prisma-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["prisma", "orm", "database", "schema", "typescript", "postgresql"],
-        "capabilities": ["prisma_schema", "migrations", "type_safe_queries"],
+        "keywords": [
+          "prisma",
+          "orm",
+          "database",
+          "schema",
+          "typescript",
+          "postgresql"
+        ],
+        "capabilities": [
+          "prisma_schema",
+          "migrations",
+          "type_safe_queries"
+        ],
         "priority": "high"
       },
       "redis-specialist": {
@@ -203,8 +372,19 @@
         "path": "agents/development/redis-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["redis", "cache", "session", "pub-sub", "nosql", "memory"],
-        "capabilities": ["caching_strategies", "session_management", "redis_optimization"],
+        "keywords": [
+          "redis",
+          "cache",
+          "session",
+          "pub-sub",
+          "nosql",
+          "memory"
+        ],
+        "capabilities": [
+          "caching_strategies",
+          "session_management",
+          "redis_optimization"
+        ],
         "priority": "medium"
       },
       "graphql-specialist": {
@@ -213,12 +393,23 @@
         "path": "agents/development/graphql-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["graphql", "apollo", "schema", "resolver", "api", "federation"],
-        "capabilities": ["graphql_schema", "resolvers", "subscriptions", "federation"],
+        "keywords": [
+          "graphql",
+          "apollo",
+          "schema",
+          "resolver",
+          "api",
+          "federation"
+        ],
+        "capabilities": [
+          "graphql_schema",
+          "resolvers",
+          "subscriptions",
+          "federation"
+        ],
         "priority": "medium"
       }
     },
-
     "frontend": {
       "react-specialist": {
         "callsign": "Nova",
@@ -226,8 +417,17 @@
         "path": "agents/frontend/react-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["react", "hooks", "component", "state"],
-        "capabilities": ["react", "state_management", "components"],
+        "keywords": [
+          "react",
+          "hooks",
+          "component",
+          "state"
+        ],
+        "capabilities": [
+          "react",
+          "state_management",
+          "components"
+        ],
         "priority": "medium"
       },
       "ui-designer": {
@@ -236,8 +436,18 @@
         "path": "agents/frontend/ui-designer.md",
         "type": "developer",
         "model": "haiku",
-        "keywords": ["ui", "ux", "design", "css", "styling"],
-        "capabilities": ["ui_design", "accessibility", "css"],
+        "keywords": [
+          "ui",
+          "ux",
+          "design",
+          "css",
+          "styling"
+        ],
+        "capabilities": [
+          "ui_design",
+          "accessibility",
+          "css"
+        ],
         "priority": "low"
       },
       "vue-specialist": {
@@ -246,8 +456,17 @@
         "path": "agents/frontend/vue-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["vue", "vuex", "composition", "pinia"],
-        "capabilities": ["vue", "vuex", "components"],
+        "keywords": [
+          "vue",
+          "vuex",
+          "composition",
+          "pinia"
+        ],
+        "capabilities": [
+          "vue",
+          "vuex",
+          "components"
+        ],
         "priority": "low"
       },
       "nextjs-specialist": {
@@ -256,8 +475,17 @@
         "path": "agents/frontend/nextjs-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["nextjs", "ssr", "ssg", "app-router"],
-        "capabilities": ["nextjs", "ssr", "routing"],
+        "keywords": [
+          "nextjs",
+          "ssr",
+          "ssg",
+          "app-router"
+        ],
+        "capabilities": [
+          "nextjs",
+          "ssr",
+          "routing"
+        ],
         "priority": "medium"
       },
       "accessibility-expert": {
@@ -266,12 +494,20 @@
         "path": "agents/frontend/accessibility-expert.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["a11y", "accessibility", "wcag", "aria"],
-        "capabilities": ["accessibility", "wcag", "audit"],
+        "keywords": [
+          "a11y",
+          "accessibility",
+          "wcag",
+          "aria"
+        ],
+        "capabilities": [
+          "accessibility",
+          "wcag",
+          "audit"
+        ],
         "priority": "low"
       }
     },
-
     "languages": {
       "python-specialist": {
         "callsign": "Serpent",
@@ -279,8 +515,18 @@
         "path": "agents/languages/python-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["python", "flask", "fastapi", "django", "async"],
-        "capabilities": ["python", "async", "web_frameworks"],
+        "keywords": [
+          "python",
+          "flask",
+          "fastapi",
+          "django",
+          "async"
+        ],
+        "capabilities": [
+          "python",
+          "async",
+          "web_frameworks"
+        ],
         "priority": "high"
       },
       "typescript-specialist": {
@@ -289,8 +535,17 @@
         "path": "agents/languages/typescript-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["typescript", "nodejs", "express", "types"],
-        "capabilities": ["typescript", "node", "type_safety"],
+        "keywords": [
+          "typescript",
+          "nodejs",
+          "express",
+          "types"
+        ],
+        "capabilities": [
+          "typescript",
+          "node",
+          "type_safety"
+        ],
         "priority": "high"
       },
       "go-specialist": {
@@ -299,8 +554,17 @@
         "path": "agents/languages/go-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["go", "golang", "goroutine", "concurrency"],
-        "capabilities": ["go", "concurrency", "microservices"],
+        "keywords": [
+          "go",
+          "golang",
+          "goroutine",
+          "concurrency"
+        ],
+        "capabilities": [
+          "go",
+          "concurrency",
+          "microservices"
+        ],
         "priority": "medium"
       },
       "rust-specialist": {
@@ -309,8 +573,17 @@
         "path": "agents/languages/rust-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["rust", "cargo", "wasm", "systems"],
-        "capabilities": ["rust", "memory_safety", "systems"],
+        "keywords": [
+          "rust",
+          "cargo",
+          "wasm",
+          "systems"
+        ],
+        "capabilities": [
+          "rust",
+          "memory_safety",
+          "systems"
+        ],
         "priority": "medium"
       },
       "java-specialist": {
@@ -319,8 +592,17 @@
         "path": "agents/languages/java-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["java", "spring", "maven", "gradle"],
-        "capabilities": ["java", "spring", "enterprise"],
+        "keywords": [
+          "java",
+          "spring",
+          "maven",
+          "gradle"
+        ],
+        "capabilities": [
+          "java",
+          "spring",
+          "enterprise"
+        ],
         "priority": "medium"
       },
       "csharp-specialist": {
@@ -329,8 +611,17 @@
         "path": "agents/languages/csharp-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["csharp", "dotnet", "aspnet", "blazor"],
-        "capabilities": ["csharp", "dotnet", "enterprise"],
+        "keywords": [
+          "csharp",
+          "dotnet",
+          "aspnet",
+          "blazor"
+        ],
+        "capabilities": [
+          "csharp",
+          "dotnet",
+          "enterprise"
+        ],
         "priority": "low"
       },
       "elixir-specialist": {
@@ -339,12 +630,20 @@
         "path": "agents/languages/elixir-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["elixir", "phoenix", "otp", "erlang"],
-        "capabilities": ["elixir", "concurrency", "fault_tolerance"],
+        "keywords": [
+          "elixir",
+          "phoenix",
+          "otp",
+          "erlang"
+        ],
+        "capabilities": [
+          "elixir",
+          "concurrency",
+          "fault_tolerance"
+        ],
         "priority": "low"
       }
     },
-
     "security": {
       "security-auditor": {
         "callsign": "The Vigil",
@@ -352,8 +651,16 @@
         "path": "agents/security/security-auditor.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["security", "audit", "vulnerability", "owasp"],
-        "capabilities": ["security_audit", "vulnerability_detection"],
+        "keywords": [
+          "security",
+          "audit",
+          "vulnerability",
+          "owasp"
+        ],
+        "capabilities": [
+          "security_audit",
+          "vulnerability_detection"
+        ],
         "priority": "high"
       },
       "penetration-tester": {
@@ -362,8 +669,16 @@
         "path": "agents/security/penetration-tester.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["pentest", "ethical", "ctf", "exploit"],
-        "capabilities": ["penetration_testing", "ctf"],
+        "keywords": [
+          "pentest",
+          "ethical",
+          "ctf",
+          "exploit"
+        ],
+        "capabilities": [
+          "penetration_testing",
+          "ctf"
+        ],
         "priority": "medium"
       },
       "compliance-checker": {
@@ -372,8 +687,17 @@
         "path": "agents/security/compliance-checker.md",
         "type": "analyst",
         "model": "haiku",
-        "keywords": ["compliance", "soc2", "gdpr", "hipaa"],
-        "capabilities": ["compliance", "audit", "policy"],
+        "keywords": [
+          "compliance",
+          "soc2",
+          "gdpr",
+          "hipaa"
+        ],
+        "capabilities": [
+          "compliance",
+          "audit",
+          "policy"
+        ],
         "priority": "low"
       },
       "secrets-manager": {
@@ -382,8 +706,16 @@
         "path": "agents/security/secrets-manager.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["secrets", "vault", "encryption", "keys"],
-        "capabilities": ["secrets_management", "encryption"],
+        "keywords": [
+          "secrets",
+          "vault",
+          "encryption",
+          "keys"
+        ],
+        "capabilities": [
+          "secrets_management",
+          "encryption"
+        ],
         "priority": "medium"
       },
       "threat-modeler": {
@@ -392,12 +724,148 @@
         "path": "agents/security/threat-modeler.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["threat", "model", "stride", "attack"],
-        "capabilities": ["threat_modeling", "risk_assessment"],
+        "keywords": [
+          "threat",
+          "model",
+          "stride",
+          "attack"
+        ],
+        "capabilities": [
+          "threat_modeling",
+          "risk_assessment"
+        ],
+        "priority": "medium"
+      },
+      "ai-ethics-governance-specialist": {
+        "callsign": "Ethicist",
+        "faction": "Forerunner",
+        "path": "agents/security/ai-ethics-governance-specialist.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "ai-ethics",
+          "governance",
+          "bias",
+          "fairness",
+          "transparency",
+          "accountability",
+          "responsible-ai",
+          "model-governance"
+        ],
+        "capabilities": [
+          "Evaluate AI systems for ethical considerations",
+          "Identify and mitigate algorithmic bias",
+          "Develop AI governance frameworks",
+          "Assess fairness and equity in AI models",
+          "Create transparency and explainability documentation",
+          "Establish accountability mechanisms"
+        ],
+        "priority": "high"
+      },
+      "data-privacy-engineer": {
+        "callsign": "Custodian",
+        "faction": "Promethean",
+        "path": "agents/security/data-privacy-engineer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "privacy",
+          "gdpr",
+          "ccpa",
+          "pii",
+          "data-protection",
+          "encryption",
+          "anonymization",
+          "consent-management"
+        ],
+        "capabilities": [
+          "Implement privacy-by-design principles",
+          "Design data minimization strategies",
+          "Implement encryption and anonymization",
+          "Build consent management systems",
+          "Ensure GDPR/CCPA compliance",
+          "Conduct privacy impact assessments"
+        ],
+        "priority": "high"
+      },
+      "enterprise-security-reviewer": {
+        "callsign": "Sentinel-Enterprise",
+        "faction": "Spartan",
+        "path": "agents/security/enterprise-security-reviewer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "enterprise-security",
+          "security-review",
+          "threat-modeling",
+          "risk-assessment",
+          "compliance",
+          "security-architecture",
+          "penetration-testing",
+          "vulnerability-assessment"
+        ],
+        "capabilities": [
+          "Conduct comprehensive security reviews",
+          "Perform threat modeling and risk assessments",
+          "Evaluate security architecture designs",
+          "Review code for security vulnerabilities",
+          "Assess compliance with security standards",
+          "Coordinate penetration testing efforts"
+        ],
+        "priority": "high"
+      },
+      "legal-advisor": {
+        "callsign": "Counselor",
+        "faction": "Forerunner",
+        "path": "agents/security/legal-advisor.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "legal",
+          "contracts",
+          "licensing",
+          "intellectual-property",
+          "terms-of-service",
+          "liability",
+          "regulatory-compliance"
+        ],
+        "capabilities": [
+          "Review legal implications of technical decisions",
+          "Analyze software licensing requirements",
+          "Assess intellectual property considerations",
+          "Review terms of service and privacy policies",
+          "Identify regulatory compliance requirements",
+          "Flag potential legal risks"
+        ],
+        "priority": "medium"
+      },
+      "legal-compliance-checker": {
+        "callsign": "Auditor-Prime",
+        "faction": "Forerunner",
+        "path": "agents/security/legal-compliance-checker.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": [
+          "compliance",
+          "audit",
+          "regulations",
+          "standards",
+          "certification",
+          "sox",
+          "hipaa",
+          "pci-dss"
+        ],
+        "capabilities": [
+          "Perform compliance audits",
+          "Check adherence to regulatory standards",
+          "Generate compliance reports",
+          "Track compliance requirements",
+          "Identify compliance gaps",
+          "Maintain compliance documentation"
+        ],
         "priority": "medium"
       }
     },
-
     "data-ai": {
       "ml-engineer": {
         "callsign": "Omniscient",
@@ -405,8 +873,17 @@
         "path": "agents/data-ai/ml-engineer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["ml", "machine-learning", "model", "training"],
-        "capabilities": ["ml_development", "mlops", "training"],
+        "keywords": [
+          "ml",
+          "machine-learning",
+          "model",
+          "training"
+        ],
+        "capabilities": [
+          "ml_development",
+          "mlops",
+          "training"
+        ],
         "priority": "medium"
       },
       "data-engineer": {
@@ -415,8 +892,17 @@
         "path": "agents/data-ai/data-engineer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["data", "etl", "pipeline", "warehouse"],
-        "capabilities": ["data_pipelines", "etl", "warehousing"],
+        "keywords": [
+          "data",
+          "etl",
+          "pipeline",
+          "warehouse"
+        ],
+        "capabilities": [
+          "data_pipelines",
+          "etl",
+          "warehousing"
+        ],
         "priority": "medium"
       },
       "rag-specialist": {
@@ -425,8 +911,17 @@
         "path": "agents/data-ai/rag-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["rag", "embedding", "vector", "retrieval"],
-        "capabilities": ["rag", "vector_db", "embeddings"],
+        "keywords": [
+          "rag",
+          "embedding",
+          "vector",
+          "retrieval"
+        ],
+        "capabilities": [
+          "rag",
+          "vector_db",
+          "embeddings"
+        ],
         "priority": "medium"
       },
       "llm-engineer": {
@@ -435,8 +930,16 @@
         "path": "agents/data-ai/llm-engineer.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["llm", "prompt", "fine-tune", "inference"],
-        "capabilities": ["llm_integration", "prompt_engineering"],
+        "keywords": [
+          "llm",
+          "prompt",
+          "fine-tune",
+          "inference"
+        ],
+        "capabilities": [
+          "llm_integration",
+          "prompt_engineering"
+        ],
         "priority": "high"
       },
       "data-analyst": {
@@ -445,12 +948,119 @@
         "path": "agents/data-ai/data-analyst.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["analysis", "visualization", "pandas", "report"],
-        "capabilities": ["data_analysis", "visualization"],
+        "keywords": [
+          "analysis",
+          "visualization",
+          "pandas",
+          "report"
+        ],
+        "capabilities": [
+          "data_analysis",
+          "visualization"
+        ],
+        "priority": "medium"
+      },
+      "analytics-reporter": {
+        "callsign": "Cipher-Prime",
+        "faction": "Forerunner",
+        "path": "agents/data-ai/analytics-reporter.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "analytics",
+          "reporting",
+          "metrics",
+          "dashboards",
+          "insights",
+          "kpi",
+          "business-intelligence"
+        ],
+        "capabilities": [
+          "Generate comprehensive analytics reports",
+          "Create data visualizations and dashboards",
+          "Analyze metrics and KPIs",
+          "Identify trends and patterns in data",
+          "Build executive summaries",
+          "Performance tracking and monitoring"
+        ],
+        "priority": "medium"
+      },
+      "experiment-tracker": {
+        "callsign": "Hypothesis",
+        "faction": "Forerunner",
+        "path": "agents/data-ai/experiment-tracker.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "ab-testing",
+          "experiments",
+          "hypothesis",
+          "statistical-analysis",
+          "feature-flags",
+          "multivariate-testing",
+          "conversion-optimization"
+        ],
+        "capabilities": [
+          "Design and track A/B tests",
+          "Perform statistical significance analysis",
+          "Manage experiment lifecycle",
+          "Track feature flag rollouts",
+          "Analyze multivariate experiments",
+          "Generate experiment reports"
+        ],
+        "priority": "medium"
+      },
+      "feedback-synthesizer": {
+        "callsign": "Echo-Prime",
+        "faction": "Forerunner",
+        "path": "agents/data-ai/feedback-synthesizer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "feedback",
+          "sentiment-analysis",
+          "user-research",
+          "qualitative-analysis",
+          "customer-insights",
+          "survey-analysis",
+          "nps"
+        ],
+        "capabilities": [
+          "Synthesize user feedback from multiple sources",
+          "Perform sentiment and thematic analysis",
+          "Identify recurring patterns and themes",
+          "Generate actionable recommendations",
+          "Analyze survey responses",
+          "Track customer satisfaction metrics"
+        ],
+        "priority": "medium"
+      },
+      "trend-researcher": {
+        "callsign": "Soothsayer",
+        "faction": "Forerunner",
+        "path": "agents/data-ai/trend-researcher.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "trends",
+          "research",
+          "market-analysis",
+          "competitive-intelligence",
+          "forecasting",
+          "technology-trends",
+          "industry-research"
+        ],
+        "capabilities": [
+          "Identify emerging trends and patterns",
+          "Conduct competitive landscape analysis",
+          "Perform market research and analysis",
+          "Generate technology trend reports",
+          "Forecast future developments",
+          "Synthesize industry insights"
+        ],
         "priority": "medium"
       }
     },
-
     "operations": {
       "incident-responder": {
         "callsign": "Blaze",
@@ -458,8 +1068,17 @@
         "path": "agents/operations/incident-responder.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["incident", "outage", "emergency", "triage"],
-        "capabilities": ["incident_response", "triage", "resolution"],
+        "keywords": [
+          "incident",
+          "outage",
+          "emergency",
+          "triage"
+        ],
+        "capabilities": [
+          "incident_response",
+          "triage",
+          "resolution"
+        ],
         "priority": "high"
       },
       "observability": {
@@ -468,8 +1087,17 @@
         "path": "agents/operations/observability.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["monitoring", "logging", "tracing", "metrics"],
-        "capabilities": ["monitoring", "alerting", "dashboards"],
+        "keywords": [
+          "monitoring",
+          "logging",
+          "tracing",
+          "metrics"
+        ],
+        "capabilities": [
+          "monitoring",
+          "alerting",
+          "dashboards"
+        ],
         "priority": "medium"
       },
       "capacity-planner": {
@@ -478,8 +1106,16 @@
         "path": "agents/operations/capacity-planner.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["capacity", "scaling", "forecast", "growth"],
-        "capabilities": ["capacity_planning", "forecasting"],
+        "keywords": [
+          "capacity",
+          "scaling",
+          "forecast",
+          "growth"
+        ],
+        "capabilities": [
+          "capacity_planning",
+          "forecasting"
+        ],
         "priority": "low"
       },
       "cost-optimizer": {
@@ -488,12 +1124,19 @@
         "path": "agents/operations/cost-optimizer.md",
         "type": "analyst",
         "model": "haiku",
-        "keywords": ["cost", "finops", "budget", "optimize"],
-        "capabilities": ["cost_analysis", "optimization"],
+        "keywords": [
+          "cost",
+          "finops",
+          "budget",
+          "optimize"
+        ],
+        "capabilities": [
+          "cost_analysis",
+          "optimization"
+        ],
         "priority": "low"
       }
     },
-
     "cloud": {
       "aws-specialist": {
         "callsign": "Celestine",
@@ -501,8 +1144,18 @@
         "path": "agents/cloud/aws-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["aws", "s3", "ec2", "lambda", "cloudformation"],
-        "capabilities": ["aws", "serverless", "infrastructure"],
+        "keywords": [
+          "aws",
+          "s3",
+          "ec2",
+          "lambda",
+          "cloudformation"
+        ],
+        "capabilities": [
+          "aws",
+          "serverless",
+          "infrastructure"
+        ],
         "priority": "medium"
       },
       "gcp-specialist": {
@@ -511,8 +1164,16 @@
         "path": "agents/cloud/gcp-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["gcp", "cloud-run", "bigquery", "pubsub"],
-        "capabilities": ["gcp", "data_services"],
+        "keywords": [
+          "gcp",
+          "cloud-run",
+          "bigquery",
+          "pubsub"
+        ],
+        "capabilities": [
+          "gcp",
+          "data_services"
+        ],
         "priority": "medium"
       },
       "azure-specialist": {
@@ -521,8 +1182,16 @@
         "path": "agents/cloud/azure-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["azure", "blob", "functions", "aks"],
-        "capabilities": ["azure", "enterprise_cloud"],
+        "keywords": [
+          "azure",
+          "blob",
+          "functions",
+          "aks"
+        ],
+        "capabilities": [
+          "azure",
+          "enterprise_cloud"
+        ],
         "priority": "low"
       },
       "terraform-specialist": {
@@ -531,8 +1200,17 @@
         "path": "agents/cloud/terraform-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["terraform", "iac", "infrastructure", "hcl"],
-        "capabilities": ["terraform", "iac", "provisioning"],
+        "keywords": [
+          "terraform",
+          "iac",
+          "infrastructure",
+          "hcl"
+        ],
+        "capabilities": [
+          "terraform",
+          "iac",
+          "provisioning"
+        ],
         "priority": "medium"
       },
       "serverless-specialist": {
@@ -541,8 +1219,16 @@
         "path": "agents/cloud/serverless-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["serverless", "lambda", "functions", "faas"],
-        "capabilities": ["serverless", "event_driven"],
+        "keywords": [
+          "serverless",
+          "lambda",
+          "functions",
+          "faas"
+        ],
+        "capabilities": [
+          "serverless",
+          "event_driven"
+        ],
         "priority": "medium"
       },
       "pulumi-specialist": {
@@ -551,12 +1237,22 @@
         "path": "agents/cloud/pulumi-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["pulumi", "iac", "infrastructure", "cloud", "typescript", "python"],
-        "capabilities": ["pulumi_programs", "multi_cloud", "policy_as_code"],
+        "keywords": [
+          "pulumi",
+          "iac",
+          "infrastructure",
+          "cloud",
+          "typescript",
+          "python"
+        ],
+        "capabilities": [
+          "pulumi_programs",
+          "multi_cloud",
+          "policy_as_code"
+        ],
         "priority": "medium"
       }
     },
-
     "swarm": {
       "hierarchical-coordinator": {
         "callsign": "The Ascendant",
@@ -564,8 +1260,17 @@
         "path": "agents/swarm/hierarchical-coordinator.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["coordinate", "orchestrate", "delegate", "lead"],
-        "capabilities": ["coordination", "delegation", "oversight"],
+        "keywords": [
+          "coordinate",
+          "orchestrate",
+          "delegate",
+          "lead"
+        ],
+        "capabilities": [
+          "coordination",
+          "delegation",
+          "oversight"
+        ],
         "priority": "high"
       },
       "mesh-coordinator": {
@@ -574,8 +1279,16 @@
         "path": "agents/swarm/mesh-coordinator.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["distributed", "peer", "consensus", "mesh"],
-        "capabilities": ["distributed_coordination", "consensus"],
+        "keywords": [
+          "distributed",
+          "peer",
+          "consensus",
+          "mesh"
+        ],
+        "capabilities": [
+          "distributed_coordination",
+          "consensus"
+        ],
         "priority": "medium"
       },
       "adaptive-coordinator": {
@@ -584,12 +1297,19 @@
         "path": "agents/swarm/adaptive-coordinator.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["adaptive", "dynamic", "switch", "flexible"],
-        "capabilities": ["adaptive_topology", "dynamic_routing"],
+        "keywords": [
+          "adaptive",
+          "dynamic",
+          "switch",
+          "flexible"
+        ],
+        "capabilities": [
+          "adaptive_topology",
+          "dynamic_routing"
+        ],
         "priority": "medium"
       }
     },
-
     "github": {
       "pr-manager": {
         "callsign": "The Herald",
@@ -597,8 +1317,16 @@
         "path": "agents/github/pr-manager.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["pr", "pull-request", "merge", "branch"],
-        "capabilities": ["pr_management", "review_coordination"],
+        "keywords": [
+          "pr",
+          "pull-request",
+          "merge",
+          "branch"
+        ],
+        "capabilities": [
+          "pr_management",
+          "review_coordination"
+        ],
         "priority": "high"
       },
       "issue-tracker": {
@@ -607,8 +1335,16 @@
         "path": "agents/github/issue-tracker.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["issue", "bug", "feature", "track"],
-        "capabilities": ["issue_management", "triage"],
+        "keywords": [
+          "issue",
+          "bug",
+          "feature",
+          "track"
+        ],
+        "capabilities": [
+          "issue_management",
+          "triage"
+        ],
         "priority": "medium"
       },
       "code-review-swarm": {
@@ -617,8 +1353,14 @@
         "path": "agents/github/code-review-swarm.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["review", "swarm", "multi-perspective"],
-        "capabilities": ["multi_agent_review"],
+        "keywords": [
+          "review",
+          "swarm",
+          "multi-perspective"
+        ],
+        "capabilities": [
+          "multi_agent_review"
+        ],
         "priority": "medium"
       },
       "release-manager": {
@@ -627,12 +1369,255 @@
         "path": "agents/github/release-manager.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["release", "version", "changelog", "tag"],
-        "capabilities": ["release_management", "versioning"],
+        "keywords": [
+          "release",
+          "version",
+          "changelog",
+          "tag"
+        ],
+        "capabilities": [
+          "release_management",
+          "versioning"
+        ],
         "priority": "medium"
+      },
+      "analyze-issue": {
+        "callsign": "Examiner",
+        "faction": "Forerunner",
+        "path": "agents/github/analyze-issue.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "issue",
+          "analyze",
+          "triage",
+          "investigation",
+          "bug-report",
+          "feature-request"
+        ],
+        "capabilities": [
+          "GitHub issue analysis and triage",
+          "Root cause investigation",
+          "Issue categorization and prioritization",
+          "Impact assessment",
+          "Reproduction step validation",
+          "Related issue detection"
+        ],
+        "priority": "high"
+      },
+      "bug-fix": {
+        "callsign": "Patcher",
+        "faction": "Spartan",
+        "path": "agents/github/bug-fix.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "bug",
+          "fix",
+          "debug",
+          "patch",
+          "hotfix",
+          "regression"
+        ],
+        "capabilities": [
+          "Bug diagnosis and fixing",
+          "Root cause analysis",
+          "Regression testing",
+          "Hotfix deployment",
+          "Code debugging",
+          "Test case creation"
+        ],
+        "priority": "high"
+      },
+      "commit": {
+        "callsign": "Chronicler-Prime",
+        "faction": "Promethean",
+        "path": "agents/github/commit.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "commit",
+          "git",
+          "version-control",
+          "changelog",
+          "history"
+        ],
+        "capabilities": [
+          "Git commit automation",
+          "Conventional commit formatting",
+          "Commit message generation",
+          "Change staging",
+          "Commit history management",
+          "Pre-commit hook coordination"
+        ],
+        "priority": "medium"
+      },
+      "create-pull-request": {
+        "callsign": "Initiator",
+        "faction": "Promethean",
+        "path": "agents/github/create-pull-request.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "pull-request",
+          "pr",
+          "code-review",
+          "merge",
+          "branch"
+        ],
+        "capabilities": [
+          "Pull request creation and formatting",
+          "PR template population",
+          "Branch management",
+          "Reviewer assignment",
+          "Label and milestone assignment",
+          "PR description generation"
+        ],
+        "priority": "medium"
+      },
+      "create-worktrees": {
+        "callsign": "Arborist",
+        "faction": "Promethean",
+        "path": "agents/github/create-worktrees.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "worktree",
+          "git-worktree",
+          "parallel-development",
+          "branch-isolation",
+          "workspace"
+        ],
+        "capabilities": [
+          "Git worktree creation and management",
+          "Parallel branch development",
+          "Workspace isolation",
+          "Worktree cleanup",
+          "Branch synchronization",
+          "Multi-context development"
+        ],
+        "priority": "low"
+      },
+      "fix-pr": {
+        "callsign": "Resolver",
+        "faction": "Spartan",
+        "path": "agents/github/fix-pr.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "pull-request",
+          "fix",
+          "review-feedback",
+          "ci-failure",
+          "merge-conflict",
+          "pr-resolution"
+        ],
+        "capabilities": [
+          "PR issue resolution",
+          "Merge conflict resolution",
+          "CI/CD failure fixes",
+          "Review feedback implementation",
+          "Code quality improvements",
+          "Test failure fixes"
+        ],
+        "priority": "high"
+      },
+      "github-issue-fix": {
+        "callsign": "Remediate",
+        "faction": "Spartan",
+        "path": "agents/github/github-issue-fix.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "issue",
+          "fix",
+          "bug",
+          "implementation",
+          "feature",
+          "resolution"
+        ],
+        "capabilities": [
+          "GitHub issue resolution",
+          "Bug fixing from issue reports",
+          "Feature implementation from requests",
+          "Issue validation and testing",
+          "Documentation updates",
+          "Issue closure workflow"
+        ],
+        "priority": "high"
+      },
+      "husky": {
+        "callsign": "Sentinel-Prime",
+        "faction": "Spartan",
+        "path": "agents/github/husky.md",
+        "type": "validator",
+        "model": "haiku",
+        "keywords": [
+          "git-hooks",
+          "husky",
+          "pre-commit",
+          "commit-msg",
+          "validation",
+          "quality-gates"
+        ],
+        "capabilities": [
+          "Git hooks management",
+          "Pre-commit validation",
+          "Commit message validation",
+          "Code quality enforcement",
+          "Automated formatting",
+          "Hook configuration"
+        ],
+        "priority": "medium"
+      },
+      "pr-issue-resolve": {
+        "callsign": "Mediator",
+        "faction": "Forerunner",
+        "path": "agents/github/pr-issue-resolve.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "pull-request",
+          "issue",
+          "coordination",
+          "resolution",
+          "workflow",
+          "integration"
+        ],
+        "capabilities": [
+          "PR and issue coordination",
+          "Workflow orchestration",
+          "Stakeholder communication",
+          "Resolution tracking",
+          "Cross-reference management",
+          "Status synchronization"
+        ],
+        "priority": "medium"
+      },
+      "update-branch-name": {
+        "callsign": "Nomenclator",
+        "faction": "Promethean",
+        "path": "agents/github/update-branch-name.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "branch",
+          "rename",
+          "git",
+          "naming-convention",
+          "refactor"
+        ],
+        "capabilities": [
+          "Branch renaming",
+          "Naming convention enforcement",
+          "Branch migration",
+          "Remote branch updates",
+          "PR branch updates",
+          "Reference updates"
+        ],
+        "priority": "low"
       }
     },
-
     "atlassian": {
       "jira-specialist": {
         "callsign": "The Obelisk",
@@ -640,8 +1625,16 @@
         "path": "agents/atlassian/jira-specialist.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["jira", "issue", "sprint", "jql"],
-        "capabilities": ["jira_management", "sprint_tracking"],
+        "keywords": [
+          "jira",
+          "issue",
+          "sprint",
+          "jql"
+        ],
+        "capabilities": [
+          "jira_management",
+          "sprint_tracking"
+        ],
         "priority": "medium"
       },
       "confluence-specialist": {
@@ -650,8 +1643,16 @@
         "path": "agents/atlassian/confluence-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["confluence", "wiki", "documentation", "page"],
-        "capabilities": ["confluence_management", "documentation"],
+        "keywords": [
+          "confluence",
+          "wiki",
+          "documentation",
+          "page"
+        ],
+        "capabilities": [
+          "confluence_management",
+          "documentation"
+        ],
         "priority": "medium"
       },
       "atlassian-admin": {
@@ -660,8 +1661,16 @@
         "path": "agents/atlassian/atlassian-admin.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["atlassian", "admin", "permissions", "users"],
-        "capabilities": ["user_management", "permissions"],
+        "keywords": [
+          "atlassian",
+          "admin",
+          "permissions",
+          "users"
+        ],
+        "capabilities": [
+          "user_management",
+          "permissions"
+        ],
         "priority": "low"
       },
       "agile-coach": {
@@ -670,8 +1679,16 @@
         "path": "agents/atlassian/agile-coach.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["agile", "scrum", "kanban", "methodology"],
-        "capabilities": ["agile_coaching", "process_improvement"],
+        "keywords": [
+          "agile",
+          "scrum",
+          "kanban",
+          "methodology"
+        ],
+        "capabilities": [
+          "agile_coaching",
+          "process_improvement"
+        ],
         "priority": "medium"
       },
       "project-tracker": {
@@ -680,8 +1697,16 @@
         "path": "agents/atlassian/project-tracker.md",
         "type": "coordinator",
         "model": "haiku",
-        "keywords": ["project", "portfolio", "roadmap", "status"],
-        "capabilities": ["project_tracking", "reporting"],
+        "keywords": [
+          "project",
+          "portfolio",
+          "roadmap",
+          "status"
+        ],
+        "capabilities": [
+          "project_tracking",
+          "reporting"
+        ],
         "priority": "low"
       },
       "scrum-master": {
@@ -690,8 +1715,16 @@
         "path": "agents/atlassian/scrum-master.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["scrum", "ceremony", "standup", "retro"],
-        "capabilities": ["ceremony_facilitation", "impediment_removal"],
+        "keywords": [
+          "scrum",
+          "ceremony",
+          "standup",
+          "retro"
+        ],
+        "capabilities": [
+          "ceremony_facilitation",
+          "impediment_removal"
+        ],
         "priority": "medium"
       },
       "product-owner": {
@@ -700,8 +1733,16 @@
         "path": "agents/atlassian/product-owner.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["product", "backlog", "prioritize", "stakeholder"],
-        "capabilities": ["backlog_management", "prioritization"],
+        "keywords": [
+          "product",
+          "backlog",
+          "prioritize",
+          "stakeholder"
+        ],
+        "capabilities": [
+          "backlog_management",
+          "prioritization"
+        ],
         "priority": "medium"
       },
       "sprint-analyst": {
@@ -710,12 +1751,19 @@
         "path": "agents/atlassian/sprint-analyst.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["velocity", "burndown", "metrics", "forecast"],
-        "capabilities": ["sprint_analytics", "forecasting"],
+        "keywords": [
+          "velocity",
+          "burndown",
+          "metrics",
+          "forecast"
+        ],
+        "capabilities": [
+          "sprint_analytics",
+          "forecasting"
+        ],
         "priority": "low"
       }
     },
-
     "documentation": {
       "docs-writer": {
         "callsign": "Epochal Sage",
@@ -723,8 +1771,16 @@
         "path": "agents/documentation/docs-writer.md",
         "type": "developer",
         "model": "haiku",
-        "keywords": ["docs", "documentation", "readme", "guide"],
-        "capabilities": ["technical_writing", "api_docs"],
+        "keywords": [
+          "docs",
+          "documentation",
+          "readme",
+          "guide"
+        ],
+        "capabilities": [
+          "technical_writing",
+          "api_docs"
+        ],
         "priority": "medium"
       },
       "api-documenter": {
@@ -733,8 +1789,16 @@
         "path": "agents/documentation/api-documenter.md",
         "type": "developer",
         "model": "haiku",
-        "keywords": ["openapi", "swagger", "api-docs", "spec"],
-        "capabilities": ["api_documentation", "openapi"],
+        "keywords": [
+          "openapi",
+          "swagger",
+          "api-docs",
+          "spec"
+        ],
+        "capabilities": [
+          "api_documentation",
+          "openapi"
+        ],
         "priority": "low"
       },
       "runbook-writer": {
@@ -743,12 +1807,150 @@
         "path": "agents/documentation/runbook-writer.md",
         "type": "developer",
         "model": "haiku",
-        "keywords": ["runbook", "playbook", "procedure", "ops"],
-        "capabilities": ["runbook_creation", "ops_docs"],
+        "keywords": [
+          "runbook",
+          "playbook",
+          "procedure",
+          "ops"
+        ],
+        "capabilities": [
+          "runbook_creation",
+          "ops_docs"
+        ],
         "priority": "low"
+      },
+      "analyze-codebase": {
+        "callsign": "Surveyor",
+        "faction": "Forerunner",
+        "path": "agents/documentation/analyze-codebase.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "codebase",
+          "analysis",
+          "architecture",
+          "patterns",
+          "structure",
+          "dependencies",
+          "complexity"
+        ],
+        "capabilities": [
+          "static_analysis",
+          "pattern_detection",
+          "dependency_mapping",
+          "complexity_metrics",
+          "code_structure_analysis",
+          "architecture_discovery",
+          "risk_assessment"
+        ],
+        "priority": "high"
+      },
+      "codebase-documenter": {
+        "callsign": "Archivist",
+        "faction": "Forerunner",
+        "path": "agents/documentation/codebase-documenter.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "documentation",
+          "generation",
+          "markdown",
+          "code_comments",
+          "readme",
+          "guides",
+          "examples"
+        ],
+        "capabilities": [
+          "documentation_generation",
+          "readme_creation",
+          "code_commenting",
+          "guide_writing",
+          "example_generation",
+          "architecture_documentation",
+          "maintenance_guide_creation"
+        ],
+        "priority": "medium"
+      },
+      "context7-docs-fetcher": {
+        "callsign": "Retriever",
+        "faction": "Promethean",
+        "path": "agents/documentation/context7-docs-fetcher.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": [
+          "context7",
+          "library_docs",
+          "framework_docs",
+          "api_reference",
+          "integration",
+          "documentation_fetching",
+          "library_integration"
+        ],
+        "capabilities": [
+          "context7_integration",
+          "library_documentation_retrieval",
+          "api_reference_aggregation",
+          "framework_guide_fetching",
+          "dependency_doc_fetching",
+          "version_compatibility_checking",
+          "doc_caching_and_indexing"
+        ],
+        "priority": "medium"
+      },
+      "generate-api-docs": {
+        "callsign": "Scriptor",
+        "faction": "Promethean",
+        "path": "agents/documentation/generate-api-docs.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "api_documentation",
+          "openapi",
+          "swagger",
+          "rest_api",
+          "graphql",
+          "endpoint_documentation",
+          "request_response_examples"
+        ],
+        "capabilities": [
+          "api_spec_generation",
+          "openapi_creation",
+          "swagger_generation",
+          "endpoint_documentation",
+          "example_generation",
+          "request_validation_docs",
+          "response_schema_documentation",
+          "error_documentation"
+        ],
+        "priority": "medium"
+      },
+      "update-claudemd": {
+        "callsign": "Updater",
+        "faction": "Promethean",
+        "path": "agents/documentation/update-claudemd.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "claude_md",
+          "system_documentation",
+          "configuration",
+          "agent_registry",
+          "orchestration_config",
+          "documentation_updates",
+          "configuration_sync"
+        ],
+        "capabilities": [
+          "claudemd_updates",
+          "configuration_management",
+          "agent_registry_updates",
+          "documentation_synchronization",
+          "version_tracking",
+          "change_documentation",
+          "configuration_validation"
+        ],
+        "priority": "medium"
       }
     },
-
     "golden-armada": {
       "llm-agent-builder": {
         "callsign": "Prime",
@@ -756,8 +1958,17 @@
         "path": "agents/golden-armada/llm-agent-builder.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["llm", "agent", "claude", "gpt", "gemini"],
-        "capabilities": ["agent_development", "multi_llm"],
+        "keywords": [
+          "llm",
+          "agent",
+          "claude",
+          "gpt",
+          "gemini"
+        ],
+        "capabilities": [
+          "agent_development",
+          "multi_llm"
+        ],
         "priority": "high"
       },
       "fleet-orchestrator": {
@@ -766,8 +1977,16 @@
         "path": "agents/golden-armada/fleet-orchestrator.md",
         "type": "coordinator",
         "model": "sonnet",
-        "keywords": ["fleet", "orchestrate", "coordinate", "route"],
-        "capabilities": ["fleet_management", "load_balancing"],
+        "keywords": [
+          "fleet",
+          "orchestrate",
+          "coordinate",
+          "route"
+        ],
+        "capabilities": [
+          "fleet_management",
+          "load_balancing"
+        ],
         "priority": "high"
       },
       "helm-specialist": {
@@ -776,12 +1995,19 @@
         "path": "agents/golden-armada/helm-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["helm", "chart", "template", "values"],
-        "capabilities": ["helm_development", "chart_management"],
+        "keywords": [
+          "helm",
+          "chart",
+          "template",
+          "values"
+        ],
+        "capabilities": [
+          "helm_development",
+          "chart_management"
+        ],
         "priority": "medium"
       }
     },
-
     "testing": {
       "qa-engineer": {
         "callsign": "Guardian",
@@ -789,8 +2015,16 @@
         "path": "agents/testing/qa-engineer.md",
         "type": "validator",
         "model": "sonnet",
-        "keywords": ["qa", "quality", "test-plan", "acceptance"],
-        "capabilities": ["qa_planning", "acceptance_testing"],
+        "keywords": [
+          "qa",
+          "quality",
+          "test-plan",
+          "acceptance"
+        ],
+        "capabilities": [
+          "qa_planning",
+          "acceptance_testing"
+        ],
         "priority": "medium"
       },
       "e2e-tester": {
@@ -799,8 +2033,16 @@
         "path": "agents/testing/e2e-tester.md",
         "type": "validator",
         "model": "sonnet",
-        "keywords": ["e2e", "playwright", "cypress", "selenium"],
-        "capabilities": ["e2e_testing", "browser_automation"],
+        "keywords": [
+          "e2e",
+          "playwright",
+          "cypress",
+          "selenium"
+        ],
+        "capabilities": [
+          "e2e_testing",
+          "browser_automation"
+        ],
         "priority": "medium"
       },
       "load-tester": {
@@ -809,8 +2051,16 @@
         "path": "agents/testing/load-tester.md",
         "type": "validator",
         "model": "sonnet",
-        "keywords": ["load", "stress", "performance", "k6"],
-        "capabilities": ["load_testing", "performance_testing"],
+        "keywords": [
+          "load",
+          "stress",
+          "performance",
+          "k6"
+        ],
+        "capabilities": [
+          "load_testing",
+          "performance_testing"
+        ],
         "priority": "low"
       },
       "contract-tester": {
@@ -819,8 +2069,16 @@
         "path": "agents/testing/contract-tester.md",
         "type": "validator",
         "model": "sonnet",
-        "keywords": ["contract", "pact", "api-test", "schema"],
-        "capabilities": ["contract_testing", "api_validation"],
+        "keywords": [
+          "contract",
+          "pact",
+          "api-test",
+          "schema"
+        ],
+        "capabilities": [
+          "contract_testing",
+          "api_validation"
+        ],
         "priority": "low"
       },
       "vitest-specialist": {
@@ -829,41 +2087,355 @@
         "path": "agents/testing/vitest-specialist.md",
         "type": "validator",
         "model": "haiku",
-        "keywords": ["vitest", "testing", "unit", "vite", "jest", "typescript"],
-        "capabilities": ["vitest_configuration", "unit_testing", "coverage_reporting"],
+        "keywords": [
+          "vitest",
+          "testing",
+          "unit",
+          "vite",
+          "jest",
+          "typescript"
+        ],
+        "capabilities": [
+          "vitest_configuration",
+          "unit_testing",
+          "coverage_reporting"
+        ],
         "priority": "low"
+      },
+      "bug-detective": {
+        "callsign": "Sleuth",
+        "faction": "Promethean",
+        "path": "agents/testing/bug-detective.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "bug",
+          "debug",
+          "investigation",
+          "root-cause",
+          "troubleshoot",
+          "error",
+          "exception",
+          "stack-trace"
+        ],
+        "capabilities": [
+          "Root cause analysis",
+          "Stack trace investigation",
+          "Bug reproduction",
+          "Error pattern recognition",
+          "Cross-file bug tracking",
+          "Regression identification"
+        ],
+        "priority": "high"
+      },
+      "code-review-assistant": {
+        "callsign": "Scrutineer",
+        "faction": "Spartan",
+        "path": "agents/testing/code-review-assistant.md",
+        "type": "validator",
+        "model": "haiku",
+        "keywords": [
+          "review",
+          "code-review",
+          "pr",
+          "pull-request",
+          "quality",
+          "standards",
+          "lint",
+          "feedback"
+        ],
+        "capabilities": [
+          "Code quality assessment",
+          "Style guideline enforcement",
+          "Security vulnerability detection",
+          "Performance issue identification",
+          "Best practice validation",
+          "Documentation completeness check"
+        ],
+        "priority": "medium"
+      },
+      "database-performance-optimizer": {
+        "callsign": "Throttle",
+        "faction": "Promethean",
+        "path": "agents/testing/database-performance-optimizer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "database",
+          "performance",
+          "optimization",
+          "query",
+          "index",
+          "postgres",
+          "mysql",
+          "sql",
+          "n+1"
+        ],
+        "capabilities": [
+          "Query performance analysis",
+          "Index optimization",
+          "Execution plan interpretation",
+          "N+1 query detection",
+          "Database schema optimization",
+          "Connection pool tuning"
+        ],
+        "priority": "high"
+      },
+      "debug-session": {
+        "callsign": "Tracer",
+        "faction": "Promethean",
+        "path": "agents/testing/debug-session.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "debug",
+          "debugging",
+          "breakpoint",
+          "inspect",
+          "step-through",
+          "runtime",
+          "trace",
+          "profiler"
+        ],
+        "capabilities": [
+          "Interactive debugging guidance",
+          "Breakpoint strategy planning",
+          "Variable inspection analysis",
+          "Runtime behavior analysis",
+          "Memory profiling",
+          "Performance profiling"
+        ],
+        "priority": "medium"
+      },
+      "double-check": {
+        "callsign": "Veritas",
+        "faction": "Spartan",
+        "path": "agents/testing/double-check.md",
+        "type": "validator",
+        "model": "haiku",
+        "keywords": [
+          "verify",
+          "validate",
+          "check",
+          "confirm",
+          "quality",
+          "correctness",
+          "sanity-check",
+          "review"
+        ],
+        "capabilities": [
+          "Quick validation checks",
+          "Correctness verification",
+          "Edge case identification",
+          "Logic verification",
+          "Output validation",
+          "Sanity checking"
+        ],
+        "priority": "medium"
+      },
+      "optimize": {
+        "callsign": "Refiner",
+        "faction": "Promethean",
+        "path": "agents/testing/optimize.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "optimize",
+          "performance",
+          "speed",
+          "efficiency",
+          "benchmark",
+          "profiling",
+          "memory",
+          "cpu"
+        ],
+        "capabilities": [
+          "Performance analysis",
+          "Algorithm optimization",
+          "Memory usage reduction",
+          "Bundle size optimization",
+          "Runtime performance tuning",
+          "Caching strategy implementation"
+        ],
+        "priority": "medium"
+      },
+      "refractor": {
+        "callsign": "Prism",
+        "faction": "Promethean",
+        "path": "agents/testing/refractor.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "refactor",
+          "refactoring",
+          "cleanup",
+          "restructure",
+          "improve",
+          "modernize",
+          "technical-debt",
+          "code-quality"
+        ],
+        "capabilities": [
+          "Code restructuring",
+          "Technical debt reduction",
+          "Pattern extraction",
+          "Code modernization",
+          "Dependency updates",
+          "Architecture improvement"
+        ],
+        "priority": "medium"
+      },
+      "test-file": {
+        "callsign": "Specimen",
+        "faction": "Spartan",
+        "path": "agents/testing/test-file.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "test",
+          "test-file",
+          "unit-test",
+          "spec",
+          "jest",
+          "vitest",
+          "testing",
+          "coverage"
+        ],
+        "capabilities": [
+          "Test file generation",
+          "Test case creation",
+          "Mock setup",
+          "Fixture creation",
+          "Test data generation",
+          "Test structure organization"
+        ],
+        "priority": "low"
+      },
+      "test-results-analyzer": {
+        "callsign": "Diagnostician",
+        "faction": "Promethean",
+        "path": "agents/testing/test-results-analyzer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "test-results",
+          "test-analysis",
+          "coverage",
+          "failure",
+          "flaky",
+          "ci",
+          "test-report",
+          "metrics"
+        ],
+        "capabilities": [
+          "Test failure analysis",
+          "Coverage gap identification",
+          "Flaky test detection",
+          "Test suite performance analysis",
+          "Regression identification",
+          "Test metrics reporting"
+        ],
+        "priority": "medium"
+      },
+      "test-writer-fixer": {
+        "callsign": "Mender",
+        "faction": "Spartan",
+        "path": "agents/testing/test-writer-fixer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "test",
+          "fix-test",
+          "write-test",
+          "unit-test",
+          "integration-test",
+          "e2e",
+          "playwright",
+          "jest",
+          "vitest"
+        ],
+        "capabilities": [
+          "Test writing and repair",
+          "Failing test diagnosis and fixing",
+          "Test coverage improvement",
+          "Mock creation and updates",
+          "Test assertion refinement",
+          "Test suite maintenance"
+        ],
+        "priority": "high"
       }
     },
-
     "utility": {
       "context-cleanup-agent": {
-        "callsign": "The Abyssal",
-        "faction": "Forerunner",
+        "callsign": "Janitor",
+        "faction": "Promethean",
         "path": "agents/utility/context-cleanup-agent.md",
-        "type": "coordinator",
+        "type": "utility",
         "model": "haiku",
-        "keywords": ["context", "cleanup", "archive", "obsidian", "storage"],
-        "capabilities": ["context_management", "file_archival", "vault_organization", "content_summarization"],
+        "keywords": [
+          "context",
+          "cleanup",
+          "archive",
+          "vault",
+          "optimization",
+          "storage",
+          "compression"
+        ],
+        "capabilities": [
+          "context_management",
+          "file_archival",
+          "vault_organization",
+          "content_summarization",
+          "storage_optimization"
+        ],
         "priority": "medium"
       },
       "documentation-sync-agent": {
-        "callsign": "Echo",
+        "callsign": "Synchronizer",
         "faction": "Promethean",
         "path": "agents/utility/documentation-sync-agent.md",
-        "type": "coordinator",
+        "type": "utility",
         "model": "haiku",
-        "keywords": ["sync", "documentation", "version", "markdown", "obsidian"],
-        "capabilities": ["bidirectional_sync", "version_tracking", "change_detection", "markdown_formatting"],
+        "keywords": [
+          "documentation",
+          "sync",
+          "obsidian",
+          "version",
+          "changelog",
+          "markdown"
+        ],
+        "capabilities": [
+          "bidirectional_sync",
+          "version_tracking",
+          "change_detection",
+          "markdown_formatting",
+          "conflict_resolution"
+        ],
         "priority": "medium"
       },
       "registry-manager-agent": {
-        "callsign": "The Arcadia",
-        "faction": "Forerunner",
+        "callsign": "Registrar",
+        "faction": "Promethean",
         "path": "agents/utility/registry-manager-agent.md",
-        "type": "coordinator",
-        "model": "sonnet",
-        "keywords": ["registry", "index", "agents", "skills", "workflows", "validation"],
-        "capabilities": ["registry_management", "index_generation", "validation", "auto_discovery"],
+        "type": "utility",
+        "model": "haiku",
+        "keywords": [
+          "registry",
+          "index",
+          "agents",
+          "skills",
+          "workflows",
+          "validation",
+          "integrity"
+        ],
+        "capabilities": [
+          "registry_management",
+          "index_generation",
+          "validation",
+          "integrity_checks",
+          "auto_discovery",
+          "metadata_extraction"
+        ],
         "priority": "high"
       },
       "regex-expert": {
@@ -872,12 +2444,22 @@
         "path": "agents/utility/regex-expert.md",
         "type": "developer",
         "model": "haiku",
-        "keywords": ["regex", "pattern", "matching", "validation", "parsing", "regexp"],
-        "capabilities": ["regex_design", "pattern_optimization", "text_parsing"],
+        "keywords": [
+          "regex",
+          "pattern",
+          "matching",
+          "validation",
+          "parsing",
+          "regexp"
+        ],
+        "capabilities": [
+          "regex_design",
+          "pattern_optimization",
+          "text_parsing"
+        ],
         "priority": "medium"
       }
     },
-
     "system-ops": {
       "shell-expert": {
         "callsign": "Rampart",
@@ -885,8 +2467,20 @@
         "path": "agents/system-ops/shell-expert.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["bash", "shell", "script", "zsh", "terminal", "cli", "scripting"],
-        "capabilities": ["shell_scripting", "cli_automation", "system_automation"],
+        "keywords": [
+          "bash",
+          "shell",
+          "script",
+          "zsh",
+          "terminal",
+          "cli",
+          "scripting"
+        ],
+        "capabilities": [
+          "shell_scripting",
+          "cli_automation",
+          "system_automation"
+        ],
         "priority": "high"
       },
       "env-manager": {
@@ -895,8 +2489,19 @@
         "path": "agents/system-ops/env-manager.md",
         "type": "developer",
         "model": "haiku",
-        "keywords": ["env", "environment", "dotenv", "config", "variables", "secrets"],
-        "capabilities": ["environment_config", "secret_detection", "config_migration"],
+        "keywords": [
+          "env",
+          "environment",
+          "dotenv",
+          "config",
+          "variables",
+          "secrets"
+        ],
+        "capabilities": [
+          "environment_config",
+          "secret_detection",
+          "config_migration"
+        ],
         "priority": "high"
       },
       "dependency-analyzer": {
@@ -905,8 +2510,20 @@
         "path": "agents/system-ops/dependency-analyzer.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["dependencies", "package", "npm", "pip", "vulnerability", "audit", "license"],
-        "capabilities": ["dependency_analysis", "vulnerability_scanning", "license_compliance"],
+        "keywords": [
+          "dependencies",
+          "package",
+          "npm",
+          "pip",
+          "vulnerability",
+          "audit",
+          "license"
+        ],
+        "capabilities": [
+          "dependency_analysis",
+          "vulnerability_scanning",
+          "license_compliance"
+        ],
         "priority": "medium"
       },
       "error-analyzer": {
@@ -915,55 +2532,132 @@
         "path": "agents/system-ops/error-analyzer.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["error", "exception", "traceback", "diagnostic", "troubleshoot", "debug"],
-        "capabilities": ["error_interpretation", "stack_trace_analysis", "root_cause_identification"],
+        "keywords": [
+          "error",
+          "exception",
+          "traceback",
+          "diagnostic",
+          "troubleshoot",
+          "debug"
+        ],
+        "capabilities": [
+          "error_interpretation",
+          "stack_trace_analysis",
+          "root_cause_identification"
+        ],
         "priority": "high"
       }
     },
-
     "mobile": {
       "react-native-specialist": {
-        "callsign": "Ember",
+        "callsign": "Hybrid-Prime",
         "faction": "Promethean",
         "path": "agents/mobile/react-native-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["react-native", "expo", "mobile", "ios", "android", "cross-platform"],
-        "capabilities": ["react_native_development", "expo_configuration", "native_modules"],
+        "keywords": [
+          "react-native",
+          "expo",
+          "mobile",
+          "ios",
+          "android",
+          "cross-platform",
+          "typescript",
+          "navigation"
+        ],
+        "capabilities": [
+          "react_native_development",
+          "expo_configuration",
+          "native_modules",
+          "platform_specific_code",
+          "mobile_performance",
+          "react_navigation",
+          "state_management"
+        ],
         "priority": "high"
       },
       "flutter-specialist": {
-        "callsign": "Zephyr",
-        "faction": "Spartan",
+        "callsign": "Wings",
+        "faction": "Promethean",
         "path": "agents/mobile/flutter-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["flutter", "dart", "mobile", "cross-platform", "widgets", "material"],
-        "capabilities": ["flutter_development", "dart_expertise", "state_management"],
+        "keywords": [
+          "flutter",
+          "dart",
+          "mobile",
+          "cross-platform",
+          "widgets",
+          "material",
+          "cupertino",
+          "bloc"
+        ],
+        "capabilities": [
+          "flutter_development",
+          "widget_composition",
+          "state_management",
+          "native_plugins",
+          "platform_channels",
+          "responsive_layouts",
+          "performance_optimization"
+        ],
         "priority": "medium"
       },
       "ios-specialist": {
-        "callsign": "Phoenix",
-        "faction": "Spartan",
+        "callsign": "Apex",
+        "faction": "Promethean",
         "path": "agents/mobile/ios-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["ios", "swift", "swiftui", "xcode", "apple", "uikit"],
-        "capabilities": ["swift_development", "ios_sdk", "app_store_deployment"],
+        "keywords": [
+          "ios",
+          "swift",
+          "swiftui",
+          "xcode",
+          "apple",
+          "uikit",
+          "combine",
+          "coredata"
+        ],
+        "capabilities": [
+          "swift_development",
+          "swiftui_uikit",
+          "ios_sdk",
+          "xcode_management",
+          "app_store_submission",
+          "ios_frameworks",
+          "memory_management"
+        ],
         "priority": "medium"
       },
       "android-specialist": {
-        "callsign": "Goliath",
-        "faction": "Spartan",
+        "callsign": "Droid",
+        "faction": "Promethean",
         "path": "agents/mobile/android-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["android", "kotlin", "jetpack", "compose", "gradle", "material"],
-        "capabilities": ["kotlin_development", "android_sdk", "play_store_deployment"],
+        "keywords": [
+          "android",
+          "kotlin",
+          "jetpack",
+          "compose",
+          "gradle",
+          "material",
+          "viewmodel",
+          "room"
+        ],
+        "capabilities": [
+          "kotlin_development",
+          "jetpack_compose",
+          "android_sdk",
+          "gradle_configuration",
+          "play_store_submission",
+          "android_frameworks",
+          "dependency_injection"
+        ],
         "priority": "medium"
       }
     },
-
     "messaging": {
       "kafka-specialist": {
         "callsign": "Epoch",
@@ -971,8 +2665,19 @@
         "path": "agents/messaging/kafka-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["kafka", "streaming", "event", "pub-sub", "broker", "topics"],
-        "capabilities": ["kafka_cluster_design", "stream_processing", "schema_registry"],
+        "keywords": [
+          "kafka",
+          "streaming",
+          "event",
+          "pub-sub",
+          "broker",
+          "topics"
+        ],
+        "capabilities": [
+          "kafka_cluster_design",
+          "stream_processing",
+          "schema_registry"
+        ],
         "priority": "high"
       },
       "rabbitmq-specialist": {
@@ -981,8 +2686,19 @@
         "path": "agents/messaging/rabbitmq-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["rabbitmq", "amqp", "queue", "message", "broker", "exchange"],
-        "capabilities": ["rabbitmq_configuration", "message_routing", "high_availability"],
+        "keywords": [
+          "rabbitmq",
+          "amqp",
+          "queue",
+          "message",
+          "broker",
+          "exchange"
+        ],
+        "capabilities": [
+          "rabbitmq_configuration",
+          "message_routing",
+          "high_availability"
+        ],
         "priority": "medium"
       },
       "event-streaming-architect": {
@@ -991,12 +2707,22 @@
         "path": "agents/messaging/event-streaming-architect.md",
         "type": "analyst",
         "model": "sonnet",
-        "keywords": ["event-driven", "streaming", "cqrs", "event-sourcing", "saga", "choreography"],
-        "capabilities": ["event_architecture", "cqrs_implementation", "saga_patterns"],
+        "keywords": [
+          "event-driven",
+          "streaming",
+          "cqrs",
+          "event-sourcing",
+          "saga",
+          "choreography"
+        ],
+        "capabilities": [
+          "event_architecture",
+          "cqrs_implementation",
+          "saga_patterns"
+        ],
         "priority": "medium"
       }
     },
-
     "migration": {
       "code-migration-specialist": {
         "callsign": "Exodus",
@@ -1004,8 +2730,19 @@
         "path": "agents/migration/code-migration-specialist.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["migration", "upgrade", "refactor", "modernize", "legacy", "framework"],
-        "capabilities": ["code_migration", "framework_upgrades", "breaking_change_management"],
+        "keywords": [
+          "migration",
+          "upgrade",
+          "refactor",
+          "modernize",
+          "legacy",
+          "framework"
+        ],
+        "capabilities": [
+          "code_migration",
+          "framework_upgrades",
+          "breaking_change_management"
+        ],
         "priority": "high"
       },
       "refactoring-guru": {
@@ -1014,12 +2751,22 @@
         "path": "agents/migration/refactoring-guru.md",
         "type": "developer",
         "model": "sonnet",
-        "keywords": ["refactor", "cleanup", "technical-debt", "patterns", "improve", "quality"],
-        "capabilities": ["code_smell_detection", "design_patterns", "technical_debt_reduction"],
+        "keywords": [
+          "refactor",
+          "cleanup",
+          "technical-debt",
+          "patterns",
+          "improve",
+          "quality"
+        ],
+        "capabilities": [
+          "code_smell_detection",
+          "design_patterns",
+          "technical_debt_reduction"
+        ],
         "priority": "high"
       }
     },
-
     "quality-gates": {
       "spec-validator": {
         "callsign": "Bulwark",
@@ -1027,8 +2774,19 @@
         "path": "agents/quality-gates/spec-validator.md",
         "type": "validator",
         "model": "sonnet",
-        "keywords": ["validation", "schema", "spec", "openapi", "quality-gate", "swagger"],
-        "capabilities": ["openapi_validation", "schema_validation", "quality_enforcement"],
+        "keywords": [
+          "validation",
+          "schema",
+          "spec",
+          "openapi",
+          "quality-gate",
+          "swagger"
+        ],
+        "capabilities": [
+          "openapi_validation",
+          "schema_validation",
+          "quality_enforcement"
+        ],
         "priority": "high"
       },
       "coverage-analyzer": {
@@ -1037,34 +2795,1824 @@
         "path": "agents/quality-gates/coverage-analyzer.md",
         "type": "analyst",
         "model": "haiku",
-        "keywords": ["coverage", "testing", "metrics", "quality", "threshold", "lcov"],
-        "capabilities": ["coverage_analysis", "threshold_enforcement", "trend_tracking"],
+        "keywords": [
+          "coverage",
+          "testing",
+          "metrics",
+          "quality",
+          "threshold",
+          "lcov"
+        ],
+        "capabilities": [
+          "coverage_analysis",
+          "threshold_enforcement",
+          "trend_tracking"
+        ],
         "priority": "medium"
+      }
+    },
+    "business-sales": {
+      "b2b-project-shipper": {
+        "callsign": "Voyager",
+        "faction": "Spartan",
+        "path": "agents/business-sales/b2b-project-shipper.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "b2b",
+          "project-delivery",
+          "client-delivery",
+          "milestone",
+          "shipment",
+          "launch"
+        ],
+        "capabilities": [
+          "Project delivery coordination",
+          "Client milestone tracking",
+          "Release management",
+          "Stakeholder communication"
+        ],
+        "priority": "medium"
+      },
+      "customer-success-manager": {
+        "callsign": "Champion",
+        "faction": "Forerunner",
+        "path": "agents/business-sales/customer-success-manager.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "customer-success",
+          "retention",
+          "adoption",
+          "engagement",
+          "churn",
+          "satisfaction",
+          "health-score"
+        ],
+        "capabilities": [
+          "Customer health monitoring",
+          "Adoption strategy planning",
+          "Retention risk identification",
+          "Success metric tracking"
+        ],
+        "priority": "high"
+      },
+      "enterprise-onboarding-specialist": {
+        "callsign": "Guide",
+        "faction": "Forerunner",
+        "path": "agents/business-sales/enterprise-onboarding-specialist.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "onboarding",
+          "enterprise",
+          "implementation",
+          "training",
+          "adoption",
+          "kickoff"
+        ],
+        "capabilities": [
+          "Enterprise implementation planning",
+          "Onboarding program design",
+          "Training delivery coordination",
+          "Stakeholder enablement"
+        ],
+        "priority": "high"
+      },
+      "finance-tracker": {
+        "callsign": "Ledger",
+        "faction": "Promethean",
+        "path": "agents/business-sales/finance-tracker.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": [
+          "finance",
+          "accounting",
+          "revenue",
+          "invoicing",
+          "billing",
+          "budget",
+          "expenses"
+        ],
+        "capabilities": [
+          "Revenue tracking and forecasting",
+          "Expense monitoring",
+          "Invoice management",
+          "Budget analysis"
+        ],
+        "priority": "medium"
+      },
+      "pricing-packaging-specialist": {
+        "callsign": "Arbiter",
+        "faction": "Forerunner",
+        "path": "agents/business-sales/pricing-packaging-specialist.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "pricing",
+          "packaging",
+          "monetization",
+          "tier",
+          "plan",
+          "value-metric",
+          "discount"
+        ],
+        "capabilities": [
+          "Pricing strategy development",
+          "Package design and optimization",
+          "Competitive pricing analysis",
+          "Value metric identification"
+        ],
+        "priority": "high"
+      },
+      "product-sales-specialist": {
+        "callsign": "Envoy",
+        "faction": "Spartan",
+        "path": "agents/business-sales/product-sales-specialist.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "product-demo",
+          "sales-presentation",
+          "discovery",
+          "qualification",
+          "objection-handling",
+          "closing"
+        ],
+        "capabilities": [
+          "Product demonstration design",
+          "Sales presentation development",
+          "Discovery framework execution",
+          "Objection handling strategies"
+        ],
+        "priority": "high"
+      },
+      "support-responder": {
+        "callsign": "Warden",
+        "faction": "Spartan",
+        "path": "agents/business-sales/support-responder.md",
+        "type": "validator",
+        "model": "haiku",
+        "keywords": [
+          "support",
+          "ticket",
+          "help-desk",
+          "customer-service",
+          "escalation",
+          "troubleshooting"
+        ],
+        "capabilities": [
+          "Support ticket triage",
+          "Issue troubleshooting",
+          "Customer communication",
+          "Escalation management"
+        ],
+        "priority": "high"
+      },
+      "technical-sales-engineer": {
+        "callsign": "Ambassador",
+        "faction": "Promethean",
+        "path": "agents/business-sales/technical-sales-engineer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "technical-sales",
+          "solutions-engineering",
+          "proof-of-concept",
+          "architecture",
+          "integration",
+          "security"
+        ],
+        "capabilities": [
+          "Technical solution design",
+          "Proof-of-concept development",
+          "Integration architecture planning",
+          "Security and compliance validation"
+        ],
+        "priority": "high"
+      }
+    },
+    "design-ux": {
+      "brand-guardian": {
+        "callsign": "Aegis-Prime",
+        "faction": "Forerunner",
+        "path": "agents/design-ux/brand-guardian.md",
+        "type": "validator",
+        "model": "sonnet",
+        "keywords": [
+          "brand",
+          "branding",
+          "consistency",
+          "style-guide",
+          "brand-identity",
+          "visual-identity",
+          "brand-guidelines",
+          "color-palette",
+          "typography",
+          "logo"
+        ],
+        "capabilities": [
+          "Brand consistency validation",
+          "Style guide enforcement",
+          "Visual identity auditing",
+          "Design token validation",
+          "Brand guidelines creation",
+          "Color palette management",
+          "Typography system validation"
+        ],
+        "priority": "high"
+      },
+      "joker": {
+        "callsign": "Trickster",
+        "faction": "Promethean",
+        "path": "agents/design-ux/joker.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "creative",
+          "experimental",
+          "playful",
+          "unconventional",
+          "humor",
+          "easter-eggs",
+          "fun",
+          "whimsical",
+          "unique",
+          "unexpected"
+        ],
+        "capabilities": [
+          "Creative experimentation",
+          "Unconventional UX patterns",
+          "Easter egg implementation",
+          "Playful interaction design",
+          "Humorous microcopy",
+          "Unique visual treatments",
+          "Experimental features"
+        ],
+        "priority": "low"
+      },
+      "mobile-ux-optimizer": {
+        "callsign": "Touch",
+        "faction": "Promethean",
+        "path": "agents/design-ux/mobile-ux-optimizer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "mobile",
+          "responsive",
+          "touch",
+          "gestures",
+          "mobile-first",
+          "adaptive",
+          "ios",
+          "android",
+          "progressive-web-app",
+          "mobile-ux"
+        ],
+        "capabilities": [
+          "Mobile-first design implementation",
+          "Touch gesture optimization",
+          "Responsive layout engineering",
+          "Mobile performance optimization",
+          "Platform-specific UX adaptation",
+          "Progressive Web App development",
+          "Mobile accessibility validation"
+        ],
+        "priority": "medium"
+      },
+      "onomastophes": {
+        "callsign": "Lexicon",
+        "faction": "Forerunner",
+        "path": "agents/design-ux/onomastophes.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": [
+          "naming",
+          "terminology",
+          "nomenclature",
+          "labels",
+          "content-strategy",
+          "microcopy",
+          "voice-and-tone",
+          "information-architecture",
+          "taxonomy",
+          "semantics"
+        ],
+        "capabilities": [
+          "Component and pattern naming",
+          "Terminology consistency validation",
+          "Microcopy creation and review",
+          "Information architecture taxonomy",
+          "Voice and tone guidelines",
+          "Label optimization for clarity",
+          "Semantic naming systems"
+        ],
+        "priority": "low"
+      },
+      "ux-researcher": {
+        "callsign": "Empathist",
+        "faction": "Forerunner",
+        "path": "agents/design-ux/ux-researcher.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "user-research",
+          "usability",
+          "testing",
+          "user-interviews",
+          "personas",
+          "user-journey",
+          "analytics",
+          "heuristics",
+          "user-feedback",
+          "empathy"
+        ],
+        "capabilities": [
+          "User research planning and execution",
+          "Usability testing and analysis",
+          "User journey mapping",
+          "Persona development",
+          "Heuristic evaluation",
+          "Analytics interpretation",
+          "A/B test design and analysis",
+          "User feedback synthesis"
+        ],
+        "priority": "high"
+      },
+      "visual-storyteller": {
+        "callsign": "Illustrator",
+        "faction": "Promethean",
+        "path": "agents/design-ux/visual-storyteller.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "visual-design",
+          "illustration",
+          "iconography",
+          "graphics",
+          "data-visualization",
+          "storytelling",
+          "visual-hierarchy",
+          "composition",
+          "imagery",
+          "design-systems"
+        ],
+        "capabilities": [
+          "Visual design implementation",
+          "Icon system creation",
+          "Illustration and graphics",
+          "Data visualization design",
+          "Visual hierarchy optimization",
+          "Image and media optimization",
+          "Design system visual language"
+        ],
+        "priority": "medium"
+      },
+      "whimsy-injector": {
+        "callsign": "Spark",
+        "faction": "Promethean",
+        "path": "agents/design-ux/whimsy-injector.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "delight",
+          "micro-interactions",
+          "animation",
+          "transitions",
+          "feedback",
+          "personality",
+          "polish",
+          "details",
+          "hover-states",
+          "loading-states"
+        ],
+        "capabilities": [
+          "Micro-interaction design",
+          "Animation and transition implementation",
+          "Delightful loading states",
+          "Hover and focus state polish",
+          "Haptic and audio feedback",
+          "Personality-driven details",
+          "Interactive feedback loops"
+        ],
+        "priority": "low"
+      }
+    },
+    "frontend-theming": {
+      "theme-builder": {
+        "callsign": "Artisan",
+        "faction": "Promethean",
+        "path": "agents/frontend-theming/theme-builder.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "theme",
+          "customization",
+          "color-palette",
+          "typography",
+          "theme-builder-ui",
+          "design-tokens",
+          "theme-editor"
+        ],
+        "capabilities": [
+          "theme_creation",
+          "color_palette_generation",
+          "typography_selection",
+          "component_styling",
+          "theme_preview"
+        ],
+        "priority": "high"
+      },
+      "theme-system-architect": {
+        "callsign": "Weaver",
+        "faction": "Promethean",
+        "path": "agents/frontend-theming/theme-system-architect.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "theme",
+          "theming",
+          "multi-tenant",
+          "css-in-js",
+          "styled-components",
+          "emotion",
+          "design-tokens",
+          "theme-provider"
+        ],
+        "capabilities": [
+          "theme_architecture",
+          "css_in_js_setup",
+          "design_tokens",
+          "dynamic_theming",
+          "theme_inheritance"
+        ],
+        "priority": "high"
+      },
+      "white-label-specialist": {
+        "callsign": "Chameleon",
+        "faction": "Promethean",
+        "path": "agents/frontend-theming/white-label-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "white-label",
+          "branding",
+          "custom-domain",
+          "logo",
+          "enterprise",
+          "keycloak-themes",
+          "email-templates"
+        ],
+        "capabilities": [
+          "white_labeling",
+          "custom_domains",
+          "branding_assets",
+          "keycloak_theming",
+          "email_customization",
+          "login_page_customization"
+        ],
+        "priority": "high"
+      }
+    },
+    "helm": {
+      "helm-chart-developer": {
+        "callsign": "Navigator",
+        "faction": "Promethean",
+        "path": "agents/helm/helm-chart-developer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "helm",
+          "chart",
+          "template",
+          "values",
+          "dependency",
+          "packaging"
+        ],
+        "capabilities": [
+          "chart_development",
+          "template_creation",
+          "dependency_management",
+          "chart_testing",
+          "packaging"
+        ],
+        "priority": "high"
+      },
+      "helm-release-manager": {
+        "callsign": "Quartermaster",
+        "faction": "Promethean",
+        "path": "agents/helm/helm-release-manager.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "helm",
+          "release",
+          "upgrade",
+          "rollback",
+          "deploy",
+          "history"
+        ],
+        "capabilities": [
+          "release_management",
+          "deployment_coordination",
+          "rollback_handling",
+          "release_history",
+          "multi_cluster"
+        ],
+        "priority": "high"
+      },
+      "helm-values-manager": {
+        "callsign": "Configurator",
+        "faction": "Promethean",
+        "path": "agents/helm/helm-values-manager.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "helm",
+          "values",
+          "environment",
+          "configuration",
+          "override",
+          "secrets"
+        ],
+        "capabilities": [
+          "values_management",
+          "environment_config",
+          "secrets_integration",
+          "config_validation",
+          "multi_env_support"
+        ],
+        "priority": "medium"
+      }
+    },
+    "keycloak": {
+      "keycloak-auth-flow-designer": {
+        "callsign": "Sentinel-Auth",
+        "faction": "Promethean",
+        "path": "agents/keycloak/keycloak-auth-flow-designer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "keycloak",
+          "authentication",
+          "flow",
+          "2fa",
+          "mfa",
+          "otp",
+          "webauthn",
+          "passkey"
+        ],
+        "capabilities": [
+          "auth_flow_design",
+          "mfa_configuration",
+          "otp_setup",
+          "webauthn_integration",
+          "conditional_authentication"
+        ],
+        "priority": "high"
+      },
+      "keycloak-identity-specialist": {
+        "callsign": "Identity",
+        "faction": "Promethean",
+        "path": "agents/keycloak/keycloak-identity-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "keycloak",
+          "identity",
+          "ldap",
+          "saml",
+          "oidc",
+          "federation",
+          "sso",
+          "idp"
+        ],
+        "capabilities": [
+          "identity_federation",
+          "ldap_integration",
+          "social_login",
+          "saml_configuration",
+          "user_storage"
+        ],
+        "priority": "high"
+      },
+      "keycloak-realm-admin": {
+        "callsign": "Realm-Master",
+        "faction": "Promethean",
+        "path": "agents/keycloak/keycloak-realm-admin.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "keycloak",
+          "realm",
+          "client",
+          "role",
+          "user",
+          "group",
+          "permission"
+        ],
+        "capabilities": [
+          "realm_management",
+          "client_configuration",
+          "role_assignment",
+          "user_federation",
+          "group_management"
+        ],
+        "priority": "high"
+      },
+      "keycloak-security-auditor": {
+        "callsign": "Inquisitor-Auth",
+        "faction": "Promethean",
+        "path": "agents/keycloak/keycloak-security-auditor.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "keycloak",
+          "security",
+          "audit",
+          "vulnerability",
+          "compliance",
+          "hardening",
+          "cve"
+        ],
+        "capabilities": [
+          "security_audit",
+          "vulnerability_assessment",
+          "compliance_review",
+          "configuration_hardening",
+          "event_analysis"
+        ],
+        "priority": "high"
+      },
+      "keycloak-theme-developer": {
+        "callsign": "Stylist",
+        "faction": "Promethean",
+        "path": "agents/keycloak/keycloak-theme-developer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "keycloak",
+          "theme",
+          "login",
+          "ui",
+          "customization",
+          "branding",
+          "ftl",
+          "freemarker"
+        ],
+        "capabilities": [
+          "theme_development",
+          "login_customization",
+          "email_templates",
+          "account_console",
+          "admin_console_theming"
+        ],
+        "priority": "medium"
+      }
+    },
+    "kubernetes": {
+      "k8s-architect": {
+        "callsign": "Orchestrator-Prime",
+        "faction": "Promethean",
+        "path": "agents/kubernetes/k8s-architect.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "kubernetes",
+          "architecture",
+          "design",
+          "cluster",
+          "topology",
+          "networking"
+        ],
+        "capabilities": [
+          "cluster_architecture",
+          "network_design",
+          "resource_planning",
+          "high_availability",
+          "multi_cluster"
+        ],
+        "priority": "high"
+      },
+      "k8s-debugger": {
+        "callsign": "Troubleshooter",
+        "faction": "Promethean",
+        "path": "agents/kubernetes/k8s-debugger.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "kubernetes",
+          "debug",
+          "troubleshoot",
+          "logs",
+          "events",
+          "pod",
+          "crash"
+        ],
+        "capabilities": [
+          "pod_debugging",
+          "log_analysis",
+          "event_investigation",
+          "network_debugging",
+          "resource_troubleshooting"
+        ],
+        "priority": "high"
+      },
+      "k8s-resource-optimizer": {
+        "callsign": "Economizer",
+        "faction": "Promethean",
+        "path": "agents/kubernetes/k8s-resource-optimizer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "kubernetes",
+          "resources",
+          "optimization",
+          "scaling",
+          "hpa",
+          "vpa",
+          "cost"
+        ],
+        "capabilities": [
+          "resource_optimization",
+          "autoscaling_configuration",
+          "capacity_planning",
+          "cost_optimization",
+          "performance_tuning"
+        ],
+        "priority": "medium"
+      },
+      "k8s-security-specialist": {
+        "callsign": "Guardian-K8s",
+        "faction": "Promethean",
+        "path": "agents/kubernetes/k8s-security-specialist.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "kubernetes",
+          "security",
+          "rbac",
+          "psp",
+          "network-policy",
+          "secrets",
+          "compliance"
+        ],
+        "capabilities": [
+          "security_audit",
+          "rbac_design",
+          "network_policies",
+          "secret_management",
+          "compliance_scanning"
+        ],
+        "priority": "high"
+      }
+    },
+    "marketing-growth": {
+      "app-store-optimizer": {
+        "callsign": "Ranker",
+        "faction": "Promethean",
+        "path": "agents/marketing-growth/app-store-optimizer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "aso",
+          "app-store",
+          "optimization",
+          "metadata",
+          "keywords",
+          "rankings",
+          "conversion",
+          "screenshots",
+          "app-store-connect",
+          "play-console"
+        ],
+        "capabilities": [
+          "App store metadata optimization",
+          "Keyword research and analysis",
+          "A/B testing strategies",
+          "Conversion rate optimization",
+          "Competitor analysis",
+          "Screenshot and preview optimization",
+          "Localization strategies",
+          "Review management"
+        ],
+        "priority": "high"
+      },
+      "content-creator": {
+        "callsign": "Wordsmith",
+        "faction": "Promethean",
+        "path": "agents/marketing-growth/content-creator.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "content",
+          "copywriting",
+          "blog",
+          "seo",
+          "storytelling",
+          "brand-voice",
+          "editorial",
+          "long-form",
+          "social-copy",
+          "landing-pages"
+        ],
+        "capabilities": [
+          "Long-form content creation",
+          "SEO-optimized copywriting",
+          "Brand voice development",
+          "Editorial calendar planning",
+          "Landing page copy",
+          "Email campaign writing",
+          "Social media copy",
+          "Content repurposing strategies"
+        ],
+        "priority": "high"
+      },
+      "growth-hacker": {
+        "callsign": "Accelerant",
+        "faction": "Spartan",
+        "path": "agents/marketing-growth/growth-hacker.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "growth",
+          "viral-loops",
+          "referral",
+          "acquisition",
+          "retention",
+          "activation",
+          "metrics",
+          "experimentation",
+          "pirate-metrics",
+          "product-led-growth"
+        ],
+        "capabilities": [
+          "Growth strategy development",
+          "Viral loop design",
+          "Referral program creation",
+          "Conversion funnel optimization",
+          "Retention strategy",
+          "Growth experimentation",
+          "Metrics analysis and tracking",
+          "Product-led growth initiatives"
+        ],
+        "priority": "high"
+      },
+      "instagram-curator": {
+        "callsign": "Aesthete",
+        "faction": "Promethean",
+        "path": "agents/marketing-growth/instagram-curator.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "instagram",
+          "visual",
+          "stories",
+          "reels",
+          "aesthetic",
+          "engagement",
+          "hashtags",
+          "influencer",
+          "ugc",
+          "carousel"
+        ],
+        "capabilities": [
+          "Instagram content strategy",
+          "Visual aesthetic curation",
+          "Reels and Stories creation",
+          "Hashtag research and optimization",
+          "Influencer collaboration",
+          "UGC campaign management",
+          "Engagement tactics",
+          "Instagram algorithm optimization"
+        ],
+        "priority": "medium"
+      },
+      "reddit-community-builder": {
+        "callsign": "Redditor",
+        "faction": "Spartan",
+        "path": "agents/marketing-growth/reddit-community-builder.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "reddit",
+          "community",
+          "subreddit",
+          "engagement",
+          "moderation",
+          "ama",
+          "authentic",
+          "karma",
+          "discussion",
+          "value-first"
+        ],
+        "capabilities": [
+          "Subreddit community building",
+          "Authentic engagement strategies",
+          "AMA (Ask Me Anything) planning",
+          "Value-first content creation",
+          "Reddit etiquette and culture navigation",
+          "Community moderation",
+          "Cross-subreddit promotion",
+          "Reddit advertising optimization"
+        ],
+        "priority": "medium"
+      },
+      "tiktok-strategist": {
+        "callsign": "Viral",
+        "faction": "Promethean",
+        "path": "agents/marketing-growth/tiktok-strategist.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "tiktok",
+          "short-form",
+          "viral",
+          "trends",
+          "hashtags",
+          "fyp",
+          "creator",
+          "duets",
+          "stitches",
+          "sounds"
+        ],
+        "capabilities": [
+          "TikTok content strategy",
+          "Trend identification and participation",
+          "Viral video creation",
+          "TikTok algorithm optimization",
+          "Creator partnership management",
+          "Hashtag challenge design",
+          "Sound and music strategy",
+          "TikTok advertising campaigns"
+        ],
+        "priority": "medium"
+      },
+      "twitter-engager": {
+        "callsign": "Tweeter",
+        "faction": "Spartan",
+        "path": "agents/marketing-growth/twitter-engager.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "twitter",
+          "x",
+          "engagement",
+          "threads",
+          "community",
+          "real-time",
+          "trending",
+          "conversations",
+          "spaces",
+          "viral-tweets"
+        ],
+        "capabilities": [
+          "Twitter/X engagement strategy",
+          "Thread creation and storytelling",
+          "Real-time conversation participation",
+          "Trending topic leverage",
+          "Twitter Spaces hosting",
+          "Community building and management",
+          "Crisis response and brand monitoring",
+          "Twitter advertising optimization"
+        ],
+        "priority": "medium"
+      }
+    },
+    "membership-domain": {
+      "directory-manager": {
+        "callsign": "Indexer",
+        "faction": "Promethean",
+        "path": "agents/membership-domain/directory-manager.md",
+        "type": "specialist",
+        "model": "sonnet",
+        "keywords": [
+          "directory",
+          "member-directory",
+          "public-profile",
+          "search",
+          "privacy",
+          "export",
+          "categories",
+          "listing"
+        ],
+        "capabilities": [
+          "directory_management",
+          "privacy_controls",
+          "member_search",
+          "category_filtering",
+          "export_functionality"
+        ],
+        "priority": "high"
+      },
+      "member-engagement-agent": {
+        "callsign": "Catalyst-Engage",
+        "faction": "Promethean",
+        "path": "agents/membership-domain/member-engagement-agent.md",
+        "type": "specialist",
+        "model": "sonnet",
+        "keywords": [
+          "engagement",
+          "activity",
+          "tracking",
+          "participation",
+          "retention",
+          "communication",
+          "events",
+          "scoring"
+        ],
+        "capabilities": [
+          "activity_tracking",
+          "engagement_scoring",
+          "communication_preferences",
+          "event_participation",
+          "retention_analysis"
+        ],
+        "priority": "high"
+      },
+      "membership-analytics-agent": {
+        "callsign": "Analyst-Prime",
+        "faction": "Promethean",
+        "path": "agents/membership-domain/membership-analytics-agent.md",
+        "type": "specialist",
+        "model": "sonnet",
+        "keywords": [
+          "analytics",
+          "metrics",
+          "kpi",
+          "churn",
+          "growth",
+          "cohort",
+          "reporting",
+          "dashboard",
+          "insights"
+        ],
+        "capabilities": [
+          "metrics_calculation",
+          "churn_prediction",
+          "growth_analysis",
+          "cohort_analysis",
+          "dashboard_aggregation"
+        ],
+        "priority": "high"
+      },
+      "membership-specialist": {
+        "callsign": "Curator",
+        "faction": "Promethean",
+        "path": "agents/membership-domain/membership-specialist.md",
+        "type": "specialist",
+        "model": "sonnet",
+        "keywords": [
+          "member",
+          "membership",
+          "crud",
+          "tier",
+          "level",
+          "renewal",
+          "status",
+          "member-management"
+        ],
+        "capabilities": [
+          "member_crud",
+          "membership_tiers",
+          "status_management",
+          "renewal_processing",
+          "member_search"
+        ],
+        "priority": "high"
+      }
+    },
+    "mongodb-atlas": {
+      "mongodb-aggregation-specialist": {
+        "callsign": "Aggregator",
+        "faction": "Promethean",
+        "path": "agents/mongodb-atlas/mongodb-aggregation-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "mongodb",
+          "aggregation",
+          "pipeline",
+          "analytics",
+          "report",
+          "group",
+          "lookup"
+        ],
+        "capabilities": [
+          "aggregation_pipelines",
+          "data_transformation",
+          "analytics_queries",
+          "report_generation",
+          "complex_queries"
+        ],
+        "priority": "medium"
+      },
+      "mongodb-atlas-admin": {
+        "callsign": "Atlas-Admin",
+        "faction": "Promethean",
+        "path": "agents/mongodb-atlas/mongodb-atlas-admin.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "mongodb",
+          "atlas",
+          "cluster",
+          "database",
+          "cloud",
+          "backup",
+          "scaling"
+        ],
+        "capabilities": [
+          "cluster_management",
+          "database_administration",
+          "backup_configuration",
+          "security_setup",
+          "performance_monitoring"
+        ],
+        "priority": "high"
+      },
+      "mongodb-query-optimizer": {
+        "callsign": "Query-Master",
+        "faction": "Promethean",
+        "path": "agents/mongodb-atlas/mongodb-query-optimizer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "mongodb",
+          "query",
+          "performance",
+          "index",
+          "explain",
+          "optimize",
+          "slow"
+        ],
+        "capabilities": [
+          "query_optimization",
+          "index_analysis",
+          "performance_tuning",
+          "explain_analysis",
+          "profiler_analysis"
+        ],
+        "priority": "high"
+      },
+      "mongodb-schema-designer": {
+        "callsign": "Schema-Forge",
+        "faction": "Promethean",
+        "path": "agents/mongodb-atlas/mongodb-schema-designer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "mongodb",
+          "schema",
+          "model",
+          "document",
+          "embedding",
+          "reference",
+          "prisma"
+        ],
+        "capabilities": [
+          "schema_design",
+          "data_modeling",
+          "embedding_patterns",
+          "reference_patterns",
+          "prisma_mongodb"
+        ],
+        "priority": "high"
+      }
+    },
+    "multi-tenant": {
+      "multi-tenant-architect": {
+        "callsign": "Partitioner",
+        "faction": "Promethean",
+        "path": "agents/multi-tenant/multi-tenant-architect.md",
+        "type": "architect",
+        "model": "sonnet",
+        "keywords": [
+          "multi-tenant",
+          "saas",
+          "tenant",
+          "organization",
+          "isolation",
+          "org_id"
+        ],
+        "capabilities": [
+          "tenant_architecture",
+          "data_isolation",
+          "org_management",
+          "tenant_provisioning"
+        ],
+        "priority": "high"
+      },
+      "tenant-provisioning-specialist": {
+        "callsign": "Provisioner",
+        "faction": "Promethean",
+        "path": "agents/multi-tenant/tenant-provisioning-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "tenant",
+          "provisioning",
+          "onboarding",
+          "organization",
+          "setup",
+          "enrollment"
+        ],
+        "capabilities": [
+          "tenant_onboarding",
+          "org_setup",
+          "user_provisioning",
+          "enrollment_flows"
+        ],
+        "priority": "high"
+      }
+    },
+    "orchestration": {
+      "agent-sdk-dev": {
+        "callsign": "Progenitor",
+        "faction": "Forerunner",
+        "path": "agents/orchestration/agent-sdk-dev.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "agent-sdk",
+          "claude-agents",
+          "anthropic-sdk",
+          "agent-development",
+          "typescript",
+          "agent-tools"
+        ],
+        "capabilities": [
+          "Building custom Claude agents using Anthropic Agent SDK",
+          "Implementing tool definitions and handlers",
+          "Agent configuration and deployment",
+          "Agent testing and debugging",
+          "SDK best practices and patterns"
+        ],
+        "priority": "high"
+      },
+      "angelos-symbo": {
+        "callsign": "Angelos",
+        "faction": "Forerunner",
+        "path": "agents/orchestration/angelos-symbo.md",
+        "type": "coordinator",
+        "model": "opus",
+        "keywords": [
+          "symbiotic-ai",
+          "orchestration",
+          "multi-agent-coordination",
+          "workflow-optimization",
+          "context-management",
+          "strategic-planning"
+        ],
+        "capabilities": [
+          "Multi-agent workflow orchestration",
+          "Context-aware task delegation",
+          "Strategic planning and execution",
+          "Cross-agent communication optimization",
+          "Resource allocation and prioritization",
+          "Adaptive workflow management"
+        ],
+        "priority": "high"
+      },
+      "ceo-quality-controller-agent": {
+        "callsign": "Paramount",
+        "faction": "Forerunner",
+        "path": "agents/orchestration/ceo-quality-controller-agent.md",
+        "type": "validator",
+        "model": "opus",
+        "keywords": [
+          "quality-assurance",
+          "executive-oversight",
+          "standards-enforcement",
+          "strategic-validation",
+          "acceptance-criteria",
+          "deliverable-review"
+        ],
+        "capabilities": [
+          "Executive-level quality assessment",
+          "Strategic objective validation",
+          "Multi-dimensional deliverable review",
+          "Standards and compliance enforcement",
+          "Risk assessment and mitigation",
+          "Final approval and sign-off"
+        ],
+        "priority": "high"
+      },
+      "claude-desktop-extension": {
+        "callsign": "Nexus",
+        "faction": "Promethean",
+        "path": "agents/orchestration/claude-desktop-extension.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "claude-desktop",
+          "mcp-integration",
+          "desktop-app",
+          "extension-development",
+          "tool-integration"
+        ],
+        "capabilities": [
+          "Claude Desktop app integration",
+          "MCP server development and configuration",
+          "Desktop tool and extension creation",
+          "Claude.app workflow optimization",
+          "Custom tool integration"
+        ],
+        "priority": "medium"
+      },
+      "commit-commands": {
+        "callsign": "Scribe",
+        "faction": "Promethean",
+        "path": "agents/orchestration/commit-commands.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "git-commit",
+          "version-control",
+          "commit-messages",
+          "git-automation",
+          "conventional-commits"
+        ],
+        "capabilities": [
+          "Automated git commit creation",
+          "Conventional commit message formatting",
+          "Change summarization and analysis",
+          "Commit history management",
+          "Pre-commit validation"
+        ],
+        "priority": "medium"
+      },
+      "feature-dev": {
+        "callsign": "Genesis",
+        "faction": "Promethean",
+        "path": "agents/orchestration/feature-dev.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "feature-implementation",
+          "full-stack-development",
+          "tdd",
+          "architecture",
+          "integration"
+        ],
+        "capabilities": [
+          "End-to-end feature implementation",
+          "Test-driven development",
+          "API design and implementation",
+          "Frontend component development",
+          "Database schema design",
+          "Feature integration and deployment"
+        ],
+        "priority": "high"
+      },
+      "lyra": {
+        "callsign": "Lyra",
+        "faction": "Forerunner",
+        "path": "agents/orchestration/lyra.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "creative-ai",
+          "content-generation",
+          "workflow-assistance",
+          "ideation",
+          "documentation",
+          "communication"
+        ],
+        "capabilities": [
+          "Creative content generation",
+          "Technical writing and documentation",
+          "Communication optimization",
+          "Ideation and brainstorming",
+          "User experience copywriting",
+          "Workflow narrative development"
+        ],
+        "priority": "medium"
+      },
+      "model-context-protocol-mcp-expert": {
+        "callsign": "Conduit",
+        "faction": "Promethean",
+        "path": "agents/orchestration/model-context-protocol-mcp-expert.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "mcp",
+          "model-context-protocol",
+          "server-development",
+          "tool-integration",
+          "resource-management",
+          "anthropic-mcp"
+        ],
+        "capabilities": [
+          "MCP server architecture and development",
+          "Tool and resource definition",
+          "MCP client integration",
+          "Protocol debugging and optimization",
+          "Multi-server orchestration",
+          "MCP best practices enforcement"
+        ],
+        "priority": "high"
+      },
+      "pr-review-toolkit": {
+        "callsign": "Inquisitor",
+        "faction": "Spartan",
+        "path": "agents/orchestration/pr-review-toolkit.md",
+        "type": "validator",
+        "model": "sonnet",
+        "keywords": [
+          "code-review",
+          "pull-request",
+          "quality-assurance",
+          "github",
+          "best-practices",
+          "security-review"
+        ],
+        "capabilities": [
+          "Comprehensive pull request analysis",
+          "Code quality assessment",
+          "Security vulnerability detection",
+          "Architecture review and feedback",
+          "Test coverage validation",
+          "Documentation completeness checks"
+        ],
+        "priority": "high"
+      },
+      "problem-solver-specialist": {
+        "callsign": "Catalyst",
+        "faction": "Promethean",
+        "path": "agents/orchestration/problem-solver-specialist.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "problem-solving",
+          "debugging",
+          "root-cause-analysis",
+          "troubleshooting",
+          "optimization",
+          "critical-thinking"
+        ],
+        "capabilities": [
+          "Complex problem decomposition",
+          "Root cause analysis",
+          "Systematic debugging",
+          "Solution evaluation and optimization",
+          "Pattern recognition",
+          "Critical thinking and analysis"
+        ],
+        "priority": "high"
+      },
+      "security-guidance": {
+        "callsign": "Bastion",
+        "faction": "Spartan",
+        "path": "agents/orchestration/security-guidance.md",
+        "type": "validator",
+        "model": "sonnet",
+        "keywords": [
+          "security",
+          "vulnerability-assessment",
+          "secure-coding",
+          "authentication",
+          "authorization",
+          "owasp"
+        ],
+        "capabilities": [
+          "Security vulnerability assessment",
+          "Secure coding practice enforcement",
+          "Authentication and authorization review",
+          "Dependency security auditing",
+          "Threat modeling and risk assessment",
+          "Security compliance validation"
+        ],
+        "priority": "high"
+      },
+      "studio-coach": {
+        "callsign": "Mentor",
+        "faction": "Forerunner",
+        "path": "agents/orchestration/studio-coach.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "mentorship",
+          "best-practices",
+          "code-review",
+          "learning",
+          "skill-development",
+          "guidance"
+        ],
+        "capabilities": [
+          "Development best practices guidance",
+          "Code review with educational feedback",
+          "Skill development coaching",
+          "Architecture mentorship",
+          "Process improvement recommendations",
+          "Team collaboration optimization"
+        ],
+        "priority": "medium"
+      },
+      "ultrathink": {
+        "callsign": "Cognitus",
+        "faction": "Forerunner",
+        "path": "agents/orchestration/ultrathink.md",
+        "type": "analyst",
+        "model": "opus",
+        "keywords": [
+          "extended-thinking",
+          "deep-analysis",
+          "strategic-reasoning",
+          "complex-problem-solving",
+          "architectural-design",
+          "research"
+        ],
+        "capabilities": [
+          "Extended reasoning for complex problems",
+          "Deep architectural analysis and design",
+          "Multi-faceted trade-off evaluation",
+          "Strategic planning and foresight",
+          "Research synthesis and insight generation",
+          "Complex system modeling"
+        ],
+        "priority": "high"
+      }
+    },
+    "product-management": {
+      "discuss": {
+        "callsign": "Dialogist",
+        "faction": "Forerunner",
+        "path": "agents/product-management/discuss.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "discussion",
+          "facilitation",
+          "stakeholder",
+          "alignment",
+          "communication",
+          "collaboration"
+        ],
+        "capabilities": [
+          "Facilitate stakeholder discussions",
+          "Drive alignment across teams",
+          "Extract key insights from conversations",
+          "Document discussion outcomes",
+          "Resolve conflicting viewpoints"
+        ],
+        "priority": "medium"
+      },
+      "planning-prd-agent": {
+        "callsign": "Strategist",
+        "faction": "Forerunner",
+        "path": "agents/product-management/planning-prd-agent.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "prd",
+          "planning",
+          "requirements",
+          "strategy",
+          "roadmap",
+          "vision"
+        ],
+        "capabilities": [
+          "Strategic product planning",
+          "PRD framework development",
+          "Requirements gathering coordination",
+          "Roadmap alignment",
+          "Vision articulation"
+        ],
+        "priority": "high"
+      },
+      "prd-specialist": {
+        "callsign": "Specifier",
+        "faction": "Forerunner",
+        "path": "agents/product-management/prd-specialist.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "prd",
+          "specification",
+          "requirements",
+          "documentation",
+          "user-stories",
+          "acceptance-criteria"
+        ],
+        "capabilities": [
+          "Detailed PRD documentation",
+          "User story writing",
+          "Acceptance criteria definition",
+          "Requirements specification",
+          "Technical requirements translation"
+        ],
+        "priority": "high"
+      },
+      "project-shipper": {
+        "callsign": "Launcher",
+        "faction": "Spartan",
+        "path": "agents/product-management/project-shipper.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "shipping",
+          "launch",
+          "delivery",
+          "release",
+          "go-to-market",
+          "deployment"
+        ],
+        "capabilities": [
+          "Launch coordination and execution",
+          "Release planning and management",
+          "Go-to-market strategy execution",
+          "Cross-functional delivery coordination",
+          "Post-launch monitoring and iteration"
+        ],
+        "priority": "high"
+      },
+      "sprint-prioritizer": {
+        "callsign": "Prioritizer",
+        "faction": "Forerunner",
+        "path": "agents/product-management/sprint-prioritizer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "prioritization",
+          "sprint-planning",
+          "backlog",
+          "capacity",
+          "trade-offs",
+          "agile"
+        ],
+        "capabilities": [
+          "Sprint backlog prioritization",
+          "Capacity planning and estimation",
+          "Trade-off analysis",
+          "Dependency mapping",
+          "Risk assessment"
+        ],
+        "priority": "medium"
+      },
+      "studio-producer": {
+        "callsign": "Producer",
+        "faction": "Forerunner",
+        "path": "agents/product-management/studio-producer.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "production",
+          "coordination",
+          "creative",
+          "assets",
+          "design",
+          "content"
+        ],
+        "capabilities": [
+          "Creative production coordination",
+          "Asset management and delivery",
+          "Design and content workflow optimization",
+          "Cross-functional creative collaboration",
+          "Quality assurance for creative outputs"
+        ],
+        "priority": "medium"
+      },
+      "tool-evaluator": {
+        "callsign": "Assessor",
+        "faction": "Forerunner",
+        "path": "agents/product-management/tool-evaluator.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "evaluation",
+          "tools",
+          "assessment",
+          "comparison",
+          "selection",
+          "roi"
+        ],
+        "capabilities": [
+          "Tool and platform evaluation",
+          "Comparative analysis",
+          "ROI assessment",
+          "Vendor selection",
+          "Integration feasibility analysis"
+        ],
+        "priority": "medium"
+      },
+      "workflow-optimizer": {
+        "callsign": "Streamliner",
+        "faction": "Promethean",
+        "path": "agents/product-management/workflow-optimizer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "workflow",
+          "optimization",
+          "efficiency",
+          "process",
+          "automation",
+          "bottlenecks"
+        ],
+        "capabilities": [
+          "Workflow analysis and mapping",
+          "Bottleneck identification",
+          "Process optimization",
+          "Automation opportunity identification",
+          "Efficiency metric tracking"
+        ],
+        "priority": "high"
+      }
+    },
+    "selenium-testing": {},
+    "stripe-payment": {
+      "invoice-manager": {
+        "callsign": "Accountant",
+        "faction": "Promethean",
+        "path": "agents/stripe-payment/invoice-manager.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "invoice",
+          "billing",
+          "receipt",
+          "statement",
+          "payment-history"
+        ],
+        "capabilities": [
+          "invoice_generation",
+          "payment_history",
+          "billing_statements",
+          "receipt_management"
+        ],
+        "priority": "medium"
+      },
+      "stripe-integration-specialist": {
+        "callsign": "Merchant",
+        "faction": "Promethean",
+        "path": "agents/stripe-payment/stripe-integration-specialist.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "stripe",
+          "payment",
+          "subscription",
+          "billing",
+          "webhook",
+          "checkout"
+        ],
+        "capabilities": [
+          "stripe_api",
+          "payment_processing",
+          "subscription_management",
+          "webhook_handling"
+        ],
+        "priority": "high"
+      },
+      "subscription-lifecycle-manager": {
+        "callsign": "Lifecycle",
+        "faction": "Promethean",
+        "path": "agents/stripe-payment/subscription-lifecycle-manager.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "subscription",
+          "lifecycle",
+          "trial",
+          "upgrade",
+          "downgrade",
+          "churn"
+        ],
+        "capabilities": [
+          "subscription_lifecycle",
+          "trial_management",
+          "plan_changes",
+          "churn_prevention"
+        ],
+        "priority": "high"
       }
     }
   },
-
   "stats": {
     "byType": {
-      "developer": 54,
-      "analyst": 17,
-      "coordinator": 19,
-      "validator": 7
+      "developer": 92,
+      "analyst": 51,
+      "validator": 15,
+      "coordinator": 36,
+      "utility": 3,
+      "specialist": 4,
+      "architect": 1
     },
     "byModel": {
-      "sonnet": 84,
-      "haiku": 13,
-      "opus": 0
+      "sonnet": 163,
+      "haiku": 36,
+      "opus": 3
     },
     "byPriority": {
-      "high": 26,
-      "medium": 53,
-      "low": 18
+      "high": 84,
+      "medium": 94,
+      "low": 24
     },
     "byFaction": {
-      "Forerunner": 34,
-      "Promethean": 37,
-      "Spartan": 26
+      "Promethean": 97,
+      "Forerunner": 66,
+      "Spartan": 39
     },
     "byCategory": {
       "core": 6,
@@ -1072,25 +4620,39 @@
       "development": 8,
       "frontend": 5,
       "languages": 7,
-      "security": 5,
-      "data-ai": 5,
+      "security": 10,
+      "data-ai": 9,
       "operations": 4,
       "cloud": 6,
       "swarm": 3,
-      "github": 4,
+      "github": 14,
       "atlassian": 8,
-      "documentation": 3,
+      "documentation": 8,
       "golden-armada": 3,
-      "testing": 5,
+      "testing": 15,
       "utility": 4,
       "system-ops": 4,
       "mobile": 4,
       "messaging": 3,
       "migration": 2,
-      "quality-gates": 2
+      "quality-gates": 2,
+      "business-sales": 8,
+      "design-ux": 7,
+      "frontend-theming": 3,
+      "helm": 3,
+      "keycloak": 5,
+      "kubernetes": 4,
+      "marketing-growth": 7,
+      "membership-domain": 4,
+      "mongodb-atlas": 4,
+      "multi-tenant": 2,
+      "orchestration": 13,
+      "product-management": 8,
+      "selenium-testing": 0,
+      "stripe-payment": 3
     },
-    "totalAgents": 97,
-    "note": "All 97 agents now have unique Halo-themed callsigns with strategic faction alignment (Forerunner, Promethean, Spartan).",
-    "lastUpdated": "2025-12-13"
+    "totalAgents": 202,
+    "note": "All 202 agents have unique Halo-themed callsigns with strategic faction alignment (Forerunner, Promethean, Spartan).",
+    "lastUpdated": "2025-12-15"
   }
 }

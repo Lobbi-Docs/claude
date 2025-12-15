@@ -1,0 +1,396 @@
+{
+  "category_mapping": {
+    "Workflow Orchestration": "NEW:workflow-orchestration",
+    "Automation DevOps": "devops",
+    "Business Sales": "NEW:business-sales",
+    "Code Quality Testing": "testing",
+    "Data Analytics": "data-ai",
+    "Design UX": "NEW:design-ux",
+    "Development Engineering": "development",
+    "Documentation": "documentation",
+    "Git Workflow": "github",
+    "Marketing Growth": "NEW:marketing-growth",
+    "Project & Product Management": "NEW:product-management",
+    "Security, Compliance & Legal": "security"
+  },
+
+  "overlapping_agents": [
+    {
+      "user_agent": "debugger",
+      "existing_agent": "debugger (Cipher)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "Consolidate debugging capabilities"
+    },
+    {
+      "user_agent": "code-reviewer / code-review-assistant / code-review",
+      "existing_agent": "reviewer (Vigilant Watcher)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "3 user agents vs 1 existing - consolidate into enhanced reviewer"
+    },
+    {
+      "user_agent": "test-writer-fixer / unit-test-generator",
+      "existing_agent": "tester (Sentinel)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "Enhance Sentinel with test generation capabilities"
+    },
+    {
+      "user_agent": "bug-detective / debug-session",
+      "existing_agent": "debugger (Cipher)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "Additional debugging perspectives - merge into Cipher"
+    },
+    {
+      "user_agent": "deployment-engineer",
+      "existing_agent": "cicd-engineer (Flux) / k8s-deployer (Vanguard)",
+      "similarity": "medium",
+      "recommendation": "keep_both",
+      "notes": "User agent more general, existing more specialized"
+    },
+    {
+      "user_agent": "code-architect / backend-architect",
+      "existing_agent": "coder (Forge) / planner (The Architect)",
+      "similarity": "medium",
+      "recommendation": "keep_both",
+      "notes": "Different architectural perspectives valuable"
+    },
+    {
+      "user_agent": "ai-engineer",
+      "existing_agent": "ml-engineer (Omniscient)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "AI/ML engineering overlap"
+    },
+    {
+      "user_agent": "enterprise-security-reviewer / audit",
+      "existing_agent": "security-auditor (The Vigil)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "Enhance The Vigil with enterprise/audit capabilities"
+    },
+    {
+      "user_agent": "data-scientist",
+      "existing_agent": "data-engineer (Arc)",
+      "similarity": "medium",
+      "recommendation": "keep_both",
+      "notes": "Different focus: science vs engineering"
+    },
+    {
+      "user_agent": "plan / planning-prd-agent / prd-specialist",
+      "existing_agent": "planner (The Architect)",
+      "similarity": "medium",
+      "recommendation": "keep_both",
+      "notes": "User agents more product-focused, existing more technical"
+    },
+    {
+      "user_agent": "explore / trend-researcher",
+      "existing_agent": "researcher (Oracle Prime)",
+      "similarity": "medium",
+      "recommendation": "merge",
+      "notes": "Enhance Oracle Prime with trend analysis"
+    },
+    {
+      "user_agent": "documentation-generator / codebase-documenter",
+      "existing_agent": "documentation (category agents)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "Consolidate into documentation category"
+    },
+    {
+      "user_agent": "frontend-developer",
+      "existing_agent": "frontend (category agents)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "Consolidate frontend capabilities"
+    },
+    {
+      "user_agent": "commit / create-pr / fix-issue / github-issue-fix",
+      "existing_agent": "github (category agents)",
+      "similarity": "high",
+      "recommendation": "merge",
+      "notes": "User has many specific git commands - merge into enhanced github category"
+    },
+    {
+      "user_agent": "infrastructure-maintainer",
+      "existing_agent": "devops (category agents)",
+      "similarity": "medium",
+      "recommendation": "merge",
+      "notes": "Part of devops responsibilities"
+    }
+  ],
+
+  "new_agents_needed": [
+    "agent-sdk-dev",
+    "pr-review-toolkit",
+    "commit-commands",
+    "feature-dev",
+    "security-guidance",
+    "angelos-symbo",
+    "ceo-quality-controller-agent",
+    "claude-desktop-extension",
+    "lyra",
+    "model-context-protocol-mcp-expert",
+    "problem-solver-specialist",
+    "studio-coach",
+    "ultrathink",
+    "n8n-workflow-builder",
+    "monitoring-observability-specialist",
+    "b2b-project-shipper",
+    "customer-success-manager",
+    "enterprise-onboarding-specialist",
+    "finance-tracker",
+    "pricing-packaging-specialist",
+    "product-sales-specialist",
+    "support-responder",
+    "technical-sales-engineer",
+    "api-tester",
+    "database-performance-optimizer",
+    "performance-benchmarker",
+    "refractor",
+    "optimize",
+    "double-check",
+    "test-results-analyzer",
+    "analytics-reporter",
+    "experiment-tracker",
+    "feedback-synthesizer",
+    "brand-guardian",
+    "joker",
+    "mobile-ux-optimizer",
+    "onomastophes",
+    "ui-designer",
+    "ux-researcher",
+    "visual-storyteller",
+    "whimsy-injector",
+    "desktop-app-dev",
+    "enterprise-integrator-architect",
+    "flutter-mobile-app-dev",
+    "react-native-dev",
+    "rapid-prototyper",
+    "vision-specialist",
+    "project-curator",
+    "python-expert",
+    "api-integration-specialist",
+    "context7-docs-fetcher",
+    "changelog-generator",
+    "openapi-expert",
+    "update-claudemd",
+    "generate-api-docs",
+    "create-worktrees",
+    "update-branch-name",
+    "husky",
+    "pr-issue-resolve",
+    "app-store-optimizer",
+    "content-creator",
+    "growth-hacker",
+    "instagram-curator",
+    "reddit-community-builder",
+    "tiktok-strategist",
+    "twitter-engager",
+    "discuss",
+    "project-shipper",
+    "sprint-prioritizer",
+    "studio-producer",
+    "tool-evaluator",
+    "workflow-optimizer",
+    "ai-ethics-governance-specialist",
+    "compliance-automation-specialist",
+    "data-privacy-engineer",
+    "legal-advisor",
+    "legal-compliance-checker"
+  ],
+
+  "new_categories_needed": [
+    "workflow-orchestration",
+    "business-sales",
+    "design-ux",
+    "marketing-growth",
+    "product-management"
+  ],
+
+  "category_details": {
+    "workflow-orchestration": {
+      "description": "Meta-level orchestration and coordination agents",
+      "agents": 13,
+      "key_agents": ["agent-sdk-dev", "lyra", "ultrathink", "ceo-quality-controller-agent", "model-context-protocol-mcp-expert"],
+      "priority": "high",
+      "notes": "Critical for system coordination - no existing equivalent"
+    },
+    "business-sales": {
+      "description": "Commercial operations, sales, customer success",
+      "agents": 8,
+      "key_agents": ["customer-success-manager", "technical-sales-engineer", "b2b-project-shipper"],
+      "priority": "medium",
+      "notes": "Business-focused agents - completely new domain"
+    },
+    "design-ux": {
+      "description": "UX research, UI design, brand consistency",
+      "agents": 8,
+      "key_agents": ["ui-designer", "ux-researcher", "brand-guardian", "mobile-ux-optimizer"],
+      "priority": "high",
+      "notes": "Design expertise missing from current registry"
+    },
+    "marketing-growth": {
+      "description": "Growth hacking, content, social media management",
+      "agents": 7,
+      "key_agents": ["growth-hacker", "content-creator", "app-store-optimizer"],
+      "priority": "low",
+      "notes": "Marketing domain - specialized use case"
+    },
+    "product-management": {
+      "description": "Product planning, PRDs, sprint management",
+      "agents": 10,
+      "key_agents": ["prd-specialist", "sprint-prioritizer", "project-shipper", "workflow-optimizer"],
+      "priority": "high",
+      "notes": "Product management capabilities currently in 'operations'"
+    }
+  },
+
+  "integration_recommendations": {
+    "phase_1_critical": {
+      "description": "High-value agents with clear use cases",
+      "agents": [
+        "model-context-protocol-mcp-expert",
+        "agent-sdk-dev",
+        "ui-designer",
+        "ux-researcher",
+        "prd-specialist",
+        "api-tester",
+        "performance-benchmarker",
+        "database-performance-optimizer",
+        "context7-docs-fetcher",
+        "openapi-expert",
+        "changelog-generator",
+        "monitoring-observability-specialist"
+      ],
+      "estimated_effort": "2-3 weeks"
+    },
+    "phase_2_enhancement": {
+      "description": "Enhance existing agents with user capabilities",
+      "merges": [
+        "Enhance Cipher (debugger) with bug-detective, debug-session capabilities",
+        "Enhance Sentinel (tester) with test-writer-fixer, unit-test-generator",
+        "Enhance Vigilant Watcher (reviewer) with 3 code-review variants",
+        "Enhance The Vigil (security) with compliance, legal, ethics capabilities",
+        "Enhance Oracle Prime (researcher) with trend-researcher, analytics"
+      ],
+      "estimated_effort": "1-2 weeks"
+    },
+    "phase_3_specialized": {
+      "description": "Domain-specific agents",
+      "agents": [
+        "flutter-mobile-app-dev",
+        "react-native-dev",
+        "desktop-app-dev",
+        "enterprise-integrator-architect",
+        "n8n-workflow-builder",
+        "rapid-prototyper",
+        "vision-specialist"
+      ],
+      "estimated_effort": "2-3 weeks"
+    },
+    "phase_4_business": {
+      "description": "Business and marketing agents",
+      "agents": [
+        "customer-success-manager",
+        "technical-sales-engineer",
+        "legal-advisor",
+        "compliance-automation-specialist",
+        "content-creator",
+        "growth-hacker"
+      ],
+      "estimated_effort": "1-2 weeks"
+    },
+    "phase_5_optional": {
+      "description": "Nice-to-have or specialized use case agents",
+      "agents": [
+        "whimsy-injector",
+        "joker",
+        "instagram-curator",
+        "tiktok-strategist",
+        "reddit-community-builder",
+        "twitter-engager",
+        "onomastophes"
+      ],
+      "estimated_effort": "1 week"
+    }
+  },
+
+  "consolidation_opportunities": {
+    "git_workflow": {
+      "current_state": "14 separate git command agents",
+      "recommendation": "Create unified 'git-orchestrator' agent with subcommands",
+      "consolidate": ["commit", "create-pr", "fix-issue", "analyze-issue", "create-worktrees", "update-branch-name", "husky", "pr-review"],
+      "benefit": "Reduce agent count by 10-12, improve discoverability"
+    },
+    "code_review": {
+      "current_state": "3 similar code review agents",
+      "recommendation": "Single enhanced 'code-reviewer' with multiple perspectives",
+      "consolidate": ["code-review", "code-review-assistant", "code-reviewer"],
+      "benefit": "Unified review experience with customizable depth"
+    },
+    "testing": {
+      "current_state": "Multiple testing agents with overlapping scope",
+      "recommendation": "Create test suite framework with specialized modes",
+      "consolidate": ["test-writer-fixer", "unit-test-generator", "api-tester", "test-results-analyzer"],
+      "benefit": "Coherent testing workflow"
+    }
+  },
+
+  "summary": {
+    "total_user_agents": 116,
+    "total_existing_agents": 97,
+    "overlapping": 28,
+    "net_new": 75,
+    "merge_candidates": 13,
+    "new_categories": 5,
+    "estimated_total_after_integration": 160,
+    "estimated_total_after_consolidation": 140
+  },
+
+  "risk_analysis": {
+    "high_priority_gaps": [
+      "MCP expertise (model-context-protocol-mcp-expert)",
+      "Product management (prd-specialist, sprint-prioritizer)",
+      "UX/Design (ui-designer, ux-researcher)",
+      "Performance optimization (performance-benchmarker, database-performance-optimizer)",
+      "Compliance/Legal (legal-advisor, compliance-automation-specialist)"
+    ],
+    "redundancy_risks": [
+      "Too many git command agents - consolidation needed",
+      "Multiple similar review agents - standardization needed",
+      "Testing agents overlap - framework approach recommended"
+    ],
+    "integration_challenges": [
+      "115 new agent files to create/integrate",
+      "Category structure needs expansion (5 new categories)",
+      "Naming conventions differ between registries",
+      "Need to maintain backward compatibility with existing agents"
+    ]
+  },
+
+  "action_plan": {
+    "immediate": [
+      "Create 5 new category directories",
+      "Merge duplicate agents (debugger, reviewers, testers)",
+      "Integrate Phase 1 critical agents (12 agents)"
+    ],
+    "short_term": [
+      "Complete Phase 2 enhancements",
+      "Consolidate git workflow agents",
+      "Integrate Phase 3 specialized agents"
+    ],
+    "medium_term": [
+      "Add business/marketing agents (Phase 4)",
+      "Create unified testing framework",
+      "Standardize naming conventions"
+    ],
+    "long_term": [
+      "Add optional/specialized agents (Phase 5)",
+      "Continuous refinement based on usage patterns",
+      "Deprecate redundant agents"
+    ]
+  }
+}
