@@ -216,10 +216,21 @@ export async function handleGetPrompt(
     const content = await client.getFileContents(path);
     return { path, content };
   } catch (error: any) {
-    // Try without .md extension
-    const altPath = `prompts/${args.name}`;
-    const content = await client.getFileContents(altPath);
-    return { path: altPath, content };
+    // Only retry with alternative path if the error is "File not found" (404)
+    // Re-throw other errors (timeout, network issues, etc.) to avoid returning wrong files
+    if (error.message?.includes('File not found')) {
+      // Try without .md extension
+      const altPath = `prompts/${args.name}`;
+      try {
+        const content = await client.getFileContents(altPath);
+        return { path: altPath, content };
+      } catch (altError: any) {
+        // If alternative path also fails, throw original error
+        throw error;
+      }
+    }
+    // Re-throw non-404 errors (timeout, network issues, etc.)
+    throw error;
   }
 }
 
@@ -237,10 +248,21 @@ export async function handleGetInstruction(
     const content = await client.getFileContents(path);
     return { path, content };
   } catch (error: any) {
-    // Try without .md extension
-    const altPath = `instructions/${args.name}`;
-    const content = await client.getFileContents(altPath);
-    return { path: altPath, content };
+    // Only retry with alternative path if the error is "File not found" (404)
+    // Re-throw other errors (timeout, network issues, etc.) to avoid returning wrong files
+    if (error.message?.includes('File not found')) {
+      // Try without .md extension
+      const altPath = `instructions/${args.name}`;
+      try {
+        const content = await client.getFileContents(altPath);
+        return { path: altPath, content };
+      } catch (altError: any) {
+        // If alternative path also fails, throw original error
+        throw error;
+      }
+    }
+    // Re-throw non-404 errors (timeout, network issues, etc.)
+    throw error;
   }
 }
 
