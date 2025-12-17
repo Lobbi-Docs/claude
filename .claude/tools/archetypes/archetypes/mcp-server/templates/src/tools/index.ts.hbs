@@ -1,0 +1,54 @@
+/**
+ * {{pascalCase serverName}} MCP Tools
+ * 
+ * Provides tools to access {{#if (eq dataSource "github")}}GitHub repository{{else}}{{dataSource}}{{/if}} resources
+ */
+
+import { z } from 'zod';
+{{#if (eq dataSource "github")}}
+import type { GitHubClient } from '../clients/github.client.js';
+{{/if}}
+import type { Resource } from '../types/index.js';
+
+/**
+ * Tool definitions for {{kebabCase serverName}} MCP server
+ */
+export const MCP_TOOLS = [
+  {
+    name: '{{kebabCase serverName}}_list_resources',
+    description: 'List all available resources',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        // Add properties here
+      },
+    },
+  },
+  // Add more tools here
+];
+
+/**
+ * Tool handler schemas for validation
+ */
+export const ListResourcesSchema = z.object({
+  // Add schema properties here
+});
+
+/**
+ * Handle list resources tool
+ */
+export async function handleListResources(
+  {{#if (eq dataSource "github")}}
+  client: GitHubClient,
+  {{/if}}
+  args: z.infer<typeof ListResourcesSchema>
+): Promise<{ resources: Resource[]; total: number }> {
+  // Implement list resources logic
+  return {
+    resources: [],
+    total: 0,
+  };
+}
+
+
+

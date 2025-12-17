@@ -1,0 +1,39 @@
+/**
+ * Type definitions for {{kebabCase serverName}} MCP server
+ */
+
+{{#if (eq dataSource "github")}}
+export interface GitHubConfig {
+  owner: string;
+  repo: string;
+  branch: string;
+  apiUrl: string;
+  rawUrl: string;
+}
+{{/if}}
+
+{{#if (includes features "caching")}}
+export interface CacheConfig {
+  enabled: boolean;
+  ttl: number; // Time to live in milliseconds
+}
+{{/if}}
+
+export interface ServerConfig {
+  {{#if (eq dataSource "github")}}
+  github: GitHubConfig;
+  {{/if}}
+  {{#if (includes features "caching")}}
+  cache: CacheConfig;
+  {{/if}}
+}
+
+export interface Resource {
+  name: string;
+  path: string;
+  type: string;
+  content?: string;
+}
+
+
+

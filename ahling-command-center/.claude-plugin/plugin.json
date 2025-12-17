@@ -1,3 +1,23 @@
 {
-  "name": "ahling-command-center"
+  "name": "ahling-command-center",
+  "version": "1.0.0",
+  "description": "Infrastructure and smart home automation command center with Ollama, Home Assistant, and multi-agent coordination",
+  "author": "Markus Ahling",
+  "license": "MIT",
+  "keywords": [
+    "infrastructure",
+    "smart-home",
+    "automation",
+    "ollama",
+    "home-assistant",
+    "docker",
+    "vault",
+    "mcp"
+  ],
+  "components": {
+    "agents": 10,
+    "commands": 15,
+    "skills": 8,
+    "hooks": true
+  }
 }

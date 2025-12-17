@@ -1,0 +1,96 @@
+/**
+ * GitHub API client{{#if githubRepo}} for {{githubRepo}}{{/if}}
+ */
+
+import axios, { AxiosInstance } from 'axios';
+import type { Resource } from '../types/index.js';
+
+export class GitHubClient {
+  private client: AxiosInstance;
+  private owner: string;
+  private repo: string;
+  private branch: string;
+  private rawUrl: string;
+
+  constructor(config: {
+    owner: string;
+    repo: string;
+    branch: string;
+    apiUrl: string;
+    rawUrl: string;
+  }) {
+    this.owner = config.owner;
+    this.repo = config.repo;
+    this.branch = config.branch;
+    this.rawUrl = config.rawUrl;
+
+    this.client = axios.create({
+      baseURL: config.apiUrl,
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': '{{kebabCase serverName}}/1.0.0',
+      },
+      timeout: 30000,
+    });
+  }
+
+  /**
+   * Get file contents from GitHub repository
+   */
+  async getFileContents(path: string): Promise<string> {
+    try {
+      const url = `${this.rawUrl}/${this.owner}/${this.repo}/${this.branch}/${path}`;
+      const response = await axios.get(url, {
+        timeout: 30000,
+        headers: {
+          'Accept': 'text/plain',
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        throw new Error(`File not found: ${path}`);
+      }
+      throw new Error(`Failed to fetch file: ${error.message}`);
+    }
+  }
+
+  /**
+   * List directory contents from GitHub repository
+   */
+  async listDirectory(path: string = ''): Promise<Resource[]> {
+    try {
+      const url = `/repos/${this.owner}/${this.repo}/contents/${path}`;
+      const response = await this.client.get(url, {
+        params: {
+          ref: this.branch,
+        },
+      });
+
+      const items: Resource[] = [];
+      for (const item of response.data) {
+        if (item.type === 'file') {
+          items.push({
+            name: item.name,
+            path: item.path,
+            type: 'file',
+          });
+        } else if (item.type === 'dir') {
+          // Recursively get directory contents
+          const subItems = await this.listDirectory(item.path);
+          items.push(...subItems);
+        }
+      }
+
+      return items;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return [];
+      }
+      throw new Error(`Failed to list directory: ${error.message}`);
+    }
+  }
+}
+
+
+

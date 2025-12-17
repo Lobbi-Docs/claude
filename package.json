@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "better-sqlite3": "^12.5.0"
+  }
+}

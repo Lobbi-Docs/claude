@@ -1,0 +1,89 @@
+# {{pascalCase serverName}} MCP Server
+
+{{description}}
+
+## Overview
+
+This MCP (Model Context Protocol) server provides access to {{#if (eq dataSource "github")}}GitHub repository{{else}}{{dataSource}}{{/if}} resources through Claude and VS Code.
+
+## Features
+
+{{#if (includes features "custom-agents")}}
+- **Custom Agents**: Pre-configured agents for common workflows
+{{/if}}
+{{#if (includes features "resources")}}
+- **MCP Resources**: Access resources via MCP resource protocol
+{{/if}}
+{{#if (includes features "caching")}}
+- **Caching**: Built-in caching for improved performance
+{{/if}}
+{{#if (includes features "error-handling")}}
+- **Error Handling**: Robust error handling and retry logic
+{{/if}}
+
+## Installation
+
+### Prerequisites
+
+- Node.js 20.0.0 or higher
+- VS Code with GitHub Copilot extension
+- npm or yarn
+
+### Setup
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Build the project:
+```bash
+npm run build
+```
+
+3. Configure VS Code settings (`.vscode/settings.json`):
+```json
+{
+  "github.copilot.chat.mcpServers": {
+    "{{kebabCase serverName}}": {
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/{{kebabCase serverName}}/dist/index.js"
+      ]
+    }
+  }
+}
+```
+
+4. Restart VS Code
+
+## Usage
+
+{{#if (includes features "custom-agents")}}
+### Custom Agents
+
+Custom agents are available in `.github/agents/` directory. Select them from the agents dropdown in VS Code Copilot Chat.
+{{/if}}
+
+## Development
+
+```bash
+# Development mode (with tsx)
+npm run dev
+
+# Build
+npm run build
+
+# Type check
+npm run typecheck
+
+# Lint
+npm run lint
+```
+
+## License
+
+MIT License
+
+
+

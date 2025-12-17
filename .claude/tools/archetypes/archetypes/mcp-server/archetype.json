@@ -1,0 +1,69 @@
+{
+  "name": "mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server template with VS Code integration, custom agents, and GitHub API client patterns",
+  "category": "integration",
+  "author": "Ahling Tech",
+  "license": "MIT",
+  "keywords": ["mcp", "model-context-protocol", "claude", "vscode", "github", "api"],
+  "variables": [
+    {
+      "name": "serverName",
+      "type": "string",
+      "prompt": "MCP server name (kebab-case):",
+      "required": true,
+      "validation": "^[a-z][a-z0-9-]*$",
+      "description": "Name of the MCP server (e.g., awesome-copilot-mcp)"
+    },
+    {
+      "name": "displayName",
+      "type": "string",
+      "prompt": "Display name:",
+      "required": true,
+      "description": "Human-readable name for the MCP server"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "prompt": "Server description:",
+      "required": true,
+      "description": "Brief description of what the MCP server provides"
+    },
+    {
+      "name": "dataSource",
+      "type": "choice",
+      "prompt": "Data source type:",
+      "required": true,
+      "choices": ["github", "api", "file-system", "database", "custom"],
+      "default": "github",
+      "description": "Primary data source for the MCP server"
+    },
+    {
+      "name": "githubRepo",
+      "type": "string",
+      "prompt": "GitHub repository (owner/repo):",
+      "required": false,
+      "description": "GitHub repository in format owner/repo (only if dataSource is github)"
+    },
+    {
+      "name": "features",
+      "type": "multi-choice",
+      "prompt": "Include features:",
+      "choices": ["custom-agents", "resources", "prompts", "caching", "error-handling", "logging"],
+      "default": ["custom-agents", "resources", "error-handling"],
+      "description": "Additional features to include"
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "prompt": "Author name:",
+      "default": "Ahling Tech"
+    }
+  ],
+  "dependencies": [],
+  "files": ["templates/**/*"],
+  "ignore": ["*.test.ts", "*.spec.ts", "dist/**", "node_modules/**"]
+}
+
+
+

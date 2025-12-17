@@ -1,7 +1,7 @@
 {
-  "name": "awesome-copilot-mcp",
+  "name": "{{kebabCase serverName}}",
   "version": "1.0.0",
-  "description": "MCP Server for accessing GitHub awesome-copilot repository resources (prompts, instructions, configurations)",
+  "description": "{{description}}",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -13,18 +13,20 @@
   },
   "keywords": [
     "mcp",
-    "awesome-copilot",
-    "github-copilot",
-    "prompts",
-    "instructions",
+    "model-context-protocol",
     "claude",
+    {{#if (eq dataSource "github")}}
+    "github",
+    {{/if}}
     "llm"
   ],
-  "author": "Ahling Tech",
+  "author": "{{author}}",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
+    {{#if (eq dataSource "github")}}
     "axios": "^1.6.5",
+    {{/if}}
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -39,4 +41,6 @@
     "node": ">=20.0.0"
   }
 }
+
+
 
