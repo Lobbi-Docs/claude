@@ -399,6 +399,69 @@ Post final summary and verify all completion criteria.
    - [ ] No pending errors
 ```
 
+## Step 10: Create Review Roadmap (MANDATORY)
+
+Break down the PR into bite-sized review tasks so reviewers can tackle small chunks at a time.
+
+### Actions:
+```
+1. Invoke the `review-facilitator` agent with:
+   - Parent issue key: ${issue_key}
+   - PR URL: {PR_URL}
+   - All sub-item keys
+
+2. The agent will:
+   - Analyze PR complexity and lines changed
+   - Group changes into reviewable chunks (5-15 min each)
+   - Create a review roadmap on the parent issue
+
+3. Review Roadmap Comment:
+   "## 📖 Review Roadmap
+
+   This PR is broken into **X reviewable chunks**.
+   Total estimated review time: ~Y minutes
+
+   ### Review Tasks (pick any to start!)
+   | # | Sub-Item | Focus | Files | Est. Time | Complexity |
+   |---|----------|-------|-------|-----------|------------|
+   | 1 | PROJ-201 | Test cases | 3 | 5 min | 🟢 Quick |
+   | 2 | PROJ-202 | Component | 4 | 10 min | 🟡 Standard |
+   | 3 | PROJ-203 | API layer | 5 | 15 min | 🟡 Standard |
+   | 4 | PROJ-204 | Error handling | 2 | 8 min | 🟢 Quick |
+
+   ### How to Review
+   1. **Pick any row** - you don't need to go in order!
+   2. Open the sub-item to see the review checklist
+   3. Review just those files (5-15 min max)
+   4. Add comments on the PR or sub-item
+   5. ✅ Check off items as you complete them
+
+   **No need to review everything at once!**
+   Each sub-item is independently reviewable."
+
+4. Each sub-item already has (from sub-item-documenter):
+   - 📋 Review Checklist (5-7 quick items)
+   - ⏱️ Estimated review time
+   - 🎯 Focus areas with file list
+   - 📚 Suggested review order
+   - ❓ Specific feedback questions
+
+5. Complexity Categories:
+   - 🟢 Quick (< 5 min): Config, small fixes, docs
+   - 🟡 Standard (5-15 min): Features, components
+   - 🔴 Deep (15-30 min): Architecture, complex logic
+```
+
+### Why Bite-Sized Reviews Matter:
+```
+- Reviewers can contribute in short time blocks
+- Each sub-item is independently reviewable
+- No need to understand entire PR at once
+- Reduces review fatigue and improves quality
+- Enables parallel reviews by multiple team members
+- Clear progress tracking (X of Y chunks reviewed)
+```
+
 ## Error Handling
 
 Handle errors gracefully at each step:
@@ -490,10 +553,11 @@ Orchestration is complete when:
 - [ ] All acceptance criteria met
 - [ ] Documentation updated in both repo and Obsidian vault
 - [ ] PR created and linked to Jira
-- [ ] **ALL sub-items documented** (implementation comments posted)
+- [ ] **ALL sub-items documented** (with review checklists)
 - [ ] **Main issue transitioned to QA**
 - [ ] **ALL sub-items transitioned to QA**
 - [ ] Final completion summary posted
+- [ ] **Review roadmap posted** (bite-sized review tasks)
 - [ ] No blockers remain
 
 ## Example Usage
@@ -531,15 +595,25 @@ Post comments at key milestones:
 9. **Sub-Items Documented**: "Implementation documented on {count} sub-items"
 10. **QA Transition**: "Main issue and {count} sub-items transitioned to QA"
 11. **Final Summary**: "🎉 Development Complete - Ready for QA" (detailed table)
+12. **Review Roadmap**: "📖 Review broken into {count} bite-sized chunks" (task table)
 
-**Sub-Item Comments:** Each sub-task also receives an implementation comment with:
+**Sub-Item Comments:** Each sub-task receives a review-friendly comment with:
 - PR link and branch name
 - Specific changes for that sub-item
-- Files modified
+- Files modified with line counts
 - Test status and coverage
 - Related commits
+- **📋 Review Checklist** (5-7 quick items)
+- **⏱️ Estimated review time** (5-15 min)
+- **🎯 Focus areas** (prioritized file list)
+- **📚 Suggested review order**
+- **❓ Feedback questions** (specific items to address)
 
-This provides full visibility to the team on progress across all items.
+**This enables reviewers to:**
+- Pick any sub-item and review it independently
+- Complete reviews in short time blocks (5-15 min)
+- Track progress across multiple reviewers
+- Know exactly what to look for in each chunk
 
 ## Notes
 
