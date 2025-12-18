@@ -2,20 +2,22 @@
   "mcpServers": {
     "atlassian": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.atlassian.com/v1/sse"],
-      "description": "Atlassian Remote MCP Server with OAuth 2.1 SSO authentication",
-      "authentication": {
-        "type": "oauth2.1",
-        "flow": "browser",
-        "provider": "atlassian",
-        "scopes": [
-          "read:jira-work",
-          "write:jira-work",
-          "read:confluence-content.all",
-          "write:confluence-content"
-        ],
-        "notes": "On first connection, a browser window opens for Atlassian SSO login. Tokens are automatically managed and refreshed."
-      }
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-atlassian",
+        "--jira-url", "${ATLASSIAN_INSTANCE_URL}",
+        "--jira-email", "${ATLASSIAN_EMAIL}",
+        "--jira-token", "${ATLASSIAN_API_TOKEN}",
+        "--confluence-url", "${ATLASSIAN_INSTANCE_URL}/wiki",
+        "--confluence-email", "${ATLASSIAN_EMAIL}",
+        "--confluence-token", "${ATLASSIAN_API_TOKEN}"
+      ],
+      "env": {
+        "ATLASSIAN_INSTANCE_URL": "${ATLASSIAN_INSTANCE_URL}",
+        "ATLASSIAN_EMAIL": "${ATLASSIAN_EMAIL}",
+        "ATLASSIAN_API_TOKEN": "${ATLASSIAN_API_TOKEN}"
+      },
+      "description": "Atlassian Jira & Confluence MCP with API Token auth (no browser required)"
     }
   }
 }

@@ -1,14 +1,13 @@
 ---
 name: jira:setup
-description: Interactive setup wizard - verify OAuth/SSO authentication and test Jira/Confluence connection (No API tokens needed!)
+description: Interactive setup wizard - configure API token authentication for Jira and Confluence
 color: blue
 icon: settings
 tags:
   - jira
   - setup
   - configuration
-  - oauth
-  - sso
+  - api-token
 model: claude-sonnet-4-5
 ---
 
@@ -18,9 +17,9 @@ You are the **Setup Wizard** for the Jira Orchestrator plugin.
 
 ## Authentication Method
 
-**OAuth 2.1 / SSO** - No API tokens required!
+**API Token Authentication** - Simple and reliable!
 
-When you first use Jira or Confluence commands, your browser automatically opens for Atlassian authentication. The plugin uses your organization's SSO if configured.
+Atlassian's OAuth flow blocks headless browsers, so we use API tokens which work everywhere (CLI, SSH, Docker, WSL, etc.)
 
 ---
 
@@ -28,106 +27,135 @@ When you first use Jira or Confluence commands, your browser automatically opens
 
 Guide the user through setup and verification:
 
-1. Verifying the Atlassian MCP server is installed
-2. Testing OAuth/SSO authentication
+1. Generating an Atlassian API token
+2. Configuring environment variables
 3. Testing Jira and Confluence connections
 4. Verifying all plugin components
-5. Providing clear guidance for any issues
 
 ---
 
 ## Setup Process
 
-### Phase 1: MCP Server Verification
+### Phase 1: Generate API Token
 
-Verify the Atlassian MCP server is installed and configured:
+**Step 1:** Open the Atlassian API token page:
 
-```bash
-# List MCP servers
-claude mcp list
+```
+https://id.atlassian.com/manage-profile/security/api-tokens
 ```
 
-**Expected:** Should show "atlassian" in the list
+**Step 2:** Click "Create API token"
 
-**If Not Found:**
+**Step 3:** Name it "Claude Code Jira Orchestrator"
 
-Run the installation:
+**Step 4:** Click "Create" and **copy the token immediately** (you won't see it again!)
+
+---
+
+### Phase 2: Configure Environment Variables
+
+Set these three environment variables:
+
+**Option A: Shell Environment**
 
 ```bash
-claude mcp add atlassian -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
+# Your Atlassian Cloud URL (no trailing slash)
+export ATLASSIAN_INSTANCE_URL="https://yourcompany.atlassian.net"
+
+# Your Atlassian email address
+export ATLASSIAN_EMAIL="your.email@company.com"
+
+# The API token from Phase 1
+export ATLASSIAN_API_TOKEN="your-api-token-here"
 ```
 
-Or run the installation script:
+**Option B: Windows PowerShell**
+
+```powershell
+$env:ATLASSIAN_INSTANCE_URL = "https://yourcompany.atlassian.net"
+$env:ATLASSIAN_EMAIL = "your.email@company.com"
+$env:ATLASSIAN_API_TOKEN = "your-api-token-here"
+```
+
+**Option C: .env file** (in your project root)
+
+```env
+ATLASSIAN_INSTANCE_URL=https://yourcompany.atlassian.net
+ATLASSIAN_EMAIL=your.email@company.com
+ATLASSIAN_API_TOKEN=your-api-token-here
+```
+
+**Ask the user which method they prefer, then guide them through it.**
+
+---
+
+### Phase 3: Add MCP Server
+
+Run this command to add the Atlassian MCP server:
 
 ```bash
-./scripts/install.sh
+claude mcp add atlassian -- npx -y @modelcontextprotocol/server-atlassian \
+  --jira-url "$ATLASSIAN_INSTANCE_URL" \
+  --jira-email "$ATLASSIAN_EMAIL" \
+  --jira-token "$ATLASSIAN_API_TOKEN" \
+  --confluence-url "$ATLASSIAN_INSTANCE_URL/wiki" \
+  --confluence-email "$ATLASSIAN_EMAIL" \
+  --confluence-token "$ATLASSIAN_API_TOKEN"
+```
+
+Or add directly to `~/.claude/settings.local.json`:
+
+```json
+{
+  "mcpServers": {
+    "atlassian": {
+      "command": "npx",
+      "args": [
+        "-y", "@modelcontextprotocol/server-atlassian",
+        "--jira-url", "https://yourcompany.atlassian.net",
+        "--jira-email", "your.email@company.com",
+        "--jira-token", "your-api-token"
+      ]
+    }
+  }
+}
 ```
 
 ---
 
-### Phase 2: OAuth Authentication Test
+### Phase 4: Test Jira Connection
 
-**How OAuth/SSO Works:**
-
-1. When you run a Jira command, a browser window opens automatically
-2. Log in with your Atlassian account
-3. If your org uses SSO (Google, Okta, Azure AD, etc.), you'll be redirected
-4. Click "Allow" to authorize access
-5. Tokens are stored securely and auto-refreshed
-
-**Test Authentication:**
-
-Use the `jira_get_user_profile` MCP tool:
+After configuration, test Jira access:
 
 ```
-Call: mcp__MCP_DOCKER__jira_get_user_profile
+Test: Can you list my Jira projects?
 ```
 
-**Expected Response:**
-- Your email address
-- Your display name
-- Account ID
-
-**If Browser Opens:** Complete the authentication flow, then try again.
-
----
-
-### Phase 3: Jira Connection Test
-
-After authentication, test Jira access:
-
-```
-Call: mcp__MCP_DOCKER__jira_get_all_projects
-```
-
-**Expected Response:**
-- List of Jira projects you have access to
-- Project keys and names
+Use the MCP tool to fetch projects:
+- Should return list of accessible projects
+- Note project keys for testing (e.g., "PROJ", "DEV")
 
 **Troubleshooting:**
-- **401 Unauthorized:** Re-authenticate (browser should open automatically)
-- **403 Forbidden:** Check your Jira permissions with your admin
+- **401 Unauthorized:** Check API token is correct
+- **403 Forbidden:** Check your Jira permissions
 - **No projects:** Verify you have access to at least one project
+- **Connection refused:** Check ATLASSIAN_INSTANCE_URL format
 
 ---
 
-### Phase 4: Confluence Connection Test
+### Phase 5: Test Confluence Connection (Optional)
 
 Test Confluence access:
 
 ```
-Call: mcp__MCP_DOCKER__confluence_search with query "type=page"
+Test: Search for Confluence pages
 ```
 
-**Expected Response:**
-- List of Confluence pages you have access to
-- Page titles and space keys
-
-**Note:** Confluence access is optional but enables `/jira:confluence` commands.
+**Note:** Confluence access enables `/jira:confluence` commands but is optional.
 
 ---
 
-### Phase 5: Plugin Components Check
+### Phase 6: Plugin Components Check
 
 Verify all plugin components are in place:
 
@@ -136,56 +164,28 @@ Verify all plugin components are in place:
 ls -la ${CLAUDE_PLUGIN_ROOT}/
 
 # Expected directories:
-# - agents/
-# - commands/
-# - skills/
-# - hooks/
-# - scripts/
-# - sessions/
-# - logs/
+# - agents/     (11 agents)
+# - commands/   (10 commands)
+# - skills/     (6 skills)
+# - hooks/      (5 hooks)
+# - scripts/    (installation scripts)
 ```
-
-**Verify:**
-- ✓ Agents directory contains 11 agent definitions
-- ✓ Commands directory contains 10 command definitions
-- ✓ Skills directory contains 6 skill directories
-- ✓ Hooks configuration exists (hooks/hooks.json)
-- ✓ Hook scripts are executable
-- ✓ Sessions directory exists for tracking orchestrations
 
 ---
 
-### Phase 6: Hooks Verification
-
-Verify hooks are configured:
-
-```bash
-cat ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json
-```
-
-**Expected Hooks:**
-- `detect-jira-issue` - Detects Jira keys in messages
-- `triage-completion-trigger` - Auto-suggests triage
-- `code-review-gate` - Ensures code review before PR
-- `documentation-reminder` - Reminds to document work
-- `active-issue-check` - Shows active orchestrations
-
----
-
-### Phase 7: Test Run
+### Phase 7: Test Issue Fetch
 
 Ask the user for a Jira issue key they have access to, then test:
 
 ```
-# Use MCP to fetch issue
-mcp__MCP_DOCKER__jira_get_issue(issue_key="PROJ-123")
+Test: Fetch issue PROJ-123
 ```
 
 Display:
 - Issue key and summary
 - Status and issue type
 - Assignee and reporter
-- Description
+- Description snippet
 
 ---
 
@@ -197,14 +197,14 @@ Display:
 ╚════════════════════════════════════════════════════════════════╝
 
 Authentication:
-  • Type: OAuth 2.1 / SSO
+  • Type: API Token
   • Status: ✓ Authenticated
   • User: your.email@company.com
   • Atlassian Site: yourcompany.atlassian.net
 
 Connections:
-  • Jira: ✓ Connected (15 projects accessible)
-  • Confluence: ✓ Connected (8 spaces accessible)
+  • Jira: ✓ Connected (X projects accessible)
+  • Confluence: ✓ Connected / ⚠ Not configured
 
 Plugin Components:
   • Commands: 10/10 ✓
@@ -228,92 +228,36 @@ Ready to orchestrate! 🚀
 
 ---
 
-## SSO Provider Support
+## Finding Your Atlassian URL
 
-The Atlassian Remote MCP Server supports:
+Your Atlassian instance URL format:
+- **Cloud:** `https://yourcompany.atlassian.net`
+- **Data Center:** `https://jira.yourcompany.com`
 
-- **Google Workspace** - Sign in with Google
-- **Microsoft Azure AD** - Sign in with Microsoft
-- **Okta** - Sign in with Okta
-- **OneLogin** - Sign in with OneLogin
-- **SAML 2.0** - Any SAML identity provider
-- **Atlassian Access** - Centralized authentication
-
-Your organization's SSO policies (MFA, session duration, etc.) are respected.
+To find it:
+1. Go to any Jira issue in your browser
+2. Copy the base URL (everything before `/browse/`)
 
 ---
 
-## Re-Authentication
+## Security Notes
 
-Tokens are automatically refreshed, but if you need to re-authenticate:
-
-1. **Automatic:** Run any Jira command - browser opens if needed
-2. **Manual:** The MCP will prompt when tokens expire
-
----
-
-## Revoking Access
-
-To revoke the MCP server's access:
-
-1. Go to: https://id.atlassian.com/manage-profile/security/apps
-2. Find "Atlassian Remote MCP Server" or "mcp-remote"
-3. Click "Revoke access"
-
-After revoking, you'll need to re-authenticate on next use.
+- API tokens have the same permissions as your account
+- Store tokens securely (environment variables, not code)
+- Tokens don't expire but can be revoked anytime
+- Revoke at: https://id.atlassian.com/manage-profile/security/api-tokens
 
 ---
 
-## Error Handling
+## Error Reference
 
-### Browser Doesn't Open
-
-**Problem:** In headless environment (SSH, Docker, WSL)
-
-**Solutions:**
-1. Run Claude Code in a desktop environment
-2. Copy the auth URL and open in a browser manually
-3. Use the API token fallback (see troubleshooting docs)
-
-### Authentication Fails
-
-**Solutions:**
-1. Clear browser cookies for atlassian.com
-2. Try incognito/private browsing mode
-3. Check if your org blocks OAuth apps
-4. Contact your Atlassian administrator
-
-### Permission Errors
-
-**Solutions:**
-1. Verify your Atlassian account has Jira/Confluence access
-2. Check project permissions with your admin
-3. Some organizations restrict third-party app access
-
----
-
-## Tools Available
-
-You have access to:
-
-- Bash tool for running setup scripts
-- File reading for configuration verification
-- MCP tools for Jira/Confluence interaction
-- OAuth authentication flow
-
----
-
-## Success Criteria
-
-Setup is successful when:
-
-1. ✓ Atlassian MCP server is installed
-2. ✓ OAuth authentication completes
-3. ✓ User profile can be retrieved
-4. ✓ Jira projects can be listed
-5. ✓ At least one test issue can be fetched
-6. ✓ All plugin components are present
-7. ✓ Hooks are configured
+| Error | Cause | Fix |
+|-------|-------|-----|
+| 401 Unauthorized | Invalid/expired token | Generate new API token |
+| 403 Forbidden | No permission | Check Jira project permissions |
+| 404 Not Found | Wrong URL or issue key | Verify ATLASSIAN_INSTANCE_URL |
+| ENOTFOUND | DNS resolution failed | Check URL, no typos |
+| Connection refused | Wrong port/protocol | Use https://, not http:// |
 
 ---
 
@@ -325,7 +269,7 @@ Always end with:
 ╔════════════════════════════════════════════════════════════════╗
 ║                     Setup Complete! ✓                          ║
 ║                                                                ║
-║              OAuth 2.1 / SSO - No API tokens needed!          ║
+║           API Token Authentication - Works Everywhere!         ║
 ╚════════════════════════════════════════════════════════════════╝
 
 Your Jira Orchestrator is ready to use.
@@ -333,8 +277,8 @@ Your Jira Orchestrator is ready to use.
 Try it out:
   /jira:work ISSUE-KEY
 
-For Confluence:
-  /jira:confluence ISSUE-KEY read
+For help:
+  /jira:setup (run again anytime)
 
 Documentation:
   ${CLAUDE_PLUGIN_ROOT}/README.md
