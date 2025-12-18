@@ -55,6 +55,51 @@
       "source": "local",
       "installedAt": "2025-12-17T13:00:00Z",
       "dependencies": {}
+    },
+    "ahling-command-center": {
+      "callsign": "Sentinel",
+      "faction": "Promethean",
+      "version": "1.0.0",
+      "path": "../ahling-command-center",
+      "source": "local",
+      "installedAt": "2025-12-17T18:00:00Z",
+      "dependencies": {}
+    },
+    "container-workflow": {
+      "callsign": "Enforcer",
+      "faction": "Spartan",
+      "version": "1.0.0",
+      "path": "../container-workflow",
+      "source": "local",
+      "installedAt": "2025-12-17T18:00:00Z",
+      "dependencies": {}
+    },
+    "fastapi-backend": {
+      "callsign": "Oracle",
+      "faction": "Promethean",
+      "version": "0.1.0",
+      "path": "../fastapi-backend",
+      "source": "local",
+      "installedAt": "2025-12-17T18:00:00Z",
+      "dependencies": {}
+    },
+    "frontend-powerhouse": {
+      "callsign": "Titan",
+      "faction": "Spartan",
+      "version": "1.0.0",
+      "path": "../frontend-powerhouse",
+      "source": "local",
+      "installedAt": "2025-12-17T18:00:00Z",
+      "dependencies": {}
+    },
+    "fullstack-iac": {
+      "callsign": "Zenith",
+      "faction": "Forerunner",
+      "version": "1.0.0",
+      "path": "../fullstack-iac",
+      "source": "local",
+      "installedAt": "2025-12-17T18:00:00Z",
+      "dependencies": {}
     }
   },
 
@@ -75,66 +120,6 @@
         "commands": 8,
         "agents": 4,
         "skills": 3,
-        "hooks": 3
-      }
-    },
-
-    "claude-frontend-toolkit": {
-      "callsign": "Quasar",
-      "faction": "Promethean",
-      "name": "claude-frontend-toolkit",
-      "version": "1.0.0",
-      "description": "Quasar - Blazing core of frontend development. Comprehensive toolkit for React, Vue, Next.js with component generation and testing that illuminates the path to stellar user interfaces.",
-      "author": "Community",
-      "license": "MIT",
-      "repository": "https://github.com/Lobbi-Docs/claude",
-      "keywords": ["frontend", "react", "vue", "nextjs", "components", "ui"],
-      "categories": ["frontend", "development", "testing"],
-      "dependencies": {},
-      "provides": {
-        "commands": 6,
-        "agents": 3,
-        "skills": 5,
-        "hooks": 2
-      }
-    },
-
-    "team-collaboration-suite": {
-      "callsign": "Maelstrom",
-      "faction": "Spartan",
-      "name": "team-collaboration-suite",
-      "version": "1.0.0",
-      "description": "Maelstrom - Unstoppable force of team coordination. Integrates Jira, Confluence, GitHub for agile workflows with the relentless power of Spartan teamwork.",
-      "author": "Community",
-      "license": "MIT",
-      "repository": "https://github.com/Lobbi-Docs/claude",
-      "keywords": ["jira", "confluence", "github", "agile", "scrum", "collaboration"],
-      "categories": ["collaboration", "project-management", "devops"],
-      "dependencies": {},
-      "provides": {
-        "commands": 10,
-        "agents": 6,
-        "skills": 4,
-        "hooks": 1
-      }
-    },
-
-    "cloud-infrastructure-manager": {
-      "callsign": "Valor",
-      "faction": "Spartan",
-      "name": "cloud-infrastructure-manager",
-      "version": "1.0.0",
-      "description": "Valor - Courageous commander of cloud realms. Manages AWS, GCP, Azure infrastructure with Terraform, Kubernetes, and Helm using the unwavering strength of Spartan discipline.",
-      "author": "Community",
-      "license": "MIT",
-      "repository": "https://github.com/Lobbi-Docs/claude",
-      "keywords": ["aws", "gcp", "azure", "terraform", "kubernetes", "helm", "cloud"],
-      "categories": ["cloud", "infrastructure", "devops"],
-      "dependencies": {},
-      "provides": {
-        "commands": 12,
-        "agents": 5,
-        "skills": 6,
         "hooks": 3
       }
     },
@@ -265,7 +250,7 @@
       "faction": "Forerunner",
       "name": "jira-orchestrator",
       "version": "1.1.0",
-      "description": "Arbiter - Supreme judge of Jira issue completion. Intelligent orchestration of 6-phase development workflows (EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT) with OAuth 2.1/SSO authentication. Auto-coordinates 10 specialized sub-agents for triage, code review, PR creation, and Confluence documentation. No API tokens required.",
+      "description": "Arbiter - Supreme judge of Jira issue completion. Intelligent orchestration of 6-phase development workflows (EXPLORE -> PLAN -> CODE -> TEST -> FIX -> DOCUMENT) with OAuth 2.1/SSO authentication. Auto-coordinates 10 specialized sub-agents for triage, code review, PR creation, and Confluence documentation. No API tokens required.",
       "author": "Brookside BI",
       "license": "MIT",
       "repository": "https://github.com/markus41/jira-orchestrator",
@@ -300,18 +285,118 @@
         "workflows": 19,
         "mcp_tools": 15
       }
+    },
+
+    "ahling-command-center": {
+      "callsign": "Sentinel",
+      "faction": "Promethean",
+      "name": "ahling-command-center",
+      "version": "1.0.0",
+      "description": "Sentinel - Vigilant guardian of infrastructure and smart home automation. Command center with Ollama integration, Home Assistant orchestration, and multi-agent coordination. Provides watchful oversight with Promethean precision.",
+      "author": "Markus Ahling",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["infrastructure", "smart-home", "automation", "ollama", "home-assistant", "docker", "vault", "mcp"],
+      "categories": ["infrastructure", "smart-home", "automation", "mcp"],
+      "dependencies": {},
+      "provides": {
+        "commands": 15,
+        "agents": 10,
+        "skills": 8,
+        "hooks": 3
+      }
+    },
+
+    "container-workflow": {
+      "callsign": "Enforcer",
+      "faction": "Spartan",
+      "name": "container-workflow",
+      "version": "1.0.0",
+      "description": "Enforcer - Relentless guardian of containerized deployments. Comprehensive Docker/Container workflow automation with CI/CD pipeline management, code review, testing, release automation, and security scanning. Enforces quality with Spartan discipline.",
+      "author": "Markus Ahling",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["docker", "container", "ci-cd", "workflow", "devops", "security", "testing", "deployment", "automation", "trivy", "github-actions", "gitlab-ci", "azure-pipelines"],
+      "categories": ["devops", "containers", "ci-cd", "security"],
+      "dependencies": {},
+      "provides": {
+        "commands": 8,
+        "agents": 4,
+        "skills": 5,
+        "hooks": 3
+      }
+    },
+
+    "fastapi-backend": {
+      "callsign": "Oracle",
+      "faction": "Promethean",
+      "name": "fastapi-backend",
+      "version": "0.1.0",
+      "description": "Oracle - All-knowing architect of backend systems. Comprehensive FastAPI development with MongoDB/Beanie ODM, Keycloak authentication, Docker/K8s deployment, background tasks, caching, observability, and real-time features. Foresees and solves backend challenges with Promethean intelligence.",
+      "author": "Markus Ahling",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["fastapi", "mongodb", "beanie", "keycloak", "kubernetes", "docker", "async", "python", "backend", "api", "websocket", "redis", "celery", "arq", "observability"],
+      "categories": ["backend", "python", "api", "devops"],
+      "dependencies": {},
+      "provides": {
+        "commands": 10,
+        "agents": 4,
+        "skills": 8,
+        "hooks": 3
+      }
+    },
+
+    "frontend-powerhouse": {
+      "callsign": "Titan",
+      "faction": "Spartan",
+      "name": "frontend-powerhouse",
+      "version": "1.0.0",
+      "description": "Titan - Unstoppable colossus of frontend development. Maximum-capacity plugin with 13 specialized subagents, ultrathink integration, and comprehensive React/Next.js/Chakra UI tooling. Overwhelms complexity with Spartan strength.",
+      "author": "Brookside BI",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["react", "nextjs", "chakra-ui", "frontend", "accessibility", "performance", "design-system", "ultrathink", "testing"],
+      "categories": ["frontend", "react", "design-system", "testing"],
+      "dependencies": {},
+      "provides": {
+        "commands": 12,
+        "agents": 13,
+        "skills": 8,
+        "hooks": 4
+      }
+    },
+
+    "fullstack-iac": {
+      "callsign": "Zenith",
+      "faction": "Forerunner",
+      "name": "fullstack-iac",
+      "version": "1.0.0",
+      "description": "Zenith - The pinnacle of full-stack development and infrastructure automation. Complete FastAPI, React/Vite, Ansible, Terraform, Kubernetes with production-ready templates and CI/CD pipelines. Represents the highest achievement of Forerunner engineering.",
+      "author": "Markus Ahling",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["fastapi", "react", "vite", "ansible", "terraform", "kubernetes", "docker", "full-stack", "infrastructure-as-code", "ci-cd", "templates", "scaffolding", "aws", "azure", "gcp", "postgresql", "mongodb", "redis", "microservices", "serverless"],
+      "categories": ["full-stack", "infrastructure", "devops", "frontend", "backend"],
+      "dependencies": {},
+      "provides": {
+        "commands": 15,
+        "agents": 8,
+        "skills": 10,
+        "hooks": 5
+      }
     }
   },
 
   "stats": {
-    "totalInstalled": 5,
-    "totalAvailable": 12,
+    "totalInstalled": 10,
+    "totalAvailable": 14,
     "byFaction": {
       "Forerunner": 6,
-      "Promethean": 4,
+      "Promethean": 5,
       "Spartan": 3
     },
-    "lastUpdated": "2025-12-17T13:00:00Z",
-    "note": "12 plugins with unique Halo-themed callsigns. Genesis (exec-automator) - AI-powered executive director automation with LangGraph/LangChain workflows."
+    "lastUpdated": "2025-12-17T18:00:00Z",
+    "note": "14 plugins with unique Halo-themed callsigns. Synced registry with actual plugin directories."
   }
 }
