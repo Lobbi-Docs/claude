@@ -1,0 +1,266 @@
+#!/bin/bash
+# Jira Orchestrator Git Hook: commit-msg
+# Validate smart commit syntax and format
+#
+# Installation:
+#   cp jira-orchestrator/hooks/git/commit-msg .git/hooks/
+#   chmod +x .git/hooks/commit-msg
+#
+# Usage:
+#   Automatic - runs after commit message is saved
+#
+# Smart Commit Commands:
+#   #comment <text>                - Add comment to issue
+#   #time <duration>               - Log work time (e.g., 2h 30m, 1d 4h)
+#   #transition "<status>"         - Transition issue (must use quotes)
+#
+# Examples:
+#   LF-27: Add OAuth support #time 2h 30m
+#   LF-27: Fix login bug #comment Fixed authentication flow #transition "In Review"
+#   LF-27: Update docs #time 1h #comment Documentation updated
+
+set -e
+
+COMMIT_MSG_FILE=$1
+DEBUG=${JIRA_HOOK_DEBUG:-false}
+
+# Configuration
+ISSUE_KEY_PATTERN='[A-Z]+-[0-9]+'
+SMART_COMMAND_PATTERN='#(comment|time|transition)'
+TIME_FORMAT_PATTERN='^([0-9]+[wdhm]\s*)+$'
+TRANSITION_FORMAT_PATTERN='#transition\s+"[^"]+"'
+
+# Debug logging
+debug() {
+  if [ "$DEBUG" = "true" ]; then
+    echo "[commit-msg] $1" >&2
+  fi
+}
+
+# Error reporting
+error() {
+  echo "ERROR: $1" >&2
+  exit 1
+}
+
+# Warning reporting
+warning() {
+  echo "WARNING: $1" >&2
+}
+
+# Read commit message
+read_commit_message() {
+  local msg_file=$1
+
+  # Read message, excluding git comment lines
+  grep -v '^#' "$msg_file" | grep -v '^\s*$' || true
+}
+
+# Check if message has smart commit commands
+has_smart_commands() {
+  local message=$1
+
+  if echo "$message" | grep -qE "$SMART_COMMAND_PATTERN"; then
+    debug "Smart commit commands detected"
+    return 0
+  fi
+
+  return 1
+}
+
+# Validate issue key is present
+validate_issue_key() {
+  local message=$1
+
+  if ! echo "$message" | grep -qE "$ISSUE_KEY_PATTERN"; then
+    error "Smart commit commands require issue key (e.g., LF-27, PROJ-123)"
+  fi
+
+  local issue_key=$(echo "$message" | grep -oE "$ISSUE_KEY_PATTERN" | head -1)
+  debug "Issue key: $issue_key"
+}
+
+# Validate time format
+validate_time_format() {
+  local message=$1
+
+  # Extract time commands
+  local time_values=$(echo "$message" | grep -oP '#time\s+\K[^#\n]+' || true)
+
+  if [ -z "$time_values" ]; then
+    return 0
+  fi
+
+  debug "Validating time format: $time_values"
+
+  # Check each time value
+  while IFS= read -r time_val; do
+    # Trim whitespace
+    time_val=$(echo "$time_val" | xargs)
+
+    if [ -z "$time_val" ]; then
+      continue
+    fi
+
+    # Validate format: combinations of number + unit (w/d/h/m)
+    if ! echo "$time_val" | grep -qE "$TIME_FORMAT_PATTERN"; then
+      error "Invalid time format: '$time_val'. Use: 2h, 30m, 1d 4h, 1w 2d 3h 30m"
+    fi
+
+    debug "Valid time format: $time_val"
+  done <<< "$time_values"
+}
+
+# Validate transition format
+validate_transition_format() {
+  local message=$1
+
+  # Check if transition command exists
+  if ! echo "$message" | grep -qE '#transition'; then
+    return 0
+  fi
+
+  debug "Validating transition format"
+
+  # Extract transition values
+  local transitions=$(echo "$message" | grep -oP '#transition\s+\K[^\n]+' || true)
+
+  if [ -z "$transitions" ]; then
+    error "Empty transition value. Use: #transition \"In Review\""
+  fi
+
+  # Check each transition
+  while IFS= read -r transition; do
+    # Trim whitespace
+    transition=$(echo "$transition" | xargs)
+
+    # Must be quoted
+    if ! echo "$transition" | grep -qE '^"[^"]+"'; then
+      error "Transition status must be quoted: #transition \"In Review\" (got: $transition)"
+    fi
+
+    # Extract status name
+    local status=$(echo "$transition" | grep -oP '^"\K[^"]+')
+    debug "Valid transition: $status"
+
+    # Warn about common status names
+    case "$status" in
+      "In Progress"|"In Review"|"In QA"|"Done"|"To Do")
+        debug "Standard status: $status"
+        ;;
+      *)
+        warning "Non-standard status name: '$status' - verify it exists in your workflow"
+        ;;
+    esac
+  done <<< "$transitions"
+}
+
+# Validate comment format
+validate_comment_format() {
+  local message=$1
+
+  # Check if comment command exists
+  if ! echo "$message" | grep -qE '#comment'; then
+    return 0
+  fi
+
+  debug "Validating comment format"
+
+  # Extract comment values
+  local comments=$(echo "$message" | grep -oP '#comment\s+\K[^#\n]+' || true)
+
+  if [ -z "$comments" ]; then
+    warning "Empty comment value detected"
+    return 0
+  fi
+
+  # Check for suspicious patterns
+  while IFS= read -r comment; do
+    comment=$(echo "$comment" | xargs)
+
+    if [ ${#comment} -lt 3 ]; then
+      warning "Very short comment: '$comment'"
+    fi
+
+    debug "Comment: ${comment:0:50}..."
+  done <<< "$comments"
+}
+
+# Validate smart commit syntax
+validate_smart_commit_syntax() {
+  local message=$1
+
+  # Extract all smart commands
+  local commands=$(echo "$message" | grep -oE '#[a-z]+' || true)
+
+  debug "Found commands: $commands"
+
+  # Check for unknown commands
+  while IFS= read -r cmd; do
+    if [ -z "$cmd" ]; then
+      continue
+    fi
+
+    case "$cmd" in
+      "#comment"|"#time"|"#transition")
+        debug "Known command: $cmd"
+        ;;
+      *)
+        warning "Unknown smart commit command: $cmd (valid: #comment, #time, #transition)"
+        ;;
+    esac
+  done <<< "$commands"
+}
+
+# Validate message structure
+validate_message_structure() {
+  local message=$1
+
+  # Check for issue key at start
+  if ! echo "$message" | head -1 | grep -qE "^$ISSUE_KEY_PATTERN"; then
+    warning "Issue key not at start of message (recommended format: 'LF-27: Message')"
+  fi
+
+  # Check message length
+  local first_line=$(echo "$message" | head -1)
+  if [ ${#first_line} -gt 100 ]; then
+    warning "First line is ${#first_line} characters (recommended: <72 characters)"
+  fi
+}
+
+# Main validation
+main() {
+  debug "=== Commit Message Hook ==="
+  debug "Message file: $COMMIT_MSG_FILE"
+
+  # Read commit message
+  local message
+  message=$(read_commit_message "$COMMIT_MSG_FILE")
+
+  if [ -z "$message" ]; then
+    debug "Empty commit message (will be rejected by git)"
+    exit 0
+  fi
+
+  debug "Message: ${message:0:100}..."
+
+  # Check for smart commands
+  if ! has_smart_commands "$message"; then
+    debug "No smart commands, skipping validation"
+    exit 0
+  fi
+
+  # Validate smart commit requirements
+  validate_issue_key "$message"
+  validate_smart_commit_syntax "$message"
+  validate_time_format "$message"
+  validate_transition_format "$message"
+  validate_comment_format "$message"
+  validate_message_structure "$message"
+
+  debug "=== Validation Complete ==="
+  exit 0
+}
+
+# Run main
+main

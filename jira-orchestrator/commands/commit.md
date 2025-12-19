@@ -25,6 +25,18 @@ arguments:
     description: Show what would be committed without making changes
     required: false
     type: boolean
+  - name: --validate-transitions
+    description: Pre-validate transition against Jira workflow before commit
+    required: false
+    type: boolean
+  - name: --check-worklog
+    description: Verify time tracking is enabled on issue before logging
+    required: false
+    type: boolean
+  - name: --strict
+    description: Fail on any validation warning (not just errors)
+    required: false
+    type: boolean
 tags:
   - jira
   - git
@@ -39,6 +51,12 @@ examples:
     description: Validate current staged changes
   - command: /jira:commit "Add OAuth2 support" --comment "Implemented Google OAuth" --time "3h 15m"
     description: Commit with comment and time tracking
+  - command: /jira:commit "Complete feature" --transition "Done" --validate-transitions
+    description: Validate transition is available before committing
+  - command: /jira:commit "Log work" --time 4h --check-worklog
+    description: Verify time tracking enabled before logging
+  - command: /jira:commit auto --time 2h --transition "In Review" --strict
+    description: Strict mode - fail on any validation warning
 ---
 
 # Jira Smart Commit Command
@@ -55,22 +73,39 @@ This command enables developers to create git commits with Jira smart commit syn
 ## Workflow Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      JIRA SMART COMMIT WORKFLOW                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐ │
-│   │   DETECT    │ -> │   VALIDATE  │ -> │   GENERATE  │ -> │   EXECUTE   │ │
-│   │ Issue Key   │    │   Syntax    │    │   Message   │    │   Commit    │ │
-│   └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘ │
-│         │                  │                  │                  │         │
-│         v                  v                  v                  v         │
-│   From branch       Time format       Build smart          Git commit    │
-│   or argument       Transition        commit message       Jira update   │
-│                     validation        with commands                       │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                        JIRA SMART COMMIT WORKFLOW (Enhanced v1.5)                    │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                      │
+│   ┌──────────┐   ┌───────────────┐   ┌──────────┐   ┌──────────┐   ┌─────────────┐ │
+│   │  DETECT  │ → │   VALIDATE    │ → │ GENERATE │ → │ EXECUTE  │ → │   SYNC      │ │
+│   │Issue Key │   │  (Enhanced)   │   │ Message  │   │  Commit  │   │  to Jira    │ │
+│   └──────────┘   └───────────────┘   └──────────┘   └──────────┘   └─────────────┘ │
+│        │                │                  │              │              │          │
+│        v                v                  v              v              v          │
+│   From branch    ┌─────────────┐    Build smart     Git commit    Process smart   │
+│   or argument    │ Validation  │    commit msg      with HEREDOC  commit commands │
+│                  │   Agents    │    + commands                                     │
+│                  └─────────────┘                                                   │
+│                        │                                                            │
+│         ┌──────────────┼──────────────┐                                            │
+│         v              v              v                                            │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐                                     │
+│  │ Transition │ │  Worklog   │ │   Smart    │                                     │
+│  │  Manager   │ │  Manager   │ │  Commit    │                                     │
+│  │   Agent    │ │   Agent    │ │ Validator  │                                     │
+│  └────────────┘ └────────────┘ └────────────┘                                     │
+│                                                                                      │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Enhanced Validation Flags
+
+| Flag | Purpose | Agent Used |
+|------|---------|------------|
+| `--validate-transitions` | Pre-validate transition against workflow | transition-manager |
+| `--check-worklog` | Verify time tracking enabled | worklog-manager |
+| `--strict` | Fail on warnings, not just errors | smart-commit-validator |
 
 ## Execution Steps
 
@@ -105,23 +140,65 @@ command: |
 - `hotfix/PROJ-789-critical` → `PROJ-789`
 - `PROJ-321-my-feature` → `PROJ-321`
 
-### Step 2: Validate Inputs
+### Step 2: Validate Inputs (Enhanced)
 
-Validate all smart commit parameters before proceeding:
+Validate all smart commit parameters using specialized validation agents:
 
 ```yaml
+# Primary validation
 agent: smart-commit-validator
 model: haiku
 tasks:
   - Validate issue key format (e.g., PROJ-123)
   - Verify issue exists in Jira
   - Validate time format if provided
-  - Check transition name against available transitions
   - Verify git status (staged changes exist)
+
+# Conditional: If --validate-transitions flag set
+agent: transition-manager
+model: haiku
+tasks:
+  - Query available transitions from Jira
+  - Fuzzy match requested transition
+  - Verify transition is valid from current status
+  - Return suggestions if invalid
+
+# Conditional: If --check-worklog flag set
+agent: worklog-manager
+model: haiku
+tasks:
+  - Check time tracking enabled on issue
+  - Validate time format and convert to seconds
+  - Check remaining estimate
+  - Return error if worklog not allowed
+
 validations:
   issue_key_pattern: "^[A-Z]+-\\d+$"
   time_pattern: "^(\\d+[wdhm]\\s*)+$"
   transition_check: Query Jira for available transitions
+  worklog_check: Verify time tracking permissions
+```
+
+#### Validation Output Example
+
+```yaml
+validation_result:
+  issue_key: "PROJ-123"
+  issue_exists: true
+  transition_validation:
+    requested: "In Review"
+    valid: true
+    available: ["In Progress", "In Review", "Done"]
+    fuzzy_matched: false
+  time_validation:
+    requested: "2h 30m"
+    valid: true
+    seconds: 9000
+    tracking_enabled: true
+  strict_mode: false
+  errors: []
+  warnings: []
+  suggestions: []
 ```
 
 #### Time Format Validation
@@ -635,19 +712,31 @@ PROJ-124 #comment Updated integration tests #time 1h
 
 ## Agent Orchestration
 
-This command orchestrates multiple specialized agents:
+This command orchestrates multiple specialized agents for validation, generation, and synchronization:
 
-| Agent | Model | Purpose |
-|-------|-------|---------|
-| smart-commit-validator | haiku | Input validation and error checking |
-| smart-commit-generator | sonnet | Auto-generate commit messages from context |
-| github-jira-sync | sonnet | Execute smart commit commands in Jira |
+| Agent | Model | Purpose | Invocation |
+|-------|-------|---------|------------|
+| smart-commit-validator | haiku | Input validation and error checking | Always |
+| transition-manager | haiku | Fuzzy transition matching and validation | With `--validate-transitions` |
+| worklog-manager | haiku | Time tracking validation and conversion | With `--check-worklog` |
+| commit-message-generator | sonnet | Auto-generate commit messages from context | With `message=auto` |
+| github-jira-sync | sonnet | Execute smart commit commands in Jira | Post-commit |
+| batch-commit-processor | sonnet | Process multiple commits with aggregation | Via `/jira:bulk-commit` |
 
 **Execution Pattern:**
-1. Validator runs first to check all inputs
-2. Generator creates message (if auto mode)
-3. Git commit executes
-4. Sync agent processes Jira updates
+1. **Validation Phase** (parallel where possible):
+   - smart-commit-validator runs to check all inputs
+   - transition-manager validates workflow state (if flag set)
+   - worklog-manager checks time tracking (if flag set)
+2. **Generation Phase:**
+   - commit-message-generator creates message (if auto mode)
+3. **Execution Phase:**
+   - Git commit executes with HEREDOC formatting
+4. **Sync Phase:**
+   - github-jira-sync processes Jira updates
+
+**Strict Mode (`--strict`):**
+When enabled, validation warnings are treated as errors and will block the commit.
 
 ## Error Handling
 
@@ -994,6 +1083,9 @@ PROJ-123 #comment Description #time 2h
 - `/jira-orchestrator:work` - Full development workflow
 - `/jira-orchestrator:pr` - Create pull request
 - `/jira:sync` - Manually sync commit to Jira
+- `/jira:commit-template` - Generate commit message template from issue
+- `/jira:bulk-commit` - Process multiple commits in batch
+- `/jira:install-hooks` - Install git hooks for smart commits
 - `/qa-review` - Review QA tickets
 
 ## Success Criteria
@@ -1023,7 +1115,11 @@ A successful smart commit execution means:
 
 - `github-jira-sync.md` - Bidirectional GitHub-Jira synchronization
 - `pr-creator.md` - Create pull requests with Jira integration
-- `smart-commit-generator.md` - Auto-generate smart commit messages
+- `smart-commit-validator.md` - Pre-flight validation of smart commit parameters
+- `transition-manager.md` - Intelligent workflow state management with fuzzy matching
+- `worklog-manager.md` - Time tracking validation and conversion
+- `commit-message-generator.md` - Auto-generate smart commit messages from context
+- `batch-commit-processor.md` - Process multiple commits with aggregation
 
 ### Configuration Files
 

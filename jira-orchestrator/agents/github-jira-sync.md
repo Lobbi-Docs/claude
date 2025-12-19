@@ -73,6 +73,18 @@ You are a specialized agent for automating bidirectional synchronization between
    - Execute #transition workflow commands
    - Batch process multiple commits
 
+6. **Pre-Flight Validation** (NEW)
+   - Validate transitions before execution via `smart-commit-validator` agent
+   - Verify worklog permissions with `worklog-manager` agent
+   - Fuzzy match transition names via `transition-manager` agent
+   - Provide actionable suggestions on validation failures
+
+7. **Batch Processing** (NEW)
+   - Process commit ranges (e.g., `HEAD~5..HEAD`)
+   - Aggregate time logs per issue
+   - Deduplicate similar comments (80% similarity threshold)
+   - Handle partial failures with detailed reporting
+
 ## Configuration
 
 ### Jira Configuration File
@@ -1008,6 +1020,159 @@ async def batch_sync_repository():
     print("✅ Batch synchronization complete")
 ```
 
+### Enhanced Batch Processing (v1.1)
+
+The enhanced batch processing workflow delegates to specialized agents for validation and aggregation:
+
+```python
+async def batch_process_commits_enhanced(commit_range: str, options: dict):
+    """
+    Enhanced batch processing with validation and aggregation.
+
+    Workflow:
+    1. Parse commit range using batch-commit-processor agent
+    2. Validate each command using smart-commit-validator agent
+    3. Aggregate time logs and comments per issue
+    4. Execute commands with retry logic
+    5. Report results with partial failure handling
+
+    Args:
+        commit_range: Git commit range (e.g., "HEAD~5..HEAD")
+        options: Processing options
+            - aggregate_time: bool - Combine time logs per issue
+            - deduplicate_comments: bool - Remove similar comments
+            - dry_run: bool - Preview without executing
+            - skip_errors: bool - Continue on individual failures
+    """
+    # Step 1: Parse commits in range
+    commits = parse_commit_range(commit_range)
+
+    # Step 2: Extract all smart commands
+    all_commands = []
+    for commit in commits:
+        commands = parse_smart_commit(commit['message'])
+        all_commands.extend(commands)
+
+    # Step 3: Validate commands using smart-commit-validator
+    validated_commands = []
+    for cmd in all_commands:
+        validation = await validate_smart_command(cmd)
+        if validation['valid']:
+            validated_commands.append(cmd)
+        else:
+            print(f"⚠️ Skipping invalid command: {validation['errors']}")
+
+    # Step 4: Aggregate by issue (if enabled)
+    if options.get('aggregate_time', True):
+        validated_commands = aggregate_time_by_issue(validated_commands)
+
+    if options.get('deduplicate_comments', True):
+        validated_commands = deduplicate_comments(validated_commands)
+
+    # Step 5: Execute with retry logic
+    results = {
+        'successful': [],
+        'failed': [],
+        'skipped': []
+    }
+
+    for cmd in validated_commands:
+        try:
+            if options.get('dry_run'):
+                results['skipped'].append(cmd)
+                continue
+
+            await execute_smart_commit_command_with_retry(cmd)
+            results['successful'].append(cmd)
+
+        except Exception as e:
+            if options.get('skip_errors', True):
+                results['failed'].append({'command': cmd, 'error': str(e)})
+            else:
+                raise
+
+    return results
+
+def aggregate_time_by_issue(commands: list) -> list:
+    """
+    Aggregate time logs per issue.
+
+    Example:
+        Input: [
+            {issue: "PROJ-123", type: "time", value: "1h"},
+            {issue: "PROJ-123", type: "time", value: "2h"},
+            {issue: "PROJ-123", type: "comment", value: "Part 1"}
+        ]
+        Output: [
+            {issue: "PROJ-123", type: "time", value: "3h"},
+            {issue: "PROJ-123", type: "comment", value: "Part 1"}
+        ]
+    """
+    from collections import defaultdict
+
+    time_by_issue = defaultdict(int)
+    other_commands = []
+
+    for cmd in commands:
+        if cmd['type'] == 'time':
+            time_by_issue[cmd['issue']] += parse_time_to_seconds(cmd['value'])
+        else:
+            other_commands.append(cmd)
+
+    # Convert aggregated times back to commands
+    aggregated = []
+    for issue, total_seconds in time_by_issue.items():
+        aggregated.append({
+            'issue': issue,
+            'type': 'time',
+            'value': seconds_to_time_string(total_seconds)
+        })
+
+    return aggregated + other_commands
+
+def deduplicate_comments(commands: list, threshold: float = 0.8) -> list:
+    """
+    Remove duplicate/similar comments using Levenshtein distance.
+
+    Args:
+        commands: List of smart commit commands
+        threshold: Similarity threshold (0.8 = 80% similar)
+
+    Returns:
+        Deduplicated command list
+    """
+    from difflib import SequenceMatcher
+
+    comments_by_issue = defaultdict(list)
+    other_commands = []
+
+    for cmd in commands:
+        if cmd['type'] == 'comment':
+            comments_by_issue[cmd['issue']].append(cmd)
+        else:
+            other_commands.append(cmd)
+
+    deduplicated = []
+    for issue, comments in comments_by_issue.items():
+        unique_comments = []
+        for cmd in comments:
+            is_duplicate = False
+            for existing in unique_comments:
+                similarity = SequenceMatcher(
+                    None,
+                    cmd['value'].lower(),
+                    existing['value'].lower()
+                ).ratio()
+                if similarity >= threshold:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                unique_comments.append(cmd)
+        deduplicated.extend(unique_comments)
+
+    return deduplicated + other_commands
+```
+
 ## Event-Driven Synchronization
 
 ### GitHub Webhook Handler
@@ -1363,6 +1528,25 @@ await execute_smart_commit_commands(commands)
 - Verify environment names in config match GitHub
 - Check workflow names match exactly
 - Verify custom field IDs
+
+## Related Agents (v1.1)
+
+| Agent | Purpose | Model |
+|-------|---------|-------|
+| `smart-commit-validator` | Pre-flight validation of smart commit parameters | haiku |
+| `transition-manager` | Fuzzy matching and workflow state management | haiku |
+| `worklog-manager` | Time tracking validation and conversion | haiku |
+| `commit-message-generator` | Generate commit messages from Jira context | sonnet |
+| `batch-commit-processor` | Process commit ranges with aggregation | sonnet |
+
+## Related Commands (v1.1)
+
+| Command | Purpose |
+|---------|---------|
+| `/jira:commit` | Create smart commits with validation |
+| `/jira:commit-template` | Generate commit messages from Jira |
+| `/jira:bulk-commit` | Process multiple commits in batch |
+| `/jira:install-hooks` | Install/manage git hooks |
 
 ---
 

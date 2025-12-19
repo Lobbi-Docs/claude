@@ -774,6 +774,83 @@ To Do → In Progress → In Review → QA → Done
 3. You have transition permission
 4. Required fields are filled
 
+## Enhanced Smart Commits (v1.1)
+
+### Pre-Flight Validation
+
+Smart commits now support pre-flight validation to catch errors before execution:
+
+```bash
+# Validate transition before committing
+/jira:commit "Feature complete" --transition "Done" --validate-transitions
+
+# Check worklog permissions before logging time
+/jira:commit "Add feature" --time 2h --check-worklog
+
+# Strict mode - fail on any validation warning
+/jira:commit auto --time 2h --strict
+```
+
+**Validation Agents:**
+- `smart-commit-validator` - Pre-flight validation of all smart commit parameters
+- `transition-manager` - Fuzzy matching and workflow state management
+- `worklog-manager` - Time tracking validation and conversion
+
+### Batch Processing
+
+Process multiple commits in a single operation:
+
+```bash
+# Process commit range
+/jira:bulk-commit HEAD~5..HEAD
+
+# Aggregate time logs per issue
+/jira:bulk-commit main..feature/PROJ-123 --aggregate-time
+
+# Dry run to preview changes
+/jira:bulk-commit HEAD~10..HEAD --dry-run
+```
+
+**Aggregation Features:**
+- Time logs combined per issue (e.g., 3 commits with 1h each = 3h total)
+- Similar comments deduplicated (80% similarity threshold)
+- Partial failures handled gracefully
+
+### Auto-Generated Commit Messages
+
+Generate commit messages from Jira issue context:
+
+```bash
+# Generate from issue details
+/jira:commit-template PROJ-123
+
+# With time and transition
+/jira:commit-template PROJ-123 --time 2h --transition "In Review"
+
+# Auto-estimate time from git diff
+/jira:commit-template PROJ-123 --auto-time
+```
+
+### Git Hook Integration
+
+Install Jira-aware git hooks for automatic validation:
+
+```bash
+# Install all hooks
+/jira:install-hooks install
+
+# Test hook functionality
+/jira:install-hooks test
+
+# View hook status
+/jira:install-hooks status
+```
+
+**Available Hooks:**
+- `prepare-commit-msg` - Auto-prepends issue key from branch name
+- `commit-msg` - Validates smart commit syntax before commit
+- `post-commit` - Processes smart commands after commit
+
 ## Resources
 
 ### Documentation Links

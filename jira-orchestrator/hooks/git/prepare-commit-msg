@@ -1,0 +1,143 @@
+#!/bin/bash
+# Jira Orchestrator Git Hook: prepare-commit-msg
+# Auto-prepend Jira issue key from branch name to commit messages
+#
+# Installation:
+#   cp jira-orchestrator/hooks/git/prepare-commit-msg .git/hooks/
+#   chmod +x .git/hooks/prepare-commit-msg
+#
+# Usage:
+#   Automatic - runs before commit message editor opens
+#
+# Examples:
+#   Branch: feature/LF-27-add-oauth-support
+#   Result: "LF-27: your commit message here"
+
+set -e
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+# Configuration
+ISSUE_KEY_PATTERN='[A-Z]+-[0-9]+'
+DEBUG=${JIRA_HOOK_DEBUG:-false}
+
+# Debug logging
+debug() {
+  if [ "$DEBUG" = "true" ]; then
+    echo "[prepare-commit-msg] $1" >&2
+  fi
+}
+
+# Exit early for certain commit sources
+skip_commit_sources() {
+  case "$COMMIT_SOURCE" in
+    merge|squash|cherry-pick)
+      debug "Skipping for commit source: $COMMIT_SOURCE"
+      exit 0
+      ;;
+  esac
+}
+
+# Extract issue key from branch name
+get_issue_key_from_branch() {
+  local branch=$(git branch --show-current 2>/dev/null)
+
+  if [ -z "$branch" ]; then
+    debug "No current branch detected (detached HEAD?)"
+    return 1
+  fi
+
+  debug "Current branch: $branch"
+
+  # Extract issue key using pattern
+  local issue_key=$(echo "$branch" | grep -oE "$ISSUE_KEY_PATTERN" | head -1)
+
+  if [ -n "$issue_key" ]; then
+    debug "Found issue key: $issue_key"
+    echo "$issue_key"
+    return 0
+  else
+    debug "No issue key found in branch name"
+    return 1
+  fi
+}
+
+# Check if commit message already has issue key
+has_issue_key() {
+  local msg_file=$1
+  local issue_key=$2
+
+  # Check if message starts with issue key
+  if grep -qE "^$issue_key[:\s]" "$msg_file"; then
+    debug "Issue key already in commit message"
+    return 0
+  fi
+
+  # Check for issue key anywhere in first line
+  if head -1 "$msg_file" | grep -qE "$issue_key"; then
+    debug "Issue key found in first line"
+    return 0
+  fi
+
+  return 1
+}
+
+# Prepend issue key to commit message
+prepend_issue_key() {
+  local msg_file=$1
+  local issue_key=$2
+  local temp_file="${msg_file}.tmp"
+
+  # Read existing message
+  local existing_msg=$(cat "$msg_file")
+
+  # Skip if message is empty or just comments
+  if [ -z "$existing_msg" ] || ! echo "$existing_msg" | grep -qvE '^#'; then
+    debug "Empty or comment-only message, skipping prepend"
+    return 0
+  fi
+
+  # Create new message with issue key
+  {
+    echo "$issue_key: $existing_msg"
+  } > "$temp_file"
+
+  # Replace original file
+  mv "$temp_file" "$msg_file"
+
+  debug "Prepended issue key to commit message"
+}
+
+# Main execution
+main() {
+  debug "=== Prepare Commit Message Hook ==="
+  debug "Message file: $COMMIT_MSG_FILE"
+  debug "Commit source: $COMMIT_SOURCE"
+
+  # Skip for certain commit sources
+  skip_commit_sources
+
+  # Get issue key from branch
+  local issue_key
+  if ! issue_key=$(get_issue_key_from_branch); then
+    debug "No issue key to prepend"
+    exit 0
+  fi
+
+  # Check if issue key already in message
+  if has_issue_key "$COMMIT_MSG_FILE" "$issue_key"; then
+    debug "Issue key already present"
+    exit 0
+  fi
+
+  # Prepend issue key
+  prepend_issue_key "$COMMIT_MSG_FILE" "$issue_key"
+
+  debug "=== Hook Complete ==="
+  exit 0
+}
+
+# Run main
+main

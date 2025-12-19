@@ -1,0 +1,312 @@
+#!/bin/bash
+# Jira Orchestrator Git Hook: post-commit
+# Process smart commit commands and trigger Jira synchronization
+#
+# Installation:
+#   cp jira-orchestrator/hooks/git/post-commit .git/hooks/
+#   chmod +x .git/hooks/post-commit
+#
+# Usage:
+#   Automatic - runs after commit is created
+#
+# Smart Commands Processed:
+#   #comment <text>      - Add comment to Jira issue
+#   #time <duration>     - Log work time to issue
+#   #transition "status" - Transition issue to new status
+#
+# Examples:
+#   After commit with: "LF-27: Add OAuth #time 2h #transition 'In Review'"
+#   Hook will:
+#     1. Detect smart commands
+#     2. Queue Jira sync task
+#     3. Optionally trigger immediate sync
+
+set -e
+
+DEBUG=${JIRA_HOOK_DEBUG:-false}
+SYNC_MODE=${JIRA_SYNC_MODE:-async}  # async|sync|manual
+NOTIFY=${JIRA_NOTIFY:-true}
+
+# Configuration
+ISSUE_KEY_PATTERN='[A-Z]+-[0-9]+'
+SMART_COMMAND_PATTERN='#(comment|time|transition)'
+SYNC_QUEUE_FILE=".git/jira-sync-queue.json"
+CLAUDE_CLI=${CLAUDE_CLI:-"claude"}
+
+# Debug logging
+debug() {
+  if [ "$DEBUG" = "true" ]; then
+    echo "[post-commit] $1" >&2
+  fi
+}
+
+# Info logging
+info() {
+  if [ "$NOTIFY" = "true" ]; then
+    echo "$1" >&2
+  fi
+}
+
+# Get commit information
+get_commit_info() {
+  local commit_sha=$(git rev-parse HEAD)
+  local commit_msg=$(git log -1 --pretty=%B)
+  local commit_author=$(git log -1 --pretty=%an)
+  local commit_email=$(git log -1 --pretty=%ae)
+  local commit_date=$(git log -1 --pretty=%ci)
+
+  debug "Commit SHA: $commit_sha"
+  debug "Author: $commit_author <$commit_email>"
+  debug "Date: $commit_date"
+  debug "Message: ${commit_msg:0:100}..."
+
+  # Export for other functions
+  export COMMIT_SHA="$commit_sha"
+  export COMMIT_MSG="$commit_msg"
+  export COMMIT_AUTHOR="$commit_author"
+  export COMMIT_EMAIL="$commit_email"
+  export COMMIT_DATE="$commit_date"
+}
+
+# Check if commit has smart commands
+has_smart_commands() {
+  if echo "$COMMIT_MSG" | grep -qE "$SMART_COMMAND_PATTERN"; then
+    return 0
+  fi
+  return 1
+}
+
+# Extract issue key from commit message
+extract_issue_key() {
+  local issue_key=$(echo "$COMMIT_MSG" | grep -oE "$ISSUE_KEY_PATTERN" | head -1)
+
+  if [ -n "$issue_key" ]; then
+    debug "Issue key: $issue_key"
+    echo "$issue_key"
+    return 0
+  fi
+
+  return 1
+}
+
+# Parse smart commands from commit message
+parse_smart_commands() {
+  local commands=()
+
+  # Extract comments
+  local comment=$(echo "$COMMIT_MSG" | grep -oP '#comment\s+\K[^#\n]+' | xargs || true)
+  if [ -n "$comment" ]; then
+    commands+=("comment:$comment")
+    debug "Found comment: $comment"
+  fi
+
+  # Extract time
+  local time=$(echo "$COMMIT_MSG" | grep -oP '#time\s+\K[^#\n]+' | xargs || true)
+  if [ -n "$time" ]; then
+    commands+=("time:$time")
+    debug "Found time: $time"
+  fi
+
+  # Extract transition
+  local transition=$(echo "$COMMIT_MSG" | grep -oP '#transition\s+"\K[^"]+' || true)
+  if [ -n "$transition" ]; then
+    commands+=("transition:$transition")
+    debug "Found transition: $transition"
+  fi
+
+  # Return as JSON array
+  printf '%s\n' "${commands[@]}" | jq -R . | jq -s .
+}
+
+# Queue sync task
+queue_sync_task() {
+  local issue_key=$1
+  local commands=$2
+
+  debug "Queuing sync task for $issue_key"
+
+  # Create queue file if it doesn't exist
+  if [ ! -f "$SYNC_QUEUE_FILE" ]; then
+    echo "[]" > "$SYNC_QUEUE_FILE"
+  fi
+
+  # Create task object
+  local task=$(jq -n \
+    --arg issue "$issue_key" \
+    --arg sha "$COMMIT_SHA" \
+    --arg msg "$COMMIT_MSG" \
+    --arg author "$COMMIT_AUTHOR" \
+    --arg email "$COMMIT_EMAIL" \
+    --arg date "$COMMIT_DATE" \
+    --argjson commands "$commands" \
+    '{
+      issue_key: $issue,
+      commit_sha: $sha,
+      commit_message: $msg,
+      commit_author: $author,
+      commit_email: $email,
+      commit_date: $date,
+      commands: $commands,
+      queued_at: (now | todate),
+      status: "pending"
+    }')
+
+  # Add to queue
+  local queue=$(cat "$SYNC_QUEUE_FILE")
+  local updated_queue=$(echo "$queue" | jq --argjson task "$task" '. += [$task]')
+  echo "$updated_queue" > "$SYNC_QUEUE_FILE"
+
+  debug "Task queued successfully"
+}
+
+# Trigger sync based on mode
+trigger_sync() {
+  local issue_key=$1
+
+  case "$SYNC_MODE" in
+    sync)
+      info "Triggering immediate Jira sync for $issue_key..."
+      trigger_immediate_sync "$issue_key"
+      ;;
+    async)
+      info "Jira sync queued for $issue_key (run 'git jira-sync' to process)"
+      ;;
+    manual)
+      debug "Manual sync mode - no automatic processing"
+      ;;
+    *)
+      debug "Unknown sync mode: $SYNC_MODE"
+      ;;
+  esac
+}
+
+# Trigger immediate sync via Claude CLI
+trigger_immediate_sync() {
+  local issue_key=$1
+
+  # Check if Claude CLI is available
+  if ! command -v "$CLAUDE_CLI" &> /dev/null; then
+    debug "Claude CLI not found at: $CLAUDE_CLI"
+    info "Queue sync task created. Process manually with: git jira-sync"
+    return 1
+  fi
+
+  # Check if jira-orchestrator:sync command exists
+  if ! "$CLAUDE_CLI" /jira-orchestrator:sync --help &> /dev/null 2>&1; then
+    debug "jira-orchestrator:sync command not available"
+    info "Queue sync task created. Process manually with: git jira-sync"
+    return 1
+  fi
+
+  # Trigger sync
+  debug "Executing: $CLAUDE_CLI /jira-orchestrator:sync --commit $COMMIT_SHA"
+
+  if "$CLAUDE_CLI" /jira-orchestrator:sync --commit "$COMMIT_SHA" --issue "$issue_key"; then
+    info "Jira sync completed for $issue_key"
+    return 0
+  else
+    info "Jira sync failed - task remains queued"
+    return 1
+  fi
+}
+
+# Display smart commit summary
+display_summary() {
+  local issue_key=$1
+  local commands=$2
+
+  if [ "$NOTIFY" != "true" ]; then
+    return 0
+  fi
+
+  echo ""
+  echo "╔═══════════════════════════════════════════════════════════════╗"
+  echo "║          Jira Smart Commit Detected                          ║"
+  echo "╚═══════════════════════════════════════════════════════════════╝"
+  echo ""
+  echo "  Issue:   $issue_key"
+  echo "  Commit:  ${COMMIT_SHA:0:8}"
+  echo ""
+
+  # Parse and display commands
+  local comment=$(echo "$commands" | jq -r '.[] | select(startswith("comment:")) | sub("^comment:"; "")')
+  local time=$(echo "$commands" | jq -r '.[] | select(startswith("time:")) | sub("^time:"; "")')
+  local transition=$(echo "$commands" | jq -r '.[] | select(startswith("transition:")) | sub("^transition:"; "")')
+
+  if [ -n "$comment" ]; then
+    echo "  Comment: $comment"
+  fi
+
+  if [ -n "$time" ]; then
+    echo "  Time:    $time"
+  fi
+
+  if [ -n "$transition" ]; then
+    echo "  Status:  → $transition"
+  fi
+
+  echo ""
+  echo "  Mode:    $SYNC_MODE"
+  echo ""
+
+  case "$SYNC_MODE" in
+    sync)
+      echo "  ⚡ Syncing to Jira now..."
+      ;;
+    async)
+      echo "  ⏳ Queued for sync (run: git jira-sync)"
+      ;;
+    manual)
+      echo "  📋 Manual sync required"
+      ;;
+  esac
+
+  echo ""
+}
+
+# Main execution
+main() {
+  debug "=== Post Commit Hook ==="
+
+  # Get commit information
+  get_commit_info
+
+  # Check for smart commands
+  if ! has_smart_commands; then
+    debug "No smart commands detected"
+    exit 0
+  fi
+
+  info "Smart commit detected, processing..."
+
+  # Extract issue key
+  local issue_key
+  if ! issue_key=$(extract_issue_key); then
+    debug "No issue key found - skipping Jira sync"
+    exit 0
+  fi
+
+  # Parse smart commands
+  local commands
+  commands=$(parse_smart_commands)
+
+  if [ "$(echo "$commands" | jq 'length')" -eq 0 ]; then
+    debug "No valid smart commands parsed"
+    exit 0
+  fi
+
+  # Queue sync task
+  queue_sync_task "$issue_key" "$commands"
+
+  # Display summary
+  display_summary "$issue_key" "$commands"
+
+  # Trigger sync based on mode
+  trigger_sync "$issue_key"
+
+  debug "=== Hook Complete ==="
+  exit 0
+}
+
+# Run main
+main
