@@ -1,0 +1,958 @@
+# File-Agent Mapping Configuration
+# Used by agent-router to select specialists based on file patterns
+#
+# This configuration maps:
+# 1. File patterns/extensions to domain classifications
+# 2. Domains to primary agents from the main registry
+# 3. Keywords that trigger domain detection
+# 4. Phase-specific agent recommendations
+# 5. Jira labels to domain mappings
+
+version: "1.0.0"
+description: "Maps file patterns to agent domains and recommended specialists"
+
+# ============================================================================
+# DOMAIN DEFINITIONS
+# ============================================================================
+# Each domain defines:
+# - description: What this domain covers
+# - keywords: Triggers for domain detection
+# - primary_agents: Main specialists from .claude/registry/agents.index.json
+# - file_patterns: Glob patterns matching files in this domain
+# - priority: Used when multiple domains match (higher = preferred)
+
+domains:
+  # --------------------------------------------------------------------------
+  # Frontend Development
+  # --------------------------------------------------------------------------
+  frontend:
+    description: "Frontend/UI development with React, Next.js, components"
+    priority: 100
+    keywords:
+      - react
+      - component
+      - ui
+      - tsx
+      - jsx
+      - css
+      - styled
+      - tailwind
+      - nextjs
+      - page
+      - layout
+      - theme
+    primary_agents:
+      - react-component-architect
+      - frontend-specialist
+      - accessibility-expert
+      - ui-ux-specialist
+    file_patterns:
+      - "*.tsx"
+      - "*.jsx"
+      - "*.css"
+      - "*.scss"
+      - "*.less"
+      - "*.styled.ts"
+      - "*.styled.tsx"
+      - "components/**/*"
+      - "pages/**/*"
+      - "app/**/*.tsx"
+      - "app/**/*.jsx"
+      - "src/ui/**/*"
+      - "src/components/**/*"
+      - "src/pages/**/*"
+      - "styles/**/*"
+      - "public/**/*.css"
+    context_hints:
+      - "React components"
+      - "UI/UX patterns"
+      - "Component architecture"
+      - "Accessibility requirements"
+
+  # --------------------------------------------------------------------------
+  # Backend Development
+  # --------------------------------------------------------------------------
+  backend:
+    description: "Backend services, API endpoints, business logic"
+    priority: 90
+    keywords:
+      - api
+      - rest
+      - endpoint
+      - service
+      - controller
+      - middleware
+      - server
+      - route
+      - handler
+    primary_agents:
+      - api-integration-specialist
+      - code-architect
+      - backend-specialist
+      - microservices-architect
+    file_patterns:
+      - "api/**/*.ts"
+      - "api/**/*.js"
+      - "server/**/*.ts"
+      - "server/**/*.js"
+      - "services/**/*.ts"
+      - "services/**/*.js"
+      - "src/api/**/*"
+      - "src/server/**/*"
+      - "src/services/**/*"
+      - "controllers/**/*"
+      - "middleware/**/*"
+      - "routes/**/*"
+      - "handlers/**/*"
+    context_hints:
+      - "API design patterns"
+      - "Business logic"
+      - "Service orchestration"
+      - "Error handling"
+
+  # --------------------------------------------------------------------------
+  # Database & Schema
+  # --------------------------------------------------------------------------
+  database:
+    description: "Database schemas, migrations, ORM configurations"
+    priority: 95
+    keywords:
+      - prisma
+      - schema
+      - migration
+      - sql
+      - database
+      - db
+      - model
+      - entity
+      - query
+    primary_agents:
+      - prisma-specialist
+      - database-specialist
+      - data-architect
+    file_patterns:
+      - "*.prisma"
+      - "prisma/**/*"
+      - "migrations/**/*"
+      - "*.sql"
+      - "src/db/**/*"
+      - "src/database/**/*"
+      - "database/**/*"
+      - "db/**/*"
+      - "schema/**/*"
+      - "models/**/*.ts"
+      - "entities/**/*.ts"
+    context_hints:
+      - "Schema design"
+      - "Data modeling"
+      - "Migration strategies"
+      - "Query optimization"
+
+  # --------------------------------------------------------------------------
+  # GraphQL
+  # --------------------------------------------------------------------------
+  graphql:
+    description: "GraphQL schemas, resolvers, queries, mutations"
+    priority: 85
+    keywords:
+      - graphql
+      - resolver
+      - query
+      - mutation
+      - subscription
+      - gql
+      - schema
+    primary_agents:
+      - graphql-specialist
+      - api-integration-specialist
+    file_patterns:
+      - "*.graphql"
+      - "*.gql"
+      - "graphql/**/*"
+      - "src/graphql/**/*"
+      - "resolvers/**/*"
+      - "schema/**/*.graphql"
+      - "schema/**/*.gql"
+    context_hints:
+      - "GraphQL schema design"
+      - "Resolver patterns"
+      - "Query optimization"
+      - "Subscription handling"
+
+  # --------------------------------------------------------------------------
+  # Testing
+  # --------------------------------------------------------------------------
+  testing:
+    description: "Unit tests, integration tests, E2E tests, test utilities"
+    priority: 80
+    keywords:
+      - test
+      - spec
+      - jest
+      - vitest
+      - playwright
+      - cypress
+      - e2e
+      - integration
+      - unit
+      - mock
+      - fixture
+    primary_agents:
+      - test-writer-fixer
+      - coverage-analyzer
+      - e2e-test-specialist
+      - test-architect
+    file_patterns:
+      - "*.test.ts"
+      - "*.test.tsx"
+      - "*.test.js"
+      - "*.test.jsx"
+      - "*.spec.ts"
+      - "*.spec.tsx"
+      - "*.spec.js"
+      - "*.spec.jsx"
+      - "__tests__/**/*"
+      - "tests/**/*"
+      - "test/**/*"
+      - "e2e/**/*"
+      - "cypress/**/*"
+      - "playwright/**/*"
+      - "*.e2e.ts"
+      - "*.integration.ts"
+    context_hints:
+      - "Testing strategies"
+      - "Coverage requirements"
+      - "Mock patterns"
+      - "Test organization"
+
+  # --------------------------------------------------------------------------
+  # DevOps & Infrastructure
+  # --------------------------------------------------------------------------
+  devops:
+    description: "Docker, Kubernetes, Helm, CI/CD, deployment"
+    priority: 90
+    keywords:
+      - docker
+      - kubernetes
+      - k8s
+      - helm
+      - deployment
+      - ci
+      - cd
+      - pipeline
+      - container
+      - orchestration
+    primary_agents:
+      - k8s-architect
+      - helm-chart-developer
+      - docker-specialist
+      - cicd-specialist
+    file_patterns:
+      - "Dockerfile"
+      - "Dockerfile.*"
+      - "docker-compose.yml"
+      - "docker-compose.yaml"
+      - "docker-compose.*.yml"
+      - "docker-compose.*.yaml"
+      - "k8s/**/*"
+      - "kubernetes/**/*"
+      - "helm/**/*"
+      - "deployment/**/*"
+      - ".github/workflows/**/*"
+      - ".gitlab-ci.yml"
+      - "Jenkinsfile"
+      - "*.dockerfile"
+    context_hints:
+      - "Container best practices"
+      - "K8s resource management"
+      - "Helm chart patterns"
+      - "CI/CD optimization"
+
+  # --------------------------------------------------------------------------
+  # Authentication & Authorization
+  # --------------------------------------------------------------------------
+  auth:
+    description: "Keycloak, OAuth, authentication, authorization, identity"
+    priority: 85
+    keywords:
+      - keycloak
+      - oauth
+      - authentication
+      - authorization
+      - auth
+      - jwt
+      - token
+      - identity
+      - rbac
+      - permissions
+    primary_agents:
+      - keycloak-identity-specialist
+      - security-specialist
+      - auth-architect
+    file_patterns:
+      - "keycloak/**/*"
+      - "auth/**/*"
+      - "src/auth/**/*"
+      - "authentication/**/*"
+      - "authorization/**/*"
+      - "identity/**/*"
+      - "oauth/**/*"
+    context_hints:
+      - "Authentication flows"
+      - "Authorization patterns"
+      - "Token management"
+      - "Security best practices"
+
+  # --------------------------------------------------------------------------
+  # Documentation
+  # --------------------------------------------------------------------------
+  documentation:
+    description: "Documentation, README files, guides, ADRs"
+    priority: 70
+    keywords:
+      - docs
+      - readme
+      - documentation
+      - guide
+      - adr
+      - markdown
+      - wiki
+    primary_agents:
+      - codebase-documenter
+      - technical-writer
+      - adr-specialist
+    file_patterns:
+      - "*.md"
+      - "*.mdx"
+      - "docs/**/*"
+      - "documentation/**/*"
+      - "README*"
+      - "CHANGELOG*"
+      - "CONTRIBUTING*"
+      - "adr/**/*"
+      - "decisions/**/*"
+    context_hints:
+      - "Documentation standards"
+      - "Code examples"
+      - "API documentation"
+      - "Architecture decisions"
+
+  # --------------------------------------------------------------------------
+  # AI & Machine Learning
+  # --------------------------------------------------------------------------
+  ai:
+    description: "AI/ML models, embeddings, training, inference"
+    priority: 85
+    keywords:
+      - ai
+      - ml
+      - model
+      - embedding
+      - training
+      - inference
+      - neural
+      - tensorflow
+      - pytorch
+      - anthropic
+      - openai
+    primary_agents:
+      - ai-engineer
+      - ml-specialist
+      - llm-integration-specialist
+    file_patterns:
+      - "ai/**/*.py"
+      - "ai/**/*.ts"
+      - "ml/**/*"
+      - "models/**/*.py"
+      - "training/**/*"
+      - "inference/**/*"
+      - "embeddings/**/*"
+      - "src/ai/**/*"
+      - "src/ml/**/*"
+    context_hints:
+      - "Model architecture"
+      - "Training strategies"
+      - "Inference optimization"
+      - "LLM integration patterns"
+
+  # --------------------------------------------------------------------------
+  # Infrastructure as Code
+  # --------------------------------------------------------------------------
+  infrastructure:
+    description: "Terraform, Ansible, cloud infrastructure, IaC"
+    priority: 88
+    keywords:
+      - terraform
+      - ansible
+      - infra
+      - infrastructure
+      - iac
+      - provisioning
+      - cloud
+      - aws
+      - gcp
+      - azure
+    primary_agents:
+      - terraform-specialist
+      - ansible-specialist
+      - cloud-architect
+    file_patterns:
+      - "terraform/**/*.tf"
+      - "terraform/**/*.tfvars"
+      - "infra/**/*.tf"
+      - "infrastructure/**/*"
+      - "*.tf"
+      - "*.tfvars"
+      - "ansible/**/*"
+      - "playbooks/**/*"
+      - "*.yml"  # Lower priority than docker-compose
+      - "*.yaml"  # Lower priority than docker-compose
+    context_hints:
+      - "IaC best practices"
+      - "Resource management"
+      - "State management"
+      - "Cloud platform specifics"
+
+  # --------------------------------------------------------------------------
+  # Caching & Session Management
+  # --------------------------------------------------------------------------
+  caching:
+    description: "Redis, caching strategies, session management"
+    priority: 75
+    keywords:
+      - redis
+      - cache
+      - session
+      - memcache
+      - caching
+      - ttl
+    primary_agents:
+      - redis-specialist
+      - performance-optimizer
+    file_patterns:
+      - "redis/**/*"
+      - "cache/**/*"
+      - "src/cache/**/*"
+      - "src/redis/**/*"
+    context_hints:
+      - "Caching strategies"
+      - "Cache invalidation"
+      - "Session management"
+      - "Performance optimization"
+
+  # --------------------------------------------------------------------------
+  # Message Queue & Event Streaming
+  # --------------------------------------------------------------------------
+  messaging:
+    description: "Kafka, message queues, event streaming, pub/sub"
+    priority: 80
+    keywords:
+      - kafka
+      - message
+      - event
+      - queue
+      - pubsub
+      - streaming
+      - consumer
+      - producer
+    primary_agents:
+      - kafka-specialist
+      - event-driven-architect
+    file_patterns:
+      - "kafka/**/*"
+      - "messaging/**/*"
+      - "events/**/*"
+      - "src/kafka/**/*"
+      - "src/messaging/**/*"
+      - "src/events/**/*"
+    context_hints:
+      - "Event-driven architecture"
+      - "Message patterns"
+      - "Consumer strategies"
+      - "Event sourcing"
+
+  # --------------------------------------------------------------------------
+  # Configuration
+  # --------------------------------------------------------------------------
+  config:
+    description: "Configuration files, settings, environment"
+    priority: 60
+    keywords:
+      - config
+      - configuration
+      - settings
+      - env
+      - environment
+    primary_agents:
+      - code-architect
+      - devops-specialist
+    file_patterns:
+      - "*.config.ts"
+      - "*.config.js"
+      - "*.config.json"
+      - "config/**/*"
+      - "configuration/**/*"
+      - ".env*"
+      - "*.env"
+      - "tsconfig.json"
+      - "package.json"
+      - "next.config.js"
+      - "vite.config.ts"
+      - "jest.config.js"
+    context_hints:
+      - "Configuration patterns"
+      - "Environment management"
+      - "Build configuration"
+      - "Runtime settings"
+
+  # --------------------------------------------------------------------------
+  # Monitoring & Observability
+  # --------------------------------------------------------------------------
+  monitoring:
+    description: "Logging, metrics, tracing, observability"
+    priority: 75
+    keywords:
+      - monitoring
+      - observability
+      - logging
+      - metrics
+      - tracing
+      - prometheus
+      - grafana
+      - datadog
+    primary_agents:
+      - observability-specialist
+      - performance-optimizer
+    file_patterns:
+      - "monitoring/**/*"
+      - "observability/**/*"
+      - "metrics/**/*"
+      - "tracing/**/*"
+      - "logging/**/*"
+    context_hints:
+      - "Observability patterns"
+      - "Metric collection"
+      - "Distributed tracing"
+      - "Log aggregation"
+
+# ============================================================================
+# PHASE-SPECIFIC AGENT MAPPINGS
+# ============================================================================
+# Override or augment domain agents based on workflow phase
+# - override_primary: Replace domain agents with phase-specific agents
+# - all_domains: Agents added to all domains in this phase
+# - domain_overrides: Phase-specific overrides per domain
+
+phase_mappings:
+  EXPLORE:
+    description: "Analysis and discovery phase"
+    override_primary: false
+    all_domains:
+      - analyze-codebase
+      - requirements-analyzer
+      - dependency-mapper
+    domain_overrides:
+      database:
+        - schema-analyzer
+      frontend:
+        - component-tree-analyzer
+      backend:
+        - api-endpoint-mapper
+
+  PLAN:
+    description: "Architecture and design phase"
+    override_primary: false
+    all_domains:
+      - code-architect
+      - design-pattern-specialist
+    domain_overrides:
+      devops:
+        - infrastructure-planner
+      database:
+        - data-modeling-specialist
+
+  CODE:
+    description: "Implementation phase (use domain primary agents)"
+    override_primary: false
+    all_domains: []
+    # Domain primary agents are used by default
+
+  TEST:
+    description: "Testing and validation phase"
+    override_primary: true  # Testing agents take priority
+    all_domains:
+      - test-writer-fixer
+      - coverage-analyzer
+      - qa-specialist
+    domain_overrides:
+      frontend:
+        - e2e-test-specialist
+        - accessibility-tester
+      backend:
+        - api-test-specialist
+        - integration-test-specialist
+
+  FIX:
+    description: "Bug fixing and debugging phase"
+    override_primary: false
+    all_domains:
+      - bug-detective
+      - error-analyzer
+      - debugger-specialist
+    domain_overrides:
+      frontend:
+        - react-debugger
+      backend:
+        - api-debugger
+      database:
+        - query-optimizer
+
+  DOCUMENT:
+    description: "Documentation phase"
+    override_primary: true  # Documentation agents take priority
+    all_domains:
+      - codebase-documenter
+      - technical-writer
+      - api-documentation-specialist
+    domain_overrides:
+      database:
+        - schema-documenter
+      devops:
+        - infrastructure-documenter
+
+  REVIEW:
+    description: "Code review and quality assurance phase"
+    override_primary: false
+    all_domains:
+      - code-reviewer
+      - security-auditor
+      - best-practices-enforcer
+    domain_overrides:
+      frontend:
+        - accessibility-reviewer
+      backend:
+        - api-security-reviewer
+      database:
+        - schema-reviewer
+
+# ============================================================================
+# EXTENSION SHORTCUTS
+# ============================================================================
+# Quick extension-to-domain lookup for fast pattern matching
+# Used when file path ends with these extensions
+
+extension_shortcuts:
+  # Frontend
+  ".tsx": frontend
+  ".jsx": frontend
+  ".css": frontend
+  ".scss": frontend
+  ".less": frontend
+  ".sass": frontend
+  ".styled.ts": frontend
+  ".styled.tsx": frontend
+
+  # Backend (unless in components/pages directories)
+  ".ts": backend
+  ".js": backend
+
+  # Database
+  ".prisma": database
+  ".sql": database
+
+  # GraphQL
+  ".graphql": graphql
+  ".gql": graphql
+
+  # Testing
+  ".test.ts": testing
+  ".test.tsx": testing
+  ".test.js": testing
+  ".test.jsx": testing
+  ".spec.ts": testing
+  ".spec.tsx": testing
+  ".spec.js": testing
+  ".spec.jsx": testing
+  ".e2e.ts": testing
+  ".e2e.js": testing
+  ".integration.ts": testing
+
+  # Documentation
+  ".md": documentation
+  ".mdx": documentation
+
+  # AI/ML
+  ".py": ai  # Unless proven otherwise
+  ".ipynb": ai
+
+  # Infrastructure
+  ".tf": infrastructure
+  ".tfvars": infrastructure
+
+  # DevOps
+  "Dockerfile": devops
+  ".dockerfile": devops
+
+  # Config
+  ".config.ts": config
+  ".config.js": config
+  ".config.json": config
+  ".env": config
+
+# ============================================================================
+# JIRA LABEL MAPPINGS
+# ============================================================================
+# Map Jira labels to domain classifications
+# Used when analyzing Jira tickets to determine relevant agents
+
+jira_label_mappings:
+  frontend:
+    - "frontend"
+    - "react"
+    - "ui"
+    - "component"
+    - "nextjs"
+    - "page"
+    - "layout"
+    - "styling"
+    - "css"
+    - "tailwind"
+
+  backend:
+    - "backend"
+    - "api"
+    - "server"
+    - "service"
+    - "endpoint"
+    - "rest"
+    - "controller"
+    - "middleware"
+
+  database:
+    - "database"
+    - "db"
+    - "prisma"
+    - "schema"
+    - "migration"
+    - "sql"
+    - "model"
+    - "entity"
+
+  graphql:
+    - "graphql"
+    - "gql"
+    - "resolver"
+    - "query"
+    - "mutation"
+
+  testing:
+    - "testing"
+    - "test"
+    - "qa"
+    - "e2e"
+    - "integration"
+    - "unit-test"
+    - "coverage"
+
+  devops:
+    - "devops"
+    - "infrastructure"
+    - "deployment"
+    - "k8s"
+    - "kubernetes"
+    - "docker"
+    - "helm"
+    - "ci"
+    - "cd"
+    - "pipeline"
+
+  auth:
+    - "auth"
+    - "authentication"
+    - "authorization"
+    - "keycloak"
+    - "oauth"
+    - "security"
+    - "jwt"
+    - "permissions"
+
+  documentation:
+    - "documentation"
+    - "docs"
+    - "readme"
+    - "guide"
+    - "adr"
+
+  ai:
+    - "ai"
+    - "ml"
+    - "machine-learning"
+    - "model"
+    - "embedding"
+    - "llm"
+    - "anthropic"
+
+  infrastructure:
+    - "infrastructure"
+    - "iac"
+    - "terraform"
+    - "ansible"
+    - "cloud"
+    - "aws"
+    - "gcp"
+    - "azure"
+
+  caching:
+    - "cache"
+    - "caching"
+    - "redis"
+    - "session"
+    - "performance"
+
+  messaging:
+    - "kafka"
+    - "messaging"
+    - "event"
+    - "queue"
+    - "pubsub"
+    - "streaming"
+
+  monitoring:
+    - "monitoring"
+    - "observability"
+    - "logging"
+    - "metrics"
+    - "tracing"
+    - "prometheus"
+
+# ============================================================================
+# DIRECTORY HINTS
+# ============================================================================
+# When file path contains these directory names, boost domain score
+
+directory_hints:
+  frontend:
+    - "components"
+    - "pages"
+    - "app"
+    - "ui"
+    - "views"
+    - "layouts"
+    - "styles"
+
+  backend:
+    - "api"
+    - "server"
+    - "services"
+    - "controllers"
+    - "middleware"
+    - "routes"
+    - "handlers"
+
+  database:
+    - "prisma"
+    - "migrations"
+    - "db"
+    - "database"
+    - "models"
+    - "entities"
+    - "schema"
+
+  testing:
+    - "tests"
+    - "test"
+    - "__tests__"
+    - "e2e"
+    - "cypress"
+    - "playwright"
+
+  devops:
+    - "k8s"
+    - "kubernetes"
+    - "helm"
+    - "deployment"
+    - "docker"
+    - ".github/workflows"
+
+  infrastructure:
+    - "terraform"
+    - "infra"
+    - "infrastructure"
+    - "ansible"
+
+  documentation:
+    - "docs"
+    - "documentation"
+    - "adr"
+    - "decisions"
+
+# ============================================================================
+# SCORING CONFIGURATION
+# ============================================================================
+# Weight different signals when calculating domain match scores
+
+scoring:
+  extension_match: 40      # Exact extension match
+  pattern_match: 35        # File pattern glob match
+  directory_match: 15      # Directory path contains hint
+  keyword_match: 10        # Description/summary contains keyword
+
+  # Minimum score to consider a domain match (0-100)
+  minimum_score: 30
+
+  # When multiple domains match, select top N
+  max_domains_per_file: 2
+
+# ============================================================================
+# FALLBACK CONFIGURATION
+# ============================================================================
+# When no domain matches or score is below threshold
+
+fallback:
+  default_agents:
+    - code-architect
+    - analyze-codebase
+  default_domain: "backend"  # Conservative default
+  require_manual_review: true
+
+# ============================================================================
+# EXAMPLES
+# ============================================================================
+# Usage examples for documentation purposes
+
+examples:
+  - file_path: "src/components/Button.tsx"
+    matched_domain: frontend
+    matched_agents:
+      - react-component-architect
+      - frontend-specialist
+    score: 85
+
+  - file_path: "api/users/route.ts"
+    matched_domain: backend
+    matched_agents:
+      - api-integration-specialist
+      - code-architect
+    score: 90
+
+  - file_path: "prisma/schema.prisma"
+    matched_domain: database
+    matched_agents:
+      - prisma-specialist
+      - database-specialist
+    score: 95
+
+  - file_path: "src/components/Button.test.tsx"
+    matched_domain: testing
+    phase_override: TEST
+    matched_agents:
+      - test-writer-fixer
+      - e2e-test-specialist
+    score: 88
+
+  - file_path: "deployment/helm/values.yaml"
+    matched_domain: devops
+    matched_agents:
+      - helm-chart-developer
+      - k8s-architect
+    score: 92

@@ -56,6 +56,32 @@ Before starting work, transition the issue to "In Progress".
 
 Based on the issue type, create an appropriate orchestration strategy.
 
+### Dynamic Agent Selection (NEW)
+
+**IMPORTANT:** Before executing any phase, invoke the `agent-router` agent to dynamically select specialized agents from the main registry based on:
+
+1. **Jira Context**: Issue labels, components, issue type
+2. **File Patterns**: Extensions and paths of files to be modified
+3. **Task Keywords**: Terms from description and acceptance criteria
+
+```yaml
+# Invoke agent-router for each phase
+agent_selection = invoke_agent('agent-router', {
+  issue_key: ${issue_key},
+  phase: "CODE",  # or EXPLORE, PLAN, TEST, FIX, DOCUMENT
+  changed_files: get_planned_changes(),  # from git diff or plan
+  model_filter: "sonnet"  # or "haiku" for fast tasks
+})
+
+# Use dynamically selected agents
+for agent in agent_selection.recommended_agents:
+  spawn_agent(agent.name, task=phase_task)
+```
+
+**Configuration:** See `jira-orchestrator/config/file-agent-mapping.yaml` for domain definitions and scoring weights.
+
+**Fallback Strategy:** If no specific agents match, use phase-appropriate defaults from agent-router output.
+
 ### NEW: PR Size Strategy (After PLAN phase)
 
 **IMPORTANT:** Before starting CODE phase, invoke the `pr-size-estimator` agent to:
@@ -114,11 +140,19 @@ PLAN (2 agents):
   - architect: Design solution architecture
   - task-decomposer: Break into implementation tasks
 
-CODE (3-4 agents):
-  - frontend-dev: UI implementation (if applicable)
-  - backend-dev: API/service implementation (if applicable)
-  - unit-tester: Write tests alongside code
-  - integrator: Ensure components work together
+CODE (3-4 agents) - DYNAMIC SELECTION:
+  # Invoke agent-router based on planned changes
+  code_agents = agent_router.select(phase="CODE", files=planned_changes)
+
+  # Example selections based on context:
+  # Frontend changes (*.tsx): react-component-architect, accessibility-expert
+  # Database changes (*.prisma): prisma-specialist, database-specialist
+  # API changes (api/**/*.ts): api-integration-specialist, graphql-specialist
+  # Mixed changes: Multiple domain specialists in parallel
+
+  # Fallback agents if no specific match:
+  - code-architect: General architecture
+  - test-writer-fixer: Write tests alongside code
 
 TEST (3 agents):
   - test-runner: Execute full test suite
@@ -252,8 +286,18 @@ Purpose:
 
 #### Phase 3: CODE
 ```
+🔀 DYNAMIC AGENT SELECTION (MANDATORY):
+  1. Invoke agent-router with:
+     - issue_key: ${issue_key}
+     - phase: "CODE"
+     - changed_files: $(git diff --cached --name-only) OR planned_changes
+     - model_filter: "sonnet"
+  2. Use recommended_agents from agent-router output
+  3. Spawn selected specialists in parallel for each domain
+  4. Fallback to code-architect if no specific match
+
 Execute implementation tasks in parallel where possible
-Write tests alongside code
+Write tests alongside code (using selected test specialist)
 Commit frequently with clear messages
 Reference issue key in commits: "ABC-123: Description"
 Handle edge cases and error states
@@ -284,6 +328,10 @@ Validate against acceptance criteria continuously
 
 #### Phase 4: TEST
 ```
+🔀 DYNAMIC AGENT SELECTION:
+  test_agents = agent_router.select(phase="TEST", files=modified_files)
+  # Selects: test-writer-fixer, vitest-specialist, coverage-analyzer, etc.
+
 Run full test suite
 Measure code coverage (target 80%+ for new code)
 Run security scans if applicable

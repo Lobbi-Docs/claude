@@ -433,9 +433,161 @@ if [ $? -ne 0 ]; then
 fi
 ```
 
-## Step 8: Create Pull Request via GitHub CLI
+## Step 8: Dynamic Reviewer Selection
 
-Use gh CLI to create the pull request with all metadata.
+Use the agent-router to intelligently select domain-specific reviewers based on changed files and expertise requirements.
+
+### Purpose:
+
+Instead of relying on hardcoded reviewers, dynamically select specialized agents/reviewers who are best suited for reviewing the specific changes in this PR.
+
+### Dynamic Selection Process:
+
+```yaml
+# Invoke agent-router with review phase
+changed_files = $(git diff origin/${base}...HEAD --name-only)
+
+reviewer_selection = agent_router.select(
+  phase="REVIEW",
+  changed_files="${changed_files}",
+  issue_type="${issuetype from Jira}",
+  issue_key="${issue_key}",
+  model_filter="sonnet"  # Use sonnet for thorough review
+)
+```
+
+### Agent Router Configuration:
+
+The agent-router uses file-to-agent mappings defined in:
+```
+jira-orchestrator/config/file-agent-mapping.yaml
+```
+
+**Configuration structure:**
+```yaml
+# Example mappings
+patterns:
+  frontend:
+    - "**/*.tsx"
+    - "**/*.jsx"
+    - "**/*.css"
+    - "src/components/**"
+    agents:
+      - react-component-architect
+      - accessibility-expert
+      - ui-testing-specialist
+
+  backend:
+    - "**/*.py"
+    - "**/*.java"
+    - "src/services/**"
+    - "src/api/**"
+    agents:
+      - backend-architect
+      - database-specialist
+      - api-security-expert
+
+  infrastructure:
+    - "**/*.tf"
+    - "docker-compose.yml"
+    - "k8s/**"
+    - ".github/workflows/**"
+    agents:
+      - devops-engineer
+      - security-engineer
+
+  database:
+    - "migrations/**"
+    - "prisma/schema.prisma"
+    - "src/db/**"
+    agents:
+      - database-specialist
+      - data-architect
+```
+
+### Example Reviewer Selection Scenarios:
+
+**Frontend Changes Only:**
+```
+Changed files: src/components/UserForm.tsx, src/styles/form.css
+Selected reviewers: react-component-architect, accessibility-expert
+```
+
+**Backend API Changes:**
+```
+Changed files: src/services/auth.py, src/api/auth_endpoints.py
+Selected reviewers: backend-architect, api-security-expert
+```
+
+**Database Migrations:**
+```
+Changed files: migrations/002_add_user_fields.sql, prisma/schema.prisma
+Selected reviewers: database-specialist, data-architect
+```
+
+**Mixed Changes:**
+```
+Changed files:
+  - src/components/Dashboard.tsx
+  - src/services/analytics.py
+  - migrations/003_add_analytics_table.sql
+Selected reviewers: react-component-architect, backend-architect, database-specialist
+```
+
+### Actions:
+
+```
+1. Get list of changed files since branching from base
+2. Invoke agent-router with changed files and issue context
+3. Router analyzes file patterns against file-agent-mapping.yaml
+4. Router returns list of recommended reviewer agents
+5. Store recommended reviewers for Step 9 (Create PR)
+6. Log reviewer selection reasoning for transparency
+7. Allow manual override if needed (via reviewers argument)
+```
+
+### Selection Logic:
+
+```bash
+# Get changed files
+CHANGED_FILES=$(git diff origin/${base}...HEAD --name-only)
+
+# Invoke agent-router via MCP
+REVIEWER_AGENTS=$(mcp__agent_router__select(
+  phase="REVIEW",
+  changed_files="${CHANGED_FILES}",
+  issue_key="${issue_key}",
+  issue_type="${issuetype}",
+  model="sonnet"
+))
+
+# If manual reviewers specified, merge with dynamic selection
+if [ -n "${reviewers}" ]; then
+  # Combine manual + dynamic reviewers
+  FINAL_REVIEWERS="${reviewers},$REVIEWER_AGENTS"
+else
+  # Use only dynamic reviewers
+  FINAL_REVIEWERS="$REVIEWER_AGENTS"
+fi
+
+# Log the selection
+echo "Dynamic Reviewer Selection:"
+echo "  Changed files: $CHANGED_FILES"
+echo "  Selected agents: $REVIEWER_AGENTS"
+echo "  Final reviewers: $FINAL_REVIEWERS"
+```
+
+### Notes:
+
+- If agent-router not available, fall back to manual reviewers argument
+- Recommended reviewers can be overridden via the `--reviewers` argument
+- Multiple reviewers from same domain can be selected for thorough review
+- Review selection is logged in Jira comments for transparency
+- Consider time zones and availability when selecting reviewers
+
+## Step 9: Create Pull Request via GitHub CLI
+
+Use gh CLI to create the pull request with all metadata and dynamically selected reviewers.
 
 ### Actions:
 ```
@@ -446,7 +598,7 @@ Use gh CLI to create the pull request with all metadata.
    - Base branch from argument (default: main)
    - Head branch (current feature branch)
    - Draft flag if specified
-   - Reviewers if specified
+   - Reviewers from Step 8 (dynamically selected or manual)
    - Labels from Jira issue labels
    - Milestone from Jira fixVersion
    - Project if configured
@@ -466,8 +618,9 @@ gh auth status
 # Build labels from Jira
 LABELS=$(echo "${labels from Jira}" | tr ',' '\n' | sed 's/^/--label /' | tr '\n' ' ')
 
-# Build reviewers
-REVIEWERS=$(echo "${reviewers}" | tr ',' '\n' | sed 's/^/--reviewer /' | tr '\n' ' ')
+# Build reviewers from Step 8 (dynamic selection or manual)
+# FINAL_REVIEWERS was set in Step 8, use it here
+REVIEWERS=$(echo "${FINAL_REVIEWERS}" | tr ',' '\n' | sed 's/^/--reviewer /' | tr '\n' ' ')
 
 # Create PR with heredoc for body
 gh pr create \
@@ -501,13 +654,16 @@ Labels: Mapped from Jira labels + issue type
   - task (if issuetype = Task)
   - {jira_label_1}
   - {jira_label_2}
-Reviewers: ${reviewers} argument (comma-separated)
+Reviewers: ${FINAL_REVIEWERS} from Step 8 (dynamically selected via agent-router)
+  - Source: ${REVIEWER_AGENTS} (auto-selected) + ${reviewers} (manual override if provided)
+  - Selection method: agent-router with file-agent-mapping.yaml
+  - Can be overridden via --reviewers argument
 Assignees: Jira assignee (if mapping exists)
 Milestone: Jira fixVersion (if exists)
 Project: From repo configuration (if exists)
 ```
 
-## Step 9: Update Jira Issue
+## Step 10: Update Jira Issue
 
 Link the PR back to Jira and update issue status.
 
@@ -536,15 +692,22 @@ mcp__atlassian__jira_add_comment(
 
 ## Review Status
 - State: $(if [ "${draft}" = "true" ]; then echo "Draft"; else echo "Ready for Review"; fi)
-- Reviewers: ${reviewers}
+- Reviewers: ${FINAL_REVIEWERS} (dynamically selected via agent-router)
 - Base branch: ${base}
 - Feature branch: ${BRANCH_NAME}
+
+## Reviewer Selection Details
+Domain-specific reviewers were automatically selected based on changed files:
+- Changed files analyzed: ${CHANGED_FILES}
+- Selection logic: agent-router (file-agent-mapping.yaml)
+- Manual override used: $(if [ -n "${reviewers}" ]; then echo "Yes - ${reviewers}"; else echo "No"; fi)
 
 ## Checklist
 - [x] All tests passing
 - [x] Code review checklist completed
 - [x] Documentation updated
 - [x] No breaking changes OR breaking changes documented
+- [x] Domain-specific reviewers selected
 
 Ready for code review and testing."
 )
@@ -571,40 +734,53 @@ Pull request created: {PR_URL}
 
 ## Review Status
 - State: Ready for Review | Draft
-- Reviewers: @reviewer1, @reviewer2
+- Reviewers: @reviewer1, @reviewer2, ... (dynamically selected via agent-router)
 - Base branch: main
 - Feature branch: feature/ABC-123-description
+
+## Reviewer Selection Details
+Domain-specific reviewers were automatically selected based on changed files:
+- Changed files analyzed: [list of files]
+- Selection logic: agent-router (file-agent-mapping.yaml)
+- Manual override used: No | Yes
 
 ## Checklist
 - [x] All tests passing
 - [x] Code review checklist completed
 - [x] Documentation updated
 - [x] No breaking changes OR breaking changes documented
+- [x] Domain-specific reviewers selected
 
 Ready for code review and testing.
 ```
 
-## Step 10: Request Reviews
+## Step 11: Request Reviews
 
-If reviewers were specified, send review requests via GitHub.
+Send review requests via GitHub using the dynamically selected reviewers.
 
 ### Actions:
 ```
-1. Parse reviewers from argument (comma-separated)
+1. Get reviewers from Step 8 (FINAL_REVIEWERS - dynamically selected or manual)
 2. For each reviewer:
    a. Validate reviewer has access to repository
    b. Request review via gh CLI
    c. Handle errors if reviewer not found
 3. If team reviewers specified (team:team-name):
    a. Request team review
-4. Optionally notify reviewers via Slack/Teams integration
-5. Log all review requests
+4. Log reviewer selection details (which were auto-selected vs. manual)
+5. Optionally notify reviewers via Slack/Teams integration
+6. Log all review requests
 ```
 
 ### Review Request Commands:
 ```bash
+# Use FINAL_REVIEWERS from Step 8 (dynamic selection + manual override)
 # Split reviewers by comma
-IFS=',' read -ra REVIEWER_ARRAY <<< "${reviewers}"
+IFS=',' read -ra REVIEWER_ARRAY <<< "${FINAL_REVIEWERS}"
+
+# Track which reviewers were dynamically selected vs. manually specified
+DYNAMIC_REVIEWERS="${REVIEWER_AGENTS}"
+MANUAL_REVIEWERS="${reviewers}"
 
 # Request reviews
 for reviewer in "${REVIEWER_ARRAY[@]}"; do
@@ -621,8 +797,15 @@ for reviewer in "${REVIEWER_ARRAY[@]}"; do
   fi
 done
 
-# Add comment mentioning reviewers
-gh pr comment "$PR_NUMBER" --body "Review requested from: ${reviewers/,/, }"
+# Add comment mentioning reviewers and selection method
+REVIEWER_NOTE=""
+if [ -n "$MANUAL_REVIEWERS" ]; then
+  REVIEWER_NOTE="Review requested from (manual + dynamic selection): ${FINAL_REVIEWERS/,/, }"
+else
+  REVIEWER_NOTE="Review requested from (auto-selected by agent-router): ${FINAL_REVIEWERS/,/, }"
+fi
+
+gh pr comment "$PR_NUMBER" --body "$REVIEWER_NOTE"
 ```
 
 ## Error Handling
@@ -751,16 +934,21 @@ Changes:
 Tests: ✅ Passing
 Coverage: ${COVERAGE}%
 
-Reviewers: ${reviewers}
+Reviewers (Dynamic Selection): ${FINAL_REVIEWERS}
+  Auto-selected agents: ${REVIEWER_AGENTS}
+  Manual override: $(if [ -n "${reviewers}" ]; then echo "${reviewers}"; else echo "None"; fi)
+  Selection logic: file-agent-mapping.yaml (domain-specific expertise)
 
 Jira: Updated with PR link
 Status: Transitioned to "In Review"
+Review selection details: Documented in Jira comments
 
 Next Steps:
-  1. Address reviewer feedback
+  1. Domain-specific reviewers will provide feedback
   2. Monitor CI/CD pipeline
-  3. Merge when approved
-  4. Close Jira issue after merge
+  3. Address reviewer feedback based on their expertise area
+  4. Merge when approved
+  5. Close Jira issue after merge
 
 View PR: ${PR_URL}
 ```
@@ -807,6 +995,22 @@ This command integrates with the complete development workflow:
 ```
 
 ## Advanced Features
+
+### Dynamic Reviewer Selection (NEW)
+
+Leverage agent-router to automatically select domain-specific reviewers:
+```
+1. Agent-router analyzes changed files during Step 8
+2. Compares against file-agent-mapping.yaml patterns
+3. Selects specialized reviewers for each domain:
+   - Frontend changes → react-component-architect, accessibility-expert
+   - Backend changes → backend-architect, api-security-expert
+   - Database changes → database-specialist, data-architect
+   - Infrastructure → devops-engineer, security-engineer
+4. Respects manual --reviewers argument if provided
+5. Logs selection rationale in Jira for transparency
+6. Enables faster, more focused code reviews
+```
 
 ### Automatic Screenshot Detection
 
@@ -874,6 +1078,8 @@ COVERAGE_COMMAND="npm run coverage"
 ## Notes
 
 - Always validate work is complete before creating PR
+- Dynamic reviewer selection (Step 8) automatically assigns domain experts based on changed files
+- If automatic selection doesn't work, fall back to manual --reviewers argument
 - Use Context7 MCP for library documentation if needed
 - PR description should be comprehensive enough for reviewers to understand changes without reading all code
 - Screenshots are critical for UI changes
@@ -881,3 +1087,5 @@ COVERAGE_COMMAND="npm run coverage"
 - Keep PR focused on single issue (avoid scope creep)
 - Link all related Jira issues
 - Update PR description if scope changes during review
+- Review selection logic is transparent and documented in Jira comments
+- Consider agent expertise areas when evaluating reviewer feedback

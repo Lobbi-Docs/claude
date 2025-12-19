@@ -10,7 +10,7 @@
 
 Transform Jira issues into fully orchestrated development workflows with automatic triage, code review, testing, and pull request creation.
 
-[Features](#features) • [Installation](#installation) • [Commands](#commands) • [Agents](#agents) • [Workflows](#workflows)
+[Features](#features) • [Installation](#installation) • [Commands](#commands) • [Agents](#agents) • [Dynamic Discovery](#dynamic-agent-discovery) • [Workflows](#workflows)
 
 </div>
 
@@ -24,7 +24,8 @@ The **Jira Orchestrator** is a Claude Code plugin that provides intelligent, aut
 
 - **Automatic Jira Detection**: Detects Jira issue keys (e.g., PROJ-123) in conversations and suggests orchestration
 - **Intelligent Triage**: Analyzes issue complexity, priority, and expertise requirements
-- **Multi-Agent Coordination**: Orchestrates 11 specialized sub-agents in parallel where possible
+- **Dynamic Agent Discovery**: Intelligently selects domain specialists from 142+ code agents based on Jira context and file patterns
+- **Multi-Agent Coordination**: Orchestrates 12 specialized workflow agents plus dynamically selected code experts in parallel where possible
 - **Confluence Integration**: Bidirectional sync between Jira issues and Confluence documentation
 - **Quality Gates**: Enforces code review before PR creation
 - **Full Automation**: From issue fetch to PR creation, documentation, and Jira/Confluence updates
@@ -519,7 +520,7 @@ The plugin provides 8 slash commands for Jira orchestration:
 
 ## Agents
 
-The plugin includes 11 specialized agents that coordinate through the orchestration workflow:
+The plugin includes 12 specialized agents that coordinate through the orchestration workflow:
 
 ### 1. Triage Agent (`triage-agent`)
 
@@ -805,6 +806,468 @@ The plugin includes 11 specialized agents that coordinate through the orchestrat
 - Pull request created
 - Jira issue updated
 - Documentation complete
+
+---
+
+### 12. Agent Router (`agent-router`)
+
+**Model:** Haiku (fast, cost-effective)
+**Color:** Yellow
+**When to Use:** When `/jira:work`, `/jira:commit`, or `/jira:pr` needs to select domain-specific agents based on Jira context, file patterns, and orchestration phase
+
+**Responsibilities:**
+- Dynamic agent discovery from main registry (142+ agents)
+- Multi-signal analysis (Jira labels, file patterns, keywords, capabilities)
+- Intelligent scoring algorithm (0-100 scale)
+- Phase-aware agent selection (EXPLORE, PLAN, CODE, TEST, FIX, DOCUMENT, REVIEW, VALIDATE)
+- Multi-domain detection (full-stack features)
+- Fallback strategies for edge cases
+- Execution plan generation (parallel vs sequential)
+
+**Tools:**
+- Read, Grep, Glob, Task
+- Jira MCP (get_issue)
+- File pattern analysis
+
+**Output:**
+- Agent recommendation report with scores
+- Detected domains and file analysis
+- Execution plan with model assignments
+- Fallback agents when needed
+- Confidence level and quality flags
+
+**How It Works:**
+1. Fetches Jira issue details (labels, components, keywords)
+2. Analyzes file patterns from git diff or planned changes
+3. Queries main registry (`.claude/registry/agents.index.json`)
+4. Scores agents using weighted algorithm:
+   - Keywords: 40%
+   - Domain match: 30%
+   - Capabilities: 20%
+   - Priority: 10%
+5. Applies phase-specific overrides
+6. Generates execution plan with recommended agents
+
+**Example:**
+```yaml
+# Input: PROJ-123 with labels ["frontend", "react", "api"]
+# Files: ["src/components/Button.tsx", "api/users/route.ts"]
+
+agent_recommendation:
+  recommended_agents:
+    - name: react-component-architect
+      score: 95
+      model: sonnet
+      rationale: "Matched: frontend domain, .tsx files, react keyword"
+    - name: api-integration-specialist
+      score: 90
+      model: sonnet
+      rationale: "Matched: backend domain, api/ directory"
+  execution_plan:
+    parallel_execution: true
+    model_distribution:
+      sonnet: 2
+```
+
+This agent bridges the gap between workflow-specific agents (29 in jira-orchestrator) and code specialists (142+ in main registry), ensuring every task is handled by the most qualified domain experts.
+
+---
+
+## Dynamic Agent Discovery
+
+The Jira Orchestrator includes an **intelligent agent routing system** that dynamically selects the most qualified specialists from the main registry (142+ code agents) based on Jira context, file patterns, and task requirements.
+
+### Overview
+
+Instead of relying on generic "frontend-dev" or "backend-dev" placeholders, the Agent Router (`agent-router`) analyzes multiple signals to select domain-specific experts:
+
+- **Jira Context**: Labels, components, issue type, keywords from description
+- **File Patterns**: Extensions, directory structure, modified files from git diff
+- **Task Keywords**: Technical terms, frameworks, libraries mentioned
+- **Orchestration Phase**: EXPLORE, PLAN, CODE, TEST, FIX, DOCUMENT, REVIEW, VALIDATE
+
+### Why Dynamic Discovery?
+
+**Traditional Approach (Static):**
+```
+Issue: "Update authentication flow"
+Agents: frontend-dev, backend-dev, test-writer
+```
+
+**Dynamic Discovery Approach:**
+```
+Issue: "Update authentication flow"
+Labels: ["auth", "keycloak", "frontend", "backend"]
+Files: ["keycloak/realms/app-realm.json", "src/components/LoginForm.tsx", "api/auth/route.ts"]
+
+Selected Agents:
+1. keycloak-identity-specialist (score: 95) - Keycloak realm configuration expert
+2. react-component-architect (score: 92) - React UI components
+3. api-integration-specialist (score: 90) - API endpoints
+4. test-writer-fixer (score: 85) - Comprehensive testing
+```
+
+**Benefits:**
+- Matches tasks to true domain experts (not generalists)
+- Bridges workflow agents (29) with code specialists (142+)
+- Reduces errors from mismatched expertise
+- Improves code quality through specialization
+- Optimizes model usage (opus/sonnet/haiku)
+
+### How It Works
+
+#### 1. Multi-Signal Analysis
+
+The Agent Router combines multiple signals into a unified score (0-100):
+
+| Signal | Weight | Example |
+|--------|--------|---------|
+| **Keywords** | 40% | "prisma", "schema", "migration" → prisma-specialist |
+| **Domain Match** | 30% | `.tsx` files → frontend domain → react-component-architect |
+| **Capabilities** | 20% | Requires "keycloak_realms" → keycloak-identity-specialist |
+| **Priority** | 10% | High-priority agents get +10 bonus |
+
+#### 2. Domain Detection
+
+The system identifies 15 domains from file patterns and Jira labels:
+
+| Domain | Triggers | Primary Agents |
+|--------|----------|----------------|
+| **frontend** | `.tsx`, `.jsx`, `components/`, labels: ["react", "ui"] | react-component-architect, accessibility-expert |
+| **backend** | `api/`, `.ts` (non-component), labels: ["api", "server"] | api-integration-specialist, code-architect |
+| **database** | `.prisma`, `.sql`, `migrations/`, labels: ["database", "schema"] | prisma-specialist, data-architect |
+| **auth** | `keycloak/`, `auth/`, labels: ["authentication", "oauth"] | keycloak-identity-specialist, security-specialist |
+| **testing** | `.test.tsx`, `__tests__/`, labels: ["testing", "qa"] | test-writer-fixer, e2e-test-specialist |
+| **devops** | `Dockerfile`, `k8s/`, `helm/`, labels: ["deployment", "k8s"] | k8s-architect, helm-chart-developer |
+| **graphql** | `.graphql`, `.gql`, labels: ["graphql"] | graphql-specialist |
+| **ai** | `ai/`, `embeddings/`, labels: ["ai", "ml"] | ai-engineer, llm-integration-specialist |
+| **infrastructure** | `terraform/`, `.tf`, labels: ["terraform", "iac"] | terraform-specialist, cloud-architect |
+| **caching** | `redis/`, `cache/`, labels: ["redis", "cache"] | redis-specialist, performance-optimizer |
+| **messaging** | `kafka/`, `events/`, labels: ["kafka", "messaging"] | kafka-specialist, event-driven-architect |
+| **monitoring** | `metrics/`, `tracing/`, labels: ["observability"] | observability-specialist |
+| **documentation** | `.md`, `docs/`, labels: ["documentation"] | codebase-documenter, technical-writer |
+| **config** | `.config.ts`, `.env`, `config/` | code-architect, devops-specialist |
+
+See full domain definitions in `config/file-agent-mapping.yaml`.
+
+#### 3. Phase-Aware Selection
+
+Different orchestration phases require different specialists:
+
+| Phase | Focus | Agent Overrides |
+|-------|-------|-----------------|
+| **EXPLORE** | Analysis & discovery | +analyze-codebase, +requirements-analyzer, +dependency-mapper |
+| **PLAN** | Architecture & design | +code-architect, +design-pattern-specialist |
+| **CODE** | Implementation | Domain primary agents (no overrides) |
+| **TEST** | Testing & validation | +test-writer-fixer, +coverage-analyzer, +qa-specialist (override primary) |
+| **FIX** | Debugging & fixes | +bug-detective, +error-analyzer, +debugger-specialist |
+| **DOCUMENT** | Documentation | +codebase-documenter, +technical-writer (override primary) |
+| **REVIEW** | Code review & quality | +code-reviewer, +security-auditor, +best-practices-enforcer |
+| **VALIDATE** | Final validation | +smart-commit-validator, +integration-tester |
+
+#### 4. Scoring Algorithm
+
+```python
+def calculate_agent_score(agent, context):
+    score = 0
+
+    # Keyword Match (40%)
+    keyword_matches = len(agent.keywords & context.keywords)
+    score += (keyword_matches / len(context.keywords)) * 40
+
+    # Domain Match (30%)
+    if agent.category in context.detected_domains:
+        score += 30
+
+    # Capability Match (20%)
+    capability_matches = len(agent.capabilities & context.required_capabilities)
+    score += (capability_matches / len(context.required_capabilities)) * 20
+
+    # Priority Bonus (10%)
+    if agent.priority == "high":
+        score += 10
+    elif agent.priority == "medium":
+        score += 5
+
+    return min(score, 100)  # Cap at 100
+```
+
+#### 5. Fallback Strategies
+
+When no clear match exists (score < 50):
+
+- **Low confidence routing**: Use general-purpose agents (code-architect, analyze-codebase)
+- **Manual review flag**: Set `require_manual_review: true`
+- **Phase-specific fallbacks**: Each phase has minimum agent requirements
+- **Documented uncertainty**: Output includes why no match was found
+
+### Configuration
+
+The Dynamic Agent Discovery system is configured via two files:
+
+#### 1. Agent Registry (`.claude/registry/agents.index.json`)
+
+Contains metadata for all 142+ code agents:
+
+```json
+{
+  "frontend": {
+    "react-component-architect": {
+      "name": "react-component-architect",
+      "description": "React component architecture and design patterns",
+      "keywords": ["react", "component", "tsx", "jsx", "hooks"],
+      "capabilities": ["react_patterns", "component_design", "state_management"],
+      "priority": "high",
+      "model": "sonnet"
+    }
+  }
+}
+```
+
+#### 2. Domain Mappings (`jira-orchestrator/config/file-agent-mapping.yaml`)
+
+Defines 15 domains with:
+
+- **Keywords**: Triggers for domain detection
+- **File Patterns**: Glob patterns matching files
+- **Directory Hints**: Path segments boosting domain score
+- **Primary Agents**: Recommended specialists for each domain
+- **Priority**: Used when multiple domains match
+- **Jira Label Mappings**: Map Jira labels to domains
+- **Phase Overrides**: Phase-specific agent recommendations
+
+**Example Domain Definition:**
+
+```yaml
+domains:
+  database:
+    description: "Database schemas, migrations, ORM configurations"
+    priority: 95
+    keywords:
+      - prisma
+      - schema
+      - migration
+      - sql
+      - database
+    primary_agents:
+      - prisma-specialist
+      - database-specialist
+      - data-architect
+    file_patterns:
+      - "*.prisma"
+      - "prisma/**/*"
+      - "migrations/**/*"
+      - "*.sql"
+```
+
+### Integration with Workflows
+
+The Agent Router is automatically invoked during workflow execution:
+
+**Phase 3: CODE (Updated)**
+
+**Goal:** Implement the solution with specialized code agents
+
+**Activities:**
+- **Agent Router analyzes context** (Jira issue + file patterns)
+- **Selects domain specialists** (replaces generic placeholders)
+- Write production code using selected experts
+- Implement tests with testing specialists
+- Handle edge cases with domain knowledge
+- Commit with clear messages
+
+**Agents (dynamically selected):**
+- Determined by Agent Router based on:
+  - Detected domains (frontend, backend, database, etc.)
+  - Jira labels and components
+  - File patterns from planned changes
+  - Phase requirements (CODE phase)
+
+**Example Selections:**
+- Frontend-only: `react-component-architect`, `accessibility-expert`
+- Backend API: `api-integration-specialist`, `graphql-specialist`
+- Database: `prisma-specialist`, `data-modeling-specialist`
+- Full-stack: Mix of above based on files changed
+
+**Output:**
+- Implemented feature by domain experts
+- Comprehensive tests
+- Git commits with issue references
+
+### Usage Examples
+
+#### Example 1: Frontend Component
+
+**Jira Issue:**
+```
+PROJ-456: "Add dark mode toggle to settings"
+Labels: ["frontend", "react", "ui"]
+Components: ["UI"]
+```
+
+**Agent Router Analysis:**
+```yaml
+detected_domains: ["frontend"]
+file_analysis:
+  total_files_changed: 3
+  files_by_domain:
+    frontend:
+      count: 3
+      patterns:
+        - "src/components/ThemeToggle.tsx"
+        - "src/components/Settings.tsx"
+        - "src/styles/theme.css"
+
+recommended_agents:
+  - name: react-component-architect
+    score: 95
+    rationale: "Matched: frontend domain, React components, .tsx files"
+  - name: accessibility-expert
+    score: 85
+    rationale: "UI components require accessibility review"
+  - name: test-writer-fixer
+    score: 75
+    rationale: "Component testing coverage"
+```
+
+#### Example 2: Database Migration
+
+**Jira Issue:**
+```
+PROJ-789: "Add user preferences table"
+Labels: ["database", "backend", "migration"]
+Components: ["Database", "API"]
+```
+
+**Agent Router Analysis:**
+```yaml
+detected_domains: ["database", "backend"]
+file_analysis:
+  total_files_changed: 4
+  files_by_domain:
+    database:
+      count: 2
+      patterns:
+        - "prisma/schema.prisma"
+        - "prisma/migrations/20250119_add_preferences.sql"
+    backend:
+      count: 2
+      patterns:
+        - "api/preferences/route.ts"
+        - "api/preferences/route.test.ts"
+
+recommended_agents:
+  - name: prisma-specialist
+    score: 98
+    rationale: "Matched: database domain, .prisma extension, high priority"
+  - name: api-integration-specialist
+    score: 90
+    rationale: "Matched: backend domain, api/ directory"
+  - name: test-writer-fixer
+    score: 80
+    rationale: "API and schema changes require testing"
+```
+
+#### Example 3: Full-Stack Feature
+
+**Jira Issue:**
+```
+PROJ-123: "Implement OAuth login with Keycloak"
+Labels: ["auth", "frontend", "backend", "keycloak"]
+Components: ["Auth", "UI", "API"]
+```
+
+**Agent Router Analysis:**
+```yaml
+detected_domains: ["auth", "frontend", "backend", "database"]
+file_analysis:
+  total_files_changed: 6
+  files_by_domain:
+    auth:
+      count: 1
+      patterns: ["keycloak/realms/app-realm.json"]
+    frontend:
+      count: 2
+      patterns: ["src/components/LoginForm.tsx", "src/components/LoginForm.test.tsx"]
+    backend:
+      count: 2
+      patterns: ["api/auth/login/route.ts", "api/auth/callback/route.ts"]
+    database:
+      count: 1
+      patterns: ["prisma/schema.prisma"]
+
+recommended_agents:
+  - name: keycloak-identity-specialist
+    score: 95
+    rationale: "Matched: auth domain, keycloak/ directory, authentication keyword"
+  - name: react-component-architect
+    score: 92
+    rationale: "Matched: frontend domain, LoginForm component"
+  - name: api-integration-specialist
+    score: 90
+    rationale: "Matched: backend domain, auth API routes"
+  - name: prisma-specialist
+    score: 88
+    rationale: "Matched: database domain, schema changes for auth"
+  - name: test-writer-fixer
+    score: 85
+    rationale: "Authentication flow requires comprehensive testing"
+
+execution_plan:
+  total_agents: 5
+  parallel_execution: true
+  execution_order:
+    - phase: "CODE"
+      agents: ["keycloak-identity-specialist", "react-component-architect", "api-integration-specialist", "prisma-specialist"]
+      parallel: true
+    - phase: "TEST"
+      agents: ["test-writer-fixer"]
+      parallel: false
+```
+
+### Best Practices
+
+**For Jira Issues:**
+1. Use descriptive labels (frontend, backend, database, auth, etc.)
+2. Set accurate components (UI, API, Database, Auth, etc.)
+3. Mention technologies in description (React, Prisma, Keycloak, etc.)
+4. Include file paths in acceptance criteria when known
+
+**For Workflows:**
+1. Let Agent Router run automatically during `/jira:work`
+2. Review recommended agents before spawning
+3. Trust high-confidence (>80) recommendations
+4. Manually review low-confidence (<50) selections
+5. Add custom labels if router misclassifies
+
+**For Configuration:**
+1. Update `file-agent-mapping.yaml` as codebase evolves
+2. Add new domains when introducing new technologies
+3. Refine keyword lists based on routing outcomes
+4. Adjust scoring weights if needed
+5. Document domain-specific patterns
+
+### Monitoring & Metrics
+
+Track routing effectiveness:
+
+- **Accuracy**: % of correct agent selections (validated by outcomes)
+- **Coverage**: % of domains correctly identified
+- **Confidence Distribution**: High (>80), Medium (50-80), Low (<50)
+- **Fallback Rate**: % of tasks requiring fallback agents
+- **Agent Utilization**: Which specialists are most frequently recommended
+- **Model Efficiency**: Cost savings from optimal model assignments
+
+### Continuous Improvement
+
+The system learns from routing outcomes:
+
+- Track successful vs failed agent recommendations
+- Identify patterns in multi-domain tasks
+- Refine scoring weights based on effectiveness
+- Update keyword mappings as codebase evolves
+- Expand domain definitions for new technologies
+- Improve fallback strategies based on edge cases
 
 ---
 

@@ -322,12 +322,89 @@ ISSUE-KEY #command value #command value #command value
 PROJ-123 #comment Fixed the bug #time 2h 30m #transition "In Review"
 ```
 
+### Step 3.5: Dynamic Validator Selection
+
+Before validating commits, invoke the `agent-router` to select file-aware validators based on changed files:
+
+```yaml
+action: Route Validators Based on File Changes
+agent: agent-router
+model: haiku
+parameters:
+  phase: "VALIDATE"
+  changed_files: $(git diff --cached --name-only)
+  model_filter: "haiku"  # Fast validation agents
+
+# Example: The agent-router analyzes staged files and recommends validators:
+validation_agents = agent_router.select(
+  phase="VALIDATE",
+  changed_files=[
+    "src/components/Button.tsx",
+    "api/users/route.ts",
+    "prisma/schema.prisma"
+  ],
+  model_filter="haiku"
+)
+
+# Output: Agent recommendations based on file domains
+# Example selections:
+# *.tsx changes → react-component-architect for component validation
+# api/**/*.ts changes → api-integration-specialist for endpoint validation
+# *.prisma changes → prisma-specialist for schema validation
+# *.test.ts changes → test-writer-fixer for test quality
+```
+
+**Dynamic Selection Process:**
+
+1. **File Pattern Analysis**
+   - Parse `git diff --cached --name-only` output
+   - Extract file extensions and directory hints
+   - Map files to domains using `file-agent-mapping.yaml`
+   - Example: `.tsx` files → frontend domain, `api/` directory → backend domain
+
+2. **Domain-Aware Validator Selection**
+   - Query registry for domain-specific validators
+   - Apply phase override for VALIDATE phase
+   - Filter for fast agents (haiku model preference)
+   - Score validators based on file patterns
+
+3. **Recommended Validator Mapping**
+   ```yaml
+   file_domain_to_validator:
+     frontend:
+       - react-component-architect      # JSX/TSX syntax validation
+       - accessibility-expert            # Component a11y validation
+     backend:
+       - api-integration-specialist      # Route/endpoint validation
+       - integration-test-specialist     # API contract validation
+     database:
+       - prisma-specialist               # Schema syntax validation
+       - query-optimizer                 # Performance validation
+     testing:
+       - test-writer-fixer               # Test quality validation
+       - coverage-analyzer               # Coverage validation
+     documentation:
+       - codebase-documenter             # Doc quality validation
+   ```
+
+4. **Fallback Validators**
+   - If no specific validator matches: `smart-commit-validator`
+   - If validation phase required: `integration-tester`
+   - Ensure at least one validator always available
+
+**Configuration Reference:** See `jira-orchestrator/config/file-agent-mapping.yaml` for:
+- Domain definitions and keywords
+- File pattern mappings
+- Phase-specific agent overrides
+- Scoring weights and thresholds
+
 ### Step 4: Validate Smart Commit Syntax
 
-Validate the complete commit message:
+Validate the complete commit message using dynamically selected validators:
 
 ```yaml
 action: Validate Smart Commit Message
+validators: [dynamic selection from Step 3.5]
 validations:
   - Issue key present
   - Commands properly formatted
@@ -335,6 +412,7 @@ validations:
   - Transition status valid
   - No syntax errors
   - Message not empty
+  - File-specific validations (if domain-specific validators selected)
 ```
 
 **Validation patterns:**
@@ -712,31 +790,61 @@ PROJ-124 #comment Updated integration tests #time 1h
 
 ## Agent Orchestration
 
-This command orchestrates multiple specialized agents for validation, generation, and synchronization:
+This command orchestrates multiple specialized agents for validation, generation, and synchronization using dynamic agent selection:
+
+### Static Orchestration Agents
 
 | Agent | Model | Purpose | Invocation |
 |-------|-------|---------|------------|
-| smart-commit-validator | haiku | Input validation and error checking | Always |
+| agent-router | haiku | Dynamic validator selection based on file patterns | Always (Step 3.5) |
 | transition-manager | haiku | Fuzzy transition matching and validation | With `--validate-transitions` |
 | worklog-manager | haiku | Time tracking validation and conversion | With `--check-worklog` |
 | commit-message-generator | sonnet | Auto-generate commit messages from context | With `message=auto` |
 | github-jira-sync | sonnet | Execute smart commit commands in Jira | Post-commit |
 | batch-commit-processor | sonnet | Process multiple commits with aggregation | Via `/jira:bulk-commit` |
 
+### Dynamic Validators (Selected via Agent-Router)
+
+The `agent-router` automatically selects domain-specific validators based on changed files:
+
+| File Domain | Recommended Validators | Purpose |
+|-------------|------------------------|---------|
+| Frontend (.tsx, .jsx) | react-component-architect, accessibility-expert | JSX syntax, component quality, a11y validation |
+| Backend (api/, service/) | api-integration-specialist, integration-test-specialist | Endpoint validation, API contract checking |
+| Database (.prisma, .sql) | prisma-specialist, query-optimizer | Schema syntax, performance validation |
+| Testing (.test.ts, .spec.ts) | test-writer-fixer, coverage-analyzer | Test quality, coverage validation |
+| Documentation (.md, ADR) | codebase-documenter, technical-writer | Doc quality, formatting validation |
+| Fallback | smart-commit-validator, integration-tester | Generic syntax and integration validation |
+
 **Execution Pattern:**
-1. **Validation Phase** (parallel where possible):
-   - smart-commit-validator runs to check all inputs
+1. **Validator Selection Phase** (Step 3.5):
+   - agent-router analyzes staged files
+   - Maps files to domains using file-agent-mapping.yaml
+   - Selects appropriate validators by domain
+   - Returns scored agent recommendations
+
+2. **Validation Phase** (Step 4, parallel where possible):
+   - Dynamic validators (selected by agent-router) validate domain-specific aspects
    - transition-manager validates workflow state (if flag set)
    - worklog-manager checks time tracking (if flag set)
-2. **Generation Phase:**
+
+3. **Generation Phase:**
    - commit-message-generator creates message (if auto mode)
-3. **Execution Phase:**
+
+4. **Execution Phase:**
    - Git commit executes with HEREDOC formatting
-4. **Sync Phase:**
+
+5. **Sync Phase:**
    - github-jira-sync processes Jira updates
 
 **Strict Mode (`--strict`):**
-When enabled, validation warnings are treated as errors and will block the commit.
+When enabled, validation warnings from both static and dynamic validators are treated as errors and will block the commit.
+
+**Configuration:**
+- Domain-to-validator mappings: `jira-orchestrator/config/file-agent-mapping.yaml`
+- Phase overrides for VALIDATE phase
+- Scoring weights for agent selection
+- Agent registry: `.claude/registry/agents.index.json`
 
 ## Error Handling
 
@@ -1087,6 +1195,16 @@ PROJ-123 #comment Description #time 2h
 - `/jira:bulk-commit` - Process multiple commits in batch
 - `/jira:install-hooks` - Install git hooks for smart commits
 - `/qa-review` - Review QA tickets
+
+## Related Agents
+
+- `agent-router.md` - Dynamic agent selection based on file patterns and Jira context
+- `smart-commit-validator.md` - Pre-flight validation of smart commit parameters
+- `transition-manager.md` - Intelligent workflow state management with fuzzy matching
+- `worklog-manager.md` - Time tracking validation and conversion
+- `commit-message-generator.md` - Auto-generate smart commit messages from context
+- `github-jira-sync.md` - Bidirectional GitHub-Jira synchronization
+- `batch-commit-processor.md` - Process multiple commits with aggregation
 
 ## Success Criteria
 
