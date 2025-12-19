@@ -56,6 +56,27 @@ Before starting work, transition the issue to "In Progress".
 
 Based on the issue type, create an appropriate orchestration strategy.
 
+### NEW: PR Size Strategy (After PLAN phase)
+
+**IMPORTANT:** Before starting CODE phase, invoke the `pr-size-estimator` agent to:
+1. Analyze the scope based on sub-items
+2. Estimate total PR size
+3. Create splitting strategy if >400 lines expected
+4. Post PR strategy to Jira
+
+This prevents massive, overwhelming PRs by planning incremental delivery upfront.
+
+```
+If estimated size < 400 lines:
+  → Single PR strategy (proceed normally)
+
+If estimated size 400-800 lines:
+  → Split into 2-3 PRs (checkpoint PRs during CODE)
+
+If estimated size > 800 lines:
+  → Split into 3+ PRs (one per sub-item group)
+```
+
 ### Issue Type Strategies:
 
 #### For Bugs:
@@ -193,6 +214,42 @@ Post plan summary as Jira comment
 📋 PR LOG: "Phase 2: PLAN completed - Technical Design: {url}"
 ```
 
+#### Phase 2.5: PR SIZE ESTIMATION (NEW - After PLAN, Before CODE)
+```
+Invoke pr-size-estimator agent:
+  - Analyze sub-item complexity
+  - Estimate lines per component
+  - Calculate total expected size
+
+If estimated > 400 lines:
+  - Create splitting strategy
+  - Map sub-items to PRs
+  - Define merge order
+
+Post PR strategy to Jira:
+  - Estimated total size
+  - Splitting strategy (if applicable)
+  - PR plan with dependencies
+
+📝 JIRA: Post "PR Strategy: {strategy_type} - {pr_count} PRs planned"
+```
+
+#### Phase 2.6: CREATE DRAFT PR (NEW - Early Visibility)
+```
+Invoke draft-pr-manager agent:
+  - Create draft PR immediately
+  - Include progress checklist
+  - Mark as [WIP]
+
+Purpose:
+  - Early visibility for stakeholders
+  - Reviewers can watch progress
+  - Catch design issues early
+  - Reduce "big reveal" anxiety
+
+📝 JIRA: Post "Draft PR created: {pr_url} [DRAFT]"
+```
+
 #### Phase 3: CODE
 ```
 Execute implementation tasks in parallel where possible
@@ -202,6 +259,18 @@ Reference issue key in commits: "ABC-123: Description"
 Handle edge cases and error states
 Validate against acceptance criteria continuously
 
+📦 CHECKPOINT PRs (If multi-PR strategy):
+   After each sub-item group completes:
+   - Invoke checkpoint-pr-manager agent
+   - Create draft PR for completed slice
+   - Post PR URL to Jira
+   - Continue with next sub-item group
+
+   This keeps PRs small and reviewable:
+   - Each checkpoint PR < 400 lines
+   - Reviewers can start early
+   - Merge order follows dependencies
+
 📚 CONFLUENCE: Create "Implementation Notes" page
    - Architecture decisions
    - Key abstractions
@@ -210,6 +279,7 @@ Validate against acceptance criteria continuously
    - Link to PR: {pr_url}
 📝 JIRA: Post "Implementation started - see [Implementation Notes](confluence_url)"
 📋 PR LOG: "Phase 3: CODE completed - {files_changed} files, {lines} lines"
+🔄 DRAFT PR: Update progress (every 5 commits)
 ```
 
 #### Phase 4: TEST
@@ -591,6 +661,45 @@ Post comprehensive documentation summary to PR and Jira with all Confluence link
 3. Update each sub-item with Confluence links:
    - Add comment with relevant Confluence page links
    - Reference parent documentation
+```
+
+## Step 12: Create Review Progress Dashboard (NEW)
+
+Track review progress with a visual dashboard on the parent issue.
+
+### Actions:
+```
+1. Invoke the `review-progress-tracker` agent with:
+   - Parent issue key: ${issue_key}
+   - PR URL: {PR_URL}
+   - All review task keys
+
+2. The agent will create a dashboard:
+   "## 📊 Review Progress Dashboard
+
+   **Completion:** X of Y chunks (Z%)
+
+   [████████░░░░░░░░░░░░] 40%
+
+   | Status | Count |
+   |--------|-------|
+   | ✅ Reviewed | N |
+   | 🔄 In Progress | N |
+   | ⏳ Pending | N |
+
+   ### Progress by Reviewer
+   | Reviewer | Assigned | Done | Status |
+   |----------|----------|------|--------|
+   | @alice | 4 | 4 | ✅ Complete |
+   | @bob | 3 | 1 | 🔄 Reviewing |
+
+   📈 Dashboard auto-updates as reviews complete."
+
+3. Dashboard benefits:
+   - Real-time visibility into review progress
+   - Identifies reviewers who need nudging
+   - Calculates time to approval
+   - Tracks velocity and bottlenecks
 ```
 
 ## Error Handling

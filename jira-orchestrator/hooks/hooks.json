@@ -56,6 +56,19 @@
       "timeout": 5000,
       "blocking": false,
       "prompt": "# Active Issue Check\n\nA new Claude Code session has started.\n\n## Your Task\n\n### Step 1: Check for Active Orchestrations\n\nRun the session resume script:\n```bash\n${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-resume.sh\n```\n\nThis will return:\n- List of active Jira orchestrations\n- Session IDs and issue keys\n- Current phase for each orchestration\n- Time since last activity\n\n### Step 2: Report Active Sessions\n\nIf active sessions found:\n```\nWelcome! I found active Jira orchestrations:\n\n1. **${ISSUE_KEY_1}**: ${ISSUE_SUMMARY}\n   - Phase: ${CURRENT_PHASE}\n   - Status: ${STATUS}\n   - Last Activity: ${TIME_AGO}\n   - Session: ${SESSION_ID}\n\n2. **${ISSUE_KEY_2}**: ${ISSUE_SUMMARY}\n   - Phase: ${CURRENT_PHASE}\n   - Status: ${STATUS}\n   - Last Activity: ${TIME_AGO}\n   - Session: ${SESSION_ID}\n\nWould you like to:\na) Resume one of these orchestrations\nb) View detailed status\nc) Start fresh with a new issue\nd) Clean up stale sessions\n```\n\nIf no active sessions:\n```\nWelcome! No active Jira orchestrations found.\n\nReady to:\n- Start work on a new issue with `/jira:work ISSUE-KEY`\n- View your Jira issues with `/jira:list`\n- Get help with `/jira:help`\n```\n\n### Step 3: Offer Resume Options\n\nIf user wants to resume:\n```\nResuming ${ISSUE_KEY} orchestration...\n\nLast known state:\n- Phase: ${CURRENT_PHASE}\n- Agents completed: ${COMPLETED_AGENTS}\n- Agents pending: ${PENDING_AGENTS}\n- Output location: ${OUTPUT_DIR}\n\nContinuing from where we left off...\n```\n\n## Session Locations\n\n- **Active Sessions**: `${CLAUDE_PLUGIN_ROOT}/sessions/active/`\n- **Session State**: `${CLAUDE_PLUGIN_ROOT}/sessions/${SESSION_ID}/state.json`\n- **Session Logs**: `${CLAUDE_PLUGIN_ROOT}/sessions/${SESSION_ID}/logs/`\n\n## Important\n\n- Only show this check once per session start\n- Don't interrupt if user provides a direct command\n- Be helpful but not pushy about resuming\n- Offer to clean up stale sessions (>24 hours old)\n\n## Context Variables\n\n- `${ACTIVE_SESSIONS}`: List of active session IDs\n- `${ISSUE_KEYS}`: List of active issue keys\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory\n- `${USER}`: Current user\n- `${SESSION_START_TIME}`: When this session started"
+    },
+    {
+      "event": "PreToolUse",
+      "name": "pr-size-guard",
+      "description": "Checks PR size before creation and blocks or warns if too large",
+      "type": "command",
+      "matcher": {
+        "type": "tool_name",
+        "pattern": "gh_pr_create|mcp__github__create_pull_request"
+      },
+      "timeout": 10000,
+      "blocking": true,
+      "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pr-size-guard.sh main"
     }
   ],
   "scripts": {
@@ -63,6 +76,7 @@
     "triage-check": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/triage-check.sh",
     "review-gate": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/review-gate.sh",
     "docs-reminder": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/docs-reminder.sh",
-    "session-resume": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-resume.sh"
+    "session-resume": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-resume.sh",
+    "pr-size-guard": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pr-size-guard.sh"
   }
 }

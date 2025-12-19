@@ -1,0 +1,656 @@
+# AWS-Specific Deployment Configuration for Jira Orchestrator
+# This configuration provides AWS-native deployment tracking with Jira integration
+
+# =============================================================================
+# AWS PROVIDER CONFIGURATION
+# =============================================================================
+cloud:
+  provider: "aws"
+  region: "${AWS_REGION:-us-east-1}"
+  account_id: "${AWS_ACCOUNT_ID}"
+
+  # AWS Profile (optional, for local development)
+  profile: "${AWS_PROFILE:-default}"
+
+  # Resource tagging strategy
+  tags:
+    Project: "${PROJECT_NAME}"
+    Environment: "${ENVIRONMENT}"
+    ManagedBy: "jira-orchestrator"
+    JiraProject: "${JIRA_PROJECT_KEY}"
+
+# =============================================================================
+# JIRA CONFIGURATION
+# =============================================================================
+jira:
+  host: "${JIRA_SITE_URL}"
+  auth:
+    email: "${JIRA_USER_EMAIL}"
+    api_token: "${JIRA_API_TOKEN}"
+  default_project: "${JIRA_PROJECT_KEY:-PROJ}"
+
+  environments:
+    development:
+      jira_field: "customfield_10100"
+      cloud_environments:
+        - "dev"
+        - "development"
+      auto_transition: "In Development"
+      aws_environments:
+        - "dev"
+        - "development"
+        - "sandbox"
+
+    staging:
+      jira_field: "customfield_10101"
+      cloud_environments:
+        - "staging"
+        - "qa"
+      auto_transition: "In QA"
+      aws_environments:
+        - "staging"
+        - "qa"
+        - "test"
+
+    production:
+      jira_field: "customfield_10102"
+      cloud_environments:
+        - "production"
+        - "prod"
+      auto_transition: "Released"
+      aws_environments:
+        - "production"
+        - "prod"
+        - "live"
+
+  fields:
+    branch_name: "customfield_10200"
+    pr_url: "customfield_10201"
+    build_status: "customfield_10202"
+    deployment_status: "customfield_10203"
+    last_deployment: "customfield_10204"
+    repository: "customfield_10205"
+    commit_count: "customfield_10206"
+    deployment_version: "customfield_10207"
+    cloud_provider: "customfield_10208"
+    cloud_region: "customfield_10209"
+
+# =============================================================================
+# AWS SERVICE CONFIGURATIONS
+# =============================================================================
+aws:
+  # AWS ECS Configuration (for container deployments)
+  ecs:
+    enabled: true
+
+    # ECS Cluster configuration
+    cluster:
+      name: "${PROJECT_NAME}-${ENVIRONMENT}"
+      arn: "${ECS_CLUSTER_ARN}"
+
+    # Service discovery
+    services:
+      frontend:
+        name: "${PROJECT_NAME}-frontend"
+        task_definition: "${PROJECT_NAME}-frontend:${VERSION}"
+        desired_count: 2
+        health_check_grace_period: 60
+
+      backend:
+        name: "${PROJECT_NAME}-backend"
+        task_definition: "${PROJECT_NAME}-backend:${VERSION}"
+        desired_count: 3
+        health_check_grace_period: 120
+
+    # Deployment configuration
+    deployment:
+      minimum_healthy_percent: 50
+      maximum_percent: 200
+      rollback_on_failure: true
+
+      # Circuit breaker for automatic rollback
+      circuit_breaker:
+        enable: true
+        rollback: true
+
+  # AWS EKS Configuration (for Kubernetes deployments)
+  eks:
+    enabled: false
+
+    # EKS Cluster
+    cluster:
+      name: "${PROJECT_NAME}-${ENVIRONMENT}"
+      region: "${AWS_REGION}"
+      version: "1.28"
+
+    # Namespace configuration
+    namespace: "${PROJECT_NAME}-${ENVIRONMENT}"
+
+    # Deployment tracking
+    track_deployments: true
+    track_pods: true
+    track_services: true
+
+  # AWS Lambda Configuration (for serverless deployments)
+  lambda:
+    enabled: false
+
+    # Lambda functions to track
+    functions:
+      - name: "${PROJECT_NAME}-api"
+        alias: "${ENVIRONMENT}"
+        version: "${VERSION}"
+
+      - name: "${PROJECT_NAME}-worker"
+        alias: "${ENVIRONMENT}"
+        version: "${VERSION}"
+
+    # Deployment configuration
+    deployment:
+      type: "linear"  # linear, canary, all_at_once
+      percentage: 10
+      interval_minutes: 5
+
+  # AWS CodeDeploy Integration
+  codedeploy:
+    enabled: true
+
+    # Application configuration
+    application_name: "${PROJECT_NAME}"
+
+    # Deployment group per environment
+    deployment_groups:
+      development:
+        name: "${PROJECT_NAME}-dev"
+        auto_rollback: true
+
+      staging:
+        name: "${PROJECT_NAME}-staging"
+        auto_rollback: true
+
+      production:
+        name: "${PROJECT_NAME}-prod"
+        auto_rollback: true
+        approval_required: true
+
+    # Deployment configuration
+    deployment_config:
+      name: "CodeDeployDefault.ECSAllAtOnce"  # ECSAllAtOnce, ECSLinear10PercentEvery1Minutes, ECSCanary10Percent5Minutes
+
+    # Track CodeDeploy events in Jira
+    track_events:
+      - "DEPLOYMENT_START"
+      - "DEPLOYMENT_SUCCESS"
+      - "DEPLOYMENT_FAILURE"
+      - "DEPLOYMENT_STOP"
+      - "DEPLOYMENT_ROLLBACK"
+
+  # AWS CloudWatch Integration
+  cloudwatch:
+    enabled: true
+
+    # Log group configuration
+    logs:
+      group_name: "/aws/jira-orchestrator/${PROJECT_NAME}"
+      retention_days: 30
+      stream_name: "${ENVIRONMENT}"
+
+    # Metrics namespace
+    metrics:
+      namespace: "JiraOrchestrator/${PROJECT_NAME}"
+      dimensions:
+        - Environment
+        - Service
+        - Version
+
+    # CloudWatch Alarms
+    alarms:
+      deployment_failures:
+        enabled: true
+        threshold: 1
+        evaluation_periods: 1
+        statistic: "Sum"
+        period: 60
+        actions:
+          - "${SNS_TOPIC_ARN}"
+
+      deployment_duration:
+        enabled: true
+        threshold: 1800  # 30 minutes
+        evaluation_periods: 1
+        statistic: "Maximum"
+        period: 60
+
+  # AWS Systems Manager Parameter Store
+  ssm:
+    enabled: true
+
+    # Parameter paths
+    parameters:
+      jira_token: "/${PROJECT_NAME}/${ENVIRONMENT}/jira/api-token"
+      jira_email: "/${PROJECT_NAME}/${ENVIRONMENT}/jira/email"
+      deployment_config: "/${PROJECT_NAME}/${ENVIRONMENT}/deployment/config"
+
+    # Auto-fetch parameters before deployment
+    auto_fetch: true
+
+  # AWS Secrets Manager
+  secrets_manager:
+    enabled: true
+
+    # Secret ARNs
+    secrets:
+      jira_credentials: "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:${PROJECT_NAME}/jira-credentials"
+      github_token: "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:${PROJECT_NAME}/github-token"
+
+    # Auto-fetch secrets before deployment
+    auto_fetch: true
+
+  # AWS SNS for notifications
+  sns:
+    enabled: true
+
+    # Topic ARN for deployment notifications
+    topic_arn: "${SNS_DEPLOYMENT_TOPIC_ARN}"
+
+    # Subscription endpoints
+    subscriptions:
+      - protocol: "email"
+        endpoint: "deployments@example.com"
+
+      - protocol: "https"
+        endpoint: "${SLACK_WEBHOOK_URL}"
+
+  # AWS EventBridge for deployment events
+  eventbridge:
+    enabled: true
+
+    # Event bus
+    event_bus: "default"
+
+    # Event pattern for CodeDeploy
+    patterns:
+      codedeploy:
+        source: ["aws.codedeploy"]
+        detail_type:
+          - "CodeDeploy Deployment State-change Notification"
+
+      ecs:
+        source: ["aws.ecs"]
+        detail_type:
+          - "ECS Deployment State Change"
+          - "ECS Service Action"
+
+# =============================================================================
+# DEPLOYMENT TRACKING
+# =============================================================================
+deployment:
+  # Issue detection from AWS resources
+  issue_detection:
+    - type: "explicit"
+      enabled: true
+
+    - type: "git_commits"
+      enabled: true
+      look_back_commits: 50
+      regex_pattern: "([A-Z]+-\\d+)"
+
+    - type: "ecs_task_tags"
+      enabled: true
+      tag_key: "JiraIssue"
+
+    - type: "codedeploy_tags"
+      enabled: true
+      tag_key: "JiraIssue"
+
+    - type: "ecr_image_tags"
+      enabled: true
+      tag_pattern: "jira-"
+
+  # Version from AWS resources
+  version:
+    # Source: ecr_tag, git_tag, parameter_store, timestamp
+    source: "ecr_tag"
+    fallback: "git_tag"
+
+    # ECR repository
+    ecr_repository: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${PROJECT_NAME}"
+
+    # Tag pattern for versions
+    tag_pattern: "v*"
+
+  # Metadata extraction from AWS
+  metadata:
+    track_timestamp: true
+    track_duration: true
+    track_deployer: true
+    track_commit: true
+
+    # AWS-specific metadata
+    aws_metadata:
+      track_account_id: true
+      track_region: true
+      track_service_arn: true
+      track_task_definition: true
+      track_deployment_id: true
+
+  # Notifications via AWS SNS
+  notifications:
+    on_success: true
+    on_failure: true
+    on_rollback: true
+
+    channels:
+      - type: "jira_comment"
+        enabled: true
+
+      - type: "sns"
+        enabled: true
+        topic_arn: "${SNS_DEPLOYMENT_TOPIC_ARN}"
+
+      - type: "cloudwatch"
+        enabled: true
+        log_group: "/aws/jira-orchestrator/${PROJECT_NAME}"
+
+# =============================================================================
+# AWS-SPECIFIC SERVICES
+# =============================================================================
+services:
+  # Frontend service (ECS)
+  frontend:
+    name: "frontend"
+    jira_project: "${JIRA_PROJECT_KEY}"
+    deployment_type: "ecs"
+
+    ecs:
+      service_name: "${PROJECT_NAME}-frontend"
+      cluster: "${PROJECT_NAME}-${ENVIRONMENT}"
+      task_definition_family: "${PROJECT_NAME}-frontend"
+
+    health_check:
+      enabled: true
+      type: "elb"  # elb, http, tcp
+      target_group_arn: "${FRONTEND_TG_ARN}"
+      healthy_threshold: 2
+      unhealthy_threshold: 3
+      interval_seconds: 30
+      timeout_seconds: 5
+
+    environments:
+      development:
+        desired_count: 1
+        cpu: "256"
+        memory: "512"
+        auto_scaling:
+          enabled: false
+
+      staging:
+        desired_count: 2
+        cpu: "512"
+        memory: "1024"
+        auto_scaling:
+          enabled: true
+          min_capacity: 2
+          max_capacity: 4
+          target_cpu_percent: 70
+
+      production:
+        desired_count: 3
+        cpu: "1024"
+        memory: "2048"
+        auto_scaling:
+          enabled: true
+          min_capacity: 3
+          max_capacity: 10
+          target_cpu_percent: 60
+
+  # Backend service (ECS)
+  backend:
+    name: "backend"
+    jira_project: "${JIRA_PROJECT_KEY}"
+    deployment_type: "ecs"
+
+    ecs:
+      service_name: "${PROJECT_NAME}-backend"
+      cluster: "${PROJECT_NAME}-${ENVIRONMENT}"
+      task_definition_family: "${PROJECT_NAME}-backend"
+
+    health_check:
+      enabled: true
+      type: "http"
+      endpoint: "/health"
+      healthy_threshold: 2
+      unhealthy_threshold: 3
+
+    # RDS database integration
+    rds:
+      enabled: true
+      cluster_identifier: "${PROJECT_NAME}-${ENVIRONMENT}"
+      track_migrations: true
+
+    environments:
+      development:
+        desired_count: 1
+        cpu: "512"
+        memory: "1024"
+
+      staging:
+        desired_count: 2
+        cpu: "1024"
+        memory: "2048"
+
+      production:
+        desired_count: 5
+        cpu: "2048"
+        memory: "4096"
+        auto_scaling:
+          enabled: true
+          min_capacity: 5
+          max_capacity: 20
+          target_cpu_percent: 70
+
+# =============================================================================
+# SECRETS MANAGEMENT (AWS)
+# =============================================================================
+secrets:
+  provider: "aws_secrets_manager"
+
+  config:
+    aws:
+      region: "${AWS_REGION}"
+      secret_prefix: "${PROJECT_NAME}/"
+
+      # KMS key for encryption
+      kms_key_id: "${KMS_KEY_ID}"
+
+      # Auto-rotation
+      rotation:
+        enabled: true
+        days: 90
+
+  required:
+    - "JIRA_API_TOKEN"
+    - "JIRA_USER_EMAIL"
+    - "JIRA_SITE_URL"
+
+# =============================================================================
+# CI/CD INTEGRATION (AWS CodePipeline)
+# =============================================================================
+cicd:
+  platform: "aws_codepipeline"
+
+  codepipeline:
+    # Pipeline configuration
+    pipeline_name: "${PROJECT_NAME}-${ENVIRONMENT}"
+
+    # Track pipeline executions
+    track_executions: true
+
+    # Stages to track
+    stages:
+      - name: "Source"
+        track: false
+
+      - name: "Build"
+        track: true
+        on_failure: "update_jira"
+
+      - name: "Test"
+        track: true
+        on_failure: "update_jira"
+
+      - name: "Deploy"
+        track: true
+        on_success: "update_jira"
+        on_failure: "update_jira"
+
+  # CodeBuild integration
+  codebuild:
+    enabled: true
+
+    # Build project
+    project_name: "${PROJECT_NAME}-build"
+
+    # Track build status in Jira
+    track_builds: true
+
+    # Environment variables for build
+    environment_variables:
+      - name: "JIRA_API_TOKEN"
+        type: "SECRETS_MANAGER"
+        value: "${PROJECT_NAME}/jira/api-token"
+
+      - name: "JIRA_USER_EMAIL"
+        type: "SECRETS_MANAGER"
+        value: "${PROJECT_NAME}/jira/email"
+
+  approval:
+    enabled: true
+    required_for:
+      - "production"
+
+    sources:
+      - type: "jira_transition"
+        from_status: "Approved"
+
+      - type: "sns_approval"
+        topic_arn: "${SNS_APPROVAL_TOPIC_ARN}"
+
+# =============================================================================
+# MONITORING (AWS CloudWatch)
+# =============================================================================
+monitoring:
+  metrics:
+    enabled: true
+    format: "cloudwatch"
+
+    namespace: "JiraOrchestrator/${PROJECT_NAME}"
+
+    track:
+      - "DeploymentCount"
+      - "DeploymentDuration"
+      - "DeploymentSuccessRate"
+      - "IssueUpdateCount"
+      - "IssueTransitionCount"
+
+  logging:
+    level: "info"
+    format: "json"
+    destination: "cloudwatch"
+
+    cloudwatch:
+      log_group: "/aws/jira-orchestrator/${PROJECT_NAME}"
+      retention_days: 30
+      stream_name_prefix: "${ENVIRONMENT}/"
+
+  alerts:
+    enabled: true
+
+    # CloudWatch Alarms
+    cloudwatch_alarms:
+      deployment_failures:
+        alarm_name: "${PROJECT_NAME}-deployment-failures"
+        metric_name: "DeploymentFailures"
+        threshold: 1
+        evaluation_periods: 1
+        actions:
+          - "${SNS_TOPIC_ARN}"
+
+      jira_sync_failures:
+        alarm_name: "${PROJECT_NAME}-jira-sync-failures"
+        metric_name: "JiraSyncFailures"
+        threshold: 3
+        evaluation_periods: 2
+        actions:
+          - "${SNS_TOPIC_ARN}"
+
+# =============================================================================
+# ROLLBACK (AWS-Specific)
+# =============================================================================
+rollback:
+  auto_rollback:
+    enabled: true
+
+    triggers:
+      - type: "cloudwatch_alarm"
+        alarm_name: "${PROJECT_NAME}-health-check-failure"
+
+      - type: "ecs_deployment_failure"
+        threshold: 1
+
+      - type: "codedeploy_failure"
+        threshold: 1
+
+  # Use AWS CodeDeploy automatic rollback
+  codedeploy_rollback:
+    enabled: true
+    on_deployment_failure: true
+    on_alarm_threshold: true
+
+  track_in_jira: true
+  strategy: "previous_version"
+
+# =============================================================================
+# AWS COST TRACKING
+# =============================================================================
+cost_tracking:
+  enabled: true
+
+  # Track deployment costs via Cost Explorer API
+  cost_explorer:
+    enabled: true
+    tag_key: "JiraIssue"
+
+    # Add deployment cost to Jira comment
+    include_in_comment: true
+
+  # Budget alerts
+  budgets:
+    enabled: false
+    monthly_limit: 1000
+    alert_threshold: 80
+
+# =============================================================================
+# EXAMPLE USAGE
+# =============================================================================
+#
+# Deploy to ECS development:
+#   export AWS_REGION=us-east-1
+#   export ENVIRONMENT=development
+#   ./deploy-to-jira.sh dev
+#
+# Deploy to ECS production with version:
+#   export AWS_REGION=us-east-1
+#   export ENVIRONMENT=production
+#   ./deploy-to-jira.sh production --version v1.2.0 --issue PROJ-123
+#
+# Deploy using CodeDeploy:
+#   aws deploy create-deployment \
+#     --application-name ${PROJECT_NAME} \
+#     --deployment-group-name ${PROJECT_NAME}-prod \
+#     --revision revisionType=S3,s3Location={bucket=my-bucket,key=app.zip,bundleType=zip}
+#
+#   # Then track in Jira:
+#   ./deploy-to-jira.sh production --deployment-id d-XXXXX
+#
+# =============================================================================

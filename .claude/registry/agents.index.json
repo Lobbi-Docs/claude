@@ -3595,32 +3595,597 @@
         ],
         "priority": "high"
       }
+    },
+    "atlassian": {
+      "github-jira-sync": {
+        "callsign": "Nexus",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/github-jira-sync.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "github",
+          "jira",
+          "sync",
+          "branch",
+          "pr",
+          "deployment",
+          "smart-commit",
+          "automation"
+        ],
+        "capabilities": [
+          "github_jira_sync",
+          "branch_tracking",
+          "pr_linking",
+          "deployment_tracking",
+          "smart_commits"
+        ],
+        "priority": "high"
+      },
+      "smart-commit-generator": {
+        "callsign": "Scribe",
+        "faction": "Promethean",
+        "path": "jira-orchestrator/agents/smart-commit-generator.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "jira",
+          "commit",
+          "smart-commit",
+          "comment",
+          "time-tracking",
+          "transition",
+          "git"
+        ],
+        "capabilities": [
+          "smart_commit_generation",
+          "jira_comment",
+          "time_logging",
+          "issue_transition"
+        ],
+        "priority": "medium"
+      },
+      "deployment-tracker": {
+        "callsign": "Beacon",
+        "faction": "Spartan",
+        "path": "jira-orchestrator/agents/deployment-tracker.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "deployment",
+          "tracking",
+          "jira",
+          "environment",
+          "dev",
+          "staging",
+          "production",
+          "rollback"
+        ],
+        "capabilities": [
+          "deployment_tracking",
+          "environment_monitoring",
+          "jira_updates",
+          "rollback_tracking"
+        ],
+        "priority": "medium"
+      },
+      "branch-strategy-manager": {
+        "callsign": "Pathfinder",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/branch-strategy-manager.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "branch",
+          "git",
+          "jira",
+          "naming",
+          "feature",
+          "workflow",
+          "lifecycle"
+        ],
+        "capabilities": [
+          "branch_creation",
+          "naming_validation",
+          "jira_linking",
+          "branch_lifecycle"
+        ],
+        "priority": "medium"
+      },
+      "pr-creator": {
+        "callsign": "Gateway",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/pr-creator.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "pull-request",
+          "pr",
+          "github",
+          "jira",
+          "code-review",
+          "merge"
+        ],
+        "capabilities": [
+          "pr_creation",
+          "jira_integration",
+          "code_review_coordination",
+          "merge_management"
+        ],
+        "priority": "high"
+      },
+      "triage-agent": {
+        "callsign": "Sentinel",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/triage-agent.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "triage",
+          "jira",
+          "prioritization",
+          "issue",
+          "task",
+          "assignment"
+        ],
+        "capabilities": [
+          "issue_triage",
+          "priority_assessment",
+          "task_assignment",
+          "workflow_routing"
+        ],
+        "priority": "high"
+      },
+      "code-reviewer": {
+        "callsign": "Arbiter",
+        "faction": "Spartan",
+        "path": "jira-orchestrator/agents/code-reviewer.md",
+        "type": "validator",
+        "model": "sonnet",
+        "keywords": [
+          "code-review",
+          "quality",
+          "jira",
+          "pr",
+          "standards",
+          "feedback"
+        ],
+        "capabilities": [
+          "code_review",
+          "quality_assessment",
+          "jira_feedback",
+          "standards_enforcement"
+        ],
+        "priority": "high"
+      },
+      "documentation-writer": {
+        "callsign": "Chronicler",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/documentation-writer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "documentation",
+          "jira",
+          "confluence",
+          "writing",
+          "knowledge-base"
+        ],
+        "capabilities": [
+          "documentation_creation",
+          "confluence_integration",
+          "knowledge_management",
+          "jira_documentation"
+        ],
+        "priority": "medium"
+      },
+      "pr-documentation-logger": {
+        "callsign": "Recorder",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/pr-documentation-logger.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "pr",
+          "documentation",
+          "logging",
+          "jira",
+          "comments",
+          "tracking"
+        ],
+        "capabilities": [
+          "pr_documentation",
+          "comment_logging",
+          "jira_updates",
+          "audit_trail"
+        ],
+        "priority": "medium"
+      },
+      "pr-size-estimator": {
+        "callsign": "Measure",
+        "faction": "Promethean",
+        "path": "jira-orchestrator/agents/pr-size-estimator.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": [
+          "pr",
+          "size",
+          "estimation",
+          "complexity",
+          "review-time"
+        ],
+        "capabilities": [
+          "size_estimation",
+          "complexity_analysis",
+          "review_planning"
+        ],
+        "priority": "low"
+      },
+      "draft-pr-manager": {
+        "callsign": "Architect",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/draft-pr-manager.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "draft",
+          "pr",
+          "wip",
+          "work-in-progress",
+          "github"
+        ],
+        "capabilities": [
+          "draft_pr_management",
+          "wip_tracking",
+          "incremental_review"
+        ],
+        "priority": "medium"
+      },
+      "checkpoint-pr-manager": {
+        "callsign": "Milestone",
+        "faction": "Spartan",
+        "path": "jira-orchestrator/agents/checkpoint-pr-manager.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "checkpoint",
+          "pr",
+          "progress",
+          "milestone",
+          "tracking"
+        ],
+        "capabilities": [
+          "checkpoint_management",
+          "progress_tracking",
+          "incremental_delivery"
+        ],
+        "priority": "medium"
+      },
+      "review-facilitator": {
+        "callsign": "Moderator",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/review-facilitator.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "review",
+          "facilitation",
+          "coordination",
+          "feedback",
+          "pr"
+        ],
+        "capabilities": [
+          "review_coordination",
+          "feedback_management",
+          "reviewer_assignment"
+        ],
+        "priority": "high"
+      },
+      "review-progress-tracker": {
+        "callsign": "Monitor",
+        "faction": "Promethean",
+        "path": "jira-orchestrator/agents/review-progress-tracker.md",
+        "type": "analyst",
+        "model": "haiku",
+        "keywords": [
+          "review",
+          "progress",
+          "tracking",
+          "status",
+          "metrics"
+        ],
+        "capabilities": [
+          "progress_tracking",
+          "review_metrics",
+          "status_reporting"
+        ],
+        "priority": "medium"
+      },
+      "task-enricher": {
+        "callsign": "Enhancer",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/task-enricher.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "task",
+          "enrichment",
+          "details",
+          "jira",
+          "metadata"
+        ],
+        "capabilities": [
+          "task_enrichment",
+          "metadata_enhancement",
+          "context_addition"
+        ],
+        "priority": "medium"
+      },
+      "epic-decomposer": {
+        "callsign": "Divider",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/epic-decomposer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "epic",
+          "decomposition",
+          "story",
+          "task",
+          "breakdown"
+        ],
+        "capabilities": [
+          "epic_decomposition",
+          "story_creation",
+          "task_breakdown"
+        ],
+        "priority": "medium"
+      },
+      "requirements-analyzer": {
+        "callsign": "Inspector",
+        "faction": "Promethean",
+        "path": "jira-orchestrator/agents/requirements-analyzer.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "requirements",
+          "analysis",
+          "specification",
+          "validation"
+        ],
+        "capabilities": [
+          "requirements_analysis",
+          "spec_validation",
+          "clarity_checking"
+        ],
+        "priority": "medium"
+      },
+      "qa-transition": {
+        "callsign": "Gatekeeper",
+        "faction": "Spartan",
+        "path": "jira-orchestrator/agents/qa-transition.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "qa",
+          "transition",
+          "workflow",
+          "jira",
+          "testing"
+        ],
+        "capabilities": [
+          "qa_transition",
+          "workflow_management",
+          "status_updates"
+        ],
+        "priority": "high"
+      },
+      "qa-ticket-reviewer": {
+        "callsign": "Examiner",
+        "faction": "Spartan",
+        "path": "jira-orchestrator/agents/qa-ticket-reviewer.md",
+        "type": "validator",
+        "model": "sonnet",
+        "keywords": [
+          "qa",
+          "review",
+          "ticket",
+          "validation",
+          "checklist"
+        ],
+        "capabilities": [
+          "ticket_review",
+          "qa_validation",
+          "checklist_verification"
+        ],
+        "priority": "high"
+      },
+      "qa-comment-responder": {
+        "callsign": "Responder",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/qa-comment-responder.md",
+        "type": "coordinator",
+        "model": "haiku",
+        "keywords": [
+          "qa",
+          "comment",
+          "response",
+          "communication",
+          "feedback"
+        ],
+        "capabilities": [
+          "comment_response",
+          "qa_communication",
+          "feedback_handling"
+        ],
+        "priority": "medium"
+      },
+      "qa-confluence-documenter": {
+        "callsign": "Archivist",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/qa-confluence-documenter.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "qa",
+          "confluence",
+          "documentation",
+          "test-results",
+          "reporting"
+        ],
+        "capabilities": [
+          "qa_documentation",
+          "confluence_updates",
+          "test_reporting"
+        ],
+        "priority": "medium"
+      },
+      "confluence-manager": {
+        "callsign": "Librarian",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/confluence-manager.md",
+        "type": "coordinator",
+        "model": "sonnet",
+        "keywords": [
+          "confluence",
+          "documentation",
+          "pages",
+          "spaces",
+          "organization"
+        ],
+        "capabilities": [
+          "confluence_management",
+          "page_organization",
+          "space_administration"
+        ],
+        "priority": "medium"
+      },
+      "confluence-documentation-creator": {
+        "callsign": "Publisher",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/confluence-documentation-creator.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "confluence",
+          "documentation",
+          "creation",
+          "publishing",
+          "pages"
+        ],
+        "capabilities": [
+          "confluence_page_creation",
+          "documentation_publishing",
+          "content_formatting"
+        ],
+        "priority": "medium"
+      },
+      "sub-item-documenter": {
+        "callsign": "Detailer",
+        "faction": "Promethean",
+        "path": "jira-orchestrator/agents/sub-item-documenter.md",
+        "type": "developer",
+        "model": "haiku",
+        "keywords": [
+          "sub-item",
+          "documentation",
+          "details",
+          "jira",
+          "subtask"
+        ],
+        "capabilities": [
+          "sub_item_documentation",
+          "detail_tracking",
+          "subtask_management"
+        ],
+        "priority": "low"
+      },
+      "quality-enhancer": {
+        "callsign": "Refiner",
+        "faction": "Spartan",
+        "path": "jira-orchestrator/agents/quality-enhancer.md",
+        "type": "developer",
+        "model": "sonnet",
+        "keywords": [
+          "quality",
+          "enhancement",
+          "improvement",
+          "standards",
+          "best-practices"
+        ],
+        "capabilities": [
+          "quality_improvement",
+          "standards_enforcement",
+          "best_practices"
+        ],
+        "priority": "medium"
+      },
+      "test-strategist": {
+        "callsign": "Tactician",
+        "faction": "Spartan",
+        "path": "jira-orchestrator/agents/test-strategist.md",
+        "type": "analyst",
+        "model": "sonnet",
+        "keywords": [
+          "testing",
+          "strategy",
+          "test-plan",
+          "coverage",
+          "quality"
+        ],
+        "capabilities": [
+          "test_strategy",
+          "test_planning",
+          "coverage_analysis"
+        ],
+        "priority": "medium"
+      },
+      "completion-orchestrator": {
+        "callsign": "Conductor",
+        "faction": "Forerunner",
+        "path": "jira-orchestrator/agents/completion-orchestrator.md",
+        "type": "coordinator",
+        "model": "opus",
+        "keywords": [
+          "completion",
+          "orchestration",
+          "workflow",
+          "coordination",
+          "finalization"
+        ],
+        "capabilities": [
+          "workflow_orchestration",
+          "completion_management",
+          "coordination"
+        ],
+        "priority": "high"
+      }
     }
   },
   "stats": {
     "byType": {
-      "developer": 92,
-      "analyst": 51,
-      "validator": 15,
-      "coordinator": 36,
+      "developer": 71,
+      "analyst": 44,
+      "coordinator": 31,
+      "validator": 12,
       "utility": 3,
       "specialist": 4,
       "architect": 1
     },
     "byModel": {
-      "sonnet": 163,
-      "haiku": 36,
-      "opus": 3
+      "sonnet": 124,
+      "haiku": 38,
+      "opus": 4
     },
     "byPriority": {
-      "high": 84,
-      "medium": 94,
-      "low": 24
+      "medium": 76,
+      "high": 81,
+      "low": 9
     },
     "byFaction": {
-      "Promethean": 97,
-      "Forerunner": 66,
-      "Spartan": 39
+      "Promethean": 87,
+      "Forerunner": 50,
+      "Spartan": 29
     },
     "byCategory": {
       "core": 6,
@@ -3634,7 +4199,7 @@
       "cloud": 6,
       "swarm": 3,
       "github": 14,
-      "atlassian": 8,
+      "atlassian": 27,
       "documentation": 8,
       "golden-armada": 3,
       "testing": 15,
@@ -3659,8 +4224,8 @@
       "selenium-testing": 0,
       "stripe-payment": 3
     },
-    "totalAgents": 202,
+    "totalAgents": 221,
     "note": "All 202 agents have unique Halo-themed callsigns with strategic faction alignment (Forerunner, Promethean, Spartan).",
-    "lastUpdated": "2025-12-15"
+    "lastUpdated": "2025-12-19"
   }
 }

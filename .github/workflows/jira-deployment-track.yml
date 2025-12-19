@@ -1,0 +1,219 @@
+name: Jira Deployment Tracking
+
+# Purpose: Track deployments in Jira issues for release management and visibility
+# Benefits: Automatic deployment notifications, deployment URL tracking, release coordination
+# Triggers: Deployment status events (created, success, failure)
+# Security: Uses repository secrets for Jira authentication
+
+on:
+  deployment_status:
+
+permissions:
+  deployments: read
+  contents: read
+
+jobs:
+  track-deployment:
+    name: Update Jira with Deployment Status
+    runs-on: ubuntu-latest
+
+    # Only run on deployment state changes we care about
+    if: |
+      github.event.deployment_status.state == 'success' ||
+      github.event.deployment_status.state == 'failure' ||
+      github.event.deployment_status.state == 'in_progress'
+
+    steps:
+      # Step 1: Checkout to access deployment metadata
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.ref }}
+          fetch-depth: 50  # Get recent commits for issue extraction
+
+      # Step 2: Authenticate with Jira
+      - name: Login to Jira
+        uses: atlassian/gajira-login@v3
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      # Step 3: Extract all Jira issue keys from deployment commits
+      - name: Extract Jira issues from deployment
+        id: extract-issues
+        run: |
+          # Get commits included in this deployment
+          git log --format=%s -n 50 > commits.txt
+
+          # Extract unique Jira issue keys
+          grep -oE '[A-Z]{2,10}-[0-9]+' commits.txt | sort -u > issue_keys.txt || true
+
+          # Count and display found issues
+          ISSUE_COUNT=$(wc -l < issue_keys.txt || echo "0")
+          echo "Found $ISSUE_COUNT Jira issues in deployment"
+          cat issue_keys.txt || echo "No issues found"
+
+          # Store for later steps
+          ISSUE_KEYS=$(cat issue_keys.txt | tr '\n' ',' | sed 's/,$//')
+          echo "issue_keys=$ISSUE_KEYS" >> $GITHUB_OUTPUT
+          echo "issue_count=$ISSUE_COUNT" >> $GITHUB_OUTPUT
+
+      # Step 4: Determine deployment emoji and status message
+      - name: Set deployment status message
+        id: status-message
+        run: |
+          STATE="${{ github.event.deployment_status.state }}"
+          ENV="${{ github.event.deployment.environment }}"
+
+          case "$STATE" in
+            success)
+              EMOJI="✅"
+              STATUS_TEXT="Successfully deployed"
+              COLOR="green"
+              ;;
+            failure)
+              EMOJI="❌"
+              STATUS_TEXT="Deployment failed"
+              COLOR="red"
+              ;;
+            in_progress)
+              EMOJI="🚀"
+              STATUS_TEXT="Deployment in progress"
+              COLOR="yellow"
+              ;;
+            *)
+              EMOJI="ℹ️"
+              STATUS_TEXT="Deployment status: $STATE"
+              COLOR="gray"
+              ;;
+          esac
+
+          echo "emoji=$EMOJI" >> $GITHUB_OUTPUT
+          echo "status_text=$STATUS_TEXT" >> $GITHUB_OUTPUT
+          echo "color=$COLOR" >> $GITHUB_OUTPUT
+
+      # Step 5: Comment deployment status on all related Jira issues
+      - name: Update Jira issues with deployment status
+        if: steps.extract-issues.outputs.issue_keys != ''
+        run: |
+          STATE="${{ github.event.deployment_status.state }}"
+          EMOJI="${{ steps.status-message.outputs.emoji }}"
+          STATUS_TEXT="${{ steps.status-message.outputs.status_text }}"
+          ENV="${{ github.event.deployment.environment }}"
+          DEPLOYMENT_URL="${{ github.event.deployment_status.environment_url }}"
+          LOG_URL="${{ github.event.deployment_status.log_url }}"
+
+          # Build comment body
+          COMMENT_BODY="$EMOJI **Deployment $STATE**\n\n"
+          COMMENT_BODY+="**Environment:** \`$ENV\`\n"
+          COMMENT_BODY+="**Status:** $STATUS_TEXT\n"
+          COMMENT_BODY+="**Ref:** \`${{ github.event.deployment.ref }}\`\n"
+          COMMENT_BODY+="**SHA:** \`${{ github.event.deployment.sha }}\`\n"
+
+          if [ -n "$DEPLOYMENT_URL" ]; then
+            COMMENT_BODY+="**URL:** $DEPLOYMENT_URL\n"
+          fi
+
+          if [ -n "$LOG_URL" ]; then
+            COMMENT_BODY+="**Logs:** $LOG_URL\n"
+          fi
+
+          COMMENT_BODY+="\n**Triggered by:** @${{ github.actor }}\n"
+          COMMENT_BODY+="**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+
+          # Post to each Jira issue
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "Updating issue: $KEY"
+
+            # Escape JSON special characters
+            ESCAPED_COMMENT=$(echo "$COMMENT_BODY" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+
+            # Post comment using Jira API
+            curl -X POST \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              -H "Content-Type: application/json" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY/comment" \
+              -d "{\"body\": {\"type\": \"doc\", \"version\": 1, \"content\": [{\"type\": \"paragraph\", \"content\": [{\"type\": \"text\", \"text\": \"$ESCAPED_COMMENT\"}]}]}}" \
+              || echo "Failed to update $KEY"
+          done
+
+      # Step 6: Transition issues to "Released" on successful production deployment
+      - name: Transition to Released (Production Success)
+        if: |
+          steps.extract-issues.outputs.issue_keys != '' &&
+          github.event.deployment_status.state == 'success' &&
+          (github.event.deployment.environment == 'production' || github.event.deployment.environment == 'prod')
+        run: |
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "Transitioning $KEY to Released"
+
+            # Use Jira API to transition issue
+            # First, get available transitions
+            TRANSITIONS=$(curl -s -X GET \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY/transitions")
+
+            # Find "Released" transition ID
+            TRANSITION_ID=$(echo "$TRANSITIONS" | jq -r '.transitions[] | select(.name | test("Released|Closed|Done"; "i")) | .id' | head -1)
+
+            if [ -n "$TRANSITION_ID" ]; then
+              curl -X POST \
+                -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+                -H "Content-Type: application/json" \
+                "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY/transitions" \
+                -d "{\"transition\": {\"id\": \"$TRANSITION_ID\"}}" \
+                && echo "Successfully transitioned $KEY" \
+                || echo "Failed to transition $KEY"
+            else
+              echo "No suitable transition found for $KEY"
+            fi
+          done
+
+      # Step 7: Add deployment URL as a custom field (if configured)
+      # Requires a custom field in Jira for deployment URLs
+      - name: Update deployment URL field
+        if: |
+          steps.extract-issues.outputs.issue_keys != '' &&
+          github.event.deployment_status.state == 'success' &&
+          github.event.deployment_status.environment_url != ''
+        env:
+          DEPLOYMENT_URL_FIELD: ${{ secrets.JIRA_DEPLOYMENT_URL_FIELD_ID }}  # Optional: custom field ID
+        run: |
+          if [ -z "$DEPLOYMENT_URL_FIELD" ]; then
+            echo "JIRA_DEPLOYMENT_URL_FIELD_ID not configured, skipping"
+            exit 0
+          fi
+
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "Updating deployment URL for $KEY"
+
+            curl -X PUT \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              -H "Content-Type: application/json" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY" \
+              -d "{\"fields\": {\"$DEPLOYMENT_URL_FIELD\": \"${{ github.event.deployment_status.environment_url }}\"}}" \
+              || echo "Failed to update URL for $KEY"
+          done
+
+      # Step 8: Create deployment summary
+      - name: Generate deployment summary
+        if: steps.extract-issues.outputs.issue_keys != ''
+        run: |
+          echo "## 📦 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.deployment.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ steps.status-message.outputs.emoji }} ${{ github.event.deployment_status.state }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Issues Updated:** ${{ steps.extract-issues.outputs.issue_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Jira Issues" >> $GITHUB_STEP_SUMMARY
+
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "- [$KEY](${{ secrets.JIRA_BASE_URL }}/browse/$KEY)" >> $GITHUB_STEP_SUMMARY
+          done
+
+    timeout-minutes: 5

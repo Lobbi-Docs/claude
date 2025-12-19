@@ -1,0 +1,269 @@
+name: Jira Build Status
+
+# Purpose: Report CI/CD build and test results to related Jira issues
+# Benefits: Automatic build notifications, test failure tracking, development visibility
+# Triggers: Workflow run completion (CI/CD pipelines)
+# Security: Uses repository secrets for Jira authentication
+
+on:
+  workflow_run:
+    workflows: ["*"]  # Monitor all workflows, or specify: ["CI", "Tests", "Build"]
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  report-build-status:
+    name: Report Build Status to Jira
+    runs-on: ubuntu-latest
+
+    # Only run for main branches or PRs (skip dependency updates, etc.)
+    if: |
+      github.event.workflow_run.conclusion != 'skipped' &&
+      github.event.workflow_run.event != 'schedule'
+
+    steps:
+      # Step 1: Checkout repository at the commit that triggered the workflow
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 10
+
+      # Step 2: Authenticate with Jira
+      - name: Login to Jira
+        uses: atlassian/gajira-login@v3
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      # Step 3: Extract Jira issue keys from recent commits
+      - name: Extract Jira issues from commits
+        id: extract-issues
+        run: |
+          # Get last 10 commits
+          git log --format=%s -n 10 > commits.txt
+
+          # Extract unique Jira issue keys
+          grep -oE '[A-Z]{2,10}-[0-9]+' commits.txt | sort -u > issue_keys.txt || true
+
+          ISSUE_COUNT=$(wc -l < issue_keys.txt || echo "0")
+          echo "Found $ISSUE_COUNT Jira issues in recent commits"
+          cat issue_keys.txt || echo "No issues found"
+
+          ISSUE_KEYS=$(cat issue_keys.txt | tr '\n' ',' | sed 's/,$//')
+          echo "issue_keys=$ISSUE_KEYS" >> $GITHUB_OUTPUT
+          echo "issue_count=$ISSUE_COUNT" >> $GITHUB_OUTPUT
+
+      # Step 4: Determine build status emoji and message
+      - name: Set build status message
+        id: status-message
+        run: |
+          CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+
+          case "$CONCLUSION" in
+            success)
+              EMOJI="✅"
+              STATUS_TEXT="Build passed"
+              COLOR="green"
+              ;;
+            failure)
+              EMOJI="❌"
+              STATUS_TEXT="Build failed"
+              COLOR="red"
+              ;;
+            cancelled)
+              EMOJI="⚠️"
+              STATUS_TEXT="Build cancelled"
+              COLOR="yellow"
+              ;;
+            timed_out)
+              EMOJI="⏱️"
+              STATUS_TEXT="Build timed out"
+              COLOR="orange"
+              ;;
+            *)
+              EMOJI="ℹ️"
+              STATUS_TEXT="Build $CONCLUSION"
+              COLOR="gray"
+              ;;
+          esac
+
+          echo "emoji=$EMOJI" >> $GITHUB_OUTPUT
+          echo "status_text=$STATUS_TEXT" >> $GITHUB_OUTPUT
+          echo "color=$COLOR" >> $GITHUB_OUTPUT
+
+      # Step 5: Download build artifacts for failure analysis (optional)
+      - name: Download failure logs
+        if: github.event.workflow_run.conclusion == 'failure'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: ./test-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 6: Parse test results (if available)
+      - name: Parse test results
+        if: github.event.workflow_run.conclusion == 'failure'
+        id: test-results
+        continue-on-error: true
+        run: |
+          # Example: Parse JUnit XML or other test reports
+          if [ -d "./test-results" ]; then
+            # Count failures (example for JUnit XML)
+            FAILURES=$(find ./test-results -name "*.xml" -exec grep -c 'failure' {} \; | awk '{s+=$1} END {print s}' || echo "0")
+            ERRORS=$(find ./test-results -name "*.xml" -exec grep -c 'error' {} \; | awk '{s+=$1} END {print s}' || echo "0")
+
+            echo "Test failures: $FAILURES"
+            echo "Test errors: $ERRORS"
+            echo "failures=$FAILURES" >> $GITHUB_OUTPUT
+            echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          else
+            echo "No test results found"
+            echo "failures=0" >> $GITHUB_OUTPUT
+            echo "errors=0" >> $GITHUB_OUTPUT
+          fi
+
+      # Step 7: Comment build status on all related Jira issues
+      - name: Update Jira issues with build status
+        if: steps.extract-issues.outputs.issue_keys != ''
+        run: |
+          CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+          EMOJI="${{ steps.status-message.outputs.emoji }}"
+          STATUS_TEXT="${{ steps.status-message.outputs.status_text }}"
+          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          BUILD_URL="${{ github.event.workflow_run.html_url }}"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          COMMIT_SHA="${{ github.event.workflow_run.head_sha }}"
+
+          # Build comment body
+          COMMENT_BODY="$EMOJI **Build Status: $STATUS_TEXT**\n\n"
+          COMMENT_BODY+="**Workflow:** \`$WORKFLOW_NAME\`\n"
+          COMMENT_BODY+="**Branch:** \`$BRANCH\`\n"
+          COMMENT_BODY+="**Commit:** \`${COMMIT_SHA:0:7}\`\n"
+          COMMENT_BODY+="**Build URL:** $BUILD_URL\n"
+
+          # Add test failure details if available
+          if [ "$CONCLUSION" == "failure" ] && [ -n "${{ steps.test-results.outputs.failures }}" ]; then
+            FAILURES="${{ steps.test-results.outputs.failures }}"
+            ERRORS="${{ steps.test-results.outputs.errors }}"
+            if [ "$FAILURES" != "0" ] || [ "$ERRORS" != "0" ]; then
+              COMMENT_BODY+="\n**Test Results:**\n"
+              COMMENT_BODY+="- Failures: $FAILURES\n"
+              COMMENT_BODY+="- Errors: $ERRORS\n"
+            fi
+          fi
+
+          COMMENT_BODY+="\n**Triggered by:** @${{ github.actor }}\n"
+          COMMENT_BODY+="**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+
+          # Post to each Jira issue
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "Updating issue: $KEY"
+
+            # Escape JSON
+            ESCAPED_COMMENT=$(echo "$COMMENT_BODY" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+
+            # Post comment
+            curl -X POST \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              -H "Content-Type: application/json" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY/comment" \
+              -d "{\"body\": {\"type\": \"doc\", \"version\": 1, \"content\": [{\"type\": \"paragraph\", \"content\": [{\"type\": \"text\", \"text\": \"$ESCAPED_COMMENT\"}]}]}}" \
+              || echo "Failed to update $KEY"
+          done
+
+      # Step 8: Add build failure label to Jira issues
+      - name: Add build failure label
+        if: |
+          steps.extract-issues.outputs.issue_keys != '' &&
+          github.event.workflow_run.conclusion == 'failure'
+        run: |
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "Adding 'build-failed' label to $KEY"
+
+            curl -X PUT \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              -H "Content-Type: application/json" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY" \
+              -d '{"update": {"labels": [{"add": "build-failed"}]}}' \
+              || echo "Failed to add label to $KEY"
+          done
+
+      # Step 9: Remove build failure label on success (cleanup)
+      - name: Remove build failure label
+        if: |
+          steps.extract-issues.outputs.issue_keys != '' &&
+          github.event.workflow_run.conclusion == 'success'
+        run: |
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "Removing 'build-failed' label from $KEY"
+
+            curl -X PUT \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              -H "Content-Type: application/json" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY" \
+              -d '{"update": {"labels": [{"remove": "build-failed"}]}}' \
+              || echo "Failed to remove label from $KEY"
+          done
+
+      # Step 10: Transition issue on build failure
+      # Move failed builds back to "In Progress" for investigation
+      - name: Transition to In Progress on Failure
+        if: |
+          steps.extract-issues.outputs.issue_keys != '' &&
+          github.event.workflow_run.conclusion == 'failure' &&
+          github.event.workflow_run.head_branch == github.event.repository.default_branch
+        run: |
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "Checking transition for $KEY"
+
+            # Get available transitions
+            TRANSITIONS=$(curl -s -X GET \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY/transitions")
+
+            # Find "In Progress" or "Reopened" transition
+            TRANSITION_ID=$(echo "$TRANSITIONS" | jq -r '.transitions[] | select(.name | test("In Progress|Reopened"; "i")) | .id' | head -1)
+
+            if [ -n "$TRANSITION_ID" ]; then
+              curl -X POST \
+                -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+                -H "Content-Type: application/json" \
+                "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$KEY/transitions" \
+                -d "{\"transition\": {\"id\": \"$TRANSITION_ID\"}}" \
+                && echo "Transitioned $KEY" \
+                || echo "Failed to transition $KEY"
+            fi
+          done
+
+      # Step 11: Generate build summary
+      - name: Generate build summary
+        if: steps.extract-issues.outputs.issue_keys != ''
+        run: |
+          echo "## 🔨 Build Status Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** ${{ github.event.workflow_run.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ steps.status-message.outputs.emoji }} ${{ github.event.workflow_run.conclusion }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.event.workflow_run.head_branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Issues Notified:** ${{ steps.extract-issues.outputs.issue_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Jira Issues Updated" >> $GITHUB_STEP_SUMMARY
+
+          IFS=',' read -ra KEYS <<< "${{ steps.extract-issues.outputs.issue_keys }}"
+          for KEY in "${KEYS[@]}"; do
+            echo "- [$KEY](${{ secrets.JIRA_BASE_URL }}/browse/$KEY)" >> $GITHUB_STEP_SUMMARY
+          done
+
+    timeout-minutes: 5

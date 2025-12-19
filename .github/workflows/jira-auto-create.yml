@@ -1,0 +1,258 @@
+name: Jira Auto Create
+
+# Purpose: Automatically create Jira issues from GitHub issues or templates
+# Benefits: Unified issue tracking, automated synchronization, reduced manual entry
+# Triggers: GitHub issue opened with specific labels or templates
+# Security: Uses repository secrets for Jira authentication
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create-jira-issue:
+    name: Create Jira Issue from GitHub Issue
+    runs-on: ubuntu-latest
+
+    # Only run if issue has specific label (e.g., "jira-sync" or "bug")
+    # Customize the label check based on your workflow
+    if: |
+      contains(github.event.issue.labels.*.name, 'jira-sync') ||
+      contains(github.event.issue.labels.*.name, 'bug') ||
+      contains(github.event.issue.labels.*.name, 'feature')
+
+    steps:
+      # Step 1: Checkout repository (for context)
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Authenticate with Jira
+      - name: Login to Jira
+        uses: atlassian/gajira-login@v3
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      # Step 3: Check if issue already has a Jira link
+      - name: Check for existing Jira link
+        id: check-existing
+        run: |
+          # Search issue body for Jira issue key pattern
+          EXISTING_KEY=$(echo "${{ github.event.issue.body }}" | grep -oE '[A-Z]{2,10}-[0-9]+' | head -1 || echo "")
+
+          if [ -n "$EXISTING_KEY" ]; then
+            echo "Found existing Jira issue: $EXISTING_KEY"
+            echo "existing_key=$EXISTING_KEY" >> $GITHUB_OUTPUT
+            echo "has_existing=true" >> $GITHUB_OUTPUT
+          else
+            echo "No existing Jira issue found"
+            echo "has_existing=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Step 4: Determine Jira issue type from GitHub labels
+      - name: Determine Jira issue type
+        id: issue-type
+        run: |
+          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+
+          if echo "$LABELS" | grep -qi "bug"; then
+            ISSUE_TYPE="Bug"
+            PRIORITY="High"
+          elif echo "$LABELS" | grep -qi "feature"; then
+            ISSUE_TYPE="Story"
+            PRIORITY="Medium"
+          elif echo "$LABELS" | grep -qi "enhancement"; then
+            ISSUE_TYPE="Improvement"
+            PRIORITY="Medium"
+          elif echo "$LABELS" | grep -qi "task"; then
+            ISSUE_TYPE="Task"
+            PRIORITY="Low"
+          else
+            ISSUE_TYPE="Task"
+            PRIORITY="Medium"
+          fi
+
+          echo "issue_type=$ISSUE_TYPE" >> $GITHUB_OUTPUT
+          echo "priority=$PRIORITY" >> $GITHUB_OUTPUT
+
+      # Step 5: Create Jira issue (only if no existing link)
+      - name: Create Jira issue
+        id: create
+        if: steps.check-existing.outputs.has_existing == 'false'
+        uses: atlassian/gajira-create@v3
+        with:
+          project: ${{ secrets.JIRA_PROJECT_KEY }}  # e.g., "PROJ"
+          issuetype: ${{ steps.issue-type.outputs.issue_type }}
+          summary: "${{ github.event.issue.title }}"
+          description: |
+            **GitHub Issue:** #${{ github.event.issue.number }}
+            **Link:** ${{ github.event.issue.html_url }}
+            **Author:** @${{ github.event.issue.user.login }}
+            **Labels:** ${{ join(github.event.issue.labels.*.name, ', ') }}
+
+            ---
+
+            ${{ github.event.issue.body }}
+          fields: |
+            {
+              "priority": {
+                "name": "${{ steps.issue-type.outputs.priority }}"
+              },
+              "labels": ["github", "auto-created"]
+            }
+
+      # Step 6: Add Jira issue link to GitHub issue
+      - name: Link Jira issue to GitHub
+        if: steps.create.outputs.issue != ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const jiraKey = '${{ steps.create.outputs.issue }}';
+            const jiraUrl = '${{ secrets.JIRA_BASE_URL }}/browse/' + jiraKey;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `🔗 **Jira Issue Created:** [${jiraKey}](${jiraUrl})\n\nThis issue is now tracked in Jira.`
+            });
+
+            // Update issue body with Jira link
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const updatedBody = `> **Jira:** [${jiraKey}](${jiraUrl})\n\n${issue.body}`;
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: updatedBody
+            });
+
+      # Step 7: Add GitHub link back to Jira issue
+      - name: Add GitHub link to Jira issue
+        if: steps.create.outputs.issue != ''
+        run: |
+          JIRA_KEY="${{ steps.create.outputs.issue }}"
+          GH_ISSUE_URL="${{ github.event.issue.html_url }}"
+
+          # Add web link to Jira issue
+          curl -X POST \
+            -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+            -H "Content-Type: application/json" \
+            "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$JIRA_KEY/remotelink" \
+            -d "{
+              \"object\": {
+                \"url\": \"$GH_ISSUE_URL\",
+                \"title\": \"GitHub Issue #${{ github.event.issue.number }}\",
+                \"icon\": {
+                  \"url16x16\": \"https://github.com/favicon.ico\"
+                }
+              }
+            }" \
+            || echo "Failed to add remote link"
+
+      # Step 8: Sync assignee from GitHub to Jira (if configured)
+      - name: Sync assignee to Jira
+        if: |
+          steps.create.outputs.issue != '' &&
+          github.event.issue.assignee != null
+        continue-on-error: true
+        run: |
+          JIRA_KEY="${{ steps.create.outputs.issue }}"
+          GH_ASSIGNEE="${{ github.event.issue.assignee.login }}"
+
+          # Map GitHub username to Jira user (requires configuration)
+          # This is a simple example - adjust based on your user mapping
+          JIRA_USER="$GH_ASSIGNEE"
+
+          # Assign in Jira
+          curl -X PUT \
+            -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+            -H "Content-Type: application/json" \
+            "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$JIRA_KEY/assignee" \
+            -d "{\"accountId\": \"$JIRA_USER\"}" \
+            || echo "Failed to assign issue (user mapping may be needed)"
+
+      # Step 9: Add components based on GitHub labels
+      - name: Add Jira components from labels
+        if: steps.create.outputs.issue != ''
+        continue-on-error: true
+        run: |
+          JIRA_KEY="${{ steps.create.outputs.issue }}"
+          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+
+          # Map GitHub labels to Jira components
+          # Customize this mapping based on your project
+          COMPONENTS=""
+
+          if echo "$LABELS" | grep -qi "frontend"; then
+            COMPONENTS="Frontend"
+          fi
+
+          if echo "$LABELS" | grep -qi "backend"; then
+            COMPONENTS="${COMPONENTS:+$COMPONENTS,}Backend"
+          fi
+
+          if echo "$LABELS" | grep -qi "api"; then
+            COMPONENTS="${COMPONENTS:+$COMPONENTS,}API"
+          fi
+
+          if [ -n "$COMPONENTS" ]; then
+            # Build components JSON array
+            COMPONENT_JSON=$(echo "$COMPONENTS" | awk -F',' '{for(i=1;i<=NF;i++) printf "{\"name\":\"%s\"}%s", $i, (i<NF?",":"")}')
+
+            curl -X PUT \
+              -H "Authorization: Basic $(echo -n ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }} | base64)" \
+              -H "Content-Type: application/json" \
+              "${{ secrets.JIRA_BASE_URL }}/rest/api/3/issue/$JIRA_KEY" \
+              -d "{\"fields\": {\"components\": [$COMPONENT_JSON]}}" \
+              || echo "Failed to add components"
+          fi
+
+      # Step 10: Handle existing Jira issue (just add comment)
+      - name: Update existing Jira issue
+        if: steps.check-existing.outputs.has_existing == 'true'
+        uses: atlassian/gajira-comment@v3
+        with:
+          issue: ${{ steps.check-existing.outputs.existing_key }}
+          comment: |
+            🔄 **GitHub Issue Updated**
+
+            **Issue:** [#${{ github.event.issue.number }} - ${{ github.event.issue.title }}](${{ github.event.issue.html_url }})
+            **Action:** ${{ github.event.action }}
+            **Labels:** ${{ join(github.event.issue.labels.*.name, ', ') }}
+
+      # Step 11: Generate summary
+      - name: Generate summary
+        run: |
+          echo "## 📝 Jira Issue Sync" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.create.outputs.issue }}" != "" ]; then
+            echo "**Status:** ✅ New Jira issue created" >> $GITHUB_STEP_SUMMARY
+            echo "**Jira Key:** ${{ steps.create.outputs.issue }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Link:** [${{ steps.create.outputs.issue }}](${{ secrets.JIRA_BASE_URL }}/browse/${{ steps.create.outputs.issue }})" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.check-existing.outputs.has_existing }}" == "true" ]; then
+            echo "**Status:** ℹ️ Updated existing Jira issue" >> $GITHUB_STEP_SUMMARY
+            echo "**Jira Key:** ${{ steps.check-existing.outputs.existing_key }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Status:** ⚠️ No action taken" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**GitHub Issue:** #${{ github.event.issue.number }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Type:** ${{ steps.issue-type.outputs.issue_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Priority:** ${{ steps.issue-type.outputs.priority }}" >> $GITHUB_STEP_SUMMARY
+
+    timeout-minutes: 5

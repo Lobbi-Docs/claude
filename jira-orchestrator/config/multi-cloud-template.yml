@@ -1,0 +1,591 @@
+# Multi-Cloud Deployment Configuration Template
+# This template provides cloud-agnostic deployment tracking for Jira Orchestrator
+# Copy this file and customize for your specific cloud provider
+
+# =============================================================================
+# CLOUD PROVIDER CONFIGURATION
+# =============================================================================
+cloud:
+  # Cloud provider: aws, gcp, azure, kubernetes, other
+  provider: "CLOUD_PROVIDER"
+
+  # Cloud region (provider-specific format)
+  region: "${CLOUD_REGION}"
+
+  # Project/Account identifier
+  project_id: "${CLOUD_PROJECT_ID}"
+
+  # Resource naming convention
+  # Available variables: {project}, {environment}, {service}, {version}
+  naming_convention: "{project}-{service}-{environment}"
+
+# =============================================================================
+# JIRA INTEGRATION CONFIGURATION
+# =============================================================================
+jira:
+  # Jira instance URL (no trailing slash)
+  host: "${JIRA_SITE_URL}"
+
+  # Authentication (use environment variables for security)
+  auth:
+    email: "${JIRA_USER_EMAIL}"
+    api_token: "${JIRA_API_TOKEN}"
+
+  # Default project key (can be overridden per service)
+  default_project: "PROJ"
+
+  # Service to project mapping (optional)
+  project_mappings:
+    frontend: "FRONT"
+    backend: "BACK"
+    api: "API"
+    infrastructure: "INFRA"
+
+  # Environment-specific Jira configuration
+  environments:
+    development:
+      # Jira custom field ID for this environment's deployment URL
+      jira_field: "customfield_10100"
+
+      # Cloud environment identifiers that map to this Jira environment
+      cloud_environments:
+        - "dev"
+        - "development"
+        - "develop"
+
+      # Auto-transition Jira issue when deployed to this environment
+      auto_transition: "In Development"
+
+      # Require approval before deployment
+      require_approval: false
+
+      # Enable automatic deployments
+      auto_deploy: true
+
+    staging:
+      jira_field: "customfield_10101"
+      cloud_environments:
+        - "staging"
+        - "stage"
+        - "qa"
+        - "test"
+      auto_transition: "In QA"
+      require_approval: false
+      auto_deploy: true
+
+    production:
+      jira_field: "customfield_10102"
+      cloud_environments:
+        - "production"
+        - "prod"
+        - "main"
+        - "live"
+      auto_transition: "Released"
+      require_approval: true
+      auto_deploy: false
+
+  # Custom field mappings (update based on your Jira instance)
+  fields:
+    # Branch name tracking
+    branch_name: "customfield_10200"
+
+    # Pull request URL
+    pr_url: "customfield_10201"
+
+    # Build status (success, failure, pending)
+    build_status: "customfield_10202"
+
+    # Deployment status (deployed, failed, rolled_back)
+    deployment_status: "customfield_10203"
+
+    # Last deployment timestamp
+    last_deployment: "customfield_10204"
+
+    # Repository identifier
+    repository: "customfield_10205"
+
+    # Commit count in deployment
+    commit_count: "customfield_10206"
+
+    # Deployment version/tag
+    deployment_version: "customfield_10207"
+
+    # Cloud provider
+    cloud_provider: "customfield_10208"
+
+    # Cloud region
+    cloud_region: "customfield_10209"
+
+# =============================================================================
+# DEPLOYMENT TRACKING CONFIGURATION
+# =============================================================================
+deployment:
+  # Issue detection strategies (in priority order)
+  issue_detection:
+    # 1. Explicit issue key argument
+    - type: "explicit"
+      enabled: true
+
+    # 2. Git commit messages
+    - type: "git_commits"
+      enabled: true
+      look_back_commits: 50
+      regex_pattern: "([A-Z]+-\\d+)"
+
+    # 3. Current branch name
+    - type: "branch_name"
+      enabled: true
+      patterns:
+        - "feature/{issue-key}-{description}"
+        - "bugfix/{issue-key}-{description}"
+        - "hotfix/{issue-key}-{description}"
+
+    # 4. Merged pull requests
+    - type: "merged_prs"
+      enabled: true
+      look_back_count: 20
+
+    # 5. Deployment tags
+    - type: "deployment_tags"
+      enabled: true
+      tag_pattern: "v*"
+
+  # Version resolution strategy
+  version:
+    # Source: tag, commit, timestamp, semantic, custom
+    source: "tag"
+
+    # Fallback if primary source unavailable
+    fallback: "commit"
+
+    # Format for version display
+    format: "v{major}.{minor}.{patch}"
+
+    # Include build metadata
+    include_build_metadata: true
+
+  # Deployment metadata to track
+  metadata:
+    # Deployment timestamp
+    track_timestamp: true
+
+    # Deployment duration
+    track_duration: true
+
+    # Deployer information
+    track_deployer: true
+
+    # Commit SHA
+    track_commit: true
+
+    # Build/Job ID
+    track_build_id: true
+
+    # Deployment URL
+    track_url: true
+
+    # Health check results
+    track_health: true
+
+  # Notification settings
+  notifications:
+    # Notify on successful deployment
+    on_success: true
+
+    # Notify on failed deployment
+    on_failure: true
+
+    # Notify on rollback
+    on_rollback: true
+
+    # Notification channels
+    channels:
+      - type: "jira_comment"
+        enabled: true
+
+      - type: "slack"
+        enabled: false
+        webhook_url: "${SLACK_WEBHOOK_URL}"
+        channel: "#deployments"
+
+      - type: "email"
+        enabled: false
+        recipients: ["team@example.com"]
+
+# =============================================================================
+# CLOUD-AGNOSTIC DEPLOYMENT CONFIGURATION
+# =============================================================================
+services:
+  # Define your services and their deployment configuration
+  # Each service can override global settings
+
+  # Example: Frontend service
+  frontend:
+    # Service identifier
+    name: "frontend"
+
+    # Jira project override
+    jira_project: "FRONT"
+
+    # Deployment strategy
+    strategy: "rolling"  # rolling, blue_green, canary
+
+    # Health check configuration
+    health_check:
+      enabled: true
+      endpoint: "/health"
+      timeout_seconds: 30
+      retry_count: 3
+
+    # Environment-specific configuration
+    environments:
+      development:
+        replicas: 1
+        auto_deploy: true
+      staging:
+        replicas: 2
+        auto_deploy: true
+      production:
+        replicas: 3
+        auto_deploy: false
+        require_approval: true
+
+  # Example: Backend API service
+  backend:
+    name: "backend"
+    jira_project: "BACK"
+    strategy: "rolling"
+
+    health_check:
+      enabled: true
+      endpoint: "/api/health"
+      timeout_seconds: 30
+
+    # Database migration tracking
+    migrations:
+      enabled: true
+      track_in_jira: true
+      rollback_on_failure: true
+
+    environments:
+      development:
+        replicas: 1
+        auto_deploy: true
+      staging:
+        replicas: 2
+        auto_deploy: true
+      production:
+        replicas: 5
+        auto_deploy: false
+        require_approval: true
+
+# =============================================================================
+# SECRETS MANAGEMENT
+# =============================================================================
+secrets:
+  # Secrets provider: env, aws_secrets_manager, gcp_secret_manager,
+  #                   azure_key_vault, kubernetes_secrets, hashicorp_vault
+  provider: "env"
+
+  # Provider-specific configuration
+  config:
+    # For AWS Secrets Manager
+    aws:
+      region: "${AWS_REGION}"
+      secret_prefix: "${PROJECT_NAME}/"
+
+    # For GCP Secret Manager
+    gcp:
+      project_id: "${GCP_PROJECT_ID}"
+      secret_prefix: "${PROJECT_NAME}/"
+
+    # For Azure Key Vault
+    azure:
+      vault_url: "${AZURE_VAULT_URL}"
+      secret_prefix: "${PROJECT_NAME}-"
+
+    # For Kubernetes Secrets
+    kubernetes:
+      namespace: "${K8S_NAMESPACE}"
+      secret_name: "${PROJECT_NAME}-secrets"
+
+    # For HashiCorp Vault
+    vault:
+      address: "${VAULT_ADDR}"
+      path: "secret/data/${PROJECT_NAME}"
+
+  # Required secrets (will be validated before deployment)
+  required:
+    - "JIRA_API_TOKEN"
+    - "JIRA_USER_EMAIL"
+    - "JIRA_SITE_URL"
+
+# =============================================================================
+# CI/CD INTEGRATION
+# =============================================================================
+cicd:
+  # CI/CD platform: github_actions, gitlab_ci, jenkins, circleci,
+  #                 azure_devops, aws_codepipeline, gcp_cloud_build
+  platform: "github_actions"
+
+  # Integration settings
+  integration:
+    # Track CI/CD job information in Jira
+    track_jobs: true
+
+    # Update Jira on pipeline events
+    on_pipeline_start: false
+    on_pipeline_success: true
+    on_pipeline_failure: true
+
+    # Include CI/CD metadata in Jira comments
+    include_build_url: true
+    include_job_logs: false
+    include_artifacts: true
+
+  # Deployment approval workflow
+  approval:
+    enabled: true
+
+    # Environments requiring approval
+    required_for:
+      - "production"
+
+    # Approval sources
+    sources:
+      - type: "jira_transition"
+        from_status: "Approved"
+
+      - type: "github_environment"
+        require_reviewers: true
+        min_reviewers: 2
+
+      - type: "manual"
+        approvers: ["@devops-team", "@tech-lead"]
+
+# =============================================================================
+# MONITORING AND LOGGING
+# =============================================================================
+monitoring:
+  # Enable deployment tracking metrics
+  metrics:
+    enabled: true
+
+    # Metrics format: prometheus, datadog, cloudwatch, stackdriver
+    format: "prometheus"
+
+    # Metrics endpoint
+    endpoint: "${METRICS_ENDPOINT}"
+
+    # Metrics to track
+    track:
+      - "deployment_count"
+      - "deployment_duration"
+      - "deployment_success_rate"
+      - "issue_update_count"
+      - "issue_transition_count"
+
+  # Logging configuration
+  logging:
+    # Log level: debug, info, warn, error
+    level: "info"
+
+    # Log format: json, text
+    format: "json"
+
+    # Log destination: stdout, file, cloudwatch, stackdriver, azure_monitor
+    destination: "stdout"
+
+    # For file logging
+    file:
+      path: "/var/log/jira-orchestrator/deployment.log"
+      max_size_mb: 100
+      max_files: 10
+
+    # Include sensitive data in logs (use cautiously)
+    include_secrets: false
+
+  # Alerting configuration
+  alerts:
+    enabled: true
+
+    # Alert on deployment failures
+    on_failure:
+      enabled: true
+      threshold: 1  # Alert after N consecutive failures
+      severity: "high"
+
+    # Alert on Jira sync failures
+    on_sync_failure:
+      enabled: true
+      threshold: 3
+      severity: "medium"
+
+    # Alert on deployment duration
+    on_slow_deployment:
+      enabled: true
+      threshold_minutes: 30
+      severity: "low"
+
+# =============================================================================
+# ROLLBACK CONFIGURATION
+# =============================================================================
+rollback:
+  # Enable automatic rollback on failure
+  auto_rollback:
+    enabled: false
+
+    # Triggers for automatic rollback
+    triggers:
+      - type: "health_check_failure"
+        threshold: 3
+
+      - type: "error_rate"
+        threshold_percent: 5
+        window_minutes: 5
+
+      - type: "deployment_timeout"
+        timeout_minutes: 30
+
+  # Track rollback in Jira
+  track_in_jira: true
+
+  # Rollback strategy
+  strategy: "previous_version"  # previous_version, last_stable, specific_version
+
+  # Retain deployment history
+  history:
+    enabled: true
+    retention_count: 10
+
+# =============================================================================
+# ADVANCED FEATURES
+# =============================================================================
+features:
+  # Enable canary deployments
+  canary:
+    enabled: false
+    traffic_percentage: 10
+    duration_minutes: 30
+    auto_promote: true
+
+  # Enable blue/green deployments
+  blue_green:
+    enabled: false
+    cutover_strategy: "instant"  # instant, gradual
+
+  # Enable feature flags integration
+  feature_flags:
+    enabled: false
+    provider: "launchdarkly"  # launchdarkly, split, flagsmith
+
+  # Enable deployment scheduling
+  scheduled_deployments:
+    enabled: false
+    allowed_windows:
+      - days: ["monday", "tuesday", "wednesday", "thursday"]
+        hours: "09:00-17:00"
+        timezone: "UTC"
+
+  # Enable deployment gates
+  deployment_gates:
+    enabled: false
+    gates:
+      - type: "security_scan"
+        required: true
+
+      - type: "performance_test"
+        required: false
+
+      - type: "integration_test"
+        required: true
+
+# =============================================================================
+# VALIDATION AND TESTING
+# =============================================================================
+validation:
+  # Validate configuration before deployment
+  pre_deployment:
+    - check: "secrets_present"
+      required: true
+
+    - check: "jira_connection"
+      required: true
+
+    - check: "cloud_credentials"
+      required: true
+
+    - check: "target_environment_exists"
+      required: true
+
+  # Validate after deployment
+  post_deployment:
+    - check: "health_endpoint"
+      required: true
+      timeout_seconds: 60
+
+    - check: "jira_updated"
+      required: true
+
+    - check: "metrics_available"
+      required: false
+
+# =============================================================================
+# DOCUMENTATION AND COMPLIANCE
+# =============================================================================
+documentation:
+  # Auto-generate deployment documentation
+  auto_generate:
+    enabled: true
+
+    # Documentation targets
+    targets:
+      - type: "jira_comment"
+        enabled: true
+        template: "deployment_summary"
+
+      - type: "confluence"
+        enabled: false
+        space: "DOCS"
+        parent_page: "Deployments"
+
+      - type: "obsidian"
+        enabled: true
+        vault_path: "${OBSIDIAN_VAULT_PATH}"
+        folder: "Deployments/${PROJECT_NAME}"
+
+  # Compliance tracking
+  compliance:
+    # Track SOC2 compliance
+    soc2:
+      enabled: false
+      track_approvals: true
+      track_changes: true
+
+    # Track GDPR compliance
+    gdpr:
+      enabled: false
+      track_data_access: true
+
+    # Audit logging
+    audit:
+      enabled: true
+      retention_days: 365
+
+# =============================================================================
+# EXAMPLE USAGE
+# =============================================================================
+#
+# Deploy to development:
+#   ./deploy-to-jira.sh dev
+#
+# Deploy to staging with version:
+#   ./deploy-to-jira.sh staging --version v1.2.0
+#
+# Deploy to production with approval:
+#   ./deploy-to-jira.sh production --version v1.2.0 --issue PROJ-123
+#
+# Rollback production:
+#   ./deploy-to-jira.sh production --rollback --version v1.1.9
+#
+# =============================================================================

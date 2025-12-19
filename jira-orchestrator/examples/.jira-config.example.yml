@@ -1,0 +1,285 @@
+# Jira-GitHub Synchronization Configuration
+# Copy this file to your repository root as `.jira/config.yml`
+
+# Jira Configuration
+jira:
+  # Jira instance URL
+  host: "https://your-org.atlassian.net"
+
+  # Project mappings (repository → Jira project key)
+  projects:
+    default: "PROJ"
+    frontend: "FRONT"
+    backend: "BACK"
+    infrastructure: "INFRA"
+
+  # Environment mappings for deployment tracking
+  environments:
+    development:
+      # Jira custom field ID for development environment
+      jira_field: "customfield_10100"
+      # GitHub environment names that map to this Jira environment
+      github_environments:
+        - "dev"
+        - "development"
+        - "develop"
+      # Auto-transition issue when deployed to this environment
+      auto_transition: "In Development"
+
+    staging:
+      jira_field: "customfield_10101"
+      github_environments:
+        - "staging"
+        - "stage"
+        - "qa"
+      auto_transition: "In QA"
+
+    production:
+      jira_field: "customfield_10102"
+      github_environments:
+        - "production"
+        - "prod"
+        - "main"
+      auto_transition: "Released"
+
+  # Workflow automation rules
+  workflows:
+    # Auto-transition when branch is created
+    branch_created:
+      - condition: "branch matches feature/*"
+        transition: "In Progress"
+      - condition: "branch matches bugfix/*"
+        transition: "In Progress"
+      - condition: "branch matches hotfix/*"
+        transition: "In Progress"
+
+    # Auto-transition when PR is opened
+    pr_opened:
+      - condition: "PR is not draft"
+        transition: "In Review"
+
+    # Auto-transition when PR is draft
+    pr_draft:
+      - condition: "PR is marked as draft"
+        transition: "In Development"
+
+    # Auto-transition when PR is approved
+    pr_approved:
+      - condition: "PR has 2+ approvals"
+        transition: "Approved"
+
+    # Auto-transition when PR is merged
+    pr_merged:
+      - condition: "PR merged to main"
+        transition: "Done"
+      - condition: "PR merged to develop"
+        transition: "In QA"
+
+    # Auto-transition when PR is closed
+    pr_closed:
+      - condition: "PR closed without merge"
+        transition: "Cancelled"
+
+  # Smart commit configuration
+  smart_commits:
+    enabled: true
+    # Supported commands
+    commands:
+      - comment    # Add comment: #comment Fixed authentication bug
+      - time       # Log work: #time 2h 30m
+      - transition # Transition: #transition "In Review"
+
+    # Regex patterns for parsing
+    patterns:
+      issue_key: "([A-Z]+-\\d+)"
+      comment: "#comment\\s+(.+)"
+      time: "#time\\s+(\\d+[hmd]\\s*)+"
+      transition: '#transition\\s+"([^"]+)"'
+
+  # Custom field mappings
+  # Update these IDs based on your Jira instance
+  fields:
+    branch_name: "customfield_10200"
+    pr_url: "customfield_10201"
+    build_status: "customfield_10202"
+    deployment_status: "customfield_10203"
+    last_deployment: "customfield_10204"
+    github_repo: "customfield_10205"
+    commit_count: "customfield_10206"
+
+# GitHub Configuration
+github:
+  # Repository information
+  repository:
+    owner: "your-org"
+    name: "your-repo"
+
+  # Branch naming conventions
+  # Use {issue-key} as placeholder for Jira issue key
+  branch_patterns:
+    feature: "feature/{issue-key}-{description}"
+    bugfix: "bugfix/{issue-key}-{description}"
+    hotfix: "hotfix/{issue-key}-{description}"
+    release: "release/{version}"
+
+  # Pull request configuration
+  pr:
+    # Auto-add labels based on Jira issue type
+    auto_labels:
+      Bug: ["bug", "needs-review"]
+      Story: ["enhancement", "needs-review"]
+      Task: ["chore", "needs-review"]
+      Epic: ["epic", "large-change"]
+      "Tech Debt": ["refactoring", "tech-debt"]
+
+    # Required number of approvals before auto-transitioning
+    required_approvals: 2
+
+    # Required PR checks (must pass before merge)
+    required_checks:
+      - "build"
+      - "test"
+      - "lint"
+      - "security-scan"
+
+    # Auto-assign reviewers based on file changes
+    auto_reviewers:
+      frontend:
+        patterns: ["src/components/**", "src/pages/**"]
+        reviewers: ["@frontend-team"]
+      backend:
+        patterns: ["src/api/**", "src/services/**"]
+        reviewers: ["@backend-team"]
+      database:
+        patterns: ["prisma/**", "migrations/**"]
+        reviewers: ["@database-team"]
+      infrastructure:
+        patterns: ["deployment/**", ".github/**", "k8s/**"]
+        reviewers: ["@devops-team"]
+
+  # Deployment tracking
+  deployments:
+    # GitHub Actions workflows to track
+    workflows:
+      - name: "Deploy to Development"
+        environment: "development"
+        track_duration: true
+      - name: "Deploy to Staging"
+        environment: "staging"
+        track_duration: true
+      - name: "Deploy to Production"
+        environment: "production"
+        track_duration: true
+        notify_on_failure: true
+
+    # Deployment notifications
+    notifications:
+      slack:
+        enabled: true
+        webhook_url: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+        channel: "#deployments"
+
+# Synchronization Settings
+sync:
+  # Sync interval for polling mode (minutes)
+  # Set to 0 to disable polling (webhook-only mode)
+  interval_minutes: 5
+
+  # Event sources
+  sources:
+    - github_webhooks  # Recommended: Real-time via webhooks
+    - github_actions   # Track GitHub Actions workflows
+    - git_hooks        # Local git hooks for development
+
+  # Enable bidirectional sync
+  bidirectional: true
+
+  # Conflict resolution strategy
+  conflicts:
+    # Options: github_wins, jira_wins, manual
+    strategy: "github_wins"
+
+  # Batch sync configuration
+  batch:
+    enabled: true
+    # Run batch sync at these times (cron format)
+    schedule: "0 */6 * * *"  # Every 6 hours
+    # Maximum number of items to sync per batch
+    max_items: 100
+
+  # Retry configuration
+  retry:
+    max_attempts: 3
+    backoff_multiplier: 2  # Exponential backoff
+    initial_delay_seconds: 1
+
+# Monitoring and Logging
+monitoring:
+  # Enable detailed logging
+  debug_mode: false
+
+  # Log file location
+  log_file: ".jira/sync.log"
+
+  # Log retention (days)
+  log_retention_days: 30
+
+  # Metrics export
+  metrics:
+    enabled: true
+    export_format: "prometheus"  # Options: prometheus, json, statsd
+    endpoint: "http://localhost:9090/metrics"
+
+  # Alerts
+  alerts:
+    enabled: true
+    # Alert on sync failures
+    on_failure:
+      enabled: true
+      threshold: 3  # Alert after 3 consecutive failures
+    # Alert on sync latency
+    on_latency:
+      enabled: true
+      threshold_seconds: 300  # 5 minutes
+
+# Security Configuration
+security:
+  # Webhook signature verification
+  github_webhook:
+    enabled: true
+    # Set via environment variable: GITHUB_WEBHOOK_SECRET
+    secret_env_var: "GITHUB_WEBHOOK_SECRET"
+
+  # API authentication
+  jira:
+    # Authentication method: api_token, oauth2
+    auth_method: "api_token"
+    # Set via environment variables:
+    # - JIRA_EMAIL (your Jira email)
+    # - JIRA_API_TOKEN (API token from Jira)
+    email_env_var: "JIRA_EMAIL"
+    token_env_var: "JIRA_API_TOKEN"
+
+  github:
+    # GitHub App or Personal Access Token
+    # Set via environment variable: GITHUB_TOKEN
+    token_env_var: "GITHUB_TOKEN"
+    # Scopes required: repo, workflow, write:packages
+
+# Feature Flags
+features:
+  # Enable/disable specific sync features
+  branch_sync: true
+  pr_sync: true
+  deployment_sync: true
+  build_sync: true
+  smart_commits: true
+
+  # Experimental features
+  experimental:
+    # AI-powered commit message analysis
+    ai_commit_analysis: false
+    # Auto-generate PR descriptions from Jira
+    auto_pr_description: false
+    # Predictive deployment risk scoring
+    deployment_risk_scoring: false

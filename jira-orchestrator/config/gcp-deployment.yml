@@ -1,0 +1,763 @@
+# GCP-Specific Deployment Configuration for Jira Orchestrator
+# This configuration provides GCP-native deployment tracking with Jira integration
+
+# =============================================================================
+# GCP PROVIDER CONFIGURATION
+# =============================================================================
+cloud:
+  provider: "gcp"
+  region: "${GCP_REGION:-us-central1}"
+  project_id: "${GCP_PROJECT_ID}"
+  zone: "${GCP_ZONE:-us-central1-a}"
+
+  # Resource labeling strategy
+  labels:
+    project: "${PROJECT_NAME}"
+    environment: "${ENVIRONMENT}"
+    managed_by: "jira-orchestrator"
+    jira_project: "${JIRA_PROJECT_KEY}"
+
+# =============================================================================
+# JIRA CONFIGURATION
+# =============================================================================
+jira:
+  host: "${JIRA_SITE_URL}"
+  auth:
+    email: "${JIRA_USER_EMAIL}"
+    api_token: "${JIRA_API_TOKEN}"
+  default_project: "${JIRA_PROJECT_KEY:-PROJ}"
+
+  environments:
+    development:
+      jira_field: "customfield_10100"
+      cloud_environments:
+        - "dev"
+        - "development"
+      auto_transition: "In Development"
+      gcp_environments:
+        - "dev"
+        - "development"
+        - "sandbox"
+
+    staging:
+      jira_field: "customfield_10101"
+      cloud_environments:
+        - "staging"
+        - "qa"
+      auto_transition: "In QA"
+      gcp_environments:
+        - "staging"
+        - "qa"
+        - "test"
+
+    production:
+      jira_field: "customfield_10102"
+      cloud_environments:
+        - "production"
+        - "prod"
+      auto_transition: "Released"
+      gcp_environments:
+        - "production"
+        - "prod"
+        - "live"
+
+  fields:
+    branch_name: "customfield_10200"
+    pr_url: "customfield_10201"
+    build_status: "customfield_10202"
+    deployment_status: "customfield_10203"
+    last_deployment: "customfield_10204"
+    repository: "customfield_10205"
+    commit_count: "customfield_10206"
+    deployment_version: "customfield_10207"
+    cloud_provider: "customfield_10208"
+    cloud_region: "customfield_10209"
+
+# =============================================================================
+# GCP SERVICE CONFIGURATIONS
+# =============================================================================
+gcp:
+  # Google Cloud Run Configuration
+  cloud_run:
+    enabled: true
+
+    # Service configuration
+    services:
+      frontend:
+        name: "${PROJECT_NAME}-frontend"
+        region: "${GCP_REGION}"
+        image: "gcr.io/${GCP_PROJECT_ID}/${PROJECT_NAME}-frontend:${VERSION}"
+
+        # Traffic management
+        traffic:
+          - latest_revision: true
+            percent: 100
+
+        # Service account
+        service_account: "${PROJECT_NAME}-frontend@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+
+      backend:
+        name: "${PROJECT_NAME}-backend"
+        region: "${GCP_REGION}"
+        image: "gcr.io/${GCP_PROJECT_ID}/${PROJECT_NAME}-backend:${VERSION}"
+
+        traffic:
+          - latest_revision: true
+            percent: 100
+
+        service_account: "${PROJECT_NAME}-backend@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+
+    # Deployment settings
+    deployment:
+      # Deployment strategy: gradual, immediate
+      strategy: "gradual"
+
+      # Traffic percentage for gradual rollout
+      traffic_percent_step: 25
+
+      # Rollback on failure
+      rollback_on_failure: true
+
+      # Timeout for deployment
+      timeout_minutes: 15
+
+  # Google Kubernetes Engine (GKE) Configuration
+  gke:
+    enabled: false
+
+    # GKE Cluster
+    cluster:
+      name: "${PROJECT_NAME}-${ENVIRONMENT}"
+      location: "${GCP_REGION}"
+      location_type: "regional"  # regional, zonal
+
+      # Node pool configuration
+      node_pools:
+        default:
+          machine_type: "e2-medium"
+          disk_size_gb: 100
+          auto_scaling:
+            enabled: true
+            min_node_count: 1
+            max_node_count: 10
+
+    # Namespace configuration
+    namespace: "${PROJECT_NAME}-${ENVIRONMENT}"
+
+    # Workload Identity
+    workload_identity:
+      enabled: true
+      service_account: "${PROJECT_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+
+    # Deployment tracking
+    track_deployments: true
+    track_pods: true
+    track_services: true
+
+  # Google Cloud Functions Configuration
+  cloud_functions:
+    enabled: false
+
+    # Functions to track
+    functions:
+      - name: "${PROJECT_NAME}-api"
+        region: "${GCP_REGION}"
+        runtime: "nodejs20"
+        entry_point: "handler"
+        source_archive: "gs://${GCP_PROJECT_ID}-functions/${PROJECT_NAME}-api-${VERSION}.zip"
+
+      - name: "${PROJECT_NAME}-worker"
+        region: "${GCP_REGION}"
+        runtime: "python311"
+        entry_point: "main"
+        source_archive: "gs://${GCP_PROJECT_ID}-functions/${PROJECT_NAME}-worker-${VERSION}.zip"
+
+    # Deployment configuration
+    deployment:
+      # Maximum instances
+      max_instances: 100
+
+      # Ingress settings: all, internal, internal-and-gclb
+      ingress_settings: "internal-and-gclb"
+
+  # Google Cloud Build Integration
+  cloud_build:
+    enabled: true
+
+    # Trigger configuration
+    triggers:
+      - name: "${PROJECT_NAME}-dev"
+        description: "Build and deploy to development"
+        github:
+          owner: "${GITHUB_ORG}"
+          name: "${GITHUB_REPO}"
+          branch: "^develop$"
+
+        filename: "cloudbuild-dev.yaml"
+
+      - name: "${PROJECT_NAME}-staging"
+        description: "Build and deploy to staging"
+        github:
+          owner: "${GITHUB_ORG}"
+          name: "${GITHUB_REPO}"
+          branch: "^main$"
+
+        filename: "cloudbuild-staging.yaml"
+
+      - name: "${PROJECT_NAME}-prod"
+        description: "Build and deploy to production"
+        github:
+          owner: "${GITHUB_ORG}"
+          name: "${GITHUB_REPO}"
+          tag: "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+
+        filename: "cloudbuild-prod.yaml"
+
+    # Track Cloud Build events in Jira
+    track_events:
+      - "BUILD_QUEUED"
+      - "BUILD_WORKING"
+      - "BUILD_SUCCESS"
+      - "BUILD_FAILURE"
+      - "BUILD_INTERNAL_ERROR"
+      - "BUILD_TIMEOUT"
+      - "BUILD_CANCELLED"
+
+    # Substitutions for Cloud Build
+    substitutions:
+      _PROJECT_NAME: "${PROJECT_NAME}"
+      _ENVIRONMENT: "${ENVIRONMENT}"
+      _VERSION: "${VERSION}"
+      _JIRA_PROJECT: "${JIRA_PROJECT_KEY}"
+
+  # Google Cloud Logging (Stackdriver)
+  logging:
+    enabled: true
+
+    # Log sink configuration
+    sinks:
+      deployment_logs:
+        name: "jira-orchestrator-deployments"
+        destination: "logging.googleapis.com/projects/${GCP_PROJECT_ID}/logs/jira-orchestrator"
+        filter: |
+          resource.type="cloud_run_revision"
+          OR resource.type="k8s_cluster"
+          OR resource.type="cloud_function"
+
+        # Include children
+        include_children: true
+
+    # Log retention
+    retention_days: 30
+
+  # Google Cloud Monitoring (Stackdriver)
+  monitoring:
+    enabled: true
+
+    # Monitoring workspace
+    workspace_project_id: "${GCP_PROJECT_ID}"
+
+    # Custom metrics
+    metrics:
+      - type: "custom.googleapis.com/jira_orchestrator/deployments"
+        metric_kind: "GAUGE"
+        value_type: "INT64"
+        unit: "1"
+        description: "Number of deployments tracked"
+
+      - type: "custom.googleapis.com/jira_orchestrator/deployment_duration"
+        metric_kind: "GAUGE"
+        value_type: "DOUBLE"
+        unit: "s"
+        description: "Deployment duration in seconds"
+
+    # Alert policies
+    alert_policies:
+      deployment_failures:
+        display_name: "${PROJECT_NAME} - Deployment Failures"
+        conditions:
+          - display_name: "Deployment failure rate"
+            condition_threshold:
+              filter: 'metric.type="custom.googleapis.com/jira_orchestrator/deployment_failures"'
+              comparison: "COMPARISON_GT"
+              threshold_value: 0
+              duration: "60s"
+
+        notification_channels:
+          - "${NOTIFICATION_CHANNEL_ID}"
+
+      deployment_duration:
+        display_name: "${PROJECT_NAME} - Slow Deployments"
+        conditions:
+          - display_name: "Deployment duration exceeded"
+            condition_threshold:
+              filter: 'metric.type="custom.googleapis.com/jira_orchestrator/deployment_duration"'
+              comparison: "COMPARISON_GT"
+              threshold_value: 1800  # 30 minutes
+              duration: "60s"
+
+  # Google Secret Manager
+  secret_manager:
+    enabled: true
+
+    # Secret paths
+    secrets:
+      jira_credentials:
+        name: "projects/${GCP_PROJECT_ID}/secrets/jira-credentials/versions/latest"
+        version: "latest"
+
+      github_token:
+        name: "projects/${GCP_PROJECT_ID}/secrets/github-token/versions/latest"
+        version: "latest"
+
+    # Auto-fetch secrets before deployment
+    auto_fetch: true
+
+  # Google Container Registry / Artifact Registry
+  container_registry:
+    enabled: true
+
+    # Registry type: gcr, artifact_registry
+    type: "artifact_registry"
+
+    # Artifact Registry configuration
+    artifact_registry:
+      repository: "${PROJECT_NAME}"
+      location: "${GCP_REGION}"
+      format: "docker"
+
+    # GCR configuration (legacy)
+    gcr:
+      hostname: "gcr.io"
+      project_id: "${GCP_PROJECT_ID}"
+
+    # Image scanning
+    vulnerability_scanning:
+      enabled: true
+      severity_threshold: "MEDIUM"  # LOW, MEDIUM, HIGH, CRITICAL
+
+  # Google Pub/Sub for events
+  pubsub:
+    enabled: true
+
+    # Topics for deployment events
+    topics:
+      deployments:
+        name: "projects/${GCP_PROJECT_ID}/topics/${PROJECT_NAME}-deployments"
+        labels:
+          project: "${PROJECT_NAME}"
+          purpose: "deployment-tracking"
+
+    # Subscriptions
+    subscriptions:
+      jira_updates:
+        name: "projects/${GCP_PROJECT_ID}/subscriptions/${PROJECT_NAME}-jira-updates"
+        topic: "projects/${GCP_PROJECT_ID}/topics/${PROJECT_NAME}-deployments"
+        ack_deadline_seconds: 60
+
+        # Push configuration for webhook
+        push_config:
+          push_endpoint: "${JIRA_WEBHOOK_ENDPOINT}"
+
+  # Google Cloud Storage for deployment artifacts
+  storage:
+    enabled: true
+
+    # Bucket for deployment artifacts
+    deployment_artifacts:
+      bucket: "${GCP_PROJECT_ID}-${PROJECT_NAME}-deployments"
+      location: "${GCP_REGION}"
+      storage_class: "STANDARD"
+
+      # Lifecycle management
+      lifecycle:
+        - action: "Delete"
+          condition:
+            age: 90
+            is_live: false
+
+# =============================================================================
+# DEPLOYMENT TRACKING
+# =============================================================================
+deployment:
+  # Issue detection from GCP resources
+  issue_detection:
+    - type: "explicit"
+      enabled: true
+
+    - type: "git_commits"
+      enabled: true
+      look_back_commits: 50
+      regex_pattern: "([A-Z]+-\\d+)"
+
+    - type: "cloud_run_labels"
+      enabled: true
+      label_key: "jira-issue"
+
+    - type: "gke_labels"
+      enabled: true
+      label_key: "jira-issue"
+
+    - type: "container_image_labels"
+      enabled: true
+      label_key: "jira-issue"
+
+  # Version from GCP resources
+  version:
+    # Source: container_tag, git_tag, cloud_build_id, timestamp
+    source: "container_tag"
+    fallback: "git_tag"
+
+    # Container registry
+    registry: "${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${PROJECT_NAME}"
+
+    # Tag pattern for versions
+    tag_pattern: "v*"
+
+  # Metadata extraction from GCP
+  metadata:
+    track_timestamp: true
+    track_duration: true
+    track_deployer: true
+    track_commit: true
+
+    # GCP-specific metadata
+    gcp_metadata:
+      track_project_id: true
+      track_region: true
+      track_service_url: true
+      track_revision_name: true
+      track_build_id: true
+
+  # Notifications via Pub/Sub
+  notifications:
+    on_success: true
+    on_failure: true
+    on_rollback: true
+
+    channels:
+      - type: "jira_comment"
+        enabled: true
+
+      - type: "pubsub"
+        enabled: true
+        topic: "projects/${GCP_PROJECT_ID}/topics/${PROJECT_NAME}-deployments"
+
+      - type: "stackdriver"
+        enabled: true
+        log_name: "jira-orchestrator-deployments"
+
+# =============================================================================
+# GCP-SPECIFIC SERVICES
+# =============================================================================
+services:
+  # Frontend service (Cloud Run)
+  frontend:
+    name: "frontend"
+    jira_project: "${JIRA_PROJECT_KEY}"
+    deployment_type: "cloud_run"
+
+    cloud_run:
+      service_name: "${PROJECT_NAME}-frontend"
+      region: "${GCP_REGION}"
+
+      # Container configuration
+      container:
+        image: "${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${PROJECT_NAME}/frontend:${VERSION}"
+        port: 8080
+
+        # Resource limits
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "512Mi"
+
+      # Scaling configuration
+      scaling:
+        min_instances: 0
+        max_instances: 10
+
+        # Concurrency
+        max_concurrent_requests: 80
+
+    health_check:
+      enabled: true
+      type: "http"
+      endpoint: "/health"
+      initial_delay_seconds: 0
+      timeout_seconds: 10
+
+    environments:
+      development:
+        min_instances: 0
+        max_instances: 2
+        cpu: "1000m"
+        memory: "512Mi"
+
+      staging:
+        min_instances: 1
+        max_instances: 5
+        cpu: "1000m"
+        memory: "1Gi"
+
+      production:
+        min_instances: 2
+        max_instances: 20
+        cpu: "2000m"
+        memory: "2Gi"
+
+  # Backend service (Cloud Run)
+  backend:
+    name: "backend"
+    jira_project: "${JIRA_PROJECT_KEY}"
+    deployment_type: "cloud_run"
+
+    cloud_run:
+      service_name: "${PROJECT_NAME}-backend"
+      region: "${GCP_REGION}"
+
+      container:
+        image: "${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${PROJECT_NAME}/backend:${VERSION}"
+        port: 8080
+
+        resources:
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+
+      scaling:
+        min_instances: 1
+        max_instances: 50
+        max_concurrent_requests: 100
+
+    health_check:
+      enabled: true
+      type: "http"
+      endpoint: "/api/health"
+      timeout_seconds: 30
+
+    # Cloud SQL integration
+    cloudsql:
+      enabled: true
+      instances:
+        - "${GCP_PROJECT_ID}:${GCP_REGION}:${PROJECT_NAME}-${ENVIRONMENT}"
+
+      track_migrations: true
+
+    environments:
+      development:
+        min_instances: 0
+        max_instances: 2
+        cpu: "1000m"
+        memory: "1Gi"
+
+      staging:
+        min_instances: 1
+        max_instances: 5
+        cpu: "2000m"
+        memory: "2Gi"
+
+      production:
+        min_instances: 3
+        max_instances: 50
+        cpu: "2000m"
+        memory: "4Gi"
+
+# =============================================================================
+# SECRETS MANAGEMENT (GCP)
+# =============================================================================
+secrets:
+  provider: "gcp_secret_manager"
+
+  config:
+    gcp:
+      project_id: "${GCP_PROJECT_ID}"
+      secret_prefix: "${PROJECT_NAME}/"
+
+      # Replication policy
+      replication:
+        automatic: true
+
+        # Or manual replication
+        # user_managed:
+        #   replicas:
+        #     - location: "us-central1"
+        #     - location: "us-east1"
+
+  required:
+    - "JIRA_API_TOKEN"
+    - "JIRA_USER_EMAIL"
+    - "JIRA_SITE_URL"
+
+# =============================================================================
+# CI/CD INTEGRATION (Google Cloud Build)
+# =============================================================================
+cicd:
+  platform: "gcp_cloud_build"
+
+  cloud_build:
+    # Build configuration file
+    config_file: "cloudbuild.yaml"
+
+    # Track builds
+    track_builds: true
+
+    # Substitutions
+    substitutions:
+      _PROJECT_NAME: "${PROJECT_NAME}"
+      _ENVIRONMENT: "${ENVIRONMENT}"
+      _VERSION: "${VERSION}"
+      _JIRA_API_TOKEN: "${JIRA_API_TOKEN}"
+      _JIRA_USER_EMAIL: "${JIRA_USER_EMAIL}"
+      _JIRA_SITE_URL: "${JIRA_SITE_URL}"
+
+    # Service account for builds
+    service_account: "projects/${GCP_PROJECT_ID}/serviceAccounts/${PROJECT_NAME}-build@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+
+    # Build timeout
+    timeout: "1800s"  # 30 minutes
+
+  approval:
+    enabled: true
+    required_for:
+      - "production"
+
+    sources:
+      - type: "jira_transition"
+        from_status: "Approved"
+
+      - type: "manual"
+        approvers: ["@devops-team", "@tech-lead"]
+
+# =============================================================================
+# MONITORING (Google Cloud Monitoring)
+# =============================================================================
+monitoring:
+  metrics:
+    enabled: true
+    format: "stackdriver"
+
+    # Custom metrics namespace
+    prefix: "custom.googleapis.com/jira_orchestrator/${PROJECT_NAME}"
+
+    track:
+      - "deployment_count"
+      - "deployment_duration"
+      - "deployment_success_rate"
+      - "issue_update_count"
+      - "issue_transition_count"
+
+  logging:
+    level: "info"
+    format: "json"
+    destination: "stackdriver"
+
+    stackdriver:
+      log_name: "jira-orchestrator-${PROJECT_NAME}"
+      resource:
+        type: "cloud_run_revision"
+        labels:
+          service_name: "jira-orchestrator"
+          location: "${GCP_REGION}"
+
+  alerts:
+    enabled: true
+
+    # Cloud Monitoring alert policies
+    policies:
+      deployment_failures:
+        display_name: "${PROJECT_NAME} - Deployment Failures"
+        severity: "CRITICAL"
+        notification_channels:
+          - "${NOTIFICATION_CHANNEL_ID}"
+
+      jira_sync_failures:
+        display_name: "${PROJECT_NAME} - Jira Sync Failures"
+        severity: "WARNING"
+        notification_channels:
+          - "${NOTIFICATION_CHANNEL_ID}"
+
+# =============================================================================
+# ROLLBACK (GCP-Specific)
+# =============================================================================
+rollback:
+  auto_rollback:
+    enabled: true
+
+    triggers:
+      - type: "cloud_monitoring_alert"
+        alert_policy: "${PROJECT_NAME}-health-check-failure"
+
+      - type: "cloud_run_deployment_failure"
+        threshold: 1
+
+      - type: "error_rate"
+        threshold_percent: 5
+        window_minutes: 5
+
+  # Use Cloud Run traffic management for rollback
+  cloud_run_rollback:
+    enabled: true
+
+    # Gradually shift traffic back
+    gradual: true
+    traffic_step_percent: 25
+
+  track_in_jira: true
+  strategy: "previous_version"
+
+# =============================================================================
+# GCP COST TRACKING
+# =============================================================================
+cost_tracking:
+  enabled: true
+
+  # Track deployment costs via Cloud Billing API
+  cloud_billing:
+    enabled: true
+
+    # Billing account
+    account_id: "${GCP_BILLING_ACCOUNT_ID}"
+
+    # Label for cost tracking
+    label_key: "jira-issue"
+
+    # Add deployment cost to Jira comment
+    include_in_comment: true
+
+  # Budget alerts
+  budgets:
+    enabled: false
+    monthly_limit: 1000
+    alert_thresholds: [50, 80, 100]
+
+# =============================================================================
+# EXAMPLE USAGE
+# =============================================================================
+#
+# Deploy to Cloud Run development:
+#   export GCP_PROJECT_ID=my-project
+#   export GCP_REGION=us-central1
+#   export ENVIRONMENT=development
+#   ./deploy-to-jira.sh dev
+#
+# Deploy to Cloud Run production with version:
+#   export GCP_PROJECT_ID=my-project
+#   export GCP_REGION=us-central1
+#   export ENVIRONMENT=production
+#   ./deploy-to-jira.sh production --version v1.2.0 --issue PROJ-123
+#
+# Deploy using Cloud Build:
+#   gcloud builds submit \
+#     --config=cloudbuild.yaml \
+#     --substitutions=_VERSION=v1.2.0,_ENVIRONMENT=production
+#
+#   # Then track in Jira:
+#   ./deploy-to-jira.sh production --build-id ${BUILD_ID}
+#
+# Deploy to GKE:
+#   kubectl apply -f k8s/deployment.yaml
+#   kubectl rollout status deployment/${PROJECT_NAME}-backend
+#   ./deploy-to-jira.sh production --version v1.2.0
+#
+# =============================================================================

@@ -1,0 +1,463 @@
+# Jira Integration Configuration Example
+# This file documents common configuration patterns for the Jira GitHub Actions workflows
+
+# ============================================================================
+# GITHUB SECRETS CONFIGURATION
+# ============================================================================
+# Add these secrets in: Settings → Secrets and variables → Actions
+#
+# Required Secrets:
+# -----------------
+# JIRA_BASE_URL: "https://your-organization.atlassian.net"
+# JIRA_USER_EMAIL: "github-bot@your-organization.com"
+# JIRA_API_TOKEN: "ATATT3xFfGF0..." (from Jira account security settings)
+# JIRA_PROJECT_KEY: "PROJ" (your default Jira project key)
+#
+# Optional Secrets:
+# -----------------
+# JIRA_DEPLOYMENT_URL_FIELD_ID: "customfield_10050" (custom field for deployment URLs)
+# SLACK_WEBHOOK_URL: "https://hooks.slack.com/..." (for notifications)
+
+# ============================================================================
+# WORKFLOW TRANSITION CUSTOMIZATION
+# ============================================================================
+# Default workflow transitions (customize based on your Jira workflow):
+
+transitions:
+  pr_opened: "In Review"        # When PR is opened or reopened
+  pr_merged: "Done"             # When PR is merged to main
+  pr_closed: "Reopened"         # When PR is closed without merge
+  deployment_success: "Released"  # When production deployment succeeds
+  build_failure: "In Progress"  # When build fails on main branch
+
+# To find available transitions for your Jira project:
+# 1. Go to Jira Project Settings → Workflows
+# 2. View your workflow diagram
+# 3. Note the exact transition names (case-sensitive)
+# 4. Update the transition values in the workflow files
+
+# ============================================================================
+# ISSUE TYPE MAPPING
+# ============================================================================
+# GitHub label → Jira issue type mapping (jira-auto-create.yml)
+
+issue_type_mapping:
+  bug:
+    type: "Bug"
+    priority: "High"
+  feature:
+    type: "Story"
+    priority: "Medium"
+  enhancement:
+    type: "Improvement"
+    priority: "Medium"
+  task:
+    type: "Task"
+    priority: "Low"
+  documentation:
+    type: "Task"
+    priority: "Low"
+
+# To customize: Edit jira-auto-create.yml, Step 4 (Determine Jira issue type)
+
+# ============================================================================
+# COMPONENT MAPPING
+# ============================================================================
+# GitHub labels → Jira components (jira-auto-create.yml)
+
+component_mapping:
+  frontend: "Frontend"
+  backend: "Backend"
+  api: "API"
+  database: "Database"
+  infrastructure: "Infrastructure"
+  documentation: "Documentation"
+
+# To customize: Edit jira-auto-create.yml, Step 9 (Add Jira components from labels)
+
+# ============================================================================
+# BRANCH NAMING CONVENTIONS
+# ============================================================================
+# Recommended branch naming patterns for automatic issue key detection:
+
+branch_patterns:
+  feature: "feature/PROJ-123-short-description"
+  bugfix: "bugfix/PROJ-456-fix-description"
+  hotfix: "hotfix/PROJ-789-critical-fix"
+  release: "release/v1.2.3"
+
+# Issue key pattern: [A-Z]{2,10}-[0-9]+
+# Examples: PROJ-123, TEAM-456, API-789
+
+# ============================================================================
+# PR TITLE CONVENTIONS
+# ============================================================================
+# Recommended PR title formats:
+
+pr_title_patterns:
+  - "[PROJ-123] Add user authentication feature"
+  - "[TEAM-456] Fix: Resolve login timeout issue"
+  - "[API-789] Refactor: Improve database queries"
+  - "[DOCS-101] Update: API documentation"
+
+# ============================================================================
+# COMMIT MESSAGE CONVENTIONS
+# ============================================================================
+# Recommended commit message formats:
+
+commit_message_patterns:
+  single_issue: |
+    PROJ-123: Add user authentication
+
+    - Implement OAuth2 flow
+    - Add JWT token validation
+    - Update documentation
+
+    Fixes PROJ-123
+
+  multiple_issues: |
+    PROJ-123, PROJ-124: Refactor authentication
+
+    - Consolidate auth logic
+    - Update tests
+
+    Related to PROJ-125
+
+# ============================================================================
+# ENVIRONMENT CONFIGURATION
+# ============================================================================
+# Deployment environment settings (jira-deployment-track.yml)
+
+environments:
+  production:
+    transition: "Released"
+    label: "production-deployed"
+    auto_transition: true
+  staging:
+    transition: "In QA"
+    label: "staging-deployed"
+    auto_transition: false
+  development:
+    transition: "In Development"
+    label: "dev-deployed"
+    auto_transition: false
+
+# ============================================================================
+# WORKFLOW FILTERING
+# ============================================================================
+# Control which workflows trigger Jira updates
+
+workflow_filters:
+  # jira-pr-sync.yml - Filter by branch
+  pr_sync_branches:
+    - main
+    - develop
+    - release/*
+
+  # jira-build-status.yml - Filter by workflow name
+  build_status_workflows:
+    - "CI"
+    - "Tests"
+    - "Build"
+
+  # jira-deployment-track.yml - Filter by environment
+  deployment_environments:
+    - production
+    - staging
+
+# ============================================================================
+# USER MAPPING (OPTIONAL)
+# ============================================================================
+# Map GitHub usernames to Jira account IDs for assignee sync
+
+user_mapping:
+  github-user1: "5d1234567890abcdef"  # Jira account ID
+  github-user2: "5d0987654321fedcba"
+  github-user3: "5dabcdef1234567890"
+
+# To find Jira account IDs:
+# GET https://your-org.atlassian.net/rest/api/3/user/search?query=email@example.com
+
+# ============================================================================
+# CUSTOM FIELDS (OPTIONAL)
+# ============================================================================
+# Custom Jira fields for additional metadata
+
+custom_fields:
+  deployment_url: "customfield_10050"
+  github_pr_number: "customfield_10051"
+  build_url: "customfield_10052"
+  sprint: "customfield_10020"
+
+# To find custom field IDs:
+# GET https://your-org.atlassian.net/rest/api/3/field
+
+# ============================================================================
+# NOTIFICATION SETTINGS
+# ============================================================================
+# Configure notifications for workflow failures
+
+notifications:
+  slack:
+    enabled: false
+    webhook_secret: "SLACK_WEBHOOK_URL"
+    channels:
+      - "#github-jira-sync"
+
+  email:
+    enabled: true  # Uses GitHub Actions default email notifications
+
+  github_issues:
+    enabled: false  # Create GitHub issue on repeated failures
+
+# ============================================================================
+# RATE LIMITING
+# ============================================================================
+# Prevent API rate limit issues
+
+rate_limiting:
+  delay_between_requests: 1  # seconds
+  max_retries: 3
+  retry_delay: 5  # seconds
+
+# ============================================================================
+# WORKFLOW BEHAVIOR
+# ============================================================================
+
+behavior:
+  # Skip bot PRs (Dependabot, etc.)
+  skip_bot_prs: true
+
+  # Skip draft PRs
+  skip_draft_prs: false
+
+  # Continue on transition errors
+  continue_on_transition_error: true
+
+  # Add labels on build failure
+  add_failure_labels: true
+
+  # Auto-remove failure labels on success
+  remove_failure_labels: true
+
+  # Create GitHub comments on Jira sync
+  create_github_comments: true
+
+# ============================================================================
+# TESTING CONFIGURATION
+# ============================================================================
+
+testing:
+  # Test Jira project key (use for testing before production)
+  test_project_key: "TEST"
+
+  # Test mode (dry run - log actions without executing)
+  dry_run: false
+
+  # Enable verbose logging
+  debug_mode: false
+
+# ============================================================================
+# EXAMPLE JIRA WORKFLOW
+# ============================================================================
+# This is an example Jira workflow that works with these GitHub Actions:
+#
+#   To Do → In Progress → In Review → Done → Released
+#              ↓             ↓
+#          Reopened ← PR Closed
+
+# Workflow States:
+# - To Do: Initial state for new issues
+# - In Progress: Developer actively working (build failure can reopen to this)
+# - In Review: PR opened for review
+# - Done: PR merged to main/develop
+# - Released: Deployed to production
+# - Reopened: PR closed without merge OR issue needs rework
+
+# ============================================================================
+# EXAMPLE SETUP COMMANDS
+# ============================================================================
+
+# Add secrets via GitHub CLI:
+# gh secret set JIRA_BASE_URL --body "https://your-org.atlassian.net"
+# gh secret set JIRA_USER_EMAIL --body "bot@your-org.com"
+# gh secret set JIRA_API_TOKEN --body "your-api-token"
+# gh secret set JIRA_PROJECT_KEY --body "PROJ"
+
+# Test Jira API connection:
+# curl -u "email:token" https://your-org.atlassian.net/rest/api/3/myself
+
+# Get available transitions for an issue:
+# curl -u "email:token" https://your-org.atlassian.net/rest/api/3/issue/PROJ-123/transitions
+
+# Manually trigger workflow:
+# gh workflow run jira-pr-sync.yml
+# gh workflow run jira-deployment-track.yml
+# gh workflow run jira-build-status.yml
+# gh workflow run jira-auto-create.yml
+
+# View workflow runs:
+# gh run list --workflow=jira-pr-sync.yml
+# gh run view <run-id> --log
+
+# ============================================================================
+# VALIDATION CHECKLIST
+# ============================================================================
+
+validation_checklist:
+  - name: "Secrets configured"
+    items:
+      - "JIRA_BASE_URL set correctly"
+      - "JIRA_USER_EMAIL set correctly"
+      - "JIRA_API_TOKEN set and valid"
+      - "JIRA_PROJECT_KEY set correctly"
+
+  - name: "Jira permissions"
+    items:
+      - "User has Browse Projects permission"
+      - "User has Create Issues permission"
+      - "User has Edit Issues permission"
+      - "User has Add Comments permission"
+      - "User has Transition Issues permission"
+
+  - name: "Workflow transitions"
+    items:
+      - "Transition names match Jira workflow"
+      - "Transitions are available from expected states"
+      - "Transition names are case-sensitive match"
+
+  - name: "Branch naming"
+    items:
+      - "Branch names follow convention (feature/PROJ-123)"
+      - "Issue key pattern matches regex"
+      - "Team follows naming standard"
+
+  - name: "Testing"
+    items:
+      - "Test with sample PR"
+      - "Verify Jira issue updated"
+      - "Check workflow logs for errors"
+      - "Test transition success"
+
+# ============================================================================
+# TROUBLESHOOTING QUICK REFERENCE
+# ============================================================================
+
+troubleshooting:
+  issue_not_found:
+    symptom: "Workflow completes but no Jira updates"
+    checks:
+      - "Verify issue key in branch name or PR title"
+      - "Check issue key pattern matches [A-Z]{2,10}-[0-9]+"
+      - "Ensure issue exists in Jira project"
+      - "Check workflow logs for 'Found issue keys' output"
+
+  transition_failed:
+    symptom: "Error: Transition 'X' not found"
+    checks:
+      - "Verify transition name is exact match (case-sensitive)"
+      - "Check transition is available from current status"
+      - "Get available transitions via API"
+      - "Update workflow with correct transition name"
+
+  authentication_failed:
+    symptom: "401 Unauthorized or 403 Forbidden"
+    checks:
+      - "Verify JIRA_API_TOKEN is valid and not expired"
+      - "Check JIRA_USER_EMAIL is correct"
+      - "Verify user has required permissions"
+      - "Test authentication with curl command"
+
+  rate_limit_exceeded:
+    symptom: "429 Too Many Requests"
+    checks:
+      - "Add delays between API calls"
+      - "Reduce number of workflow triggers"
+      - "Batch API requests where possible"
+      - "Check Jira rate limits for your plan"
+
+# ============================================================================
+# PERFORMANCE OPTIMIZATION
+# ============================================================================
+
+performance:
+  caching:
+    # Cache Jira transitions to reduce API calls
+    enabled: false
+    cache_duration: 3600  # seconds
+
+  batching:
+    # Batch multiple updates into single API call
+    enabled: false
+    batch_size: 10
+
+  filtering:
+    # Skip unnecessary workflow runs
+    skip_workflows:
+      - "pages-build-deployment"
+      - "dependabot"
+      - "CodeQL"
+
+# ============================================================================
+# SECURITY BEST PRACTICES
+# ============================================================================
+
+security:
+  principles:
+    - "Never log secrets or tokens"
+    - "Use GitHub Secrets for all sensitive data"
+    - "Rotate API tokens regularly (every 90 days)"
+    - "Use dedicated service account for automation"
+    - "Limit Jira user permissions to minimum required"
+    - "Enable audit logging for API access"
+    - "Use environment secrets for production deployments"
+
+  secret_rotation:
+    - "Create new Jira API token"
+    - "Update JIRA_API_TOKEN secret in GitHub"
+    - "Test workflow with new token"
+    - "Revoke old API token in Jira"
+
+# ============================================================================
+# MONITORING AND ALERTING
+# ============================================================================
+
+monitoring:
+  metrics:
+    - "Workflow success rate"
+    - "Average workflow duration"
+    - "Number of Jira issues updated per day"
+    - "Failed transitions percentage"
+    - "API error rate"
+
+  alerts:
+    - "Workflow failure 3 times in 24 hours"
+    - "Authentication failure"
+    - "Rate limit approached (80% threshold)"
+    - "High API error rate (>5%)"
+
+# ============================================================================
+# MAINTENANCE SCHEDULE
+# ============================================================================
+
+maintenance:
+  weekly:
+    - "Review failed workflow runs"
+    - "Check for new Jira workflow changes"
+    - "Verify issue key detection accuracy"
+
+  monthly:
+    - "Review and update transition mappings"
+    - "Audit Jira user permissions"
+    - "Update documentation with new patterns"
+    - "Review user mapping for new team members"
+
+  quarterly:
+    - "Rotate Jira API tokens"
+    - "Review and optimize workflow performance"
+    - "Update workflow dependencies (actions versions)"
+    - "Conduct team training on conventions"
+
+# ============================================================================
+# END OF CONFIGURATION
+# ============================================================================

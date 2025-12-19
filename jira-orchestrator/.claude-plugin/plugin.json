@@ -1,10 +1,10 @@
 {
   "name": "jira-orchestrator",
-  "version": "1.2.0",
-  "description": "Arbiter (Spartan) - Intelligent Jira issue orchestration. Coordinates sub-agents through 6-phase protocol, auto-creates PRs, documents all sub-items, and transitions everything to QA status.",
+  "version": "1.4.0",
+  "description": "Arbiter (Spartan) - Intelligent Jira issue orchestration with GitHub Integration Suite. Features: (1) Incremental PR Strategy - prevents massive PRs through proactive size estimation and checkpoint PRs, (2) Smart Commits - auto-update Jira via commit messages with #comment, #time, #transition, (3) GitHub-Jira Sync - auto-link branches, PRs, and deployments, (4) Multi-Cloud Deployment Tracking - portable configs for AWS/GCP/Azure, (5) 6-Phase Protocol - EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT with auto-documentation.",
   "author": {
-    "name": "Brookside BI",
-    "email": "dev@brooksidebi.com"
+    "name": "The Lobbi",
+    "email": "developers@thelobbi.io"
   },
   "keywords": [
     "jira",
@@ -15,7 +15,13 @@
     "workflow",
     "agile",
     "oauth",
-    "sso"
+    "sso",
+    "smart-commits",
+    "github-actions",
+    "deployment-tracking",
+    "multi-cloud",
+    "branch-linking",
+    "pr-sync"
   ],
   "license": "MIT",
   "repository": "https://github.com/markus41/jira-orchestrator"

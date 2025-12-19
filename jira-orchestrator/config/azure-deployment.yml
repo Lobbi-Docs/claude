@@ -1,0 +1,844 @@
+# Azure-Specific Deployment Configuration for Jira Orchestrator
+# This configuration provides Azure-native deployment tracking with Jira integration
+
+# =============================================================================
+# AZURE PROVIDER CONFIGURATION
+# =============================================================================
+cloud:
+  provider: "azure"
+  region: "${AZURE_REGION:-eastus}"
+  subscription_id: "${AZURE_SUBSCRIPTION_ID}"
+  resource_group: "${AZURE_RESOURCE_GROUP}"
+  tenant_id: "${AZURE_TENANT_ID}"
+
+  # Resource tagging strategy
+  tags:
+    Project: "${PROJECT_NAME}"
+    Environment: "${ENVIRONMENT}"
+    ManagedBy: "jira-orchestrator"
+    JiraProject: "${JIRA_PROJECT_KEY}"
+
+# =============================================================================
+# JIRA CONFIGURATION
+# =============================================================================
+jira:
+  host: "${JIRA_SITE_URL}"
+  auth:
+    email: "${JIRA_USER_EMAIL}"
+    api_token: "${JIRA_API_TOKEN}"
+  default_project: "${JIRA_PROJECT_KEY:-PROJ}"
+
+  environments:
+    development:
+      jira_field: "customfield_10100"
+      cloud_environments:
+        - "dev"
+        - "development"
+      auto_transition: "In Development"
+      azure_environments:
+        - "dev"
+        - "development"
+        - "sandbox"
+
+    staging:
+      jira_field: "customfield_10101"
+      cloud_environments:
+        - "staging"
+        - "qa"
+      auto_transition: "In QA"
+      azure_environments:
+        - "staging"
+        - "qa"
+        - "test"
+
+    production:
+      jira_field: "customfield_10102"
+      cloud_environments:
+        - "production"
+        - "prod"
+      auto_transition: "Released"
+      azure_environments:
+        - "production"
+        - "prod"
+        - "live"
+
+  fields:
+    branch_name: "customfield_10200"
+    pr_url: "customfield_10201"
+    build_status: "customfield_10202"
+    deployment_status: "customfield_10203"
+    last_deployment: "customfield_10204"
+    repository: "customfield_10205"
+    commit_count: "customfield_10206"
+    deployment_version: "customfield_10207"
+    cloud_provider: "customfield_10208"
+    cloud_region: "customfield_10209"
+
+# =============================================================================
+# AZURE SERVICE CONFIGURATIONS
+# =============================================================================
+azure:
+  # Azure Container Instances (ACI)
+  container_instances:
+    enabled: false
+
+    # Container groups
+    container_groups:
+      frontend:
+        name: "${PROJECT_NAME}-frontend-${ENVIRONMENT}"
+        location: "${AZURE_REGION}"
+        os_type: "Linux"
+
+        containers:
+          - name: "frontend"
+            image: "${ACR_LOGIN_SERVER}/${PROJECT_NAME}/frontend:${VERSION}"
+            cpu: 1.0
+            memory: 1.5
+
+      backend:
+        name: "${PROJECT_NAME}-backend-${ENVIRONMENT}"
+        location: "${AZURE_REGION}"
+        os_type: "Linux"
+
+        containers:
+          - name: "backend"
+            image: "${ACR_LOGIN_SERVER}/${PROJECT_NAME}/backend:${VERSION}"
+            cpu: 2.0
+            memory: 4.0
+
+  # Azure Kubernetes Service (AKS)
+  aks:
+    enabled: true
+
+    # AKS Cluster
+    cluster:
+      name: "${PROJECT_NAME}-${ENVIRONMENT}"
+      resource_group: "${AZURE_RESOURCE_GROUP}"
+      location: "${AZURE_REGION}"
+
+      # Node pool configuration
+      node_pools:
+        default:
+          vm_size: "Standard_DS2_v2"
+          node_count: 3
+          min_count: 1
+          max_count: 10
+          enable_auto_scaling: true
+
+      # Network configuration
+      network:
+        network_plugin: "azure"
+        network_policy: "azure"
+        service_cidr: "10.0.0.0/16"
+        dns_service_ip: "10.0.0.10"
+
+    # Namespace configuration
+    namespace: "${PROJECT_NAME}-${ENVIRONMENT}"
+
+    # Azure AD Pod Identity
+    pod_identity:
+      enabled: true
+      identity_name: "${PROJECT_NAME}-pod-identity"
+
+    # Deployment tracking
+    track_deployments: true
+    track_pods: true
+    track_services: true
+
+  # Azure App Service (Web Apps)
+  app_service:
+    enabled: false
+
+    # Web apps to track
+    web_apps:
+      frontend:
+        name: "${PROJECT_NAME}-frontend-${ENVIRONMENT}"
+        resource_group: "${AZURE_RESOURCE_GROUP}"
+        location: "${AZURE_REGION}"
+
+        # App Service Plan
+        app_service_plan: "${PROJECT_NAME}-plan-${ENVIRONMENT}"
+
+        # Runtime stack
+        runtime: "NODE|18-lts"
+
+        # Deployment slots
+        deployment_slots:
+          - name: "staging"
+            auto_swap: true
+            target_slot: "production"
+
+      backend:
+        name: "${PROJECT_NAME}-backend-${ENVIRONMENT}"
+        resource_group: "${AZURE_RESOURCE_GROUP}"
+        location: "${AZURE_REGION}"
+        app_service_plan: "${PROJECT_NAME}-plan-${ENVIRONMENT}"
+        runtime: "PYTHON|3.11"
+
+  # Azure Functions
+  functions:
+    enabled: false
+
+    # Function apps
+    function_apps:
+      - name: "${PROJECT_NAME}-api-${ENVIRONMENT}"
+        resource_group: "${AZURE_RESOURCE_GROUP}"
+        location: "${AZURE_REGION}"
+        runtime: "node"
+        runtime_version: "18"
+
+      - name: "${PROJECT_NAME}-worker-${ENVIRONMENT}"
+        resource_group: "${AZURE_RESOURCE_GROUP}"
+        location: "${AZURE_REGION}"
+        runtime: "python"
+        runtime_version: "3.11"
+
+    # Deployment configuration
+    deployment:
+      # Run from package
+      run_from_package: true
+
+      # Deployment source
+      source_control:
+        type: "GitHub"
+        repo_url: "${GITHUB_REPO_URL}"
+        branch: "${GITHUB_BRANCH}"
+
+  # Azure DevOps Integration
+  devops:
+    enabled: true
+
+    # Organization and project
+    organization: "${AZURE_DEVOPS_ORG}"
+    project: "${AZURE_DEVOPS_PROJECT}"
+
+    # Pipeline configuration
+    pipelines:
+      development:
+        name: "${PROJECT_NAME}-dev"
+        definition_id: "${DEV_PIPELINE_ID}"
+
+      staging:
+        name: "${PROJECT_NAME}-staging"
+        definition_id: "${STAGING_PIPELINE_ID}"
+
+      production:
+        name: "${PROJECT_NAME}-prod"
+        definition_id: "${PROD_PIPELINE_ID}"
+        approval_required: true
+
+    # Track pipeline events in Jira
+    track_events:
+      - "BuildCompleted"
+      - "DeploymentStarted"
+      - "DeploymentCompleted"
+      - "ApprovalPending"
+      - "ApprovalCompleted"
+
+  # Azure Monitor Integration
+  monitor:
+    enabled: true
+
+    # Log Analytics workspace
+    log_analytics:
+      workspace_id: "${LOG_ANALYTICS_WORKSPACE_ID}"
+      workspace_key: "${LOG_ANALYTICS_WORKSPACE_KEY}"
+
+      # Custom log type
+      log_type: "JiraOrchestrator"
+
+    # Application Insights
+    application_insights:
+      enabled: true
+      instrumentation_key: "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+      connection_string: "${APPLICATIONINSIGHTS_CONNECTION_STRING}"
+
+      # Track custom events
+      track_events:
+        - "DeploymentStarted"
+        - "DeploymentCompleted"
+        - "DeploymentFailed"
+        - "JiraIssueUpdated"
+
+    # Metrics
+    custom_metrics:
+      namespace: "JiraOrchestrator/${PROJECT_NAME}"
+
+      metrics:
+        - name: "DeploymentCount"
+          aggregation: "Count"
+
+        - name: "DeploymentDuration"
+          aggregation: "Average"
+          unit: "Seconds"
+
+        - name: "IssueUpdateCount"
+          aggregation: "Count"
+
+    # Alerts
+    alerts:
+      deployment_failures:
+        name: "${PROJECT_NAME}-deployment-failures"
+        description: "Alert on deployment failures"
+        severity: 1  # 0=Critical, 1=Error, 2=Warning, 3=Informational, 4=Verbose
+
+        criteria:
+          metric_name: "DeploymentFailures"
+          operator: "GreaterThan"
+          threshold: 0
+          time_aggregation: "Total"
+          window_size: "PT5M"
+
+        actions:
+          - action_group_id: "${ACTION_GROUP_ID}"
+
+      deployment_duration:
+        name: "${PROJECT_NAME}-slow-deployments"
+        severity: 2
+
+        criteria:
+          metric_name: "DeploymentDuration"
+          operator: "GreaterThan"
+          threshold: 1800  # 30 minutes
+          time_aggregation: "Maximum"
+          window_size: "PT5M"
+
+  # Azure Key Vault
+  key_vault:
+    enabled: true
+
+    # Key Vault name
+    vault_name: "${KEY_VAULT_NAME}"
+    vault_uri: "https://${KEY_VAULT_NAME}.vault.azure.net/"
+
+    # Secrets
+    secrets:
+      jira_api_token:
+        name: "jira-api-token"
+
+      jira_user_email:
+        name: "jira-user-email"
+
+      github_token:
+        name: "github-token"
+
+    # Managed Identity for access
+    managed_identity:
+      enabled: true
+      client_id: "${MANAGED_IDENTITY_CLIENT_ID}"
+
+    # Auto-fetch secrets before deployment
+    auto_fetch: true
+
+  # Azure Container Registry (ACR)
+  container_registry:
+    enabled: true
+
+    # Registry configuration
+    registry_name: "${ACR_NAME}"
+    login_server: "${ACR_LOGIN_SERVER}"
+    sku: "Standard"  # Basic, Standard, Premium
+
+    # Image repositories
+    repositories:
+      - name: "${PROJECT_NAME}/frontend"
+        tag_pattern: "v*"
+
+      - name: "${PROJECT_NAME}/backend"
+        tag_pattern: "v*"
+
+    # Vulnerability scanning (Premium SKU only)
+    security_scanning:
+      enabled: true
+      severity_threshold: "Medium"
+
+    # Geo-replication (Premium SKU only)
+    geo_replication:
+      enabled: false
+      locations:
+        - "westus"
+        - "eastus"
+
+  # Azure Service Bus for events
+  service_bus:
+    enabled: true
+
+    # Namespace
+    namespace: "${SERVICE_BUS_NAMESPACE}"
+
+    # Topics for deployment events
+    topics:
+      deployments:
+        name: "deployments"
+        default_message_ttl: "P14D"  # 14 days
+
+        # Subscriptions
+        subscriptions:
+          jira_updates:
+            name: "jira-updates"
+            max_delivery_count: 10
+
+            # Filter rules
+            rules:
+              - name: "JiraIssueFilter"
+                filter_type: "SqlFilter"
+                sql_filter: "JiraIssue IS NOT NULL"
+
+  # Azure Event Grid for deployment events
+  event_grid:
+    enabled: true
+
+    # Event Grid topic
+    topic:
+      name: "${PROJECT_NAME}-deployments"
+      resource_group: "${AZURE_RESOURCE_GROUP}"
+      location: "${AZURE_REGION}"
+
+    # Event subscriptions
+    subscriptions:
+      jira_webhook:
+        name: "jira-webhook-subscription"
+        endpoint_type: "webhook"
+        endpoint_url: "${JIRA_WEBHOOK_ENDPOINT}"
+
+        # Event types to subscribe to
+        included_event_types:
+          - "Microsoft.ContainerRegistry.ImagePushed"
+          - "Microsoft.ContainerService.NewKubernetesVersionAvailable"
+          - "Microsoft.Web.AppUpdated"
+
+  # Azure Storage for deployment artifacts
+  storage:
+    enabled: true
+
+    # Storage account
+    account_name: "${STORAGE_ACCOUNT_NAME}"
+    account_key: "${STORAGE_ACCOUNT_KEY}"
+
+    # Container for deployment artifacts
+    containers:
+      deployments:
+        name: "deployments"
+        access: "private"
+
+        # Lifecycle management
+        lifecycle_rules:
+          - name: "delete-old-artifacts"
+            enabled: true
+            filters:
+              blob_types: ["blockBlob"]
+              prefix_match: ["artifacts/"]
+
+            actions:
+              base_blob:
+                delete:
+                  days_after_modification_greater_than: 90
+
+# =============================================================================
+# DEPLOYMENT TRACKING
+# =============================================================================
+deployment:
+  # Issue detection from Azure resources
+  issue_detection:
+    - type: "explicit"
+      enabled: true
+
+    - type: "git_commits"
+      enabled: true
+      look_back_commits: 50
+      regex_pattern: "([A-Z]+-\\d+)"
+
+    - type: "aks_labels"
+      enabled: true
+      label_key: "jira-issue"
+
+    - type: "resource_tags"
+      enabled: true
+      tag_key: "JiraIssue"
+
+    - type: "container_image_labels"
+      enabled: true
+      label_key: "jira-issue"
+
+  # Version from Azure resources
+  version:
+    # Source: container_tag, git_tag, build_number, timestamp
+    source: "container_tag"
+    fallback: "git_tag"
+
+    # Container registry
+    registry: "${ACR_LOGIN_SERVER}"
+
+    # Tag pattern for versions
+    tag_pattern: "v*"
+
+  # Metadata extraction from Azure
+  metadata:
+    track_timestamp: true
+    track_duration: true
+    track_deployer: true
+    track_commit: true
+
+    # Azure-specific metadata
+    azure_metadata:
+      track_subscription_id: true
+      track_resource_group: true
+      track_region: true
+      track_resource_id: true
+      track_build_id: true
+
+  # Notifications via Service Bus
+  notifications:
+    on_success: true
+    on_failure: true
+    on_rollback: true
+
+    channels:
+      - type: "jira_comment"
+        enabled: true
+
+      - type: "service_bus"
+        enabled: true
+        namespace: "${SERVICE_BUS_NAMESPACE}"
+        topic: "deployments"
+
+      - type: "azure_monitor"
+        enabled: true
+        workspace_id: "${LOG_ANALYTICS_WORKSPACE_ID}"
+
+# =============================================================================
+# AZURE-SPECIFIC SERVICES
+# =============================================================================
+services:
+  # Frontend service (AKS)
+  frontend:
+    name: "frontend"
+    jira_project: "${JIRA_PROJECT_KEY}"
+    deployment_type: "aks"
+
+    aks:
+      deployment_name: "${PROJECT_NAME}-frontend"
+      namespace: "${PROJECT_NAME}-${ENVIRONMENT}"
+
+      # Container configuration
+      container:
+        image: "${ACR_LOGIN_SERVER}/${PROJECT_NAME}/frontend:${VERSION}"
+        port: 8080
+
+        # Resource requests/limits
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "1000m"
+            memory: "512Mi"
+
+      # Horizontal Pod Autoscaler
+      autoscaling:
+        enabled: true
+        min_replicas: 2
+        max_replicas: 10
+        target_cpu_percent: 70
+
+    health_check:
+      enabled: true
+      type: "http"
+      endpoint: "/health"
+      initial_delay_seconds: 30
+      timeout_seconds: 10
+
+    environments:
+      development:
+        replicas: 1
+        cpu_request: "250m"
+        memory_request: "256Mi"
+
+      staging:
+        replicas: 2
+        cpu_request: "500m"
+        memory_request: "512Mi"
+
+      production:
+        replicas: 3
+        cpu_request: "1000m"
+        memory_request: "1Gi"
+
+  # Backend service (AKS)
+  backend:
+    name: "backend"
+    jira_project: "${JIRA_PROJECT_KEY}"
+    deployment_type: "aks"
+
+    aks:
+      deployment_name: "${PROJECT_NAME}-backend"
+      namespace: "${PROJECT_NAME}-${ENVIRONMENT}"
+
+      container:
+        image: "${ACR_LOGIN_SERVER}/${PROJECT_NAME}/backend:${VERSION}"
+        port: 8080
+
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+
+      autoscaling:
+        enabled: true
+        min_replicas: 3
+        max_replicas: 20
+        target_cpu_percent: 70
+
+    health_check:
+      enabled: true
+      type: "http"
+      endpoint: "/api/health"
+      timeout_seconds: 30
+
+    # Azure SQL Database integration
+    azure_sql:
+      enabled: true
+      server: "${SQL_SERVER_NAME}.database.windows.net"
+      database: "${PROJECT_NAME}-${ENVIRONMENT}"
+      track_migrations: true
+
+    environments:
+      development:
+        replicas: 1
+        cpu_request: "500m"
+        memory_request: "512Mi"
+
+      staging:
+        replicas: 2
+        cpu_request: "1000m"
+        memory_request: "1Gi"
+
+      production:
+        replicas: 5
+        cpu_request: "2000m"
+        memory_request: "2Gi"
+
+# =============================================================================
+# SECRETS MANAGEMENT (Azure)
+# =============================================================================
+secrets:
+  provider: "azure_key_vault"
+
+  config:
+    azure:
+      vault_name: "${KEY_VAULT_NAME}"
+      vault_uri: "https://${KEY_VAULT_NAME}.vault.azure.net/"
+
+      # Authentication method: service_principal, managed_identity
+      auth_method: "managed_identity"
+
+      # For service principal auth
+      service_principal:
+        tenant_id: "${AZURE_TENANT_ID}"
+        client_id: "${AZURE_CLIENT_ID}"
+        client_secret: "${AZURE_CLIENT_SECRET}"
+
+      # For managed identity auth
+      managed_identity:
+        client_id: "${MANAGED_IDENTITY_CLIENT_ID}"
+
+  required:
+    - "JIRA_API_TOKEN"
+    - "JIRA_USER_EMAIL"
+    - "JIRA_SITE_URL"
+
+# =============================================================================
+# CI/CD INTEGRATION (Azure DevOps)
+# =============================================================================
+cicd:
+  platform: "azure_devops"
+
+  azure_devops:
+    # Organization and project
+    organization: "${AZURE_DEVOPS_ORG}"
+    project: "${AZURE_DEVOPS_PROJECT}"
+
+    # Personal Access Token
+    pat: "${AZURE_DEVOPS_PAT}"
+
+    # Pipelines
+    pipelines:
+      build:
+        definition_id: "${BUILD_PIPELINE_ID}"
+        track: true
+
+      deploy_dev:
+        definition_id: "${DEPLOY_DEV_PIPELINE_ID}"
+        track: true
+        on_success: "update_jira"
+
+      deploy_staging:
+        definition_id: "${DEPLOY_STAGING_PIPELINE_ID}"
+        track: true
+        on_success: "update_jira"
+
+      deploy_prod:
+        definition_id: "${DEPLOY_PROD_PIPELINE_ID}"
+        track: true
+        on_success: "update_jira"
+        on_failure: "update_jira"
+
+    # Environments
+    environments:
+      development:
+        id: "${DEV_ENVIRONMENT_ID}"
+
+      staging:
+        id: "${STAGING_ENVIRONMENT_ID}"
+
+      production:
+        id: "${PROD_ENVIRONMENT_ID}"
+        approval_required: true
+
+  approval:
+    enabled: true
+    required_for:
+      - "production"
+
+    sources:
+      - type: "jira_transition"
+        from_status: "Approved"
+
+      - type: "azure_devops_approval"
+        environment: "production"
+
+# =============================================================================
+# MONITORING (Azure Monitor)
+# =============================================================================
+monitoring:
+  metrics:
+    enabled: true
+    format: "azure_monitor"
+
+    namespace: "JiraOrchestrator/${PROJECT_NAME}"
+
+    track:
+      - "deployment_count"
+      - "deployment_duration"
+      - "deployment_success_rate"
+      - "issue_update_count"
+      - "issue_transition_count"
+
+  logging:
+    level: "info"
+    format: "json"
+    destination: "azure_monitor"
+
+    azure_monitor:
+      workspace_id: "${LOG_ANALYTICS_WORKSPACE_ID}"
+      workspace_key: "${LOG_ANALYTICS_WORKSPACE_KEY}"
+      log_type: "JiraOrchestrator"
+
+  alerts:
+    enabled: true
+
+    # Azure Monitor alert rules
+    alert_rules:
+      deployment_failures:
+        name: "${PROJECT_NAME}-deployment-failures"
+        severity: 1
+        action_group_id: "${ACTION_GROUP_ID}"
+
+      jira_sync_failures:
+        name: "${PROJECT_NAME}-jira-sync-failures"
+        severity: 2
+        action_group_id: "${ACTION_GROUP_ID}"
+
+# =============================================================================
+# ROLLBACK (Azure-Specific)
+# =============================================================================
+rollback:
+  auto_rollback:
+    enabled: true
+
+    triggers:
+      - type: "azure_monitor_alert"
+        alert_rule: "${PROJECT_NAME}-health-check-failure"
+
+      - type: "aks_deployment_failure"
+        threshold: 1
+
+      - type: "app_service_error_rate"
+        threshold_percent: 5
+        window_minutes: 5
+
+  # Use AKS rollout undo or App Service slot swap
+  azure_rollback:
+    enabled: true
+
+    # For AKS
+    aks:
+      use_rollout_undo: true
+
+    # For App Service
+    app_service:
+      use_slot_swap: true
+      source_slot: "production"
+      target_slot: "staging"
+
+  track_in_jira: true
+  strategy: "previous_version"
+
+# =============================================================================
+# AZURE COST TRACKING
+# =============================================================================
+cost_tracking:
+  enabled: true
+
+  # Track deployment costs via Azure Cost Management API
+  cost_management:
+    enabled: true
+
+    # Tag for cost tracking
+    tag_key: "JiraIssue"
+
+    # Add deployment cost to Jira comment
+    include_in_comment: true
+
+  # Budget alerts
+  budgets:
+    enabled: false
+    monthly_limit: 1000
+    alert_thresholds: [50, 80, 100]
+
+# =============================================================================
+# EXAMPLE USAGE
+# =============================================================================
+#
+# Deploy to AKS development:
+#   export AZURE_SUBSCRIPTION_ID=xxxx
+#   export AZURE_RESOURCE_GROUP=my-rg
+#   export ENVIRONMENT=development
+#   ./deploy-to-jira.sh dev
+#
+# Deploy to AKS production with version:
+#   export AZURE_SUBSCRIPTION_ID=xxxx
+#   export AZURE_RESOURCE_GROUP=my-rg
+#   export ENVIRONMENT=production
+#   ./deploy-to-jira.sh production --version v1.2.0 --issue PROJ-123
+#
+# Deploy using Azure DevOps:
+#   az pipelines run \
+#     --name "${PROJECT_NAME}-prod" \
+#     --parameters version=v1.2.0
+#
+#   # Then track in Jira:
+#   ./deploy-to-jira.sh production --build-id ${BUILD_ID}
+#
+# Deploy to App Service:
+#   az webapp deployment source config-zip \
+#     --resource-group ${AZURE_RESOURCE_GROUP} \
+#     --name ${APP_NAME} \
+#     --src app.zip
+#
+#   ./deploy-to-jira.sh production --version v1.2.0
+#
+# =============================================================================
