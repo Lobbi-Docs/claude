@@ -1,0 +1,12 @@
+{
+  "current_month": {
+    "total_bugs_found": 0,
+    "found_in_development": 0,
+    "found_in_qa": 0,
+    "found_in_production": 0,
+    "escape_rate": 0
+  },
+  "trends": [],
+  "target_escape_rate": 5,
+  "last_updated": "2025-12-22T00:00:00Z"
+}

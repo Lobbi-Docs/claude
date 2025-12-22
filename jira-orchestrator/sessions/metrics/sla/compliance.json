@@ -1,0 +1,17 @@
+{
+  "compliance_rates": {
+    "overall": {
+      "response_time_met": 0,
+      "resolution_time_met": 0,
+      "both_met": 0,
+      "total_issues": 0
+    },
+    "by_priority": {},
+    "by_issue_type": {}
+  },
+  "last_updated": "2025-12-22T00:00:00Z",
+  "period": {
+    "start": "2025-12-01T00:00:00Z",
+    "end": "2025-12-31T23:59:59Z"
+  }
+}

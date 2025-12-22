@@ -2,17 +2,107 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-purple.svg)
+![Agents](https://img.shields.io/badge/agents-60+-orange.svg)
+![Commands](https://img.shields.io/badge/commands-32-red.svg)
+![Enterprise](https://img.shields.io/badge/Enterprise-Ultimate-gold.svg)
 
-**Intelligent Jira issue orchestration with multi-agent workflows**
+**Arbiter (Enterprise Ultimate) - Complete Enterprise Jira Orchestration Platform**
 
-Transform Jira issues into fully orchestrated development workflows with automatic triage, code review, testing, and pull request creation.
+The most comprehensive Jira orchestration solution with AI-powered Intelligence, Event Sourcing, Portfolio Management, Approval Workflows, Notification System, Team Capacity Planning, SLA Monitoring, Compliance Reporting, and 60+ specialized agents.
 
-[Features](#features) • [Installation](#installation) • [Commands](#commands) • [Agents](#agents) • [Dynamic Discovery](#dynamic-agent-discovery) • [Workflows](#workflows)
+[Features](#features) • [What's New in v4.0](#whats-new-in-v40) • [Commands](#commands) • [Agents](#agents) • [Patterns](#advanced-orchestration-patterns) • [Installation](#installation)
 
 </div>
+
+---
+
+## What's New in v4.0
+
+### 🔔 Notification System
+- **Multi-Channel Routing**: Slack, Microsoft Teams, Email, Webhooks
+- **Smart Batching**: Rate limiting and digest mode for high-volume events
+- **Interactive Buttons**: Approve/reject directly from Slack
+- **Event Subscriptions**: Subscribe to specific event types per user
+
+### ✅ Approval Workflows
+- **Multi-Level Approvals**: Sequential, parallel, and conditional paths
+- **Policy Enforcement**: Code quality gates, security scans, review requirements
+- **Governance Auditing**: Complete audit trails with SOC2 compliance
+- **Escalation Rules**: Time-based escalation with delegation support
+
+### 📊 Portfolio Management
+- **Multi-Project Dashboards**: Aggregate metrics across all projects
+- **Roadmap Planning**: Visual roadmaps with dependency awareness
+- **Dependency Mapping**: Cross-project dependency graphs and impact analysis
+- **Release Coordination**: Multi-project release planning and notes generation
+
+### 👥 Team Capacity Planning
+- **Workload Balancing**: Automatic work distribution recommendations
+- **Skill Mapping**: Team skills inventory with gap analysis
+- **Burnout Detection**: Risk indicators and early warning alerts
+- **Focus Time Optimization**: Meeting load analysis and recommendations
+
+### ⏱️ SLA Monitoring
+- **Real-Time Tracking**: Response and resolution SLA monitoring
+- **Breach Prediction**: ML-based prediction of SLA breaches
+- **Customer Tiers**: Enterprise/Premium/Standard SLA rules
+- **Escalation Triggers**: Automatic escalation at 75%, 90%, 100%
+
+### 📋 Compliance Reporting
+- **SOC2 Type II**: Control effectiveness tracking and evidence collection
+- **GDPR Compliance**: Data protection controls and reporting
+- **ISO27001**: Security control mapping and assessment
+- **Audit Packages**: One-click audit report generation
+
+### 📦 Batch Operations
+- **Bulk Updates**: Mass field updates with dry-run and rollback
+- **Import/Export**: CSV, Excel, JSON with field mapping
+- **PDF Reports**: Professional reports with charts and metrics
+- **Scheduled Exports**: Cron-based recurring export jobs
+
+---
+
+## What's New in v3.0
+
+### 🎯 Event Sourcing System
+- **Complete Audit Trails**: Append-only event log of all orchestration activities
+- **Time-Travel Debugging**: View system state at any point in time
+- **State Reconstruction**: Rebuild orchestration state from events
+- **Event Replay**: Replay events for recovery or testing
+
+### 🧠 Intelligence Module
+- **Predictive Analytics**: Complexity, risk, and estimate predictions
+- **Smart Prioritization**: WSJF-based backlog prioritization
+- **Velocity Forecasting**: Data-driven sprint velocity predictions
+- **Pattern Recognition**: Detect recurring issues and bottlenecks
+
+### ⚡ Advanced Orchestration Patterns
+- **Blackboard Pattern**: Collaborative multi-agent problem-solving
+- **Circuit Breaker**: Fault-tolerant orchestration with graceful degradation
+- **Dynamic Replanning**: Continuous plan evaluation and adaptation
+- **Hierarchical Decomposition**: Recursive task breakdown with parallelization
+- **Saga Pattern**: Distributed transaction management with compensations
+
+### 📊 Real-time Metrics Dashboard
+- **SLA Tracking**: Response and resolution time compliance
+- **Agent Performance**: Success rates, execution times, cost analysis
+- **Quality Metrics**: Test coverage, bug escape rate, rework percentage
+- **Throughput Analysis**: Issues completed, story points delivered
+
+### 📋 Sprint Planning Automation
+- **Capacity Planning**: Team availability and buffer calculations
+- **Velocity Tracking**: Historical velocity with trend analysis
+- **Sprint Commitment**: Data-driven commitment recommendations
+- **Retrospective Analytics**: Completed vs committed, carryover analysis
+
+### 🎯 Quality Intelligence
+- **Tech Debt Tracking**: Debt scoring with interest calculation
+- **Code Health Scoring**: 0-100 health score with A-F grading
+- **Hotspot Detection**: High-churn and bug-prone file identification
+- **Predictive Quality**: Bug prediction and risk assessment
 
 ---
 
@@ -25,11 +115,23 @@ The **Jira Orchestrator** is a Claude Code plugin that provides intelligent, aut
 - **Automatic Jira Detection**: Detects Jira issue keys (e.g., PROJ-123) in conversations and suggests orchestration
 - **Intelligent Triage**: Analyzes issue complexity, priority, and expertise requirements
 - **Dynamic Agent Discovery**: Intelligently selects domain specialists from 142+ code agents based on Jira context and file patterns
-- **Multi-Agent Coordination**: Orchestrates 12 specialized workflow agents plus dynamically selected code experts in parallel where possible
+- **Multi-Agent Coordination**: Orchestrates 60+ specialized workflow agents plus dynamically selected code experts in parallel where possible
+- **Notification System**: Real-time alerts via Slack, Teams, Email, and Webhooks (v4.0)
+- **Approval Workflows**: Multi-level approvals with policy enforcement and governance (v4.0)
+- **Portfolio Management**: Multi-project dashboards, roadmaps, and dependency mapping (v4.0)
+- **Team Capacity**: Workload balancing, skill mapping, and burnout detection (v4.0)
+- **SLA Monitoring**: Real-time SLA tracking with breach prediction and escalation (v4.0)
+- **Compliance Reporting**: SOC2, GDPR, ISO27001 evidence collection and reporting (v4.0)
+- **Batch Operations**: Bulk updates, imports, exports with rollback support (v4.0)
 - **Confluence Integration**: Bidirectional sync between Jira issues and Confluence documentation
 - **Quality Gates**: Enforces code review before PR creation
 - **Full Automation**: From issue fetch to PR creation, documentation, and Jira/Confluence updates
 - **6-Phase Protocol**: EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT
+- **Event Sourcing**: Complete audit trails with time-travel debugging (v3.0)
+- **Predictive Intelligence**: AI-powered analytics and pattern recognition (v3.0)
+- **Advanced Patterns**: Blackboard, Circuit Breaker, Saga, Dynamic Replanning (v3.0)
+- **Sprint Automation**: Capacity planning and velocity tracking (v3.0)
+- **Quality Intelligence**: Tech debt and code health analysis (v3.0)
 
 ---
 
@@ -218,7 +320,35 @@ This provides access to Jira tools:
 
 ## Commands
 
-The plugin provides 8 slash commands for Jira orchestration:
+The plugin provides **32 slash commands** for comprehensive Jira orchestration:
+
+### New in v4.0
+
+| Command | Description |
+|---------|-------------|
+| `/jira:notify` | Configure notifications (Slack, Teams, Email, Webhooks) |
+| `/jira:approve` | Request/grant approvals with multi-level workflow support |
+| `/jira:portfolio` | Multi-project portfolio dashboard and analytics |
+| `/jira:release` | Release planning, notes generation, and coordination |
+| `/jira:batch` | Bulk operations (update, transition, assign, link) |
+| `/jira:export` | Export to PDF, Excel, CSV, JSON with scheduling |
+| `/jira:team` | Team capacity, skills, and workload management |
+| `/jira:sla` | SLA monitoring, breach analysis, and reporting |
+| `/jira:compliance` | SOC2, GDPR, ISO27001 compliance reporting |
+
+### New in v3.0
+
+| Command | Description |
+|---------|-------------|
+| `/jira:prepare` | Prepare a task for work by creating subtasks with detailed descriptions |
+| `/jira:metrics` | Generate real-time metrics dashboard with SLA tracking and agent performance |
+| `/jira:sprint-plan` | Automated sprint planning with capacity calculation and velocity tracking |
+| `/jira:quality` | Quality intelligence report with tech debt and health scoring |
+| `/jira:events` | Query event sourcing system for audit trails and time-travel debugging |
+| `/jira:intelligence` | Access AI-powered predictive analytics and smart prioritization |
+| `/jira:orchestrate-advanced` | Execute advanced orchestration patterns (Blackboard, Circuit Breaker, etc.) |
+
+### Core Commands (v1.0-v2.0)
 
 ### `/jira:work`
 
@@ -253,6 +383,52 @@ The plugin provides 8 slash commands for Jira orchestration:
 # Work on a technical task
 /jira:work TASK-789
 ```
+
+---
+
+### `/jira:prepare`
+
+**Prepare a task for work by analyzing it, creating subtasks, and adding detailed descriptions.**
+
+```bash
+/jira:prepare PROJ-123
+```
+
+**What it does:**
+1. Analyzes the issue to understand scope and requirements
+2. Decomposes the task into logical subtasks
+3. Creates subtasks in Jira with proper hierarchy
+4. Enriches each subtask with detailed descriptions
+5. Adds acceptance criteria to each subtask
+6. Provides time/point estimates
+7. Documents dependencies between subtasks
+
+**Parameters:**
+- `issue_key` (required): The Jira issue to prepare
+- `depth`: Level of detail - `basic`, `standard` (default), or `comprehensive`
+- `include_estimates`: Include time/point estimates (default: true)
+
+**Example:**
+```bash
+# Standard preparation
+/jira:prepare PROJ-123
+
+# Comprehensive preparation with full details
+/jira:prepare PROJ-123 depth=comprehensive
+
+# Basic preparation for simple tasks
+/jira:prepare PROJ-123 depth=basic
+
+# Preparation without estimates
+/jira:prepare PROJ-123 include_estimates=false
+```
+
+**Depth Levels:**
+| Depth | Subtask Count | Detail Level |
+|-------|---------------|--------------|
+| basic | 2-4 | High-level only |
+| standard | 4-8 | Moderate detail with acceptance criteria |
+| comprehensive | 8-15 | Full technical details and testing notes |
 
 ---
 

@@ -1,0 +1,17 @@
+{
+  "current_coverage": {
+    "overall": 0,
+    "unit_tests": 0,
+    "integration_tests": 0,
+    "e2e_tests": 0
+  },
+  "trends": [],
+  "by_component": {},
+  "coverage_goals": {
+    "overall": 90,
+    "unit_tests": 95,
+    "integration_tests": 85,
+    "e2e_tests": 75
+  },
+  "last_updated": "2025-12-22T00:00:00Z"
+}

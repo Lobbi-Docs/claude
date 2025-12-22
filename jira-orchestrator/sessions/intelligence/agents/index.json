@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-12-22T00:00:00Z",
+  "description": "Index of agent performance records",
+  "total_agents": 0,
+  "agents": {},
+  "top_performers": {
+    "by_success_rate": [],
+    "by_quality_score": [],
+    "by_estimation_accuracy": []
+  },
+  "by_domain": {
+    "frontend": [],
+    "backend": [],
+    "database": [],
+    "auth": [],
+    "devops": [],
+    "testing": [],
+    "documentation": []
+  }
+}

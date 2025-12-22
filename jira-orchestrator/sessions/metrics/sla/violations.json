@@ -1,0 +1,16 @@
+{
+  "violations": [],
+  "last_updated": "2025-12-22T00:00:00Z",
+  "summary": {
+    "total_violations": 0,
+    "by_severity": {
+      "critical": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "by_type": {
+      "response_time": 0,
+      "resolution_time": 0
+    }
+  }
+}

@@ -1,0 +1,283 @@
+---
+# Intelligence Analyzer Configuration
+# Controls prediction algorithms, learning parameters, and data retention
+
+version: "1.0.0"
+module: "intelligence-analyzer"
+last_updated: "2025-12-22"
+
+# ============================================================================
+# PREDICTION SETTINGS
+# ============================================================================
+
+complexity_prediction:
+  # Keyword weights for complexity scoring
+  keyword_weights:
+    high_complexity:
+      - "migration"
+      - "refactor"
+      - "architecture"
+      - "security"
+      - "performance"
+      - "breaking change"
+    medium_complexity:
+      - "integration"
+      - "api"
+      - "database"
+      - "auth"
+      - "testing"
+      - "deployment"
+    low_complexity:
+      - "fix"
+      - "update"
+      - "enhance"
+      - "style"
+      - "documentation"
+      - "typo"
+
+  # Domain-specific complexity multipliers
+  domain_complexity_weights:
+    auth: 1.5
+    database: 1.3
+    devops: 1.4
+    ai: 1.6
+    infrastructure: 1.4
+    frontend: 1.0
+    backend: 1.1
+    testing: 0.9
+    documentation: 0.7
+
+  # Confidence thresholds
+  high_confidence_threshold: 0.85
+  medium_confidence_threshold: 0.70
+  low_confidence_threshold: 0.50
+
+  # Require at least N similar historical issues for high confidence
+  min_similar_issues_for_confidence: 3
+
+risk_prediction:
+  # Risk factor weights (must sum to 100)
+  weights:
+    technical_risk: 35
+    dependency_risk: 25
+    expertise_risk: 20
+    historical_risk: 10
+    timeline_risk: 10
+
+  # Risk level thresholds
+  thresholds:
+    critical: 70
+    high: 50
+    medium: 30
+    low: 0
+
+  # Automatic mitigation triggers
+  auto_mitigations:
+    critical_risk:
+      - "Assign top expert (confidence >= 90)"
+      - "Create spike story for high-uncertainty areas"
+      - "Add extra review cycles"
+      - "Schedule early in sprint"
+    high_risk:
+      - "Assign strong expert (confidence >= 75)"
+      - "Schedule in first half of sprint"
+      - "Add backup expert"
+
+prioritization:
+  # Priority score weights (must sum to 100)
+  weights:
+    business_value: 35
+    urgency: 25
+    technical_risk: 20  # Inverse: lower risk = higher priority
+    dependency_impact: 15
+    effort_efficiency: 5
+
+  # Priority tier thresholds
+  tiers:
+    P0:
+      threshold: 80
+      label: "Immediate - This Sprint, Days 1-3"
+    P1:
+      threshold: 60
+      label: "This Sprint, Days 4-10"
+    P2:
+      threshold: 40
+      label: "Next Sprint"
+    P3:
+      threshold: 0
+      label: "Backlog"
+
+# ============================================================================
+# LEARNING SETTINGS
+# ============================================================================
+
+learning:
+  # How many historical issues to consider for predictions
+  historical_lookback_days: 90
+
+  # Similarity threshold for "similar issues" (0-1)
+  similarity_threshold: 0.75
+
+  # Minimum data points needed before using historical data
+  min_history_for_learning: 5
+
+  # Weight given to recent data vs older data (exponential decay)
+  recency_weight_factor: 0.1  # Higher = more weight to recent
+
+  # Agent performance tracking
+  agent_tracking:
+    min_tasks_for_rating: 3
+    performance_decay_factor: 0.05  # How much old performance fades
+    success_rate_threshold: 0.80  # Below this = flag for review
+
+  # Pattern detection
+  pattern_detection:
+    min_occurrences: 3  # Minimum times pattern must occur
+    pattern_lookback_days: 180
+    auto_create_mitigations: true
+
+# ============================================================================
+# VELOCITY & METRICS
+# ============================================================================
+
+velocity:
+  # Forecast settings
+  forecast_sprints: 3
+  min_sprints_for_forecast: 3
+  confidence_level: 0.68  # 1 standard deviation
+
+  # Velocity trend detection
+  trend_window: 6  # Number of sprints to analyze for trend
+  significant_change_threshold: 0.15  # 15% change is significant
+
+  # Cycle time percentiles to track
+  cycle_time_percentiles:
+    - 50  # Median
+    - 75
+    - 90
+    - 95
+
+  # Alert thresholds
+  alerts:
+    velocity_drop_threshold: 0.20  # Alert if velocity drops 20%
+    cycle_time_increase_threshold: 0.30  # Alert if cycle time increases 30%
+    throughput_drop_threshold: 0.25
+
+# ============================================================================
+# DATA RETENTION
+# ============================================================================
+
+data_retention:
+  # How long to keep detailed task history
+  task_history_retention_days: 730  # 2 years
+
+  # How long to keep agent performance records
+  agent_performance_retention_days: 730
+
+  # How long to keep velocity records
+  velocity_retention_days: 1095  # 3 years
+
+  # How long to keep pattern records
+  pattern_retention_days: 730
+
+  # Auto-archive settings
+  auto_archive: true
+  archive_interval_days: 90
+  archive_location: "/home/user/claude/jira-orchestrator/sessions/intelligence/archives/"
+
+# ============================================================================
+# INTEGRATION SETTINGS
+# ============================================================================
+
+integration:
+  # Expert-agent-matcher integration
+  expert_matcher:
+    enabled: true
+    provide_historical_scores: true
+    boost_top_performers: true
+    boost_amount: 15  # Points added to top performers
+
+  # Agent-router integration
+  agent_router:
+    enabled: true
+    provide_domain_risk_scores: true
+    adjust_routing_thresholds: true
+
+  # Sprint planning integration
+  sprint_planning:
+    auto_generate_briefings: true
+    briefing_lead_time_days: 2  # Generate 2 days before sprint
+    include_recommendations: true
+
+# ============================================================================
+# REPORTING
+# ============================================================================
+
+reporting:
+  # Report generation frequency
+  weekly_reports: true
+  monthly_reports: true
+  sprint_retrospective_reports: true
+
+  # Report content
+  include_charts: false  # Set to true if visualization is available
+  include_recommendations: true
+  include_patterns: true
+  include_forecasts: true
+
+  # Report storage
+  reports_directory: "/home/user/claude/jira-orchestrator/sessions/intelligence/reports/"
+
+# ============================================================================
+# FEATURE FLAGS
+# ============================================================================
+
+features:
+  complexity_prediction: true
+  risk_prediction: true
+  smart_prioritization: true
+  velocity_forecasting: true
+  pattern_recognition: true
+  agent_performance_tracking: true
+  historical_learning: true
+
+  # Experimental features
+  experimental:
+    nlp_similarity_matching: false  # Advanced text similarity
+    anomaly_detection: false  # Detect unusual patterns
+    predictive_bottlenecks: false  # Predict future bottlenecks
+    ml_models: false  # Use machine learning models
+
+# ============================================================================
+# QUALITY THRESHOLDS
+# ============================================================================
+
+quality_thresholds:
+  # Minimum accuracy for predictions to be considered reliable
+  min_prediction_accuracy: 0.75
+
+  # Minimum correlation for priority scores
+  min_priority_correlation: 0.70
+
+  # Minimum velocity forecast accuracy
+  min_velocity_forecast_accuracy: 0.80
+
+  # If accuracy falls below these, trigger recalibration
+  recalibration_threshold: 0.65
+
+# ============================================================================
+# DEFAULTS
+# ============================================================================
+
+defaults:
+  # Default complexity when no prediction available
+  default_complexity: 5
+
+  # Default risk level
+  default_risk_level: "medium"
+
+  # Default priority score
+  default_priority_score: 50
+
+  # Default agent confidence when no history
+  default_agent_confidence: 0.70

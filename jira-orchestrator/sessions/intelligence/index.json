@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-12-22T00:00:00Z",
+  "description": "Root index for intelligence module - tracks all data locations",
+  "modules": {
+    "history": {
+      "description": "Task completion history",
+      "index_file": "history/index.json",
+      "total_records": 0,
+      "last_updated": null
+    },
+    "agents": {
+      "description": "Agent performance tracking",
+      "index_file": "agents/index.json",
+      "total_records": 0,
+      "last_updated": null
+    },
+    "velocity": {
+      "description": "Team velocity and metrics",
+      "index_file": "velocity/index.json",
+      "total_records": 0,
+      "last_updated": null
+    },
+    "patterns": {
+      "description": "Detected patterns and bottlenecks",
+      "index_file": "patterns/index.json",
+      "total_records": 0,
+      "last_updated": null
+    },
+    "sprint_briefings": {
+      "description": "Pre-sprint intelligence reports",
+      "total_records": 0,
+      "last_updated": null
+    },
+    "reports": {
+      "description": "Generated reports and insights",
+      "total_records": 0,
+      "last_updated": null
+    }
+  },
+  "statistics": {
+    "total_issues_analyzed": 0,
+    "total_agents_tracked": 0,
+    "total_sprints_recorded": 0,
+    "total_patterns_detected": 0,
+    "prediction_accuracy": {
+      "complexity": null,
+      "risk": null,
+      "priority": null,
+      "velocity": null
+    }
+  },
+  "health": {
+    "status": "initialized",
+    "last_health_check": "2025-12-22T00:00:00Z",
+    "issues": []
+  }
+}
