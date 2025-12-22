@@ -1,0 +1,97 @@
+{
+  "version": "2025.1",
+  "lastUpdated": "2025-12-22T00:00:00Z",
+  "source": "Industry Analysis 2025 - Software Quality Metrics",
+  "benchmarks": {
+    "healthScore": {
+      "excellent": 90,
+      "good": 80,
+      "fair": 70,
+      "poor": 60
+    },
+    "testCoverage": {
+      "excellent": 90,
+      "good": 80,
+      "fair": 70,
+      "poor": 60
+    },
+    "bugDensity": {
+      "excellent": 2,
+      "good": 5,
+      "fair": 10,
+      "poor": 15
+    },
+    "technicalDebtRatio": {
+      "excellent": 3,
+      "good": 5,
+      "fair": 10,
+      "poor": 15
+    },
+    "cyclomaticComplexity": {
+      "excellent": 5,
+      "good": 10,
+      "fair": 15,
+      "poor": 20
+    },
+    "securityPosture": {
+      "excellent": 90,
+      "good": 80,
+      "fair": 70,
+      "poor": 60
+    },
+    "codeChurnRate": {
+      "excellent": 10,
+      "good": 20,
+      "fair": 30,
+      "poor": 40
+    },
+    "meanTimeToResolve": {
+      "excellent": 2,
+      "good": 5,
+      "fair": 10,
+      "poor": 20
+    }
+  },
+  "industryAverages": {
+    "healthScore": 75,
+    "testCoverage": 78,
+    "bugDensity": 8,
+    "technicalDebtRatio": 7,
+    "cyclomaticComplexity": 12,
+    "securityPosture": 72,
+    "codeChurnRate": 22,
+    "meanTimeToResolve": 7
+  },
+  "byIndustry": {
+    "fintech": {
+      "healthScore": 85,
+      "testCoverage": 88,
+      "bugDensity": 4,
+      "securityPosture": 90
+    },
+    "healthcare": {
+      "healthScore": 83,
+      "testCoverage": 85,
+      "bugDensity": 5,
+      "securityPosture": 88
+    },
+    "ecommerce": {
+      "healthScore": 78,
+      "testCoverage": 75,
+      "bugDensity": 7,
+      "securityPosture": 75
+    },
+    "saas": {
+      "healthScore": 80,
+      "testCoverage": 82,
+      "bugDensity": 6,
+      "securityPosture": 78
+    },
+    "general": {
+      "healthScore": 75,
+      "testCoverage": 78,
+      "bugDensity": 8,
+      "securityPosture": 72
+    }
+  }
+}

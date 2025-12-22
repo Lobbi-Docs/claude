@@ -1,0 +1,145 @@
+{
+  "sla_definitions": {
+    "bug": {
+      "highest": {
+        "response_time_minutes": 15,
+        "resolution_time_hours": 4,
+        "business_hours_only": false,
+        "description": "Critical production bugs require immediate response"
+      },
+      "high": {
+        "response_time_minutes": 60,
+        "resolution_time_hours": 24,
+        "business_hours_only": false,
+        "description": "High priority bugs affecting multiple users"
+      },
+      "medium": {
+        "response_time_hours": 4,
+        "resolution_time_hours": 72,
+        "business_hours_only": true,
+        "description": "Standard bugs with moderate impact"
+      },
+      "low": {
+        "response_time_hours": 24,
+        "resolution_time_hours": 168,
+        "business_hours_only": true,
+        "description": "Low priority bugs with minimal impact"
+      }
+    },
+    "story": {
+      "highest": {
+        "response_time_hours": 2,
+        "resolution_time_hours": 16,
+        "business_hours_only": true,
+        "description": "Urgent feature requests"
+      },
+      "high": {
+        "response_time_hours": 8,
+        "resolution_time_hours": 40,
+        "business_hours_only": true,
+        "description": "High priority features"
+      },
+      "medium": {
+        "response_time_hours": 24,
+        "resolution_time_hours": 80,
+        "business_hours_only": true,
+        "description": "Standard feature development"
+      },
+      "low": {
+        "response_time_hours": 72,
+        "resolution_time_hours": 160,
+        "business_hours_only": true,
+        "description": "Nice-to-have features"
+      }
+    },
+    "task": {
+      "highest": {
+        "response_time_hours": 1,
+        "resolution_time_hours": 8,
+        "business_hours_only": true,
+        "description": "Urgent tasks"
+      },
+      "high": {
+        "response_time_hours": 4,
+        "resolution_time_hours": 24,
+        "business_hours_only": true,
+        "description": "High priority tasks"
+      },
+      "medium": {
+        "response_time_hours": 24,
+        "resolution_time_hours": 80,
+        "business_hours_only": true,
+        "description": "Standard tasks"
+      },
+      "low": {
+        "response_time_hours": 72,
+        "resolution_time_hours": 160,
+        "business_hours_only": true,
+        "description": "Low priority tasks"
+      }
+    },
+    "epic": {
+      "highest": {
+        "response_time_hours": 4,
+        "resolution_time_hours": 80,
+        "business_hours_only": true,
+        "description": "Critical epics"
+      },
+      "high": {
+        "response_time_hours": 24,
+        "resolution_time_hours": 160,
+        "business_hours_only": true,
+        "description": "High priority epics"
+      },
+      "medium": {
+        "response_time_hours": 72,
+        "resolution_time_hours": 320,
+        "business_hours_only": true,
+        "description": "Standard epics"
+      }
+    },
+    "spike": {
+      "high": {
+        "response_time_hours": 8,
+        "resolution_time_hours": 40,
+        "business_hours_only": true,
+        "description": "Urgent research spikes"
+      },
+      "medium": {
+        "response_time_hours": 24,
+        "resolution_time_hours": 80,
+        "business_hours_only": true,
+        "description": "Standard research spikes"
+      }
+    }
+  },
+  "business_hours": {
+    "timezone": "UTC",
+    "weekdays": {
+      "monday": { "start": "09:00", "end": "17:00" },
+      "tuesday": { "start": "09:00", "end": "17:00" },
+      "wednesday": { "start": "09:00", "end": "17:00" },
+      "thursday": { "start": "09:00", "end": "17:00" },
+      "friday": { "start": "09:00", "end": "17:00" }
+    },
+    "holidays": [
+      "2025-01-01",
+      "2025-12-25",
+      "2025-12-26"
+    ]
+  },
+  "escalation_policies": {
+    "first_breach": {
+      "action": "notify_team_lead",
+      "channels": ["slack", "email"]
+    },
+    "second_breach": {
+      "action": "escalate_to_manager",
+      "channels": ["slack", "email", "sms"]
+    },
+    "critical_breach": {
+      "action": "page_on_call",
+      "channels": ["pagerduty"]
+    }
+  }
+}

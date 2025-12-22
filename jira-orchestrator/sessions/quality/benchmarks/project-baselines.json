@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "projectName": "jira-orchestrator",
+  "lastUpdated": "2025-12-22T00:00:00Z",
+  "description": "Project baseline metrics - established at project start or major release",
+  "baseline": {
+    "timestamp": "2025-12-22T00:00:00Z",
+    "commit": "initial-baseline",
+    "metrics": {
+      "healthScore": 75,
+      "testCoverage": 80,
+      "bugDensity": 5,
+      "technicalDebtRatio": 6,
+      "cyclomaticComplexity": 12,
+      "securityPosture": 78,
+      "codeChurnRate": 18,
+      "linesOfCode": 15000,
+      "numberOfFiles": 250,
+      "numberOfModules": 35
+    }
+  },
+  "targets": {
+    "shortTerm": {
+      "timeframe": "Next Quarter (Q1 2026)",
+      "healthScore": 80,
+      "testCoverage": 85,
+      "bugDensity": 4,
+      "technicalDebtRatio": 5,
+      "securityPosture": 82
+    },
+    "mediumTerm": {
+      "timeframe": "6 Months",
+      "healthScore": 85,
+      "testCoverage": 90,
+      "bugDensity": 3,
+      "technicalDebtRatio": 4,
+      "securityPosture": 88
+    },
+    "longTerm": {
+      "timeframe": "1 Year",
+      "healthScore": 90,
+      "testCoverage": 92,
+      "bugDensity": 2,
+      "technicalDebtRatio": 3,
+      "securityPosture": 92
+    }
+  },
+  "qualityGates": {
+    "critical": {
+      "testCoverage": 70,
+      "criticalVulnerabilities": 0,
+      "highVulnerabilities": 0,
+      "cyclomaticComplexity": 20,
+      "securityScore": 70
+    },
+    "standard": {
+      "testCoverage": 80,
+      "criticalVulnerabilities": 0,
+      "highVulnerabilities": 2,
+      "cyclomaticComplexity": 15,
+      "securityScore": 75
+    },
+    "strict": {
+      "testCoverage": 90,
+      "criticalVulnerabilities": 0,
+      "highVulnerabilities": 0,
+      "cyclomaticComplexity": 10,
+      "securityScore": 85
+    }
+  },
+  "history": [
+    {
+      "date": "2025-12-22",
+      "version": "1.0.0",
+      "milestone": "Initial Release",
+      "metrics": {
+        "healthScore": 75,
+        "testCoverage": 80,
+        "bugDensity": 5,
+        "technicalDebtRatio": 6
+      }
+    }
+  ],
+  "notes": [
+    "Baseline established on 2025-12-22",
+    "Initial focus on security and test coverage",
+    "Technical debt primarily in legacy authentication module",
+    "Target: Reduce debt by 20% per quarter"
+  ]
+}

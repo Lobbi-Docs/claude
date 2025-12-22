@@ -1,0 +1,245 @@
+---
+name: jira:quality
+description: Generate quality intelligence report with tech debt analysis, health scoring, and predictive insights
+arguments:
+  - name: scope
+    description: Scope of analysis (project, sprint, issue, file)
+    required: false
+    default: project
+  - name: target
+    description: Target identifier (project key, sprint name, issue key, or file path)
+    required: false
+version: 1.0.0
+---
+
+# Quality Intelligence Report
+
+You are generating a **comprehensive quality intelligence report** with predictive analytics.
+
+## Parameters
+
+- **Scope:** ${scope:-project}
+- **Target:** ${target:-current project}
+
+---
+
+## Quality Analysis Workflow
+
+### Step 1: Invoke Quality Intelligence Agent
+
+```
+Invoke the `quality-intelligence` agent with:
+  - scope: ${scope:-project}
+  - target: ${target}
+  - include_debt: true
+  - include_health: true
+  - include_hotspots: true
+  - include_predictions: true
+  - include_security: true
+```
+
+### Step 2: Technical Debt Analysis
+
+The agent will:
+
+1. **Scan for Debt Items**
+   - TODOs/FIXMEs in code
+   - Code smells (complexity, duplication)
+   - Architecture violations
+   - Outdated dependencies
+
+2. **Calculate Debt Metrics**
+   - Total debt score
+   - Interest rate (cost of delay)
+   - Repayment priority
+
+3. **Track Debt Trends**
+   - Debt over time
+   - New debt vs repaid
+   - Debt velocity
+
+### Step 3: Code Health Scoring
+
+Calculate overall health score (0-100):
+
+| Category | Weight | Components |
+|----------|--------|------------|
+| Security | 30% | CVEs, auth, encryption |
+| Maintainability | 35% | Complexity, coupling, coverage |
+| Performance | 20% | Load times, memory, queries |
+| Reliability | 15% | Error rates, uptime, recovery |
+
+Grade assignment:
+- A: 90-100 (Excellent)
+- B: 80-89 (Good)
+- C: 70-79 (Fair)
+- D: 60-69 (Poor)
+- F: <60 (Critical)
+
+### Step 4: Hotspot Detection
+
+Identify high-risk areas:
+
+1. **High-Churn Files**
+   - Files changed frequently
+   - Modification velocity
+
+2. **Bug-Prone Files**
+   - Files with frequent bug fixes
+   - Bug density per file
+
+3. **Risk Matrix**
+   ```
+   High Complexity + High Churn = CRITICAL (refactor immediately)
+   High Complexity + Low Churn = MONITOR (refactor when touched)
+   Low Complexity + High Churn = STABILIZE (add tests)
+   Low Complexity + Low Churn = STABLE (maintain)
+   ```
+
+### Step 5: Security Intelligence
+
+1. **Vulnerability Tracking**
+   - Open CVEs by severity
+   - Trend over time
+
+2. **Security Posture Score**
+   - Authentication strength
+   - Input validation
+   - Encryption usage
+   - Logging/monitoring
+
+3. **Dependency Health**
+   - Outdated dependencies
+   - Known vulnerabilities
+   - Update recommendations
+
+### Step 6: Predictive Analytics
+
+1. **Bug Prediction**
+   - Likelihood of bugs in new code
+   - Risk factors identified
+
+2. **Quality Gate Recommendations**
+   - Dynamic thresholds based on risk
+   - Coverage recommendations
+
+3. **Change Risk Assessment**
+   - Risk score for pending changes
+   - Mitigation suggestions
+
+---
+
+## Output Format
+
+```markdown
+## 🎯 Quality Intelligence Report
+
+**Scope:** ${scope}
+**Target:** ${target}
+**Generated:** {timestamp}
+
+---
+
+### 📊 Overall Health Score: 82/100 (B - Good)
+
+| Category | Score | Trend |
+|----------|-------|-------|
+| Security | 85 | ↑ |
+| Maintainability | 78 | → |
+| Performance | 88 | ↑ |
+| Reliability | 80 | → |
+
+---
+
+### 🔧 Technical Debt Summary
+
+| Metric | Value |
+|--------|-------|
+| Total Debt Score | 156 |
+| Interest Rate | 8%/week |
+| Debt Items | 23 |
+| Critical Items | 3 |
+
+**Top Priority Debt Items:**
+1. [HIGH] Refactor AuthService (complexity: 45)
+2. [HIGH] Update lodash (CVE-2021-23337)
+3. [MEDIUM] Extract shared utilities (duplication)
+
+---
+
+### 🔥 Hotspots
+
+**Critical (Refactor Immediately):**
+- `src/services/payment.ts` (churn: 45, complexity: 32)
+- `src/api/orders.ts` (churn: 38, complexity: 28)
+
+**Monitor:**
+- `src/utils/validation.ts` (complexity: 25)
+
+---
+
+### 🔒 Security Posture: 85/100
+
+| Severity | Open | Trend |
+|----------|------|-------|
+| Critical | 0 | → |
+| High | 2 | ↓ |
+| Medium | 5 | → |
+| Low | 8 | → |
+
+**Action Required:**
+- Update axios to 1.6.0 (CVE-2023-45857)
+- Review auth token expiration
+
+---
+
+### 🔮 Predictions
+
+**Bug Prediction for Recent Changes:**
+- `src/features/checkout.tsx`: 65% bug likelihood (HIGH)
+- `src/services/inventory.ts`: 25% bug likelihood (LOW)
+
+**Recommended Actions:**
+1. Add integration tests for checkout flow
+2. Increase coverage for payment service to 90%
+
+---
+
+### 📈 Quality Trends (Last 30 Days)
+
+- Health Score: 78 → 82 (+5%)
+- Test Coverage: 72% → 78% (+6%)
+- Bug Density: 3.2 → 2.1 (-34%)
+- Tech Debt: 178 → 156 (-12%)
+
+---
+
+### ✅ Recommendations
+
+1. **Immediate:** Update critical dependencies
+2. **This Sprint:** Refactor PaymentService
+3. **Next Sprint:** Add integration tests for checkout
+4. **Backlog:** Reduce complexity in OrdersAPI
+
+---
+
+*Generated by Quality Intelligence Agent v1.0*
+```
+
+---
+
+## Example Usage
+
+```bash
+# Full project quality report
+/jira:quality
+
+# Sprint-specific report
+/jira:quality scope=sprint target="Sprint 42"
+
+# Issue-specific analysis
+/jira:quality scope=issue target="PROJ-123"
+
+# File-specific deep dive
+/jira:quality scope=file target="src/services/payment.ts"
+```

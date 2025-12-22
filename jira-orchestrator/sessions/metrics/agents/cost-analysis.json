@@ -1,0 +1,18 @@
+{
+  "daily_costs": {
+    "total": 0,
+    "by_model": {
+      "opus": 0,
+      "sonnet": 0,
+      "haiku": 0
+    },
+    "by_agent": {}
+  },
+  "monthly_projection": 0,
+  "optimization_opportunities": [],
+  "cost_per_issue": {
+    "by_type": {},
+    "by_complexity": {}
+  },
+  "last_updated": "2025-12-22T00:00:00Z"
+}

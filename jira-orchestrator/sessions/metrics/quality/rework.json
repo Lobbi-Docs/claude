@@ -1,0 +1,12 @@
+{
+  "current_sprint": {
+    "total_issues_completed": 0,
+    "issues_requiring_rework": 0,
+    "rework_percentage": 0,
+    "total_rework_hours": 0
+  },
+  "rework_reasons": {},
+  "trends": [],
+  "target_rework_percentage": 10,
+  "last_updated": "2025-12-22T00:00:00Z"
+}

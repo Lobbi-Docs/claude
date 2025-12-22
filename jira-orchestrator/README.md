@@ -2,17 +2,60 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-purple.svg)
+![Agents](https://img.shields.io/badge/agents-41-orange.svg)
+![Patterns](https://img.shields.io/badge/patterns-5-red.svg)
 
-**Intelligent Jira issue orchestration with multi-agent workflows**
+**Arbiter (Enterprise) - Next-Generation Jira Orchestration with AI-Powered Intelligence**
 
-Transform Jira issues into fully orchestrated development workflows with automatic triage, code review, testing, and pull request creation.
+Enterprise-grade Jira orchestration with Event Sourcing, Predictive Analytics, Advanced Orchestration Patterns, Real-time Metrics, Sprint Planning Automation, and Quality Intelligence.
 
-[Features](#features) • [Installation](#installation) • [Commands](#commands) • [Agents](#agents) • [Dynamic Discovery](#dynamic-agent-discovery) • [Workflows](#workflows)
+[Features](#features) • [What's New in v3.0](#whats-new-in-v30) • [Commands](#commands) • [Agents](#agents) • [Patterns](#advanced-orchestration-patterns) • [Installation](#installation)
 
 </div>
+
+---
+
+## What's New in v3.0
+
+### 🎯 Event Sourcing System
+- **Complete Audit Trails**: Append-only event log of all orchestration activities
+- **Time-Travel Debugging**: View system state at any point in time
+- **State Reconstruction**: Rebuild orchestration state from events
+- **Event Replay**: Replay events for recovery or testing
+
+### 🧠 Intelligence Module
+- **Predictive Analytics**: Complexity, risk, and estimate predictions
+- **Smart Prioritization**: WSJF-based backlog prioritization
+- **Velocity Forecasting**: Data-driven sprint velocity predictions
+- **Pattern Recognition**: Detect recurring issues and bottlenecks
+
+### ⚡ Advanced Orchestration Patterns
+- **Blackboard Pattern**: Collaborative multi-agent problem-solving
+- **Circuit Breaker**: Fault-tolerant orchestration with graceful degradation
+- **Dynamic Replanning**: Continuous plan evaluation and adaptation
+- **Hierarchical Decomposition**: Recursive task breakdown with parallelization
+- **Saga Pattern**: Distributed transaction management with compensations
+
+### 📊 Real-time Metrics Dashboard
+- **SLA Tracking**: Response and resolution time compliance
+- **Agent Performance**: Success rates, execution times, cost analysis
+- **Quality Metrics**: Test coverage, bug escape rate, rework percentage
+- **Throughput Analysis**: Issues completed, story points delivered
+
+### 📋 Sprint Planning Automation
+- **Capacity Planning**: Team availability and buffer calculations
+- **Velocity Tracking**: Historical velocity with trend analysis
+- **Sprint Commitment**: Data-driven commitment recommendations
+- **Retrospective Analytics**: Completed vs committed, carryover analysis
+
+### 🎯 Quality Intelligence
+- **Tech Debt Tracking**: Debt scoring with interest calculation
+- **Code Health Scoring**: 0-100 health score with A-F grading
+- **Hotspot Detection**: High-churn and bug-prone file identification
+- **Predictive Quality**: Bug prediction and risk assessment
 
 ---
 
@@ -25,11 +68,16 @@ The **Jira Orchestrator** is a Claude Code plugin that provides intelligent, aut
 - **Automatic Jira Detection**: Detects Jira issue keys (e.g., PROJ-123) in conversations and suggests orchestration
 - **Intelligent Triage**: Analyzes issue complexity, priority, and expertise requirements
 - **Dynamic Agent Discovery**: Intelligently selects domain specialists from 142+ code agents based on Jira context and file patterns
-- **Multi-Agent Coordination**: Orchestrates 12 specialized workflow agents plus dynamically selected code experts in parallel where possible
+- **Multi-Agent Coordination**: Orchestrates 41 specialized workflow agents plus dynamically selected code experts in parallel where possible
 - **Confluence Integration**: Bidirectional sync between Jira issues and Confluence documentation
 - **Quality Gates**: Enforces code review before PR creation
 - **Full Automation**: From issue fetch to PR creation, documentation, and Jira/Confluence updates
 - **6-Phase Protocol**: EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT
+- **Event Sourcing**: Complete audit trails with time-travel debugging (v3.0)
+- **Predictive Intelligence**: AI-powered analytics and pattern recognition (v3.0)
+- **Advanced Patterns**: Blackboard, Circuit Breaker, Saga, Dynamic Replanning (v3.0)
+- **Sprint Automation**: Capacity planning and velocity tracking (v3.0)
+- **Quality Intelligence**: Tech debt and code health analysis (v3.0)
 
 ---
 
@@ -218,7 +266,20 @@ This provides access to Jira tools:
 
 ## Commands
 
-The plugin provides 8 slash commands for Jira orchestration:
+The plugin provides **14 slash commands** for Jira orchestration:
+
+### New in v3.0
+
+| Command | Description |
+|---------|-------------|
+| `/jira:metrics` | Generate real-time metrics dashboard with SLA tracking and agent performance |
+| `/jira:sprint-plan` | Automated sprint planning with capacity calculation and velocity tracking |
+| `/jira:quality` | Quality intelligence report with tech debt and health scoring |
+| `/jira:events` | Query event sourcing system for audit trails and time-travel debugging |
+| `/jira:intelligence` | Access AI-powered predictive analytics and smart prioritization |
+| `/jira:orchestrate-advanced` | Execute advanced orchestration patterns (Blackboard, Circuit Breaker, etc.) |
+
+### Core Commands (v1.0-v2.0)
 
 ### `/jira:work`
 
