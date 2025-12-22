@@ -103,15 +103,22 @@ Before starting work, transition the issue to "In Progress".
 
 ## Step 2.5: Tag Management (NEW - MANDATORY)
 
-**IMPORTANT:** Apply tags to the parent issue and all sub-issues for tracking.
+**IMPORTANT:** Apply tags to the parent issue and all sub-issues for tracking. Tags that don't exist will be CREATED automatically.
 
 ### Actions:
 ```
-1. Invoke the `tag-manager` agent with:
+1. FIRST: Initialize project tags if not already done
+   - Check if project has standard tags initialized
+   - If not, invoke tag-manager with operation: "initialize-project-tags"
+   - This creates all standard domain/status/type tags in the project
+   - Creates a "[System] Tag Management" reference issue to hold the tags
+
+2. Invoke the `tag-manager` agent with:
    - issue_key: ${issue_key}
    - operation: "auto-detect-and-apply"
+   - auto_create: true  # CREATE tags if they don't exist
 
-2. The agent will:
+3. The agent will:
    a. Analyze the issue description, acceptance criteria, and components
    b. Auto-detect relevant domain tags:
       - domain:frontend (if React, components, UI)
@@ -143,18 +150,32 @@ Before starting work, transition the issue to "In Progress".
 tag_categories:
   domain:
     prefix: "domain:"
-    values: [frontend, backend, database, devops, testing, docs, security, performance]
+    values: [frontend, backend, database, devops, testing, docs, security, performance, api, infrastructure]
     propagate_to_children: true
+    auto_create: true  # Create if doesn't exist
 
   status:
     prefix: "status:"
-    values: [in-progress, completed, reviewed, tested, deployed, blocked, needs-review]
+    values: [in-progress, completed, reviewed, tested, deployed, blocked, needs-review, sub-issues-complete]
     propagate_to_children: false
+    auto_create: true
 
   type:
     prefix: "type:"
-    values: [feature, bug, task, refactor, enhancement, hotfix, chore]
+    values: [feature, bug, task, refactor, enhancement, hotfix, chore, documentation]
     propagate_to_children: true (if child has no type)
+    auto_create: true
+
+  custom:
+    prefix: "custom:"
+    values: []  # User-defined tags
+    auto_create: true
+
+tag_creation:
+  enabled: true
+  strategy: "reference-issue"  # Create tags by adding to reference issue
+  reference_issue_title: "[System] Tag Management - DO NOT DELETE"
+  initialize_on_first_use: true
 ```
 
 ---

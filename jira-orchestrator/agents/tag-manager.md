@@ -524,6 +524,412 @@ def validate_and_normalize_tags(tags: list[str]) -> list[str]:
     return validated
 ```
 
+---
+
+## Tag Creation & Existence Check (CRITICAL)
+
+**IMPORTANT:** Tags/labels that don't exist in Jira MUST be created before they can be used effectively.
+
+### How Jira Labels Work
+
+In Jira:
+- **Labels are created automatically** when you add them to an issue
+- Labels are **project-scoped** (available across the project once created)
+- There is no "pre-create label" API - labels are created on first use
+- Labels are case-sensitive and support limited special characters
+
+### Tag Existence Check & Creation
+
+```python
+def ensure_tags_exist(project_key: str, tags: list[str]) -> dict:
+    """
+    Ensure all required tags exist in the Jira project.
+    Creates tags if they don't exist by adding them to a reference issue.
+
+    Args:
+        project_key: Jira project key (e.g., 'PROJ')
+        tags: List of tags to ensure exist
+
+    Returns:
+        Tag creation summary
+    """
+    results = {
+        "project": project_key,
+        "existing_tags": [],
+        "created_tags": [],
+        "failed_tags": [],
+        "all_tags_available": False
+    }
+
+    # 1. Check which tags already exist in the project
+    # Search for issues with each tag to verify existence
+    for tag in tags:
+        search_result = mcp__atlassian__jira_search_issues(
+            jql=f'project = {project_key} AND labels = "{tag}"',
+            max_results=1,
+            fields=["key"]
+        )
+
+        if search_result.get("total", 0) > 0:
+            results["existing_tags"].append(tag)
+        else:
+            # Tag doesn't exist - needs to be created
+            results["created_tags"].append(tag)
+
+    # 2. Create missing tags by adding to a reference issue
+    if results["created_tags"]:
+        create_result = create_missing_tags(project_key, results["created_tags"])
+        results["creation_details"] = create_result
+
+        if create_result.get("success"):
+            results["all_tags_available"] = True
+        else:
+            results["failed_tags"] = create_result.get("failed", [])
+    else:
+        results["all_tags_available"] = True
+
+    return results
+
+
+def create_missing_tags(project_key: str, tags: list[str]) -> dict:
+    """
+    Create missing tags in Jira by adding them to issues.
+
+    Strategy:
+    1. Try to find an existing issue to temporarily add tags
+    2. If no suitable issue, create a temporary "tag-management" issue
+    3. Add tags to the issue
+    4. Optionally clean up (remove from temp issue or delete temp issue)
+
+    Args:
+        project_key: Jira project key
+        tags: List of tags to create
+
+    Returns:
+        Creation result
+    """
+    created = []
+    failed = []
+
+    # Find or create a reference issue for tag creation
+    reference_issue = find_or_create_reference_issue(project_key)
+
+    if not reference_issue:
+        return {
+            "success": False,
+            "error": "Could not find or create reference issue for tag creation",
+            "failed": tags
+        }
+
+    # Add each tag to the reference issue
+    for tag in tags:
+        try:
+            # Get current labels
+            issue = mcp__atlassian__jira_get_issue(issue_key=reference_issue)
+            current_labels = issue.get("fields", {}).get("labels", [])
+
+            # Add new tag
+            updated_labels = list(set(current_labels + [tag]))
+
+            # Update issue
+            mcp__atlassian__jira_update_issue(
+                issue_key=reference_issue,
+                update_data={
+                    "fields": {
+                        "labels": updated_labels
+                    }
+                }
+            )
+
+            created.append(tag)
+
+        except Exception as e:
+            failed.append({
+                "tag": tag,
+                "error": str(e)
+            })
+
+    return {
+        "success": len(failed) == 0,
+        "reference_issue": reference_issue,
+        "created": created,
+        "failed": failed,
+        "total_created": len(created)
+    }
+
+
+def find_or_create_reference_issue(project_key: str) -> str:
+    """
+    Find or create a reference issue for tag management.
+
+    Strategy:
+    1. Look for existing "Tag Management" issue
+    2. If not found, create one
+
+    Args:
+        project_key: Jira project key
+
+    Returns:
+        Issue key for reference issue
+    """
+    # Search for existing tag management issue
+    search_result = mcp__atlassian__jira_search_issues(
+        jql=f'project = {project_key} AND summary ~ "Tag Management" AND issuetype = Task',
+        max_results=1,
+        fields=["key"]
+    )
+
+    if search_result.get("total", 0) > 0:
+        return search_result["issues"][0]["key"]
+
+    # Create new tag management issue
+    # NOTE: This creates a hidden/internal issue for tag management
+    create_result = mcp__atlassian__jira_create_issue(
+        project_key=project_key,
+        issue_type="Task",
+        summary="[System] Tag Management - DO NOT DELETE",
+        description="""
+This is a system-managed issue used for tag/label management.
+
+**Purpose:**
+- Acts as a reference point for creating new project labels
+- Ensures all required tags exist in the project
+- Should NOT be modified manually
+
+**Created by:** Jira Orchestrator Tag Manager Agent
+**Last Updated:** {timestamp}
+
+⚠️ DO NOT DELETE - This issue is required for the orchestration system.
+        """
+    )
+
+    return create_result.get("key")
+```
+
+### Pre-Defined Tag Registry
+
+```python
+# Standard tags that should exist in every orchestrated project
+STANDARD_TAG_REGISTRY = {
+    "domain": [
+        "domain:frontend",
+        "domain:backend",
+        "domain:database",
+        "domain:devops",
+        "domain:testing",
+        "domain:docs",
+        "domain:security",
+        "domain:performance",
+        "domain:api",
+        "domain:infrastructure"
+    ],
+    "status": [
+        "status:in-progress",
+        "status:completed",
+        "status:reviewed",
+        "status:tested",
+        "status:deployed",
+        "status:blocked",
+        "status:needs-review",
+        "status:sub-issues-complete"
+    ],
+    "type": [
+        "type:feature",
+        "type:bug",
+        "type:task",
+        "type:refactor",
+        "type:enhancement",
+        "type:hotfix",
+        "type:chore",
+        "type:documentation"
+    ]
+}
+
+
+def initialize_project_tags(project_key: str) -> dict:
+    """
+    Initialize all standard tags for a project.
+    Should be run once when setting up orchestration for a new project.
+
+    Args:
+        project_key: Jira project key
+
+    Returns:
+        Initialization summary
+    """
+    all_tags = []
+    for category_tags in STANDARD_TAG_REGISTRY.values():
+        all_tags.extend(category_tags)
+
+    result = ensure_tags_exist(project_key, all_tags)
+
+    # Add comment to reference issue documenting the initialization
+    if result.get("all_tags_available"):
+        reference_issue = find_or_create_reference_issue(project_key)
+        mcp__atlassian__jira_add_comment(
+            issue_key=reference_issue,
+            comment=f"""
+## Tag Registry Initialized
+
+**Project:** {project_key}
+**Timestamp:** {datetime.now().isoformat()}
+**Total Tags:** {len(all_tags)}
+
+### Tags by Category:
+
+**Domain Tags ({len(STANDARD_TAG_REGISTRY['domain'])}):**
+{', '.join(STANDARD_TAG_REGISTRY['domain'])}
+
+**Status Tags ({len(STANDARD_TAG_REGISTRY['status'])}):**
+{', '.join(STANDARD_TAG_REGISTRY['status'])}
+
+**Type Tags ({len(STANDARD_TAG_REGISTRY['type'])}):**
+{', '.join(STANDARD_TAG_REGISTRY['type'])}
+
+---
+Initialized by Jira Orchestrator Tag Manager
+            """
+        )
+
+    return result
+```
+
+### Custom Tag Creation
+
+```python
+def create_custom_tag(project_key: str, tag_name: str, category: str = None) -> dict:
+    """
+    Create a custom tag that's not in the standard registry.
+
+    Args:
+        project_key: Jira project key
+        tag_name: Name of the custom tag
+        category: Optional category prefix (domain, status, type, or custom)
+
+    Returns:
+        Creation result
+    """
+    # Normalize tag name
+    normalized_tag = tag_name.lower().strip().replace(' ', '-')
+
+    # Add category prefix if provided
+    if category:
+        if not normalized_tag.startswith(f"{category}:"):
+            normalized_tag = f"{category}:{normalized_tag}"
+    elif ':' not in normalized_tag:
+        # Default to 'custom' category for unclassified tags
+        normalized_tag = f"custom:{normalized_tag}"
+
+    # Create the tag
+    result = ensure_tags_exist(project_key, [normalized_tag])
+
+    return {
+        "tag": normalized_tag,
+        "created": normalized_tag in result.get("created_tags", []),
+        "already_existed": normalized_tag in result.get("existing_tags", []),
+        "project": project_key
+    }
+```
+
+### Tag Existence Verification Before Apply
+
+```python
+def add_tags_with_creation(issue_key: str, tags: list[str], auto_create: bool = True) -> dict:
+    """
+    Add tags to an issue, creating any that don't exist.
+
+    Args:
+        issue_key: Jira issue key (e.g., 'PROJ-123')
+        tags: List of tags to add
+        auto_create: If True, create missing tags automatically
+
+    Returns:
+        Operation result
+    """
+    # Extract project key from issue key
+    project_key = issue_key.split('-')[0]
+
+    # Validate and normalize tags
+    validated_tags = validate_and_normalize_tags(tags)
+
+    if not validated_tags:
+        return {
+            "success": False,
+            "error": "No valid tags to add",
+            "original_tags": tags
+        }
+
+    # Check/create tags if auto_create enabled
+    if auto_create:
+        existence_result = ensure_tags_exist(project_key, validated_tags)
+
+        if not existence_result.get("all_tags_available"):
+            return {
+                "success": False,
+                "error": "Failed to create required tags",
+                "details": existence_result
+            }
+
+    # Now add tags to the issue
+    try:
+        issue = mcp__atlassian__jira_get_issue(issue_key=issue_key)
+        current_labels = set(issue.get("fields", {}).get("labels", []))
+        updated_labels = list(current_labels.union(set(validated_tags)))
+
+        mcp__atlassian__jira_update_issue(
+            issue_key=issue_key,
+            update_data={
+                "fields": {
+                    "labels": updated_labels
+                }
+            }
+        )
+
+        return {
+            "success": True,
+            "issue": issue_key,
+            "tags_added": validated_tags,
+            "total_labels": len(updated_labels),
+            "tags_created": existence_result.get("created_tags", []) if auto_create else []
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "issue": issue_key
+        }
+```
+
+### Integration with Work Command
+
+When the `/jira:work` command starts (Step 2.5 Tag Management):
+
+```yaml
+tag_management_workflow:
+  1_initialize:
+    - Check if project tags are initialized
+    - If not, run initialize_project_tags()
+
+  2_detect:
+    - Analyze issue context (description, type, components)
+    - Detect appropriate tags via auto-detection
+
+  3_ensure_exist:
+    - Verify all detected tags exist in project
+    - Create any missing tags
+
+  4_apply:
+    - Apply tags to parent issue
+    - Apply tags to all sub-issues (with propagation rules)
+
+  5_verify:
+    - Confirm tags were applied successfully
+    - Post comment with tag summary
+```
+
+---
+
 ### Examples
 
 #### Example 1: Auto-Tag PR Creating Frontend Feature
