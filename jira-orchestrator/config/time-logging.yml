@@ -1,0 +1,91 @@
+# Time Logging Configuration
+# Automatically log Claude's command execution time to Jira worklogs
+#
+# This configuration controls how AI-assisted work time is tracked and logged
+# to Jira issues, providing visibility into AI utilization across projects.
+
+time_logging:
+  # Enable/disable automatic time logging
+  # Set to false to completely disable the feature
+  enabled: true
+
+  # Atlassian Cloud ID for your Jira instance
+  # Get this from mcp__plugin_atlassian_atlassian__getAccessibleAtlassianResources
+  atlassian_cloud_id: "c4423066-5fa2-4ba6-b734-21595003e7dd"  # thelobbi.atlassian.net
+
+  # Minimum execution time (in seconds) before logging
+  # Commands completing faster than this threshold are not logged
+  # Prevents noise from quick status checks or simple operations
+  threshold_seconds: 60
+
+  # Worklog comment format
+  # Available variables:
+  #   {command}  - The command name (e.g., /jira:work)
+  #   {duration} - Formatted duration (e.g., "5m 23s")
+  #   {phases}   - Phases executed (optional)
+  format: "[Claude] {command} - {duration}"
+
+  # Commands excluded from time logging
+  # These commands are too fast or are meta-operations
+  exclude_commands:
+    - "/jira:status"    # Quick status check
+    - "/jira:cancel"    # Meta operation
+    - "/jira:setup"     # One-time setup
+
+  # Issue key detection priority
+  # Sources checked in order until a key is found
+  detection_priority:
+    - argument          # --issue flag or positional argument
+    - branch            # Git branch name (feature/PROJ-123-desc)
+    - environment       # JIRA_ISSUE_KEY environment variable
+    - orchestration_db  # Current session context
+
+  # Worklog posting settings
+  worklog:
+    # How to adjust remaining estimate when time is logged
+    # Options:
+    #   auto   - Automatically reduce remaining estimate by time spent
+    #   leave  - Don't change remaining estimate
+    #   new    - Set a new remaining estimate (requires newEstimate)
+    #   manual - Reduce by specific amount (requires reduceBy)
+    adjust_estimate: "auto"
+
+    # Retry failed worklog attempts
+    retry_on_failure: true
+    max_retries: 2
+    retry_delay_seconds: 1
+
+    # If time tracking is disabled on issue, post as comment instead
+    fallback_to_comment: true
+
+  # Duration formatting options
+  formatting:
+    # Rounding strategy for displayed time
+    # Options: round_up, round_down, round_nearest
+    rounding: "round_up"
+
+    # Minimum time unit to display
+    # Options: minute, hour
+    minimum_unit: "minute"
+
+  # Logging and debugging
+  debug:
+    # Log all tracking events to console
+    verbose: false
+
+    # Store tracking history in database
+    store_history: true
+
+    # Log failed worklog attempts for retry
+    store_failures: true
+
+# Example Output:
+#
+# When /jira:work PROJ-123 runs for 5 minutes 23 seconds:
+#
+# Worklog Entry:
+#   Issue: PROJ-123
+#   Time Spent: 6m (rounded up)
+#   Comment: "[Claude] /jira:work - 6m"
+#   Started: 2025-12-22T10:30:00.000Z
+#   Adjust Estimate: auto (reduced remaining by 6m)

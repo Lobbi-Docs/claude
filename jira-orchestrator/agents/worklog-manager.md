@@ -599,3 +599,147 @@ Weeks:
 1w = 5d = 40h
 2w = 10d = 80h
 ```
+
+## Auto-Log Mode (AI Execution Time)
+
+This mode is used for automatically logging Claude's command execution time to Jira. It's triggered by the orchestration system when commands complete.
+
+### Overview
+
+When Claude executes a `/jira:*` command, the orchestration system tracks execution time. If the duration exceeds the configured threshold (default: 60 seconds), a worklog is automatically posted with a `[Claude]` prefix to distinguish AI-assisted work from human work.
+
+### Auto-Log Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `mode` | string | Yes | Must be `"auto"` |
+| `issue_key` | string | Yes | Jira issue key (e.g., "PROJ-123") |
+| `duration_seconds` | integer | Yes | Execution time in seconds |
+| `command_name` | string | Yes | Command that executed (e.g., "/jira:work") |
+
+### Auto-Log Format
+
+**Comment Format:** `[Claude] {command_name} - {formatted_duration}`
+
+**Examples:**
+- `[Claude] /jira:work - 5m 23s`
+- `[Claude] /jira:commit - 1m 45s`
+- `[Claude] /jira:pr - 12m 8s`
+
+### Duration Formatting
+
+| Input Seconds | Output |
+|---------------|--------|
+| 65 | "1m 5s" |
+| 90 | "1m 30s" |
+| 323 | "5m 23s" |
+| 3600 | "1h 0m" |
+| 3750 | "1h 2m" |
+
+### Auto-Log Workflow
+
+```yaml
+auto_log_flow:
+  1_trigger:
+    event: "Command execution complete"
+    condition: "duration >= threshold_seconds (60)"
+
+  2_format:
+    duration: "Convert seconds to human-readable"
+    comment: "[Claude] {command} - {duration}"
+
+  3_validate:
+    - Check issue exists
+    - Verify time tracking enabled
+    - Confirm worklog permission
+
+  4_post:
+    tool: "mcp__MCP_DOCKER__addWorklog"
+    parameters:
+      issueKey: "{issue_key}"
+      timeSpentSeconds: "{duration_seconds}"
+      comment: "{formatted_comment}"
+      adjustEstimate: "auto"
+
+  5_confirm:
+    success: "Log posted, return worklog ID"
+    failure: "Log error, do NOT throw exception"
+```
+
+### Configuration
+
+Auto-logging is configured in `jira-orchestrator/config/time-logging.yml`:
+
+```yaml
+time_logging:
+  enabled: true
+  threshold_seconds: 60
+  format: "[Claude] {command} - {duration}"
+
+  exclude_commands:
+    - "/jira:status"
+    - "/jira:cancel"
+
+  worklog:
+    adjust_estimate: "auto"
+    retry_on_failure: true
+```
+
+### Error Handling
+
+Auto-log operations are designed to **never break command execution**:
+
+| Error | Behavior |
+|-------|----------|
+| Issue not found | Skip worklog, log warning |
+| Time tracking disabled | Skip worklog, log warning |
+| Permission denied | Skip worklog, log error |
+| API timeout | Queue for retry |
+| Network error | Queue for retry |
+
+### Pending Worklogs
+
+Failed or queued worklogs are stored in:
+```
+.claude/orchestration/db/pending_worklogs/{issue_key}_{timestamp}.json
+```
+
+A background processor retries these periodically.
+
+### Example Auto-Log Request
+
+```yaml
+# Input from orchestration system
+auto_log_request:
+  mode: "auto"
+  issue_key: "PROJ-123"
+  duration_seconds: 323
+  command_name: "/jira:work"
+
+# Processing
+format_duration: "5m 23s"
+format_comment: "[Claude] /jira:work - 5m 23s"
+
+# MCP Call
+mcp__MCP_DOCKER__addWorklog:
+  issueKey: "PROJ-123"
+  timeSpentSeconds: 323
+  comment: "[Claude] /jira:work - 5m 23s"
+  adjustEstimate: "auto"
+
+# Result
+worklog_result:
+  success: true
+  worklog_id: "54321"
+  time_logged: "5m 23s"
+  issue_key: "PROJ-123"
+```
+
+### Integration Points
+
+Auto-log integrates with:
+
+- **Agent Activity Logger** (`agent_activity_logger.py`) - Triggers auto-log on command completion
+- **Command Time Tracker** (`command_time_tracker.py`) - Provides duration and issue detection
+- **Pending Worklog Processor** - Retries failed worklogs
+- **Smart Commit Validator** - Prevents duplicate manual + auto logging

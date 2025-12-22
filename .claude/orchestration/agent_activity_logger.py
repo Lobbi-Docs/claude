@@ -140,7 +140,9 @@ class AgentActivityLogger:
         agent_id: str,
         status: str,  # completed, failed
         errors: int = 0,
-        warnings: int = 0
+        warnings: int = 0,
+        jira_key: str = None,  # NEW: Jira issue key for auto-worklog
+        command_name: str = None  # NEW: Command name for worklog comment
     ) -> None:
         """
         Log agent completion.
@@ -150,13 +152,21 @@ class AgentActivityLogger:
             status: Final status (completed/failed)
             errors: Number of errors encountered
             warnings: Number of warnings generated
+            jira_key: Optional Jira issue key for automatic worklog posting
+            command_name: Optional command name for worklog comment
         """
         # Calculate duration
         duration = 0
+        duration_seconds = 0
         if agent_id in self.active_agents:
             start = datetime.fromisoformat(self.active_agents[agent_id]['start_time'])
-            duration = round((datetime.now() - start).total_seconds() / 60, 2)  # minutes
+            duration_seconds = (datetime.now() - start).total_seconds()
+            duration = round(duration_seconds / 60, 2)  # minutes
             del self.active_agents[agent_id]
+
+        # NEW: Auto-log to Jira if duration >= 1 minute and jira_key provided
+        if jira_key and duration >= 1.0:
+            self._auto_log_worklog(jira_key, command_name, duration_seconds)
 
         try:
             self._call_mcp_client(
@@ -197,6 +207,63 @@ class AgentActivityLogger:
             stderr=subprocess.DEVNULL,
             start_new_session=True
         )
+
+    def _auto_log_worklog(
+        self,
+        jira_key: str,
+        command_name: str,
+        duration_seconds: float
+    ) -> None:
+        """
+        Automatically log worklog to Jira for Claude execution time.
+
+        Posts worklog with [Claude] prefix to distinguish AI-assisted work.
+
+        Args:
+            jira_key: Jira issue key (e.g., 'PROJ-123')
+            command_name: Command that executed (e.g., '/jira:work')
+            duration_seconds: Execution time in seconds
+        """
+        try:
+            # Format duration for display
+            hours = int(duration_seconds // 3600)
+            minutes = int((duration_seconds % 3600) // 60)
+            secs = int(duration_seconds % 60)
+
+            if hours > 0:
+                duration_str = f"{hours}h {minutes}m"
+            elif minutes > 0:
+                duration_str = f"{minutes}m {secs}s"
+            else:
+                duration_str = f"{secs}s"
+
+            # Build worklog comment
+            cmd_display = command_name or "command"
+            comment = f"[Claude] {cmd_display} - {duration_str}"
+
+            # Write pending worklog for async processing
+            pending_dir = self.fallback_json.parent / 'pending_worklogs'
+            pending_dir.mkdir(exist_ok=True)
+
+            worklog_data = {
+                'issue_key': jira_key,
+                'time_spent_seconds': int(duration_seconds),
+                'comment': comment,
+                'adjust_estimate': 'auto',
+                'started': datetime.now().isoformat(),
+                'source': 'agent_activity_logger'
+            }
+
+            import time as time_module
+            pending_file = pending_dir / f"{jira_key}_{int(time_module.time() * 1000)}.json"
+            with open(pending_file, 'w') as f:
+                json.dump(worklog_data, f, indent=2)
+
+            print(f"[TIME] Queued worklog for {jira_key}: {comment}")
+
+        except Exception as e:
+            # Never throw - worklog failures should not break agent completion
+            print(f"[WARN] Auto-worklog failed for {jira_key}: {e}")
 
     def _log_to_fallback(self, agent_id: str, event_type: str, data: Dict) -> None:
         """
@@ -305,7 +372,9 @@ def log_agent_complete(
     agent_id: str,
     status: str,
     errors: int = 0,
-    warnings: int = 0
+    warnings: int = 0,
+    jira_key: str = None,
+    command_name: str = None
 ) -> None:
     """
     Log agent completion.
@@ -315,8 +384,10 @@ def log_agent_complete(
         status: Final status
         errors: Error count
         warnings: Warning count
+        jira_key: Optional Jira issue key for auto-worklog
+        command_name: Optional command name for worklog comment
     """
-    _logger.log_agent_complete(agent_id, status, errors, warnings)
+    _logger.log_agent_complete(agent_id, status, errors, warnings, jira_key, command_name)
 
 
 # ============================================================================

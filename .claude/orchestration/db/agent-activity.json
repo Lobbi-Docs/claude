@@ -1450,5 +1450,26 @@
       "errors": 0,
       "warnings": 0
     }
+  },
+  {
+    "timestamp": "2025-12-22T10:38:32.990986",
+    "agent_id": "24e14874",
+    "event_type": "start",
+    "data": {
+      "agent_type": "test-agent",
+      "task_id": "task-001",
+      "parent_task": null
+    }
+  },
+  {
+    "timestamp": "2025-12-22T10:38:33.500789",
+    "agent_id": "24e14874",
+    "event_type": "complete",
+    "data": {
+      "status": "completed",
+      "duration": 0.01,
+      "errors": 0,
+      "warnings": 0
+    }
   }
 ]

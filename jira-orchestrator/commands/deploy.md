@@ -40,6 +40,28 @@ tags:
 
 This command tracks deployments to various environments and automatically updates Jira issues with deployment status, timestamps, and metadata.
 
+## Step 0: Time Tracking Initialization
+
+**AUTOMATIC**: This step runs silently before command execution begins.
+
+The orchestration system tracks execution time for this command. When the command completes:
+- If duration >= 60 seconds AND a Jira issue key is detected
+- A worklog is automatically posted with comment: `[Claude] /jira:deploy - {duration}`
+
+### Issue Key Detection Priority
+1. Command argument (e.g., `${issue_key}`)
+2. Git branch name (e.g., `feature/PROJ-123-desc`)
+3. Environment variable `JIRA_ISSUE_KEY`
+4. Current orchestration session
+
+### Configuration
+Time logging can be configured in `jira-orchestrator/config/time-logging.yml`:
+- `enabled`: Toggle auto-logging (default: true)
+- `threshold_seconds`: Minimum duration to log (default: 60)
+- `format`: Worklog comment format (default: "[Claude] {command} - {duration}")
+
+---
+
 ## Prerequisites
 
 - Atlassian Cloud access configured

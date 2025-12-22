@@ -77,6 +77,13 @@
     "review-gate": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/review-gate.sh",
     "docs-reminder": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/docs-reminder.sh",
     "session-resume": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-resume.sh",
-    "pr-size-guard": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pr-size-guard.sh"
+    "pr-size-guard": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pr-size-guard.sh",
+    "process-pending-worklogs": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/process-pending-worklogs.sh"
+  },
+  "auto_time_logging": {
+    "enabled": true,
+    "description": "Automatically log Claude's command execution time to Jira",
+    "config_file": "${CLAUDE_PLUGIN_ROOT}/config/time-logging.yml",
+    "processor": "${CLAUDE_PLUGIN_ROOT}/lib/pending_worklog_processor.py"
   }
 }
