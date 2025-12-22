@@ -2,19 +2,66 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-purple.svg)
-![Agents](https://img.shields.io/badge/agents-41-orange.svg)
-![Patterns](https://img.shields.io/badge/patterns-5-red.svg)
+![Agents](https://img.shields.io/badge/agents-60+-orange.svg)
+![Commands](https://img.shields.io/badge/commands-32-red.svg)
+![Enterprise](https://img.shields.io/badge/Enterprise-Ultimate-gold.svg)
 
-**Arbiter (Enterprise) - Next-Generation Jira Orchestration with AI-Powered Intelligence**
+**Arbiter (Enterprise Ultimate) - Complete Enterprise Jira Orchestration Platform**
 
-Enterprise-grade Jira orchestration with Event Sourcing, Predictive Analytics, Advanced Orchestration Patterns, Real-time Metrics, Sprint Planning Automation, and Quality Intelligence.
+The most comprehensive Jira orchestration solution with AI-powered Intelligence, Event Sourcing, Portfolio Management, Approval Workflows, Notification System, Team Capacity Planning, SLA Monitoring, Compliance Reporting, and 60+ specialized agents.
 
-[Features](#features) • [What's New in v3.0](#whats-new-in-v30) • [Commands](#commands) • [Agents](#agents) • [Patterns](#advanced-orchestration-patterns) • [Installation](#installation)
+[Features](#features) • [What's New in v4.0](#whats-new-in-v40) • [Commands](#commands) • [Agents](#agents) • [Patterns](#advanced-orchestration-patterns) • [Installation](#installation)
 
 </div>
+
+---
+
+## What's New in v4.0
+
+### 🔔 Notification System
+- **Multi-Channel Routing**: Slack, Microsoft Teams, Email, Webhooks
+- **Smart Batching**: Rate limiting and digest mode for high-volume events
+- **Interactive Buttons**: Approve/reject directly from Slack
+- **Event Subscriptions**: Subscribe to specific event types per user
+
+### ✅ Approval Workflows
+- **Multi-Level Approvals**: Sequential, parallel, and conditional paths
+- **Policy Enforcement**: Code quality gates, security scans, review requirements
+- **Governance Auditing**: Complete audit trails with SOC2 compliance
+- **Escalation Rules**: Time-based escalation with delegation support
+
+### 📊 Portfolio Management
+- **Multi-Project Dashboards**: Aggregate metrics across all projects
+- **Roadmap Planning**: Visual roadmaps with dependency awareness
+- **Dependency Mapping**: Cross-project dependency graphs and impact analysis
+- **Release Coordination**: Multi-project release planning and notes generation
+
+### 👥 Team Capacity Planning
+- **Workload Balancing**: Automatic work distribution recommendations
+- **Skill Mapping**: Team skills inventory with gap analysis
+- **Burnout Detection**: Risk indicators and early warning alerts
+- **Focus Time Optimization**: Meeting load analysis and recommendations
+
+### ⏱️ SLA Monitoring
+- **Real-Time Tracking**: Response and resolution SLA monitoring
+- **Breach Prediction**: ML-based prediction of SLA breaches
+- **Customer Tiers**: Enterprise/Premium/Standard SLA rules
+- **Escalation Triggers**: Automatic escalation at 75%, 90%, 100%
+
+### 📋 Compliance Reporting
+- **SOC2 Type II**: Control effectiveness tracking and evidence collection
+- **GDPR Compliance**: Data protection controls and reporting
+- **ISO27001**: Security control mapping and assessment
+- **Audit Packages**: One-click audit report generation
+
+### 📦 Batch Operations
+- **Bulk Updates**: Mass field updates with dry-run and rollback
+- **Import/Export**: CSV, Excel, JSON with field mapping
+- **PDF Reports**: Professional reports with charts and metrics
+- **Scheduled Exports**: Cron-based recurring export jobs
 
 ---
 
@@ -68,7 +115,14 @@ The **Jira Orchestrator** is a Claude Code plugin that provides intelligent, aut
 - **Automatic Jira Detection**: Detects Jira issue keys (e.g., PROJ-123) in conversations and suggests orchestration
 - **Intelligent Triage**: Analyzes issue complexity, priority, and expertise requirements
 - **Dynamic Agent Discovery**: Intelligently selects domain specialists from 142+ code agents based on Jira context and file patterns
-- **Multi-Agent Coordination**: Orchestrates 41 specialized workflow agents plus dynamically selected code experts in parallel where possible
+- **Multi-Agent Coordination**: Orchestrates 60+ specialized workflow agents plus dynamically selected code experts in parallel where possible
+- **Notification System**: Real-time alerts via Slack, Teams, Email, and Webhooks (v4.0)
+- **Approval Workflows**: Multi-level approvals with policy enforcement and governance (v4.0)
+- **Portfolio Management**: Multi-project dashboards, roadmaps, and dependency mapping (v4.0)
+- **Team Capacity**: Workload balancing, skill mapping, and burnout detection (v4.0)
+- **SLA Monitoring**: Real-time SLA tracking with breach prediction and escalation (v4.0)
+- **Compliance Reporting**: SOC2, GDPR, ISO27001 evidence collection and reporting (v4.0)
+- **Batch Operations**: Bulk updates, imports, exports with rollback support (v4.0)
 - **Confluence Integration**: Bidirectional sync between Jira issues and Confluence documentation
 - **Quality Gates**: Enforces code review before PR creation
 - **Full Automation**: From issue fetch to PR creation, documentation, and Jira/Confluence updates
@@ -266,7 +320,21 @@ This provides access to Jira tools:
 
 ## Commands
 
-The plugin provides **15 slash commands** for Jira orchestration:
+The plugin provides **32 slash commands** for comprehensive Jira orchestration:
+
+### New in v4.0
+
+| Command | Description |
+|---------|-------------|
+| `/jira:notify` | Configure notifications (Slack, Teams, Email, Webhooks) |
+| `/jira:approve` | Request/grant approvals with multi-level workflow support |
+| `/jira:portfolio` | Multi-project portfolio dashboard and analytics |
+| `/jira:release` | Release planning, notes generation, and coordination |
+| `/jira:batch` | Bulk operations (update, transition, assign, link) |
+| `/jira:export` | Export to PDF, Excel, CSV, JSON with scheduling |
+| `/jira:team` | Team capacity, skills, and workload management |
+| `/jira:sla` | SLA monitoring, breach analysis, and reporting |
+| `/jira:compliance` | SOC2, GDPR, ISO27001 compliance reporting |
 
 ### New in v3.0
 

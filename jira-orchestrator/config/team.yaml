@@ -1,0 +1,475 @@
+# Team & Resource Management Configuration
+# This file configures team members, skills, capacity settings, and thresholds
+
+# Team Definitions
+teams:
+  # Default team configuration
+  default:
+    name: "Platform Engineering Team"
+    description: "Core platform development team"
+
+    # Team Members
+    members:
+      - id: alice
+        name: "Alice Smith"
+        jira_username: "asmith"
+        email: "alice.smith@company.com"
+        role: "Senior Engineer"
+        location: "US/Pacific"
+        contracted_hours_per_day: 8
+        capacity_adjustment_factor: 1.0  # 1.0 = normal, <1.0 = reduced capacity
+        avg_story_points_per_hour: 0.3   # Historical velocity factor
+
+      - id: bob
+        name: "Bob Johnson"
+        jira_username: "bjohnson"
+        email: "bob.johnson@company.com"
+        role: "Engineer"
+        location: "US/Eastern"
+        contracted_hours_per_day: 8
+        capacity_adjustment_factor: 1.0
+        avg_story_points_per_hour: 0.25
+
+      - id: carol
+        name: "Carol Williams"
+        jira_username: "cwilliams"
+        email: "carol.williams@company.com"
+        role: "QA Engineer"
+        location: "Europe/London"
+        contracted_hours_per_day: 7.5
+        capacity_adjustment_factor: 1.0
+        avg_story_points_per_hour: 0.2
+
+      - id: david
+        name: "David Martinez"
+        jira_username: "dmartinez"
+        email: "david.martinez@company.com"
+        role: "Tech Lead"
+        location: "US/Central"
+        contracted_hours_per_day: 8
+        capacity_adjustment_factor: 0.8  # Reduced capacity due to leadership duties
+        avg_story_points_per_hour: 0.35
+
+# Skills Inventory
+skills:
+  # Skills by team member
+  alice:
+    # Frontend Skills
+    React:
+      level: 5
+      years_experience: 4
+      last_used: "2024-05-15"
+      certifications: []
+    TypeScript:
+      level: 4
+      years_experience: 3
+      last_used: "2024-05-15"
+    Vue:
+      level: 3
+      years_experience: 2
+      last_used: "2024-03-01"
+
+    # Backend Skills
+    Python:
+      level: 4
+      years_experience: 5
+      last_used: "2024-05-10"
+    Node.js:
+      level: 3
+      years_experience: 2
+      last_used: "2024-04-20"
+
+    # Database Skills
+    PostgreSQL:
+      level: 3
+      years_experience: 3
+      last_used: "2024-05-12"
+
+    # DevOps Skills
+    Docker:
+      level: 4
+      years_experience: 3
+      last_used: "2024-05-14"
+    Kubernetes:
+      level: 2
+      years_experience: 1
+      last_used: "2024-02-15"
+
+  bob:
+    # Backend Skills
+    Python:
+      level: 5
+      years_experience: 6
+      certifications: ["Python Institute PCPP"]
+      last_used: "2024-05-15"
+    Node.js:
+      level: 4
+      years_experience: 4
+      last_used: "2024-05-13"
+    Java:
+      level: 3
+      years_experience: 2
+      last_used: "2024-01-20"
+
+    # Database Skills
+    PostgreSQL:
+      level: 4
+      years_experience: 5
+      last_used: "2024-05-15"
+    MongoDB:
+      level: 3
+      years_experience: 2
+      last_used: "2024-04-10"
+
+    # DevOps Skills
+    Docker:
+      level: 3
+      years_experience: 2
+      last_used: "2024-05-10"
+    AWS:
+      level: 4
+      years_experience: 3
+      certifications: ["AWS Solutions Architect Associate"]
+      last_used: "2024-05-14"
+
+  carol:
+    # Testing Skills
+    Testing Strategy:
+      level: 5
+      years_experience: 7
+      certifications: ["ISTQB Advanced"]
+      last_used: "2024-05-15"
+    Selenium:
+      level: 4
+      years_experience: 4
+      last_used: "2024-05-12"
+    Cypress:
+      level: 4
+      years_experience: 3
+      last_used: "2024-05-15"
+    Pytest:
+      level: 3
+      years_experience: 2
+      last_used: "2024-05-10"
+
+    # Frontend Skills
+    JavaScript:
+      level: 3
+      years_experience: 3
+      last_used: "2024-05-13"
+    React:
+      level: 2
+      years_experience: 1
+      last_used: "2024-05-14"
+
+  david:
+    # Architecture Skills
+    System Design:
+      level: 5
+      years_experience: 8
+      last_used: "2024-05-15"
+    Microservices:
+      level: 5
+      years_experience: 6
+      last_used: "2024-05-14"
+    API Design:
+      level: 5
+      years_experience: 7
+      last_used: "2024-05-15"
+
+    # Backend Skills
+    Python:
+      level: 4
+      years_experience: 7
+      last_used: "2024-05-10"
+    Go:
+      level: 4
+      years_experience: 3
+      last_used: "2024-05-12"
+
+    # DevOps Skills
+    Kubernetes:
+      level: 5
+      years_experience: 4
+      certifications: ["CKA", "CKAD"]
+      last_used: "2024-05-15"
+    Terraform:
+      level: 4
+      years_experience: 3
+      last_used: "2024-05-13"
+
+# Skill Categories & Required Skills
+skill_categories:
+  frontend:
+    - React
+    - Vue
+    - Angular
+    - TypeScript
+    - JavaScript
+    - CSS
+    - HTML
+
+  backend:
+    - Python
+    - Node.js
+    - Java
+    - Go
+    - Ruby
+    - PHP
+
+  database:
+    - PostgreSQL
+    - MySQL
+    - MongoDB
+    - Redis
+    - Elasticsearch
+
+  devops:
+    - Docker
+    - Kubernetes
+    - AWS
+    - GCP
+    - Azure
+    - Terraform
+    - CI/CD
+
+  testing:
+    - Testing Strategy
+    - Jest
+    - Pytest
+    - Cypress
+    - Selenium
+
+  architecture:
+    - System Design
+    - Microservices
+    - API Design
+    - Security
+
+  soft_skills:
+    - Leadership
+    - Communication
+    - Mentoring
+    - Agile
+
+# Required Skills for Team (minimum levels)
+required_skills:
+  React: 3
+  Python: 3
+  PostgreSQL: 3
+  Docker: 3
+  Kubernetes: 3
+  Testing Strategy: 3
+  System Design: 3
+
+# PTO Calendar (Planned Time Off)
+pto_calendar:
+  alice:
+    - start: "2024-06-10"
+      end: "2024-06-14"
+      type: "vacation"
+    - start: "2024-08-05"
+      end: "2024-08-09"
+      type: "vacation"
+
+  bob:
+    - start: "2024-07-01"
+      end: "2024-07-05"
+      type: "vacation"
+
+  carol:
+    - start: "2024-06-03"
+      end: "2024-06-07"
+      type: "vacation"
+    - start: "2024-12-23"
+      end: "2024-12-30"
+      type: "vacation"
+
+# Recurring Meetings
+recurring_meetings:
+  alice:
+    - name: "Daily Standup"
+      frequency: "daily"
+      duration_hours: 0.25
+    - name: "Sprint Planning"
+      frequency: "biweekly"
+      duration_hours: 3
+    - name: "Sprint Retro"
+      frequency: "biweekly"
+      duration_hours: 1.5
+    - name: "Team Sync"
+      frequency: "weekly"
+      duration_hours: 1
+
+  bob:
+    - name: "Daily Standup"
+      frequency: "daily"
+      duration_hours: 0.25
+    - name: "Sprint Planning"
+      frequency: "biweekly"
+      duration_hours: 3
+    - name: "Sprint Retro"
+      frequency: "biweekly"
+      duration_hours: 1.5
+
+  carol:
+    - name: "Daily Standup"
+      frequency: "daily"
+      duration_hours: 0.25
+    - name: "Sprint Planning"
+      frequency: "biweekly"
+      duration_hours: 3
+    - name: "Sprint Retro"
+      frequency: "biweekly"
+      duration_hours: 1.5
+    - name: "QA Sync"
+      frequency: "weekly"
+      duration_hours: 1
+
+  david:
+    - name: "Daily Standup"
+      frequency: "daily"
+      duration_hours: 0.25
+    - name: "Sprint Planning"
+      frequency: "biweekly"
+      duration_hours: 3
+    - name: "Sprint Retro"
+      frequency: "biweekly"
+      duration_hours: 1.5
+    - name: "Tech Lead Sync"
+      frequency: "weekly"
+      duration_hours: 2
+    - name: "Architecture Review"
+      frequency: "weekly"
+      duration_hours: 2
+
+# Capacity Configuration
+capacity:
+  # Sprint Configuration
+  sprint_duration_days: 10  # 2-week sprint, 5 days/week
+
+  # Overhead Percentages
+  meeting_overhead_pct: 0.20    # 20% for ceremonies (standups, planning, retro, reviews)
+  admin_overhead_pct: 0.05       # 5% for email, slack, admin tasks
+
+  # Capacity Buffers
+  bug_buffer_pct: 0.15           # 15% reserved for bug fixes
+  support_buffer_pct: 0.10       # 10% reserved for support requests
+  uncertainty_buffer_pct: 0.10   # 10% reserved for unknowns/emergencies
+
+  # Role-Based Ceremony Multipliers
+  ceremony_multipliers:
+    "Scrum Master": 1.5
+    "Product Owner": 1.3
+    "Tech Lead": 1.2
+    "Senior Engineer": 1.0
+    "Engineer": 0.9
+    "Junior Engineer": 0.8
+    "QA Engineer": 1.0
+
+# Workload Thresholds
+workload_thresholds:
+  # Capacity Utilization
+  under_allocated_pct: 60        # Below 60% is under-allocated
+  optimal_min_pct: 60            # Optimal range: 60-100%
+  optimal_max_pct: 100
+  over_allocated_pct: 100        # Above 100% is over-allocated
+  critical_over_allocated_pct: 130  # Above 130% is critical
+
+  # Work In Progress (WIP) Limits
+  wip_limits:
+    "Tech Lead": 3
+    "Senior Engineer": 3
+    "Engineer": 3
+    "Junior Engineer": 2
+    "QA Engineer": 4
+
+  # Distribution Balance
+  excellent_cv: 15               # CV < 15% is excellent balance
+  good_cv: 25                    # CV < 25% is good balance
+  fair_cv: 40                    # CV < 40% is fair balance
+  # CV >= 40% is poor balance
+
+  # Context Switching
+  fragmentation_thresholds:
+    low: 25
+    moderate: 50
+    high: 75
+    # Above 75 is severe
+
+  # Meeting Load
+  meeting_load_thresholds:
+    low_pct: 25
+    moderate_pct: 40
+    high_pct: 60
+    # Above 60% is excessive
+
+# Burnout Risk Configuration
+burnout_risk:
+  # Risk Score Thresholds (0-100)
+  low_risk: 20
+  moderate_risk: 40
+  high_risk: 60
+  critical_risk: 80
+
+  # Factor Weights
+  sustained_over_allocation_weight: 30
+  declining_velocity_weight: 20
+  excessive_meetings_weight: 15
+  high_fragmentation_weight: 15
+  weekend_work_weight: 20
+
+  # Detection Settings
+  lookback_sprints: 4
+  over_allocation_threshold_pct: 110
+  velocity_decline_threshold_pct: 20
+
+# Training Time Estimates (weeks)
+training_estimates:
+  # Time to progress between proficiency levels
+  level_0_to_1: 2    # Beginner
+  level_1_to_2: 4    # Intermediate
+  level_2_to_3: 8    # Proficient
+  level_3_to_4: 12   # Advanced
+  level_4_to_5: 24   # Expert
+
+# Skill Gap Priorities
+skill_gap_priorities:
+  # Gap Types
+  critical_gap_priority: "P0"         # No team coverage
+  proficiency_gap_priority: "P1"      # Have skill but below required level
+  bus_factor_risk_priority: "P2"      # Only one person proficient
+
+  # Gap Score Weights
+  critical_gap_score: 30
+  proficiency_gap_score_per_level: 10
+  bus_factor_risk_score: 15
+
+  # Coverage Thresholds
+  minimum_proficient_members: 2  # Need at least 2 people at level 3+ for critical skills
+  excellent_coverage_pct: 80     # 80%+ coverage is excellent
+
+# Reporting Configuration
+reporting:
+  # Report Storage
+  reports_directory: "/home/user/claude/jira-orchestrator/sessions/team-reports"
+
+  # Report Schedules
+  capacity_report_frequency: "sprint"
+  skills_report_frequency: "monthly"
+  workload_report_frequency: "weekly"
+  burnout_report_frequency: "weekly"
+  health_report_frequency: "sprint"
+
+  # Team Health Score Weights
+  health_score_weights:
+    capacity: 0.25
+    skills: 0.25
+    workload_balance: 0.25
+    burnout_risk: 0.25
+
+  # Health Score Thresholds
+  excellent_health_score: 85
+  good_health_score: 70
+  fair_health_score: 50
+  # Below 50 is poor health

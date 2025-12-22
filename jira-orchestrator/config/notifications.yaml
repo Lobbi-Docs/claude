@@ -1,0 +1,535 @@
+# Jira Orchestrator Notification System Configuration
+# This file defines default notification settings, channel configurations,
+# event type mappings, and template definitions for the notification system.
+
+# ============================================================================
+# General Settings
+# ============================================================================
+
+general:
+  enabled: true
+  default_priority: normal  # urgent, normal, low
+  timezone: UTC
+  log_level: info  # debug, info, warn, error
+  audit_retention_days: 30
+
+# ============================================================================
+# Channel Configurations
+# ============================================================================
+
+channels:
+  # Slack Configuration
+  slack:
+    enabled: true
+    workspace:
+      team_id: "${SLACK_TEAM_ID}"
+      team_name: "${SLACK_TEAM_NAME}"
+    auth:
+      bot_token: "${SLACK_BOT_TOKEN}"  # xoxb-... token
+      signing_secret: "${SLACK_SIGNING_SECRET}"
+    bot:
+      username: "Jira Orchestrator"
+      icon_emoji: ":jira:"
+      # Alternative: icon_url for custom image
+      # icon_url: "https://company.com/jira-bot-icon.png"
+    channels:
+      # Map channel names to IDs for quick reference
+      engineering: "${SLACK_CHANNEL_ENGINEERING}"  # e.g., C12345678
+      releases: "${SLACK_CHANNEL_RELEASES}"
+      incidents: "${SLACK_CHANNEL_INCIDENTS}"
+      qa: "${SLACK_CHANNEL_QA}"
+      deployments: "${SLACK_CHANNEL_DEPLOYMENTS}"
+    rate_limits:
+      messages_per_second: 1  # Respect Slack tier limits
+      burst_size: 5
+      retry_after_429: true
+    threading:
+      enabled: true
+      group_by: issue_key  # or correlation_id
+      ttl_days: 30  # Clean up old thread mappings after 30 days
+    formatting:
+      link_unfurling: true
+      markdown_support: true
+      emoji_enabled: true
+
+  # Email Configuration
+  email:
+    enabled: true
+    smtp:
+      host: "${SMTP_HOST}"
+      port: "${SMTP_PORT}"  # 587 for TLS, 465 for SSL
+      username: "${SMTP_USER}"
+      password: "${SMTP_PASSWORD}"
+      use_tls: true
+      use_ssl: false
+    from:
+      address: "${EMAIL_FROM_ADDRESS}"  # e.g., jira-notifications@company.com
+      name: "Jira Orchestrator"
+    reply_to: "${EMAIL_REPLY_TO}"  # Optional
+    templates:
+      format: html  # html or plain
+      include_plaintext_fallback: true
+    digest:
+      enabled: true
+      default_interval: daily  # hourly, daily, weekly
+      send_times:
+        hourly: "on_the_hour"  # :00
+        daily: "09:00"  # 9 AM in user's timezone
+        weekly: "monday_09:00"  # Monday 9 AM
+    rate_limits:
+      max_per_hour: 100
+      max_per_day: 500
+
+  # Microsoft Teams Configuration (Optional)
+  teams:
+    enabled: false
+    auth:
+      tenant_id: "${TEAMS_TENANT_ID}"
+      client_id: "${TEAMS_CLIENT_ID}"
+      client_secret: "${TEAMS_CLIENT_SECRET}"
+    bot:
+      name: "Jira Orchestrator"
+      icon_url: "https://company.com/jira-bot-icon.png"
+    formatting:
+      adaptive_cards: true
+      markdown_support: true
+
+  # SMS Configuration (Optional - requires Twilio)
+  sms:
+    enabled: false
+    provider: twilio
+    auth:
+      account_sid: "${TWILIO_ACCOUNT_SID}"
+      auth_token: "${TWILIO_AUTH_TOKEN}"
+    from_number: "${TWILIO_FROM_NUMBER}"
+    rate_limits:
+      max_per_hour: 10  # Keep SMS low for cost
+      max_per_day: 30
+    urgent_only: true  # Only send SMS for urgent notifications
+
+# ============================================================================
+# Webhook Endpoints
+# ============================================================================
+
+webhooks:
+  endpoints:
+    # Example: Monitoring System Webhook
+    - id: webhook-monitoring
+      name: "Monitoring System"
+      url: "${WEBHOOK_URL_MONITORING}"  # e.g., https://monitoring.company.com/api/webhooks/jira
+      secret: "${WEBHOOK_SECRET_MONITORING}"
+      enabled: true
+      event_filters:
+        - "deployment.*"
+        - "orchestration.failed"
+        - "workflow.blocked"
+      custom_headers:
+        X-API-Key: "${MONITORING_API_KEY}"
+      timeout_seconds: 10
+      max_retries: 5
+
+    # Example: CI/CD Pipeline Webhook
+    - id: webhook-cicd
+      name: "CI/CD Pipeline"
+      url: "${WEBHOOK_URL_CICD}"  # e.g., https://cicd.company.com/webhooks/jira
+      secret: "${WEBHOOK_SECRET_CICD}"
+      enabled: true
+      event_filters:
+        - "pr.created"
+        - "pr.merged"
+        - "issue.transitioned"
+      filter_conditions:
+        labels:
+          - "deployment"
+          - "release"
+      timeout_seconds: 15
+      max_retries: 3
+
+    # Example: Analytics Platform Webhook
+    - id: webhook-analytics
+      name: "Analytics Platform"
+      url: "${WEBHOOK_URL_ANALYTICS}"  # e.g., https://analytics.company.com/events
+      secret: "${WEBHOOK_SECRET_ANALYTICS}"
+      enabled: true
+      event_filters:
+        - "*"  # All events
+      batch_delivery:
+        enabled: true
+        batch_size: 50
+        batch_interval_seconds: 60
+      timeout_seconds: 30
+      max_retries: 5
+
+  defaults:
+    timeout_seconds: 10
+    max_retries: 5
+    backoff_base_seconds: 5
+    signature_algorithm: sha256
+    verify_ssl: true
+    follow_redirects: false
+
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 5  # Open circuit after N consecutive failures
+    cooldown_seconds: 300  # 5 minutes
+    half_open_max_calls: 1  # Try 1 test call when half-open
+
+  rate_limiting:
+    enabled: true
+    max_per_minute: 60
+    max_per_hour: 1000
+
+# ============================================================================
+# Event Type Configurations
+# ============================================================================
+
+event_types:
+  # Issue Events
+  issue_created:
+    default_channels: [slack, email]
+    priority: normal
+    batching_allowed: true
+    template: issue-created
+
+  issue_updated:
+    default_channels: [slack]
+    priority: low
+    batching_allowed: true
+    template: issue-updated
+
+  issue_assigned:
+    default_channels: [slack, email]
+    priority: normal
+    batching_allowed: false  # Always immediate
+    template: issue-assigned
+
+  issue_commented:
+    default_channels: [slack]
+    priority: normal
+    batching_allowed: true
+    template: issue-commented
+
+  issue_mentioned:
+    default_channels: [slack]
+    priority: normal
+    batching_allowed: false  # Always immediate
+    template: issue-mentioned
+
+  # Workflow Events
+  workflow_transitioned:
+    default_channels: [slack, webhook]
+    priority: normal
+    batching_allowed: true
+    template: workflow-transition
+
+  workflow_blocked:
+    default_channels: [slack, email]
+    priority: urgent
+    batching_allowed: false
+    template: workflow-blocked
+
+  workflow_ready_for_review:
+    default_channels: [slack, email]
+    priority: normal
+    batching_allowed: false
+    template: ready-for-review
+
+  workflow_completed:
+    default_channels: [slack, email, webhook]
+    priority: normal
+    batching_allowed: false
+    template: workflow-completed
+
+  # Pull Request Events
+  pr_created:
+    default_channels: [slack, email]
+    priority: normal
+    batching_allowed: false
+    template: pr-created
+
+  pr_review_requested:
+    default_channels: [slack, email]
+    priority: normal
+    batching_allowed: false
+    template: pr-review-requested
+
+  pr_approved:
+    default_channels: [slack]
+    priority: normal
+    batching_allowed: true
+    template: pr-approved
+
+  pr_changes_requested:
+    default_channels: [slack, email]
+    priority: normal
+    batching_allowed: false
+    template: pr-changes-requested
+
+  pr_merged:
+    default_channels: [slack, email, webhook]
+    priority: normal
+    batching_allowed: false
+    template: pr-merged
+
+  # Deployment Events
+  deployment_started:
+    default_channels: [slack, webhook]
+    priority: normal
+    batching_allowed: true
+    template: deployment-started
+
+  deployment_succeeded:
+    default_channels: [slack, email, webhook]
+    priority: normal
+    batching_allowed: false
+    template: deployment-succeeded
+
+  deployment_failed:
+    default_channels: [slack, email, webhook]
+    priority: urgent
+    batching_allowed: false
+    template: deployment-failed
+
+  deployment_rolled_back:
+    default_channels: [slack, email, webhook]
+    priority: urgent
+    batching_allowed: false
+    template: deployment-rollback
+
+  # Orchestration Events
+  orchestration_started:
+    default_channels: [slack]
+    priority: normal
+    batching_allowed: true
+    template: orchestration-started
+
+  orchestration_phase_completed:
+    default_channels: [slack]
+    priority: low
+    batching_allowed: true
+    template: phase-completed
+
+  orchestration_completed:
+    default_channels: [slack, email]
+    priority: normal
+    batching_allowed: false
+    template: orchestration-completed
+
+  orchestration_failed:
+    default_channels: [slack, email]
+    priority: urgent
+    batching_allowed: false
+    template: orchestration-failed
+
+  orchestration_agent_error:
+    default_channels: [slack]
+    priority: normal
+    batching_allowed: true
+    template: agent-error
+
+# ============================================================================
+# Rate Limiting Defaults
+# ============================================================================
+
+rate_limits:
+  default:
+    max_per_hour: 30
+    max_per_day: 200
+    urgent_bypass: true  # Urgent notifications bypass rate limits
+
+  per_channel:
+    slack:
+      max_per_hour: 50
+      max_per_day: 300
+    email:
+      max_per_hour: 20
+      max_per_day: 100
+    webhook:
+      max_per_hour: 100
+      max_per_day: 1000
+
+# ============================================================================
+# Quiet Hours Defaults
+# ============================================================================
+
+quiet_hours:
+  default_enabled: false
+  default_start: "22:00"
+  default_end: "08:00"
+  default_timezone: UTC
+  urgent_bypass: true  # Urgent notifications bypass quiet hours
+
+# ============================================================================
+# Template Configurations
+# ============================================================================
+
+templates:
+  base_path: "jira-orchestrator/templates/notifications"
+  format: handlebars  # handlebars, jinja2, mustache
+  cache_enabled: true
+  cache_ttl_seconds: 3600  # 1 hour
+
+  # Template file mappings
+  files:
+    # Slack templates (Block Kit JSON)
+    issue-created: slack/issue-created.hbs
+    issue-updated: slack/issue-updated.hbs
+    issue-assigned: slack/issue-assigned.hbs
+    issue-commented: slack/issue-commented.hbs
+    issue-mentioned: slack/issue-mentioned.hbs
+    workflow-transition: slack/workflow-transition.hbs
+    workflow-blocked: slack/workflow-blocked.hbs
+    ready-for-review: slack/ready-for-review.hbs
+    workflow-completed: slack/workflow-completed.hbs
+    pr-created: slack/pr-created.hbs
+    pr-review-requested: slack/pr-review-requested.hbs
+    pr-approved: slack/pr-approved.hbs
+    pr-changes-requested: slack/pr-changes-requested.hbs
+    pr-merged: slack/pr-merged.hbs
+    deployment-started: slack/deployment-started.hbs
+    deployment-succeeded: slack/deployment-succeeded.hbs
+    deployment-failed: slack/deployment-failed.hbs
+    deployment-rollback: slack/deployment-rollback.hbs
+    orchestration-started: slack/orchestration-started.hbs
+    phase-completed: slack/phase-completed.hbs
+    orchestration-completed: slack/orchestration-completed.hbs
+    orchestration-failed: slack/orchestration-failed.hbs
+    agent-error: slack/agent-error.hbs
+
+    # Email templates (HTML)
+    issue-created-email: email/issue-created.html
+    issue-assigned-email: email/issue-assigned.html
+    pr-review-requested-email: email/pr-review-requested.html
+    deployment-succeeded-email: email/deployment-succeeded.html
+
+  # Handlebars helper functions
+  helpers:
+    - truncate  # Truncate text to N characters
+    - formatDate  # Format timestamps
+    - emojiPriority  # Map priority to emoji
+    - emojiStatus  # Map status to emoji
+    - linkify  # Convert URLs to clickable links
+
+# ============================================================================
+# Subscription Defaults
+# ============================================================================
+
+subscriptions:
+  auto_subscribe:
+    # Automatically subscribe users to these events
+    - event: issue.assigned
+      condition:
+        assignee: me
+      channels: [slack, email]
+
+    - event: issue.mentioned
+      channels: [slack]
+
+    - event: pr.review_requested
+      condition:
+        reviewer: me
+      channels: [slack, email]
+
+  default_filters:
+    # Apply these filters to all subscriptions unless overridden
+    exclude_labels:
+      - spam
+      - test
+      - archived
+
+# ============================================================================
+# Logging & Monitoring
+# ============================================================================
+
+logging:
+  audit_log:
+    enabled: true
+    path: "sessions/notifications/audit.log"
+    rotation: daily
+    retention_days: 30
+    format: json
+
+  delivery_log:
+    enabled: true
+    path: "sessions/notifications/deliveries.log"
+    rotation: daily
+    retention_days: 7
+
+  error_log:
+    enabled: true
+    path: "sessions/notifications/errors.log"
+    rotation: daily
+    retention_days: 14
+
+monitoring:
+  metrics:
+    enabled: true
+    export_interval_seconds: 60
+    metrics:
+      - delivery_total
+      - delivery_success_rate
+      - delivery_latency
+      - rate_limit_triggers
+      - circuit_breaker_state
+      - template_render_errors
+
+  alerts:
+    enabled: true
+    admin_email: "${ADMIN_EMAIL}"
+    admin_slack_id: "${ADMIN_SLACK_ID}"
+    conditions:
+      - metric: delivery_success_rate
+        threshold: 0.95
+        operator: below
+        severity: warning
+      - metric: circuit_breaker_state
+        value: open
+        severity: critical
+      - metric: delivery_latency_p95
+        threshold: 1000  # ms
+        operator: above
+        severity: warning
+
+# ============================================================================
+# Security
+# ============================================================================
+
+security:
+  webhook_signatures:
+    enabled: true
+    algorithm: sha256  # sha256, sha512
+    header_name: X-Webhook-Signature
+    include_timestamp: true
+
+  ssl_verification:
+    enabled: true
+    verify_certificates: true
+    allow_self_signed: false  # Set to true for development only
+
+  ip_allowlist:
+    enabled: false
+    allowed_ips: []
+      # - 192.168.1.0/24
+      # - 10.0.0.0/8
+
+  secrets_rotation:
+    enabled: false
+    rotation_interval_days: 90
+    notify_before_days: 7
+
+# ============================================================================
+# Feature Flags
+# ============================================================================
+
+features:
+  batching: true
+  threading: true
+  circuit_breaker: true
+  rate_limiting: true
+  quiet_hours: true
+  digest_mode: true
+  webhooks: true
+  email: true
+  slack: true
+  teams: false
+  sms: false
