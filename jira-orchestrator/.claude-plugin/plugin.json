@@ -1,7 +1,7 @@
 {
   "name": "jira-orchestrator",
-  "version": "1.4.0",
-  "description": "Arbiter (Spartan) - Intelligent Jira issue orchestration with GitHub Integration Suite. Features: (1) Incremental PR Strategy - prevents massive PRs through proactive size estimation and checkpoint PRs, (2) Smart Commits - auto-update Jira via commit messages with #comment, #time, #transition, (3) GitHub-Jira Sync - auto-link branches, PRs, and deployments, (4) Multi-Cloud Deployment Tracking - portable configs for AWS/GCP/Azure, (5) 6-Phase Protocol - EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT with auto-documentation.",
+  "version": "2.0.0",
+  "description": "Arbiter (Spartan) - Enhanced Jira issue orchestration with Parallel Sub-Issue Processing, Expert Agent Matching, and Complete Traceability. Features: (1) Parallel Sub-Issue Work - DAG-based execution of sub-issues with dependency analysis, (2) Expert Agent Matching - 50-25-15-10 weighted algorithm for optimal agent selection per sub-task, (3) Tag Management - Auto-detect and apply domain/status/type tags with parent-child sync, (4) Completion Flow - Gap analysis, automatic fix coordination, Confluence documentation trigger, (5) Commit Tracking - Map commits to issues with full traceability and Confluence links, (6) Issue Commenting - Post commit info + Confluence refs on ALL issues, (7) 6-Phase Protocol - EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT with expert agents.",
   "author": {
     "name": "The Lobbi",
     "email": "developers@thelobbi.io"
@@ -14,14 +14,45 @@
     "development",
     "workflow",
     "agile",
-    "oauth",
-    "sso",
+    "parallel-execution",
+    "dag-scheduling",
+    "expert-agents",
+    "tag-management",
+    "gap-analysis",
+    "commit-tracking",
+    "traceability",
     "smart-commits",
     "github-actions",
     "deployment-tracking",
     "multi-cloud",
     "branch-linking",
-    "pr-sync"
+    "pr-sync",
+    "sub-issues",
+    "documentation-automation"
+  ],
+  "features": [
+    "Parallel Sub-Issue Work (v2.0)",
+    "Expert Agent Matching (v2.0)",
+    "Tag Management (v2.0)",
+    "Completion Flow with Gap Analysis (v2.0)",
+    "Commit Tracking & Issue Commenting (v2.0)",
+    "Smart Commits v1.1",
+    "GitHub-Jira Integration Suite v1.4.0",
+    "6-Phase Protocol",
+    "Confluence Integration",
+    "Multi-Cloud Deployment Tracking"
+  ],
+  "agents": [
+    "tag-manager",
+    "parallel-sub-issue-worker",
+    "expert-agent-matcher",
+    "completion-flow-orchestrator",
+    "commit-tracker",
+    "agent-router",
+    "confluence-manager",
+    "sub-item-documenter",
+    "smart-commit-validator",
+    "qa-transition"
   ],
   "license": "MIT",
   "repository": "https://github.com/markus41/jira-orchestrator"
