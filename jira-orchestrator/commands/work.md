@@ -1,19 +1,66 @@
 ---
 name: jira:work
-description: Start working on a Jira issue with full orchestration following the mandatory 6-phase protocol
+description: Start working on a Jira issue with full orchestration - processes sub-issues in parallel first, then main task, with expert agent assignment and comprehensive documentation
 arguments:
   - name: issue_key
     description: The Jira issue key (e.g., ABC-123)
     required: true
+version: 2.0.0
 ---
 
-# Jira Issue Orchestration
+# Jira Issue Orchestration (Enhanced v2.0)
 
-You are initiating work on a **Jira issue** with full orchestration. This command fetches the issue, creates a comprehensive execution plan, and coordinates sub-agents through all 6 phases.
+You are initiating work on a **Jira issue** with full orchestration. This enhanced workflow:
+1. **Detects sub-issues first** and works them before the main issue
+2. **Applies tags** to issues and sub-issues for tracking
+3. **Executes sub-issues in parallel** when they have no dependencies
+4. **Uses expert agents** most viable for each sub-task domain
+5. **Creates Confluence documentation** after sub-issues complete
+6. **Posts commit tracking comments** on all issues with Confluence references
 
 ## Issue Details
 
 **Issue Key:** ${issue_key}
+
+---
+
+## ENHANCED WORKFLOW OVERVIEW
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ENHANCED WORK COMMAND v2.0                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Step 1: VALIDATE & FETCH          ─→  Validate issue, fetch details        │
+│                  ↓                                                          │
+│  Step 2: TRANSITION TO IN PROGRESS ─→  Update Jira status                   │
+│                  ↓                                                          │
+│  Step 2.5: TAG MANAGEMENT (NEW)    ─→  Apply domain/status/type tags        │
+│                  ↓                                                          │
+│  Step 2.6: SUB-ISSUE DETECTION     ─→  Discover all subtasks & linked       │
+│                  ↓                                                          │
+│  Step 2.7: EXPERT AGENT MATCHING   ─→  Select best experts per sub-issue    │
+│                  ↓                                                          │
+│  Step 2.8: PARALLEL SUB-ISSUE WORK ─→  Execute sub-issues (parallel DAG)    │
+│                  ↓                                                          │
+│  Step 3: MAIN ISSUE ORCHESTRATION  ─→  6-phase protocol on main task        │
+│                  ↓                                                          │
+│  Step 4-9: STANDARD PHASES         ─→  EXPLORE→PLAN→CODE→TEST→FIX→DOCUMENT  │
+│                  ↓                                                          │
+│  Step 10: COMPLETION FLOW (NEW)    ─→  Gap analysis, fix gaps               │
+│                  ↓                                                          │
+│  Step 11: CONFLUENCE DOCS (NEW)    ─→  Create full documentation            │
+│                  ↓                                                          │
+│  Step 12: COMMIT & PR              ─→  Smart commit with tracking           │
+│                  ↓                                                          │
+│  Step 13: ISSUE COMMENTS (NEW)     ─→  Post commit info + Confluence refs   │
+│                  ↓                                                          │
+│  Step 14: FINAL SUMMARY            ─→  Complete traceability report         │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
 
 ## Step 1: Validate and Fetch Issue
 
@@ -52,7 +99,269 @@ Before starting work, transition the issue to "In Progress".
 3. Add initial comment: "Starting orchestrated development with Claude Code"
 ```
 
-## Step 3: Create Orchestration Plan
+---
+
+## Step 2.5: Tag Management (NEW - MANDATORY)
+
+**IMPORTANT:** Apply tags to the parent issue and all sub-issues for tracking.
+
+### Actions:
+```
+1. Invoke the `tag-manager` agent with:
+   - issue_key: ${issue_key}
+   - operation: "auto-detect-and-apply"
+
+2. The agent will:
+   a. Analyze the issue description, acceptance criteria, and components
+   b. Auto-detect relevant domain tags:
+      - domain:frontend (if React, components, UI)
+      - domain:backend (if API, services)
+      - domain:database (if Prisma, migrations)
+      - domain:testing (if test files involved)
+      - domain:devops (if CI/CD, infrastructure)
+      - domain:security (if auth, encryption)
+
+   c. Apply status tags:
+      - status:in-progress (initial)
+
+   d. Apply type tags:
+      - type:feature (for Stories)
+      - type:bug (for Bugs)
+      - type:task (for Tasks)
+      - type:refactor (for Refactor tasks)
+
+3. Sync tags to all sub-issues:
+   - Domain tags propagate to children
+   - Children inherit parent's type tags (if not set)
+   - Status tags are independent per issue
+
+4. Post comment: "Tags applied: [list of tags]"
+```
+
+### Tag Schema:
+```yaml
+tag_categories:
+  domain:
+    prefix: "domain:"
+    values: [frontend, backend, database, devops, testing, docs, security, performance]
+    propagate_to_children: true
+
+  status:
+    prefix: "status:"
+    values: [in-progress, completed, reviewed, tested, deployed, blocked, needs-review]
+    propagate_to_children: false
+
+  type:
+    prefix: "type:"
+    values: [feature, bug, task, refactor, enhancement, hotfix, chore]
+    propagate_to_children: true (if child has no type)
+```
+
+---
+
+## Step 2.6: Sub-Issue Detection (NEW - MANDATORY)
+
+**IMPORTANT:** Discover all sub-issues before starting work. Sub-issues are worked FIRST.
+
+### Actions:
+```
+1. Fetch subtasks from parent issue:
+   - parent.fields.subtasks → array of subtask keys
+
+2. Fetch linked issues:
+   - Use JQL: issue in linkedIssues(${issue_key})
+   - Filter by link types: "blocks", "is blocked by", "relates to"
+
+3. Build sub-issue registry:
+   {
+     "parent_key": "${issue_key}",
+     "sub_issues": [
+       {
+         "key": "PROJ-124",
+         "summary": "Implement login form",
+         "type": "Sub-task",
+         "status": "To Do",
+         "priority": "High",
+         "labels": ["frontend", "auth"],
+         "link_type": "subtask"
+       },
+       // ... more sub-issues
+     ],
+     "total_count": 5
+   }
+
+4. If sub-issues found → Proceed to Step 2.7 (Expert Agent Matching)
+   If no sub-issues → Skip to Step 3 (Main Issue Orchestration)
+
+5. Post comment: "Discovered {count} sub-issues to work first"
+```
+
+### Sub-Issue Priority:
+```yaml
+execution_priority:
+  1. Subtasks (highest - direct children)
+  2. "Blocks" linked issues (must complete first)
+  3. "Is blocked by" issues (dependencies)
+  4. "Relates to" issues (lowest - optional)
+```
+
+---
+
+## Step 2.7: Expert Agent Matching (NEW - MANDATORY)
+
+**IMPORTANT:** For each sub-issue, select the MOST VIABLE expert agents.
+
+### Actions:
+```
+1. For each sub-issue, invoke the `expert-agent-matcher` agent:
+
+   for sub_issue in sub_issues:
+     expert_match = invoke_agent('expert-agent-matcher', {
+       issue_key: sub_issue.key,
+       issue_summary: sub_issue.summary,
+       issue_labels: sub_issue.labels,
+       planned_files: analyze_expected_files(sub_issue),
+       required_capabilities: extract_capabilities(sub_issue.description)
+     })
+
+     sub_issue.assigned_experts = expert_match.recommended_experts
+     sub_issue.expert_rationale = expert_match.rationale
+
+2. Expert Matching Algorithm (50-25-15-10 weights):
+   - Domain Expertise (50%): Primary domain match, capability breadth
+   - Technology Match (25%): Exact tech/framework matches
+   - File Pattern Match (15%): Extension and path matching
+   - Historical Performance (10%): Success rate on similar tasks
+
+3. Expert Selection Output per Sub-Issue:
+   {
+     "sub_issue": "PROJ-124",
+     "recommended_experts": [
+       {
+         "name": "react-component-architect",
+         "score": 95,
+         "rationale": "Matched: frontend domain, .tsx files, React keyword",
+         "model": "sonnet"
+       },
+       {
+         "name": "accessibility-expert",
+         "score": 82,
+         "rationale": "Secondary: UI component requires a11y review",
+         "model": "haiku"
+       }
+     ],
+     "confidence": "High"
+   }
+
+4. Post comment on parent: "Expert agents assigned to {count} sub-issues"
+```
+
+### Expert Categories:
+```yaml
+expert_domains:
+  frontend:
+    primary: [react-component-architect, nextjs-specialist, accessibility-expert]
+    secondary: [theme-builder, mobile-ux-optimizer]
+
+  backend:
+    primary: [api-integration-specialist, code-architect]
+    secondary: [graphql-specialist, redis-specialist]
+
+  database:
+    primary: [prisma-specialist, mongodb-schema-designer]
+    secondary: [database-performance-optimizer]
+
+  authentication:
+    primary: [keycloak-identity-specialist, keycloak-auth-flow-designer]
+    secondary: [enterprise-security-reviewer]
+
+  testing:
+    primary: [test-writer-fixer, vitest-specialist]
+    secondary: [coverage-analyzer, selenium-test-architect]
+
+  devops:
+    primary: [k8s-deployer, helm-chart-developer, docker-builder]
+    secondary: [cicd-engineer, gitops-specialist]
+```
+
+---
+
+## Step 2.8: Parallel Sub-Issue Work (NEW - MANDATORY)
+
+**IMPORTANT:** Work ALL sub-issues FIRST before the main task. Execute in parallel where possible.
+
+### Actions:
+```
+1. Invoke the `parallel-sub-issue-worker` agent:
+
+   parallel_result = invoke_agent('parallel-sub-issue-worker', {
+     parent_key: ${issue_key},
+     sub_issues: sub_issue_registry.sub_issues,
+     expert_assignments: expert_match_results,
+     execution_mode: "parallel-dag"
+   })
+
+2. The agent will:
+   a. Analyze dependencies between sub-issues:
+      - Explicit: Jira links (blocks, depends on)
+      - File-based: Detect shared file modifications
+      - Semantic: Layer dependencies (DB → API → UI)
+
+   b. Build DAG (Directed Acyclic Graph):
+      - Level 0: No dependencies (can run in parallel)
+      - Level 1: Depends on Level 0 completion
+      - Level 2: Depends on Level 1 completion
+      - etc.
+
+   c. Execute in parallel respecting DAG:
+      - Spawn Task agents for Level 0 sub-issues in parallel
+      - Wait for Level 0 completion
+      - Spawn Task agents for Level 1 sub-issues in parallel
+      - Continue until all levels complete
+
+   d. Each sub-issue execution uses:
+      - The expert agents assigned in Step 2.7
+      - 6-phase protocol (EXPLORE→PLAN→CODE→TEST→FIX→DOCUMENT)
+      - Progress reporting to parent issue
+
+3. Track progress:
+   - Post updates every 5 minutes to parent issue
+   - Track: in_progress, completed, failed counts
+   - Calculate parallelism efficiency
+
+4. On completion of all sub-issues:
+   - Post summary: "All {count} sub-issues completed"
+   - Trigger: Step 3 (Main Issue Orchestration)
+```
+
+### Parallel Execution Example:
+```
+Parent: PROJ-123 "Implement OAuth2 Login"
+  │
+  ├── Level 0 (parallel):
+  │     ├── PROJ-124: "Database schema for users" (prisma-specialist)
+  │     └── PROJ-127: "Design login UI mockup" (ux-researcher)
+  │
+  ├── Level 1 (parallel, after Level 0):
+  │     ├── PROJ-125: "Implement Keycloak integration" (keycloak-identity-specialist)
+  │     └── PROJ-128: "Create LoginForm component" (react-component-architect)
+  │
+  └── Level 2 (after Level 1):
+        └── PROJ-126: "Integration tests for auth flow" (test-writer-fixer)
+```
+
+### Post-Sub-Issue Actions:
+```
+After all sub-issues complete:
+1. Apply status tag: "status:sub-issues-complete"
+2. Collect all commits from sub-issues
+3. Aggregate file changes
+4. Prepare for main issue evaluation
+```
+
+---
+
+## Step 3: Main Issue Orchestration (After Sub-Issues)
 
 Based on the issue type, create an appropriate orchestration strategy.
 
@@ -833,14 +1142,232 @@ Assign appropriate models based on task complexity:
 | **sonnet-4.5** | Development, analysis, most CODE phase work |
 | **haiku** | Documentation, simple tasks, status updates |
 
-## Success Criteria
+---
+
+## Step 13: Completion Flow with Gap Analysis (NEW - MANDATORY)
+
+**IMPORTANT:** After sub-issues and main issue work complete, run completion flow.
+
+### Actions:
+```
+1. Invoke the `completion-flow-orchestrator` agent:
+
+   completion_result = invoke_agent('completion-flow-orchestrator', {
+     parent_key: ${issue_key},
+     sub_issues: sub_issue_registry.sub_issues,
+     pr_url: {PR_URL},
+     branch_name: {branch_name}
+   })
+
+2. The agent will:
+
+   a. EVALUATE COMPLETION:
+      - Check all sub-issues status = "Done"
+      - Verify acceptance criteria met
+      - Validate test coverage >= 80%
+      - Confirm documentation exists
+
+   b. GAP ANALYSIS:
+      For each criterion, check and identify gaps:
+
+      | Criterion | Check | Gap Type |
+      |-----------|-------|----------|
+      | Tests passing | `npm test` or `pytest` | testing-gap |
+      | Coverage >= 80% | Coverage report | coverage-gap |
+      | Documentation | Confluence pages exist | documentation-gap |
+      | Acceptance criteria | Jira AC checklist | acceptance-gap |
+      | Code quality | Linting, no TODOs | quality-gap |
+
+   c. FIX GAPS:
+      For each identified gap:
+      - Spawn appropriate agent to fix
+      - Wait for completion
+      - Re-evaluate
+
+   d. TRIGGER CONFLUENCE DOCS:
+      - Invoke confluence-manager for full documentation
+      - Create: Technical Design, Implementation Notes, Test Results, Runbook
+      - Link all pages to Jira issue
+
+3. Output:
+   {
+     "completion_status": "complete",
+     "gaps_found": 2,
+     "gaps_fixed": 2,
+     "confluence_pages": [
+       { "title": "Technical Design", "url": "..." },
+       { "title": "Implementation Notes", "url": "..." }
+     ],
+     "ready_for_commit": true
+   }
+
+4. Post comment: "Gap analysis complete: {gaps_found} found, {gaps_fixed} fixed"
+```
+
+### Gap Analysis Categories:
+```yaml
+gap_categories:
+  critical:
+    - Tests failing
+    - Security vulnerability
+    - Missing core functionality
+
+  high:
+    - Test coverage < 80%
+    - Missing acceptance criteria
+    - Missing error handling
+
+  medium:
+    - Missing documentation
+    - Code quality issues
+    - Performance concerns
+
+  low:
+    - Minor style issues
+    - Optional enhancements
+```
+
+---
+
+## Step 14: Commit Tracking & Issue Comments (NEW - MANDATORY)
+
+**IMPORTANT:** Post detailed commit info on ALL issues with Confluence references.
+
+### Actions:
+```
+1. Invoke the `commit-tracker` agent:
+
+   tracking_result = invoke_agent('commit-tracker', {
+     parent_key: ${issue_key},
+     sub_issues: sub_issue_registry.sub_issues,
+     branch_name: {branch_name},
+     confluence_pages: completion_result.confluence_pages
+   })
+
+2. The agent will:
+
+   a. COLLECT COMMITS:
+      - Get all commits on branch: git log origin/{branch_name}
+      - Extract: SHA, author, date, message, files changed
+
+   b. MAP COMMITS TO ISSUES:
+      For each commit, determine which issue it relates to:
+
+      Mapping Strategy (priority order):
+      1. Direct key match in commit message (PROJ-123)
+      2. File path match against issue scope
+      3. Temporal proximity to issue work period
+      4. Semantic match (commit message ↔ issue summary)
+
+   c. POST COMMENTS ON EACH ISSUE:
+
+      For parent issue and each sub-issue, post:
+
+      "## 🔧 Commit Tracking Report
+
+      ### Commits for this Issue
+      | Commit | Author | Files | Changes |
+      |--------|--------|-------|---------|
+      | [`a1b2c3d`]({github_url}) | @developer | 4 | +142/-23 |
+      | [`e4f5g6h`]({github_url}) | @developer | 2 | +56/-12 |
+
+      ### Files Changed
+      | File | Status | Lines |
+      |------|--------|-------|
+      | `src/components/Login.tsx` | Modified | +98/-15 |
+      | `src/services/auth.ts` | Added | +44 |
+      | `tests/auth.test.ts` | Added | +56 |
+
+      ### What Changed
+      - Implemented OAuth2 login flow
+      - Added JWT token handling
+      - Created unit tests for auth service
+
+      ### 📚 Documentation
+      - [Technical Design]({confluence_url})
+      - [Implementation Notes]({confluence_url})
+      - [Test Results]({confluence_url})
+
+      ### 🔗 Pull Request
+      - [PR #{pr_number}]({pr_url}): {pr_title}
+
+      ---
+      🤖 Tracked by Jira Orchestrator | Commit Coverage: 100%"
+
+3. BATCH PROCESSING for multiple commits:
+   - Group commits by issue
+   - Single comment per issue with all related commits
+   - Include aggregate file changes
+
+4. Output:
+   {
+     "issues_commented": 6,
+     "commits_tracked": 12,
+     "commit_coverage": "100%",
+     "confluence_links_added": true
+   }
+```
+
+### Comment Template Structure:
+```yaml
+comment_sections:
+  header:
+    - Issue completion status emoji (✅/⚠️/❌)
+    - Report title
+
+  commits_table:
+    columns: [SHA (short, linked), Author, Files, +/- Lines]
+    max_rows: 10 (truncate with "...and N more")
+
+  files_table:
+    columns: [File path, Status (Added/Modified/Deleted), Lines changed]
+    group_by: file_type (source, test, config, docs)
+
+  changes_summary:
+    format: Bullet points
+    extract_from: Commit messages
+    max_points: 7
+
+  documentation_links:
+    include: All Confluence pages created
+    format: Markdown links with titles
+
+  pr_link:
+    include: PR number, title, status
+    format: Single link with description
+```
+
+---
+
+## Success Criteria (Enhanced v2.0)
 
 Orchestration is complete when:
+
+### Phase Execution:
 - [ ] All 6 phases executed successfully (EXPLORE → DOCUMENT)
+- [ ] All sub-issues worked FIRST (via parallel-sub-issue-worker)
+- [ ] Expert agents used for each domain (via expert-agent-matcher)
+- [ ] Main issue evaluated and completed
+
+### Quality:
 - [ ] All tests passing
 - [ ] All acceptance criteria met
+- [ ] Gap analysis completed with all gaps fixed
+- [ ] Code review completed (if required)
+
+### Documentation:
+- [ ] Confluence documentation created (4+ pages)
 - [ ] Documentation updated in both repo and Obsidian vault
+- [ ] All sub-items have Confluence links in comments
+
+### Commits & PR:
 - [ ] PR created and linked to Jira
+- [ ] All commits tracked and mapped to issues
+- [ ] Commit comments posted on ALL issues (parent + sub-issues)
+- [ ] Confluence references in all issue comments
+
+### Status:
+- [ ] Tags applied to parent and all sub-issues
 - [ ] **ALL sub-items documented** (with review checklists)
 - [ ] **Main issue transitioned to QA**
 - [ ] **ALL sub-items transitioned to QA**
