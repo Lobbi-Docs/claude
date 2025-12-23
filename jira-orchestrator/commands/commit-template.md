@@ -1,5 +1,5 @@
 ---
-name: commit-template
+name: jira:commit-template
 description: Generate commit message templates from Jira issue context for conventional commits
 arguments:
   - name: issue-key

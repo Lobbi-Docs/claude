@@ -1,5 +1,5 @@
 ---
-name: qa-review
+name: jira:qa-review
 description: Review all JIRA tickets in QA status - improve content, create Confluence documentation, and respond to comments
 arguments:
   - name: ticket

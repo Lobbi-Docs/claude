@@ -1,5 +1,5 @@
 ---
-name: install-hooks
+name: jira:install-hooks
 description: Install and manage git hooks for Jira smart commit integration
 arguments:
   - name: action

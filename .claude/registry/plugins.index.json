@@ -41,11 +41,18 @@
     "jira-orchestrator": {
       "callsign": "Arbiter",
       "faction": "Forerunner",
-      "version": "1.1.0",
+      "version": "4.0.0",
       "path": "../jira-orchestrator",
       "source": "local",
       "installedAt": "2025-12-17T11:30:00Z",
-      "dependencies": {}
+      "updatedAt": "2025-12-23T00:00:00Z",
+      "dependencies": {},
+      "provides": {
+        "commands": 35,
+        "agents": 61,
+        "skills": 6,
+        "hooks": 5
+      }
     },
     "exec-automator": {
       "callsign": "Genesis",
@@ -249,17 +256,17 @@
       "callsign": "Arbiter",
       "faction": "Forerunner",
       "name": "jira-orchestrator",
-      "version": "1.1.0",
-      "description": "Arbiter - Supreme judge of Jira issue completion. Intelligent orchestration of 6-phase development workflows (EXPLORE -> PLAN -> CODE -> TEST -> FIX -> DOCUMENT) with OAuth 2.1/SSO authentication. Auto-coordinates 10 specialized sub-agents for triage, code review, PR creation, and Confluence documentation. No API tokens required.",
+      "version": "4.0.0",
+      "description": "Arbiter (Enterprise Ultimate) - Supreme judge of Jira issue completion. Complete enterprise Jira orchestration platform with AI-powered Intelligence, Event Sourcing, Advanced Orchestration Patterns, Enterprise Analytics, Multi-Project Portfolio Management, Approval Workflows, Notification System (Slack/Teams/Email), Team Capacity Planning, SLA Monitoring, Compliance Reporting (SOC2/GDPR/ISO27001), and Batch Operations. Features 61 specialized agents and 35 slash commands for end-to-end development lifecycle automation.",
       "author": "Brookside BI",
       "license": "MIT",
       "repository": "https://github.com/markus41/jira-orchestrator",
-      "keywords": ["jira", "confluence", "orchestration", "automation", "development", "workflow", "agile", "oauth", "sso", "code-review", "triage", "pr-automation", "atlassian"],
-      "categories": ["collaboration", "project-management", "devops", "orchestration", "automation"],
+      "keywords": ["jira", "confluence", "orchestration", "automation", "development", "workflow", "agile", "oauth", "sso", "code-review", "triage", "pr-automation", "atlassian", "event-sourcing", "intelligence", "portfolio-management", "sla-monitoring", "compliance", "notifications", "approval-workflows", "team-capacity", "batch-operations"],
+      "categories": ["collaboration", "project-management", "devops", "orchestration", "automation", "enterprise"],
       "dependencies": {},
       "provides": {
-        "commands": 10,
-        "agents": 10,
+        "commands": 35,
+        "agents": 61,
         "skills": 6,
         "hooks": 5
       }

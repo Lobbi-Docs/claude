@@ -169,6 +169,7 @@
     "jira:triage",
     "jira:branch",
     "jira:commit",
+    "jira:commit-template",
     "jira:pr",
     "jira:review",
     "jira:docs",
@@ -190,9 +191,11 @@
     "jira:sla",
     "jira:compliance",
     "jira:setup",
+    "jira:install-hooks",
     "jira:bulk-commit",
     "jira:qa-review",
-    "jira:plan-prs"
+    "jira:plan-prs",
+    "jira:process-worklogs"
   ],
   "license": "MIT",
   "repository": "https://github.com/markus41/jira-orchestrator"

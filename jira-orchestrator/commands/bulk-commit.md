@@ -1,5 +1,5 @@
 ---
-name: bulk-commit
+name: jira:bulk-commit
 description: Process multiple existing commits and send aggregated updates to Jira
 arguments:
   - name: commit-range
