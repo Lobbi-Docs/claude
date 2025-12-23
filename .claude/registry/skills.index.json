@@ -263,6 +263,69 @@
         "plugin": "jira-orchestrator",
         "description": "Arbiter (Enterprise Ultimate) - 35 commands for end-to-end Jira development lifecycle automation"
       },
+      "jira:work": {
+        "path": "skills/jira-work/SKILL.md",
+        "triggers": ["jira:work", "work on issue", "start issue", "begin jira"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:prepare": {
+        "path": "skills/jira-prepare/SKILL.md",
+        "triggers": ["jira:prepare", "prepare task", "enrich issue"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:status": {
+        "path": "skills/jira-status/SKILL.md",
+        "triggers": ["jira:status", "work status", "current progress"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:sync": {
+        "path": "skills/jira-sync/SKILL.md",
+        "triggers": ["jira:sync", "sync jira", "update jira"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:pr": {
+        "path": "skills/jira-pr/SKILL.md",
+        "triggers": ["jira:pr", "create pr", "pull request"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:commit": {
+        "path": "skills/jira-commit/SKILL.md",
+        "triggers": ["jira:commit", "smart commit", "jira commit"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:branch": {
+        "path": "skills/jira-branch/SKILL.md",
+        "triggers": ["jira:branch", "create branch", "feature branch"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:triage": {
+        "path": "skills/jira-triage/SKILL.md",
+        "triggers": ["jira:triage", "triage issues", "analyze backlog"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
+      "jira:review": {
+        "path": "skills/jira-review/SKILL.md",
+        "triggers": ["jira:review", "code review", "review pr"],
+        "activationScore": 0,
+        "dependencies": ["jira"],
+        "autoActivate": true
+      },
       "confluence": {
         "path": "skills/confluence/SKILL.md",
         "triggers": [

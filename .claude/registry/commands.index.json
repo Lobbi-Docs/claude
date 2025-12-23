@@ -1,7 +1,7 @@
 {
   "$schema": "./schema/commands.schema.json",
   "version": "5.0.0",
-  "description": "Slash command registry for Claude Code - 60 commands across 10 categories",
+  "description": "Slash command registry for Claude Code - 95 commands across 11 categories",
   "commands": {
     "core": {
       "init": {
@@ -732,6 +732,253 @@
         "usage": "/telemetry <summary|dashboard|export> [options]",
         "priority": "medium"
       }
+    },
+    "jira-orchestrator": {
+      "jira:work": {
+        "path": "jira-orchestrator/commands/work.md",
+        "description": "Start working on a Jira issue with full 6-phase orchestration",
+        "keywords": ["jira", "work", "issue", "start", "orchestrate"],
+        "usage": "/jira:work <issue-key>",
+        "priority": "high"
+      },
+      "jira:prepare": {
+        "path": "jira-orchestrator/commands/prepare.md",
+        "description": "Prepare a Jira task with enrichment and subtask creation",
+        "keywords": ["jira", "prepare", "task", "enrich", "subtask"],
+        "usage": "/jira:prepare <issue-key>",
+        "priority": "high"
+      },
+      "jira:status": {
+        "path": "jira-orchestrator/commands/status.md",
+        "description": "Check status of current Jira work session",
+        "keywords": ["jira", "status", "progress", "check"],
+        "usage": "/jira:status [issue-key]",
+        "priority": "high"
+      },
+      "jira:cancel": {
+        "path": "jira-orchestrator/commands/cancel.md",
+        "description": "Cancel current Jira work session",
+        "keywords": ["jira", "cancel", "stop", "abort"],
+        "usage": "/jira:cancel",
+        "priority": "medium"
+      },
+      "jira:sync": {
+        "path": "jira-orchestrator/commands/sync.md",
+        "description": "Sync local changes with Jira issue",
+        "keywords": ["jira", "sync", "update", "push"],
+        "usage": "/jira:sync [issue-key]",
+        "priority": "high"
+      },
+      "jira:triage": {
+        "path": "jira-orchestrator/commands/triage.md",
+        "description": "Triage and analyze Jira issues",
+        "keywords": ["jira", "triage", "analyze", "assess"],
+        "usage": "/jira:triage <issue-key|jql>",
+        "priority": "high"
+      },
+      "jira:branch": {
+        "path": "jira-orchestrator/commands/branch.md",
+        "description": "Create git branch linked to Jira issue",
+        "keywords": ["jira", "branch", "git", "create"],
+        "usage": "/jira:branch <issue-key>",
+        "priority": "high"
+      },
+      "jira:commit": {
+        "path": "jira-orchestrator/commands/commit.md",
+        "description": "Create smart commit linked to Jira issue",
+        "keywords": ["jira", "commit", "git", "smart"],
+        "usage": "/jira:commit [issue-key] [message]",
+        "priority": "high"
+      },
+      "jira:commit-template": {
+        "path": "jira-orchestrator/commands/commit-template.md",
+        "description": "Generate commit message template for Jira issue",
+        "keywords": ["jira", "commit", "template", "message"],
+        "usage": "/jira:commit-template <issue-key>",
+        "priority": "medium"
+      },
+      "jira:pr": {
+        "path": "jira-orchestrator/commands/pr.md",
+        "description": "Create pull request linked to Jira issue",
+        "keywords": ["jira", "pr", "pull-request", "create"],
+        "usage": "/jira:pr <issue-key>",
+        "priority": "high"
+      },
+      "jira:review": {
+        "path": "jira-orchestrator/commands/review.md",
+        "description": "Review code changes for Jira issue",
+        "keywords": ["jira", "review", "code", "audit"],
+        "usage": "/jira:review <issue-key>",
+        "priority": "high"
+      },
+      "jira:docs": {
+        "path": "jira-orchestrator/commands/docs.md",
+        "description": "Generate documentation for Jira issue",
+        "keywords": ["jira", "docs", "documentation", "generate"],
+        "usage": "/jira:docs <issue-key>",
+        "priority": "medium"
+      },
+      "jira:confluence": {
+        "path": "jira-orchestrator/commands/confluence.md",
+        "description": "Sync Jira issue to Confluence",
+        "keywords": ["jira", "confluence", "sync", "wiki"],
+        "usage": "/jira:confluence <issue-key>",
+        "priority": "medium"
+      },
+      "jira:deploy": {
+        "path": "jira-orchestrator/commands/deploy.md",
+        "description": "Track deployment for Jira issue",
+        "keywords": ["jira", "deploy", "release", "track"],
+        "usage": "/jira:deploy <issue-key> <environment>",
+        "priority": "medium"
+      },
+      "jira:metrics": {
+        "path": "jira-orchestrator/commands/metrics.md",
+        "description": "View Jira metrics and analytics",
+        "keywords": ["jira", "metrics", "analytics", "dashboard"],
+        "usage": "/jira:metrics [project-key]",
+        "priority": "medium"
+      },
+      "jira:sprint-plan": {
+        "path": "jira-orchestrator/commands/sprint-plan.md",
+        "description": "Automate sprint planning",
+        "keywords": ["jira", "sprint", "plan", "planning"],
+        "usage": "/jira:sprint-plan [sprint-name]",
+        "priority": "medium"
+      },
+      "jira:quality": {
+        "path": "jira-orchestrator/commands/quality.md",
+        "description": "Generate quality intelligence report",
+        "keywords": ["jira", "quality", "report", "intelligence"],
+        "usage": "/jira:quality [project-key]",
+        "priority": "medium"
+      },
+      "jira:events": {
+        "path": "jira-orchestrator/commands/events.md",
+        "description": "View event sourcing audit trail",
+        "keywords": ["jira", "events", "audit", "history"],
+        "usage": "/jira:events [issue-key]",
+        "priority": "low"
+      },
+      "jira:intelligence": {
+        "path": "jira-orchestrator/commands/intelligence.md",
+        "description": "AI-powered Jira analytics and predictions",
+        "keywords": ["jira", "intelligence", "ai", "predict"],
+        "usage": "/jira:intelligence [query]",
+        "priority": "medium"
+      },
+      "jira:orchestrate-advanced": {
+        "path": "jira-orchestrator/commands/orchestrate-advanced.md",
+        "description": "Advanced orchestration patterns",
+        "keywords": ["jira", "orchestrate", "advanced", "pattern"],
+        "usage": "/jira:orchestrate-advanced <pattern> <issue-key>",
+        "priority": "low"
+      },
+      "jira:notify": {
+        "path": "jira-orchestrator/commands/notify.md",
+        "description": "Send notifications for Jira events",
+        "keywords": ["jira", "notify", "slack", "teams"],
+        "usage": "/jira:notify <channel> <message>",
+        "priority": "medium"
+      },
+      "jira:approve": {
+        "path": "jira-orchestrator/commands/approve.md",
+        "description": "Manage approval workflows",
+        "keywords": ["jira", "approve", "workflow", "governance"],
+        "usage": "/jira:approve <issue-key>",
+        "priority": "medium"
+      },
+      "jira:portfolio": {
+        "path": "jira-orchestrator/commands/portfolio.md",
+        "description": "Multi-project portfolio management",
+        "keywords": ["jira", "portfolio", "multi-project", "roadmap"],
+        "usage": "/jira:portfolio [command]",
+        "priority": "medium"
+      },
+      "jira:release": {
+        "path": "jira-orchestrator/commands/release.md",
+        "description": "Coordinate releases",
+        "keywords": ["jira", "release", "version", "coordinate"],
+        "usage": "/jira:release <version>",
+        "priority": "medium"
+      },
+      "jira:batch": {
+        "path": "jira-orchestrator/commands/batch.md",
+        "description": "Bulk operations on Jira issues",
+        "keywords": ["jira", "batch", "bulk", "import"],
+        "usage": "/jira:batch <operation> [options]",
+        "priority": "medium"
+      },
+      "jira:export": {
+        "path": "jira-orchestrator/commands/export.md",
+        "description": "Export Jira data and reports",
+        "keywords": ["jira", "export", "report", "csv"],
+        "usage": "/jira:export <format> [jql]",
+        "priority": "low"
+      },
+      "jira:team": {
+        "path": "jira-orchestrator/commands/team.md",
+        "description": "Team capacity and workload management",
+        "keywords": ["jira", "team", "capacity", "workload"],
+        "usage": "/jira:team [command]",
+        "priority": "medium"
+      },
+      "jira:sla": {
+        "path": "jira-orchestrator/commands/sla.md",
+        "description": "SLA monitoring and alerts",
+        "keywords": ["jira", "sla", "monitor", "breach"],
+        "usage": "/jira:sla [project-key]",
+        "priority": "medium"
+      },
+      "jira:compliance": {
+        "path": "jira-orchestrator/commands/compliance.md",
+        "description": "Compliance reporting",
+        "keywords": ["jira", "compliance", "soc2", "gdpr"],
+        "usage": "/jira:compliance <standard>",
+        "priority": "low"
+      },
+      "jira:setup": {
+        "path": "jira-orchestrator/commands/setup.md",
+        "description": "Setup jira-orchestrator plugin",
+        "keywords": ["jira", "setup", "configure", "install"],
+        "usage": "/jira:setup",
+        "priority": "high"
+      },
+      "jira:install-hooks": {
+        "path": "jira-orchestrator/commands/install-hooks.md",
+        "description": "Install git hooks for Jira integration",
+        "keywords": ["jira", "hooks", "git", "install"],
+        "usage": "/jira:install-hooks",
+        "priority": "medium"
+      },
+      "jira:bulk-commit": {
+        "path": "jira-orchestrator/commands/bulk-commit.md",
+        "description": "Commit multiple changes with Jira linking",
+        "keywords": ["jira", "bulk", "commit", "batch"],
+        "usage": "/jira:bulk-commit [options]",
+        "priority": "medium"
+      },
+      "jira:qa-review": {
+        "path": "jira-orchestrator/commands/qa-review.md",
+        "description": "Review QA tickets and update documentation",
+        "keywords": ["jira", "qa", "review", "test"],
+        "usage": "/jira:qa-review [issue-key]",
+        "priority": "medium"
+      },
+      "jira:plan-prs": {
+        "path": "jira-orchestrator/commands/plan-prs.md",
+        "description": "Plan PR strategy for issues",
+        "keywords": ["jira", "plan", "pr", "strategy"],
+        "usage": "/jira:plan-prs <issue-key>",
+        "priority": "medium"
+      },
+      "jira:process-worklogs": {
+        "path": "jira-orchestrator/commands/process-worklogs.md",
+        "description": "Process and sync worklogs",
+        "keywords": ["jira", "worklog", "time", "track"],
+        "usage": "/jira:process-worklogs [issue-key]",
+        "priority": "low"
+      }
     }
   },
   "quickLookup": {
@@ -758,7 +1005,17 @@
         "jira-create",
         "jira-status",
         "jira-transition",
-        "atlassian-sync"
+        "atlassian-sync",
+        "jira:work",
+        "jira:prepare",
+        "jira:status",
+        "jira:sync",
+        "jira:triage",
+        "jira:branch",
+        "jira:commit",
+        "jira:pr",
+        "jira:review",
+        "jira:docs"
       ],
       "review": [
         "review",
@@ -856,7 +1113,7 @@
     }
   },
   "stats": {
-    "totalCommands": 60,
+    "totalCommands": 95,
     "byCategory": {
       "core": 4,
       "development": 9,
@@ -867,12 +1124,13 @@
       "analysis": 5,
       "plugin-management": 7,
       "ecosystem": 6,
-      "intelligence": 4
+      "intelligence": 4,
+      "jira-orchestrator": 35
     },
     "byPriority": {
-      "high": 20,
-      "medium": 27,
-      "low": 4
+      "high": 31,
+      "medium": 50,
+      "low": 9
     }
   }
 }
