@@ -195,5 +195,10 @@
     "jira:plan-prs"
   ],
   "license": "MIT",
-  "repository": "https://github.com/markus41/jira-orchestrator"
+  "repository": "https://github.com/the-lobbi/jira-orchestrator",
+  "targetOrganization": "the-lobbi",
+  "codebaseMapping": {
+    "configFile": "config/github-repos.yaml",
+    "defaultRepo": "the-lobbi/keycloak-alpha"
+  }
 }

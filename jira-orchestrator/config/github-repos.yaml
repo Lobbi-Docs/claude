@@ -1,0 +1,99 @@
+# GitHub Repository Configuration
+# Maps Jira projects to target repositories in the-lobbi org
+# All code work from Jira tasks should go to these repos
+
+github:
+  # Primary organization for all code work
+  organization: "the-lobbi"
+
+  # Default branch for new feature branches
+  default_base_branch: "main"
+
+  # Branch naming convention
+  branch_prefix: "feature/"
+  bugfix_prefix: "bugfix/"
+  hotfix_prefix: "hotfix/"
+
+# Repository mappings by Jira project key
+# When a Jira task comes in, route code to the appropriate repo
+project_mappings:
+  # Keycloak/Auth related projects
+  KEYCLOAK:
+    repo: "the-lobbi/keycloak-alpha"
+    description: "Multi-tenant MERN stack with Keycloak authentication"
+    tech_stack: ["typescript", "react", "express", "mongodb", "keycloak"]
+
+  AUTH:
+    repo: "the-lobbi/keycloak-alpha"
+    description: "Authentication and identity management"
+    tech_stack: ["typescript", "keycloak", "oauth2"]
+
+  # Platform projects (add your project keys here)
+  PLATFORM:
+    repo: "the-lobbi/keycloak-alpha"
+    description: "Core platform services"
+    tech_stack: ["typescript", "express", "mongodb"]
+
+  # API projects
+  API:
+    repo: "the-lobbi/keycloak-alpha"
+    description: "API services"
+    tech_stack: ["typescript", "express", "openapi"]
+
+  # Frontend projects
+  FRONTEND:
+    repo: "the-lobbi/keycloak-alpha"
+    description: "Frontend applications"
+    tech_stack: ["typescript", "react", "tailwind"]
+
+  # Add more project mappings as needed
+  # PROJECT_KEY:
+  #   repo: "the-lobbi/repo-name"
+  #   description: "Description"
+  #   tech_stack: ["languages", "frameworks"]
+
+# Default repository if project key not mapped
+default_repo:
+  repo: "the-lobbi/keycloak-alpha"
+  description: "Default repository for unmapped projects"
+
+# PR settings
+pull_requests:
+  # Auto-create draft PRs
+  create_draft: true
+
+  # Require linked Jira issue
+  require_jira_link: true
+
+  # PR template location in target repo
+  template_path: ".github/PULL_REQUEST_TEMPLATE.md"
+
+  # Auto-assign reviewers based on CODEOWNERS
+  auto_assign_reviewers: true
+
+  # Labels to apply
+  default_labels:
+    - "from-jira"
+
+# Commit settings
+commits:
+  # Include Jira issue key in commit messages
+  include_jira_key: true
+
+  # Commit message format
+  # Available placeholders: {issue_key}, {summary}, {type}
+  message_format: "{type}({issue_key}): {summary}"
+
+  # Sign commits if GPG key available
+  sign_commits: false
+
+# Branch protection
+branch_rules:
+  # Require PR for these branches
+  protected_branches:
+    - "main"
+    - "develop"
+    - "release/*"
+
+  # Delete branch after merge
+  delete_on_merge: true
