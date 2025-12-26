@@ -1,0 +1,88 @@
+{
+  "name": "api-nexus-v2-conduit",
+  "version": "2.0.0",
+  "description": "Conduit - Self-Architecting API Platform & Inter-Plugin Communication Hub. Intent-to-API generation, self-optimizing runtime, API evolution AI, multi-protocol synthesis (REST, GraphQL, gRPC), and schema registry. Foundation for all plugin communication. Provides 12 specialized agents and 15 commands for 75-80% backend developer reduction.",
+  "author": {
+    "name": "The Lobbi",
+    "email": "developers@thelobbi.io"
+  },
+  "callsign": "Conduit",
+  "faction": "Spartan",
+  "keywords": [
+    "api-design",
+    "graphql-federation",
+    "grpc",
+    "rest-api",
+    "schema-registry",
+    "api-gateway",
+    "rate-limiting",
+    "circuit-breaker",
+    "intent-to-api",
+    "self-optimizing",
+    "api-evolution",
+    "contract-testing",
+    "webhook-orchestration",
+    "openapi",
+    "swagger",
+    "inter-plugin-communication",
+    "message-bus"
+  ],
+  "features": [
+    "Intent-to-API Generation (v2.0) - Natural language to full API implementation",
+    "Self-Optimizing Runtime (v2.0) - Auto-caching, N+1 elimination, query optimization",
+    "API Evolution AI (v2.0) - Safe versioning, migration paths, breaking change detection",
+    "Multi-Protocol Synthesis (v2.0) - REST, GraphQL, gRPC from single spec",
+    "Schema Registry (v2.0) - Centralized API contract management",
+    "API Gateway (v2.0) - Unified entry point with rate limiting, auth, routing",
+    "Contract Testing (v2.0) - Consumer-driven contract validation",
+    "GraphQL Federation (v2.0) - Apollo Federation v2 for unified graph",
+    "Webhook Orchestration (v2.0) - Reliable webhook delivery with retry",
+    "Circuit Breaker (v2.0) - Fault tolerance with fallback strategies"
+  ],
+  "agents": [
+    "api-designer",
+    "schema-validator",
+    "graphql-federator",
+    "grpc-manager",
+    "rest-generator",
+    "webhook-orchestrator",
+    "rate-limiter",
+    "quota-enforcer",
+    "circuit-breaker-manager",
+    "api-gateway-controller",
+    "version-controller",
+    "documentation-generator"
+  ],
+  "commands": [
+    "api:design",
+    "api:generate",
+    "api:test",
+    "api:deploy",
+    "api:federate",
+    "api:schema",
+    "api:version",
+    "api:docs",
+    "api:quota",
+    "api:limit",
+    "api:circuit",
+    "api:gateway",
+    "api:graphql",
+    "api:grpc",
+    "api:webhook"
+  ],
+  "provides": {
+    "commands": 15,
+    "agents": 12,
+    "skills": 3,
+    "hooks": 2
+  },
+  "dependencies": {},
+  "routing": {
+    "domains": ["backend", "api", "integration", "communication"],
+    "keywords": ["api", "rest", "graphql", "grpc", "webhook", "gateway", "schema", "endpoint", "route"],
+    "triggers": ["create api", "design api", "api endpoint", "graphql query", "grpc service"]
+  },
+  "isFoundation": true,
+  "license": "MIT",
+  "repository": "https://github.com/Lobbi-Docs/api-nexus-v2-conduit"
+}

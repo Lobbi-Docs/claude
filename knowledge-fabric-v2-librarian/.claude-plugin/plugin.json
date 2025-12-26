@@ -1,0 +1,97 @@
+{
+  "name": "knowledge-fabric-v2-librarian",
+  "version": "2.0.0",
+  "description": "Librarian - Cognitive Organization & Expert Knowledge Synthesis. Expert cloning for senior developer knowledge capture, decision intelligence, cognitive onboarding, cross-repo pattern mining, and architectural decision records. Provides 15 specialized agents and 20 commands for 67% onboarding time reduction and 314% ROI.",
+  "author": {
+    "name": "The Lobbi",
+    "email": "developers@thelobbi.io"
+  },
+  "callsign": "Librarian",
+  "faction": "Monitor",
+  "keywords": [
+    "knowledge-management",
+    "expert-cloning",
+    "rag",
+    "semantic-search",
+    "vector-embeddings",
+    "obsidian-sync",
+    "confluence-integration",
+    "notion-integration",
+    "documentation-curation",
+    "context-retrieval",
+    "knowledge-graph",
+    "citation-tracking",
+    "adr",
+    "decision-intelligence",
+    "cognitive-onboarding",
+    "pattern-mining",
+    "organizational-memory"
+  ],
+  "features": [
+    "Expert Cloning (v2.0) - Capture and replicate senior developer knowledge",
+    "Decision Intelligence (v2.0) - AI-powered recommendations from history",
+    "Cognitive Onboarding (v2.0) - Personalized learning paths for new devs",
+    "Cross-Repo Pattern Mining (v2.0) - Extract patterns across codebases",
+    "ADR Automation (v2.0) - Auto-generate architectural decision records",
+    "Semantic Search (v2.0) - Vector-powered documentation search",
+    "Knowledge Graph (v2.0) - Relationship extraction and visualization",
+    "Multi-Platform Sync (v2.0) - Obsidian, Confluence, Notion bidirectional",
+    "Context Retrieval (v2.0) - RAG pipeline for accurate context",
+    "Citation Tracking (v2.0) - Source attribution and provenance"
+  ],
+  "agents": [
+    "knowledge-ingester",
+    "vector-embedder",
+    "semantic-searcher",
+    "documentation-curator",
+    "obsidian-syncer",
+    "confluence-connector",
+    "notion-integrator",
+    "markdown-processor",
+    "context-retriever",
+    "knowledge-grapher",
+    "citation-tracker",
+    "version-historian",
+    "summarizer",
+    "relationship-mapper",
+    "insight-generator"
+  ],
+  "commands": [
+    "kf:ingest",
+    "kf:search",
+    "kf:embed",
+    "kf:curate",
+    "kf:sync-obsidian",
+    "kf:sync-confluence",
+    "kf:sync-notion",
+    "kf:process",
+    "kf:retrieve",
+    "kf:graph",
+    "kf:cite",
+    "kf:version",
+    "kf:summarize",
+    "kf:relate",
+    "kf:insight",
+    "kf:export",
+    "kf:dashboard",
+    "kf:trends",
+    "kf:compare",
+    "kf:archive"
+  ],
+  "provides": {
+    "commands": 20,
+    "agents": 15,
+    "skills": 4,
+    "hooks": 2
+  },
+  "dependencies": {
+    "api-nexus-v2-conduit": ">=2.0.0"
+  },
+  "routing": {
+    "domains": ["documentation", "knowledge", "learning", "onboarding"],
+    "keywords": ["knowledge", "document", "search", "obsidian", "confluence", "notion", "rag", "context", "onboard", "learn"],
+    "triggers": ["find documentation", "search knowledge", "onboard developer", "sync obsidian", "create ADR"]
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Lobbi-Docs/knowledge-fabric-v2-librarian"
+}

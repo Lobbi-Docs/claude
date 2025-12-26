@@ -395,15 +395,135 @@
     }
   },
 
+  "v2PluginsMantle": {
+    "cipe-v2-oracle-prime": {
+      "callsign": "Oracle Prime",
+      "faction": "Forerunner",
+      "name": "cipe-v2-oracle-prime",
+      "version": "2.0.0",
+      "description": "Oracle Prime - Autonomous Codebase Intelligence & Predictive Engineering. Advanced semantic codebase analysis with vector embeddings, predictive development engine, self-healing capabilities, autonomous refactoring, and ML-powered code generation.",
+      "status": "scaffolded",
+      "path": "../cipe-v2-oracle-prime",
+      "provides": {
+        "commands": 25,
+        "agents": 18,
+        "skills": 4,
+        "hooks": 3
+      },
+      "dependencies": {
+        "api-nexus-v2-conduit": ">=2.0.0"
+      },
+      "devReduction": "73.5%"
+    },
+    "visualforge-v2-architects-eye": {
+      "callsign": "Architect's Eye",
+      "faction": "Promethean",
+      "name": "visualforge-v2-architects-eye",
+      "version": "2.0.0",
+      "description": "Architect's Eye - Zero-Touch Design-to-Deploy Visual Development. Multi-modal processing for screenshot/Figma to production React code generation.",
+      "status": "scaffolded",
+      "path": "../visualforge-v2-architects-eye",
+      "provides": {
+        "commands": 18,
+        "agents": 15,
+        "skills": 3,
+        "hooks": 2
+      },
+      "dependencies": {
+        "api-nexus-v2-conduit": ">=2.0.0",
+        "cipe-v2-oracle-prime": ">=2.0.0",
+        "knowledge-fabric-v2-librarian": ">=2.0.0"
+      },
+      "devReduction": "85-95%"
+    },
+    "api-nexus-v2-conduit": {
+      "callsign": "Conduit",
+      "faction": "Spartan",
+      "name": "api-nexus-v2-conduit",
+      "version": "2.0.0",
+      "description": "Conduit - Self-Architecting API Platform & Inter-Plugin Communication Hub. Foundation for all plugin communication.",
+      "status": "scaffolded",
+      "path": "../api-nexus-v2-conduit",
+      "provides": {
+        "commands": 15,
+        "agents": 12,
+        "skills": 3,
+        "hooks": 2
+      },
+      "dependencies": {},
+      "isFoundation": true,
+      "devReduction": "75-80%"
+    },
+    "devsecops-sentinel-v2-warden": {
+      "callsign": "Warden",
+      "faction": "Forerunner",
+      "name": "devsecops-sentinel-v2-warden",
+      "version": "2.0.0",
+      "description": "Warden - Autonomous Security Operations & Compliance Enforcement. ML vulnerability prediction and autonomous remediation.",
+      "status": "scaffolded",
+      "path": "../devsecops-sentinel-v2-warden",
+      "provides": {
+        "commands": 25,
+        "agents": 18,
+        "skills": 5,
+        "hooks": 4
+      },
+      "dependencies": {
+        "api-nexus-v2-conduit": ">=2.0.0",
+        "cipe-v2-oracle-prime": ">=2.0.0"
+      },
+      "devReduction": "71%"
+    },
+    "knowledge-fabric-v2-librarian": {
+      "callsign": "Librarian",
+      "faction": "Monitor",
+      "name": "knowledge-fabric-v2-librarian",
+      "version": "2.0.0",
+      "description": "Librarian - Cognitive Organization & Expert Knowledge Synthesis. Expert cloning and decision intelligence.",
+      "status": "scaffolded",
+      "path": "../knowledge-fabric-v2-librarian",
+      "provides": {
+        "commands": 20,
+        "agents": 15,
+        "skills": 4,
+        "hooks": 2
+      },
+      "dependencies": {
+        "api-nexus-v2-conduit": ">=2.0.0"
+      },
+      "devReduction": "67%"
+    }
+  },
+
+  "mantleOfResponsibility": {
+    "name": "Mantle of Responsibility",
+    "version": "1.0.0",
+    "description": "Unified autonomous plugin ecosystem with Jira Orchestrator as central meta-controller routing to 5 specialized v2 plugins",
+    "totalAgents": 78,
+    "totalCommands": 103,
+    "totalSkills": 19,
+    "totalHooks": 13,
+    "targetDevReduction": "80%",
+    "phases": {
+      "foundation": "API Nexus v2 (weeks 1-10)",
+      "parallel1": "CIPE v2 + Knowledge Fabric v2 (weeks 11-16)",
+      "parallel2": "VisualForge v2 + DevSecOps v2 (weeks 17-22)"
+    },
+    "status": "scaffolded",
+    "createdAt": "2025-12-26T00:00:00Z"
+  },
+
   "stats": {
     "totalInstalled": 10,
-    "totalAvailable": 14,
+    "totalAvailable": 19,
+    "v2PluginsScaffolded": 5,
     "byFaction": {
-      "Forerunner": 6,
-      "Promethean": 5,
-      "Spartan": 3
+      "Forerunner": 8,
+      "Promethean": 6,
+      "Spartan": 4,
+      "Monitor": 1
     },
-    "lastUpdated": "2025-12-17T18:00:00Z",
-    "note": "14 plugins with unique Halo-themed callsigns. Synced registry with actual plugin directories."
+    "lastUpdated": "2025-12-26T00:00:00Z",
+    "note": "19 plugins with unique Halo-themed callsigns. 5 new v2 plugins scaffolded for Mantle of Responsibility initiative."
   }
 }

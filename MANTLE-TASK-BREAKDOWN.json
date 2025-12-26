@@ -1,0 +1,942 @@
+{
+  "metadata": {
+    "project": "Mantle of Responsibility",
+    "description": "5 Autonomous Plugins | 78 Agents | 103 Commands",
+    "timeline": "14-18 weeks",
+    "foundationDuration": "4 weeks",
+    "pluginDevelopmentDuration": "10-14 weeks",
+    "exportDate": "2025-12-26",
+    "exportFormat": "Jira Compatible",
+    "statistics": {
+      "totalTasks": 26,
+      "totalAgents": 78,
+      "totalCommands": 103,
+      "phases": 6,
+      "criticalPathDays": 126
+    }
+  },
+  "phases": [
+    {
+      "phaseId": "P0",
+      "phaseName": "Foundation",
+      "duration": "4 weeks",
+      "startWeek": 1,
+      "endWeek": 4,
+      "description": "Message Bus, State Management, Security Framework, Plugin Schema v2",
+      "tasks": [
+        {
+          "taskId": "MOR-001",
+          "title": "Message Bus Implementation",
+          "type": "Story",
+          "description": "Design and implement event-driven message bus for inter-plugin communication",
+          "epic": "Foundation",
+          "priority": "P0",
+          "severity": "CRITICAL",
+          "assignee": "Backend Engineer / Infrastructure",
+          "duration": {
+            "hours": 40,
+            "days": 5
+          },
+          "dependencies": [],
+          "subtasks": [
+            {
+              "id": "MOR-001-1",
+              "title": "Design pub/sub architecture",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-001-2",
+              "title": "Implement message acknowledgment and retry",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-001-3",
+              "title": "Create integration tests",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-001-4",
+              "title": "Documentation and runbooks",
+              "type": "Subtask"
+            }
+          ],
+          "acceptanceCriteria": [
+            "Message bus deployed and tested with 100+ concurrent messages",
+            "Retry mechanism validated with 3 retry attempts minimum",
+            "Message ordering guaranteed per topic",
+            "Latency <100ms for message propagation",
+            "Support for message filtering/routing based on topics and payloads",
+            "Complete integration tests passing (8+ test cases)"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "CRITICAL",
+          "mitigations": [
+            "Use proven message bus technology (RabbitMQ/Kafka)",
+            "Implement comprehensive monitoring",
+            "Design redundancy for message persistence",
+            "Create failover procedures"
+          ]
+        },
+        {
+          "taskId": "MOR-002",
+          "title": "Distributed State Management Framework",
+          "type": "Story",
+          "description": "Implement distributed state management with event sourcing",
+          "epic": "Foundation",
+          "priority": "P0",
+          "severity": "CRITICAL",
+          "assignee": "Backend Engineer / Database Specialist",
+          "duration": {
+            "hours": 48,
+            "days": 6
+          },
+          "dependencies": ["MOR-001"],
+          "subtasks": [
+            {
+              "id": "MOR-002-1",
+              "title": "Design state store architecture",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-002-2",
+              "title": "Implement event sourcing system",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-002-3",
+              "title": "Create state recovery mechanisms",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-002-4",
+              "title": "Test and optimize for performance",
+              "type": "Subtask"
+            }
+          ],
+          "acceptanceCriteria": [
+            "Event store persisting all state changes to SQLite",
+            "State snapshots created every 100 events",
+            "Distributed lock mechanism working (Redis-based)",
+            "State recovery from event log tested",
+            "Namespace isolation validated across plugins",
+            "<50ms query latency for state lookups",
+            "Documentation of state schema and versioning strategy"
+          ],
+          "storyPoints": 15,
+          "riskLevel": "CRITICAL",
+          "mitigations": [
+            "Implement event log verification",
+            "Use distributed locks to prevent race conditions",
+            "Regular backup and recovery testing",
+            "Version state schema explicitly"
+          ]
+        },
+        {
+          "taskId": "MOR-003",
+          "title": "Security Framework & Sandboxing",
+          "type": "Story",
+          "description": "Establish security baseline with sandboxing, RBAC, and API key management",
+          "epic": "Foundation",
+          "priority": "P0",
+          "severity": "CRITICAL",
+          "assignee": "Security Engineer / DevOps",
+          "duration": {
+            "hours": 44,
+            "days": 5
+          },
+          "dependencies": ["MOR-002"],
+          "subtasks": [
+            {
+              "id": "MOR-003-1",
+              "title": "Design RBAC model",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-003-2",
+              "title": "Implement credential storage",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-003-3",
+              "title": "Create execution sandbox",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-003-4",
+              "title": "Conduct security audit and penetration test",
+              "type": "Subtask"
+            }
+          ],
+          "acceptanceCriteria": [
+            "RBAC matrix defined with 5+ roles and 20+ permissions",
+            "API key rotation system operational",
+            "Rate limiting enforced: 1000 req/min per plugin, 100 req/min per agent",
+            "Secure credential storage with encryption at rest",
+            "Audit logging of all security events",
+            "Security penetration test completed with report",
+            "SOC2 compliance checklist 80%+ complete"
+          ],
+          "storyPoints": 14,
+          "riskLevel": "CRITICAL",
+          "mitigations": [
+            "Engage third-party security firm for audit",
+            "Use industry-standard encryption algorithms",
+            "Implement comprehensive audit logging",
+            "Regular security training for team"
+          ]
+        },
+        {
+          "taskId": "MOR-004",
+          "title": "Plugin Schema v2 & Registry",
+          "type": "Story",
+          "description": "Define and implement plugin schema v2 with auto-discovery",
+          "epic": "Foundation",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer / Architect",
+          "duration": {
+            "hours": 36,
+            "days": 4
+          },
+          "dependencies": [],
+          "subtasks": [
+            {
+              "id": "MOR-004-1",
+              "title": "Design plugin manifest schema",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-004-2",
+              "title": "Implement auto-discovery mechanism",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-004-3",
+              "title": "Create registry validation system",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-004-4",
+              "title": "Document plugin lifecycle",
+              "type": "Subtask"
+            }
+          ],
+          "acceptanceCriteria": [
+            "Plugin schema v2 supporting: agents, commands, skills, hooks, MCPs",
+            "Auto-discovery script finding all plugin components",
+            "Registry validation with 10+ schema checks",
+            "Plugin dependency graph resolver implemented",
+            "Manifest versioning strategy documented",
+            "CLI command for plugin validation: `plugin-validate`",
+            "100% schema coverage with JSON Schema"
+          ],
+          "storyPoints": 11,
+          "riskLevel": "HIGH",
+          "mitigations": [
+            "Use industry-standard schema formats",
+            "Create comprehensive schema documentation",
+            "Version schema explicitly for backwards compatibility"
+          ]
+        },
+        {
+          "taskId": "MOR-005",
+          "title": "Foundation Integration & Testing",
+          "type": "Story",
+          "description": "Integrate all foundation components and create baseline tests",
+          "epic": "Foundation",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "QA Engineer / Testing Specialist",
+          "duration": {
+            "hours": 36,
+            "days": 4
+          },
+          "dependencies": ["MOR-001", "MOR-002", "MOR-003", "MOR-004"],
+          "subtasks": [
+            {
+              "id": "MOR-005-1",
+              "title": "Create integration test suite",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-005-2",
+              "title": "Set up CI/CD pipeline",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-005-3",
+              "title": "Execute load testing",
+              "type": "Subtask"
+            },
+            {
+              "id": "MOR-005-4",
+              "title": "Write operations manual",
+              "type": "Subtask"
+            }
+          ],
+          "acceptanceCriteria": [
+            "50+ integration tests passing",
+            "Load test showing system stable at 1000+ concurrent operations",
+            "CI/CD pipeline green for foundation components",
+            "Foundation operations manual (50+ pages) completed",
+            "Disaster recovery procedure documented and tested",
+            "RPO/RTO targets defined and met",
+            "Foundation deployment checklist for production"
+          ],
+          "storyPoints": 11,
+          "riskLevel": "HIGH",
+          "mitigations": [
+            "Use automated testing to reduce human error",
+            "Document all procedures step-by-step",
+            "Conduct disaster recovery drills regularly"
+          ]
+        }
+      ]
+    },
+    {
+      "phaseId": "P1",
+      "phaseName": "API Nexus v2",
+      "duration": "6 weeks",
+      "startWeek": 5,
+      "endWeek": 10,
+      "description": "12 agents, 15 commands, GraphQL Federation, Schema Registry",
+      "tasks": [
+        {
+          "taskId": "MOR-010",
+          "title": "Core API Framework",
+          "type": "Story",
+          "description": "Build GraphQL API server with federation and schema registry",
+          "epic": "API Nexus v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer / API Specialist",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-005"],
+          "agents": 2,
+          "commands": 3,
+          "acceptanceCriteria": [
+            "GraphQL schema with 100+ types covering all plugin operations",
+            "Federation working with 3+ subgraphs",
+            "Schema registry with version history and rollback",
+            "Subscription support for agent execution events",
+            "GraphQL validation and introspection working",
+            "50+ unit tests for resolver logic",
+            "API documentation auto-generated from schema"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-011",
+          "title": "Agent Integration Module",
+          "type": "Story",
+          "description": "Build agent orchestration module (12 agents for API Nexus)",
+          "epic": "API Nexus v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer",
+          "duration": {
+            "hours": 48,
+            "days": 5
+          },
+          "dependencies": ["MOR-010"],
+          "agents": 12,
+          "agentsList": [
+            "API Schema Architect",
+            "Federation Coordinator",
+            "Query Optimizer",
+            "Subscription Manager",
+            "Rate Limiter Controller",
+            "Cache Strategy Manager",
+            "Error Handler",
+            "Documentation Generator",
+            "Performance Monitor",
+            "Security Validator",
+            "Backwards Compatibility Manager",
+            "Version Manager"
+          ],
+          "acceptanceCriteria": [
+            "All 12 agents implemented with full documentation",
+            "Each agent has 3+ capabilities defined",
+            "Agent-to-agent communication tested",
+            "Skill registration complete for each agent",
+            "Integration with jira-orchestrator commands working",
+            "Agent execution time <5 seconds for 95% operations",
+            "100% code coverage for agent logic"
+          ],
+          "storyPoints": 15,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-012",
+          "title": "API Commands Implementation",
+          "type": "Story",
+          "description": "Implement 15 API Nexus slash commands",
+          "epic": "API Nexus v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer / CLI Developer",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-011"],
+          "commands": 15,
+          "commandsList": [
+            "/api-schema-generate",
+            "/api-schema-validate",
+            "/api-federation-setup",
+            "/api-federation-test",
+            "/api-query-optimize",
+            "/api-subscription-manage",
+            "/api-rate-limit-config",
+            "/api-cache-strategy",
+            "/api-error-handling",
+            "/api-docs-generate",
+            "/api-performance-report",
+            "/api-security-audit",
+            "/api-backwards-compat-check",
+            "/api-version-manage",
+            "/api-test-suite"
+          ],
+          "acceptanceCriteria": [
+            "All 15 commands implemented and documented",
+            "Each command has help text and examples",
+            "Commands integrated with jira-orchestrator routing",
+            "Test coverage 85%+ for command logic",
+            "Documentation for each command (500+ words)",
+            "E2E tests for all commands",
+            "CLI validation tests passing"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-013",
+          "title": "GraphQL Federation & Schema Registry",
+          "type": "Story",
+          "description": "Implement advanced federation and schema versioning",
+          "epic": "API Nexus v2",
+          "priority": "P2",
+          "severity": "MEDIUM",
+          "assignee": "Backend Engineer / Architect",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-010", "MOR-011"],
+          "acceptanceCriteria": [
+            "Schema composition working across 3+ plugins",
+            "Version history maintained with ability to rollback",
+            "Migration scripts for schema changes",
+            "Breaking change detection and warnings",
+            "Schema diff generation between versions",
+            "Documentation of federation patterns",
+            "Performance benchmarks for schema composition"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "MEDIUM"
+        },
+        {
+          "taskId": "MOR-014",
+          "title": "Testing & Documentation",
+          "type": "Story",
+          "description": "Create comprehensive testing and documentation for API Nexus v2",
+          "epic": "API Nexus v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "QA Engineer / Technical Writer",
+          "duration": {
+            "hours": 36,
+            "days": 3
+          },
+          "dependencies": ["MOR-010", "MOR-011", "MOR-012", "MOR-013"],
+          "acceptanceCriteria": [
+            "E2E test suite with 50+ tests",
+            "Load test results showing <200ms p95 latency",
+            "API documentation (Swagger/OpenAPI) complete",
+            "Developer guide (100+ pages) with examples",
+            "Architecture decision records (ADRs) for key decisions",
+            "Operational runbook with troubleshooting guide",
+            "API versioning strategy document"
+          ],
+          "storyPoints": 11,
+          "riskLevel": "HIGH"
+        }
+      ]
+    },
+    {
+      "phaseId": "P2A",
+      "phaseName": "CIPE v2",
+      "duration": "6 weeks",
+      "startWeek": 11,
+      "endWeek": 16,
+      "description": "Code Intelligence & Processing Engine: 18 agents, 25 commands",
+      "tasks": [
+        {
+          "taskId": "MOR-020",
+          "title": "CIPE v2 Core Architecture",
+          "type": "Story",
+          "description": "Design and implement CIPE v2 core architecture",
+          "epic": "CIPE v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Architecture / Backend Engineer",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-014"],
+          "acceptanceCriteria": [
+            "AST parser working for 4+ languages",
+            "Code diff analysis identifying 15+ pattern types",
+            "Quality scoring algorithm with 10 metrics",
+            "Integration with GitHub/GitLab APIs",
+            "Code analysis latency <2 seconds per file",
+            "Support for repositories up to 100k files",
+            "Documentation of AST schema for each language"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-021",
+          "title": "CIPE Agent Pool",
+          "type": "Story",
+          "description": "Build 18 specialized agents for CIPE v2",
+          "epic": "CIPE v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer",
+          "duration": {
+            "hours": 48,
+            "days": 5
+          },
+          "dependencies": ["MOR-020"],
+          "agents": 18,
+          "acceptanceCriteria": [
+            "All 18 agents with full capability definitions",
+            "Agent-to-agent data flow working",
+            "Skill modules registered for each agent",
+            "Message bus integration for async analysis",
+            "Analysis results persisted to state store",
+            "Agent execution time <10s for 95% operations",
+            "100% code coverage"
+          ],
+          "storyPoints": 15,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-022",
+          "title": "CIPE Commands Implementation",
+          "type": "Story",
+          "description": "Implement 25 CIPE slash commands",
+          "epic": "CIPE v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer / CLI Developer",
+          "duration": {
+            "hours": 48,
+            "days": 5
+          },
+          "dependencies": ["MOR-021"],
+          "commands": 25,
+          "acceptanceCriteria": [
+            "All 25 commands implemented and documented",
+            "Commands callable from jira-orchestrator",
+            "Help text and examples for all commands",
+            "Integration with GitHub/GitLab webhooks",
+            "Async analysis for long-running commands",
+            "Result persistence and history",
+            "80%+ test coverage",
+            "Documentation (500+ words per command group)"
+          ],
+          "storyPoints": 15,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-023",
+          "title": "CIPE Knowledge & ML Components",
+          "type": "Story",
+          "description": "Implement learning components and ML-based pattern detection",
+          "epic": "CIPE v2",
+          "priority": "P2",
+          "severity": "MEDIUM",
+          "assignee": "ML Engineer / Backend Engineer",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-021"],
+          "acceptanceCriteria": [
+            "Pattern learning system capturing 50+ patterns from codebase",
+            "ML classifier for code smells with 85%+ accuracy",
+            "Baseline metrics established for trends",
+            "Recommendation engine with scoring system",
+            "Integration with message bus for async learning",
+            "Documentation of ML models and training data",
+            "Model versioning system"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "MEDIUM"
+        },
+        {
+          "taskId": "MOR-024",
+          "title": "CIPE Integration & Testing",
+          "type": "Story",
+          "description": "Test and integrate CIPE v2 with foundation",
+          "epic": "CIPE v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "QA Engineer",
+          "duration": {
+            "hours": 36,
+            "days": 3
+          },
+          "dependencies": ["MOR-020", "MOR-021", "MOR-022", "MOR-023"],
+          "acceptanceCriteria": [
+            "60+ integration tests passing",
+            "Performance tested on 1M+ LOC (analysis <5 minutes)",
+            "GitHub webhook integration tested",
+            "Operational documentation complete",
+            "Incident response procedures documented",
+            "SLA targets defined and met",
+            "Monitoring dashboards configured"
+          ],
+          "storyPoints": 11,
+          "riskLevel": "HIGH"
+        }
+      ]
+    },
+    {
+      "phaseId": "P2B",
+      "phaseName": "Knowledge Fabric v2",
+      "duration": "6 weeks",
+      "startWeek": 11,
+      "endWeek": 16,
+      "description": "Knowledge Graph, RAG, 15 agents, 20 commands",
+      "tasks": [
+        {
+          "taskId": "MOR-030",
+          "title": "Knowledge Graph Architecture",
+          "type": "Story",
+          "description": "Design and implement knowledge graph with vector embeddings",
+          "epic": "Knowledge Fabric v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Architecture / Backend Engineer",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-014"],
+          "acceptanceCriteria": [
+            "Knowledge graph schema with 20+ entity types",
+            "Vector embedding using OpenAI/Claude embeddings",
+            "Support for 10M+ nodes and 50M+ relationships",
+            "Semantic search with <200ms query latency",
+            "Incremental knowledge ingestion",
+            "Multi-language support for documents",
+            "Documentation of knowledge graph structure"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-031",
+          "title": "Knowledge Fabric Agents",
+          "type": "Story",
+          "description": "Build 15 specialized agents for Knowledge Fabric v2",
+          "epic": "Knowledge Fabric v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-030"],
+          "agents": 15,
+          "acceptanceCriteria": [
+            "All 15 agents implemented with capabilities",
+            "Agent collaboration working for knowledge processing",
+            "Integration with message bus for async processing",
+            "Knowledge persistence to graph database",
+            "Agent execution time <5s for 95% operations",
+            "100% code coverage",
+            "Full documentation of agent roles"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-032",
+          "title": "Knowledge Fabric Commands",
+          "type": "Story",
+          "description": "Implement 20 Knowledge Fabric slash commands",
+          "epic": "Knowledge Fabric v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "Backend Engineer / CLI Developer",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-031"],
+          "commands": 20,
+          "acceptanceCriteria": [
+            "All 20 commands implemented and documented",
+            "Integration with jira-orchestrator",
+            "Async processing for long-running operations",
+            "Result caching where appropriate",
+            "80%+ test coverage",
+            "Help and examples for all commands",
+            "Documentation (50+ pages total)"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "HIGH"
+        },
+        {
+          "taskId": "MOR-033",
+          "title": "RAG & Advanced Retrieval",
+          "type": "Story",
+          "description": "Implement advanced RAG with context optimization",
+          "epic": "Knowledge Fabric v2",
+          "priority": "P2",
+          "severity": "MEDIUM",
+          "assignee": "ML Engineer / Backend Engineer",
+          "duration": {
+            "hours": 40,
+            "days": 4
+          },
+          "dependencies": ["MOR-031"],
+          "acceptanceCriteria": [
+            "RAG pipeline with context ranking working",
+            "Multi-hop queries returning relevant results",
+            "Synthesis producing coherent answers",
+            "Relevance feedback system implemented",
+            "RAG quality metrics 85%+ accuracy",
+            "Integration with Claude API for synthesis",
+            "Documentation of RAG workflow"
+          ],
+          "storyPoints": 13,
+          "riskLevel": "MEDIUM"
+        },
+        {
+          "taskId": "MOR-034",
+          "title": "Knowledge Fabric Integration & Testing",
+          "type": "Story",
+          "description": "Test and integrate Knowledge Fabric v2",
+          "epic": "Knowledge Fabric v2",
+          "priority": "P1",
+          "severity": "HIGH",
+          "assignee": "QA Engineer",
+          "duration": {
+            "hours": 36,
+            "days": 3
+          },
+          "dependencies": ["MOR-030", "MOR-031", "MOR-032", "MOR-033"],
+          "acceptanceCriteria": [
+            "55+ integration tests passing",
+            "Load test with 10M nodes successful",
+            "Query latency <200ms for 95% queries",
+            "Cross-plugin linking validated",
+            "Operational documentation complete",
+            "Backup and recovery procedures tested",
+            "Monitoring configured"
+          ],
+          "storyPoints": 11,
+          "riskLevel": "HIGH"
+        }
+      ]
+    }
+  ],
+  "summaryStatistics": {
+    "byPhase": {
+      "Foundation": {
+        "tasks": 5,
+        "agents": 0,
+        "commands": 0,
+        "totalHours": 204,
+        "totalStoryPoints": 64,
+        "duration": "4 weeks"
+      },
+      "API Nexus v2": {
+        "tasks": 5,
+        "agents": 12,
+        "commands": 15,
+        "totalHours": 172,
+        "totalStoryPoints": 65,
+        "duration": "6 weeks"
+      },
+      "CIPE v2": {
+        "tasks": 5,
+        "agents": 18,
+        "commands": 25,
+        "totalHours": 212,
+        "totalStoryPoints": 67,
+        "duration": "6 weeks"
+      },
+      "Knowledge Fabric v2": {
+        "tasks": 5,
+        "agents": 15,
+        "commands": 20,
+        "totalHours": 196,
+        "totalStoryPoints": 63,
+        "duration": "6 weeks"
+      },
+      "VisualForge v2": {
+        "tasks": 1,
+        "agents": 12,
+        "commands": 18,
+        "totalHours": 120,
+        "totalStoryPoints": 20,
+        "duration": "4 weeks"
+      },
+      "DevSecOps v2": {
+        "tasks": 1,
+        "agents": 14,
+        "commands": 22,
+        "totalHours": 120,
+        "totalStoryPoints": 20,
+        "duration": "4 weeks"
+      },
+      "Cross-Cutting": {
+        "tasks": 4,
+        "agents": 0,
+        "commands": 0,
+        "totalHours": 230,
+        "totalStoryPoints": 57,
+        "duration": "3 weeks"
+      }
+    },
+    "byRole": {
+      "Backend Engineer": {
+        "tasks": 12,
+        "hours": 506,
+        "weeks": 14
+      },
+      "Security Engineer": {
+        "tasks": 1,
+        "hours": 44,
+        "weeks": 2
+      },
+      "QA Engineer": {
+        "tasks": 5,
+        "hours": 164,
+        "weeks": 4
+      },
+      "Frontend Engineer": {
+        "tasks": 1,
+        "hours": 120,
+        "weeks": 4
+      },
+      "DevOps Engineer": {
+        "tasks": 3,
+        "hours": 150,
+        "weeks": 5
+      },
+      "ML Engineer": {
+        "tasks": 2,
+        "hours": 80,
+        "weeks": 2
+      },
+      "Technical Writer": {
+        "tasks": 1,
+        "hours": 80,
+        "weeks": 2
+      },
+      "Release Manager": {
+        "tasks": 1,
+        "hours": 40,
+        "weeks": 1
+      }
+    },
+    "totals": {
+      "tasks": 26,
+      "agents": 78,
+      "commands": 103,
+      "totalHours": 1254,
+      "totalStoryPoints": 392,
+      "estimatedWeeks": 18,
+      "estimatedFTE": 3.5
+    }
+  },
+  "criticalPath": [
+    {
+      "sequence": 1,
+      "tasks": ["MOR-001", "MOR-002", "MOR-003"],
+      "duration": "15 days",
+      "description": "Foundation infrastructure must be completed first"
+    },
+    {
+      "sequence": 2,
+      "tasks": ["MOR-004", "MOR-005"],
+      "duration": "8 days",
+      "description": "Schema and foundation integration"
+    },
+    {
+      "sequence": 3,
+      "tasks": ["MOR-010", "MOR-011", "MOR-012", "MOR-013", "MOR-014"],
+      "duration": "18 days",
+      "description": "API Nexus v2 implementation"
+    },
+    {
+      "sequence": 4,
+      "tasks": ["MOR-020-MOR-024", "MOR-030-MOR-034"],
+      "duration": "18 days",
+      "description": "Parallel tracks: CIPE v2 and Knowledge Fabric v2"
+    },
+    {
+      "sequence": 5,
+      "tasks": ["MOR-100", "MOR-101", "MOR-102", "MOR-103"],
+      "duration": "15 days",
+      "description": "Integration, monitoring, documentation, and rollout"
+    }
+  ],
+  "risks": [
+    {
+      "taskId": "MOR-002",
+      "riskName": "State Corruption or Loss",
+      "likelihood": "MEDIUM",
+      "impact": "CRITICAL",
+      "mitigation": "Event sourcing with verification, redundant backups, chaos testing"
+    },
+    {
+      "taskId": "MOR-003",
+      "riskName": "Security Vulnerabilities",
+      "likelihood": "MEDIUM",
+      "impact": "CRITICAL",
+      "mitigation": "Third-party audit, penetration testing, security review board"
+    },
+    {
+      "taskId": "MOR-011",
+      "riskName": "Agent Coordination Complexity",
+      "likelihood": "HIGH",
+      "impact": "HIGH",
+      "mitigation": "Max 5 agents per coordinator, circuit breakers, timeout limits"
+    },
+    {
+      "taskId": "MOR-021",
+      "riskName": "Analysis Engine False Positives",
+      "likelihood": "MEDIUM",
+      "impact": "MEDIUM",
+      "mitigation": "Training data validation, human review of critical findings"
+    }
+  ],
+  "successCriteria": [
+    "All 103 commands operational and tested",
+    "All 78 agents integrated with message bus",
+    "Plugin isolation verified (no cross-contamination)",
+    "Load testing: 1000+ concurrent agents stable",
+    "Security: Penetration test passing with <3 critical findings",
+    "Documentation: 500+ pages covering all systems",
+    "Team training: All team members certified",
+    "Pilot program: 5-10 users successfully using system",
+    "SLA targets met: 99.5% uptime, <200ms p95 latency",
+    "Cost within budget: $1.7M ± 10%"
+  ]
+}

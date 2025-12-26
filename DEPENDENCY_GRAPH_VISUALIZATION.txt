@@ -1,0 +1,439 @@
+================================================================================
+                    PLUGIN DEPENDENCY GRAPH - VISUAL EDITION
+================================================================================
+
+================================================================================
+COMPLETE SYSTEM ARCHITECTURE
+================================================================================
+
+                                ┌──────────────────────────────────┐
+                                │   PLUGIN SCHEMA v2 (FOUNDATION)  │
+                                │  Defines all plugin structures   │
+                                └────────────┬─────────────────────┘
+                                             │
+                        ┌────────────────────┴──────────────────────┐
+                        │                                           │
+                        ▼                                           ▼
+            ┌──────────────────────┐              ┌────────────────────────┐
+            │  OAUTH2 SECURITY     │              │  MESSAGE BUS (REDIS)   │
+            │  - Authentication    │              │  - Event streaming     │
+            │  - Audit logging     │              │  - Async messaging     │
+            │  - Access control    │              │  - Dead letter queue   │
+            └──────┬───────────────┘              └──────────┬─────────────┘
+                   │                                         │
+                   └────────────────────┬────────────────────┘
+                                        │
+                        ┌───────────────┴───────────────┐
+                        │                               │
+                        ▼                               ▼
+            ┌──────────────────────┐    ┌────────────────────────┐
+            │  AGENT REGISTRY      │    │ STATE MANAGEMENT       │
+            │  - Agent discovery   │    │ - PostgreSQL           │
+            │  - Dynamic loading   │    │ - Redis cache          │
+            │  - Version control   │    │ - State sync           │
+            └──────┬───────────────┘    └───┬────────────────────┘
+                   │                        │
+                   └────────────┬───────────┘
+                                │
+                                ▼
+                    ┌──────────────────────────┐
+                    │  ROUTING ENGINE (CRITICAL)
+                    │  - Request routing       │ ◄── BOTTLENECK!
+                    │  - Load balancing        │
+                    │  - Rate limiting         │
+                    │  - Request logging       │
+                    └────┬─────────┬─────┬─────┘
+                         │         │     │
+            ┌────────────┬┴─────┬───┴──┬──┴──────┐
+            │            │      │      │         │
+            ▼            ▼      ▼      ▼         ▼
+        ┌────────┐  ┌────────┐ ┌────────┐ ┌────────┐ ┌─────────┐
+        │  API   │  │ CIPE   │ │ KnFab  │ │ Visual │ │ DevSec  │
+        │ Nexus  │  │  v2    │ │  v2    │ │ Forge  │ │Sentinel │
+        │  v2    │  │        │ │        │ │  v2    │ │  v2     │
+        └────────┘  └────┬───┘ └────────┘ └────────┘ └────┬────┘
+            15cmds       25cmd    20cmd     18cmd      25cmd
+            12agents     18agents 15agents  15agents   18agents
+                         │                            │
+                         └────────────┬───────────────┘
+                                      │
+                      (DevSecOps depends on CIPE)
+
+
+================================================================================
+DETAILED DEPENDENCY MATRIX
+================================================================================
+
+PLUGIN                │SCHEMA│OAUTH2│REGISTRY│STATE│ROUTING│MSG-BUS│EXT-DEPS
+──────────────────────┼──────┼──────┼────────┼─────┼───────┼───────┼─────────
+API Nexus v2          │  R   │  R   │   R    │  R  │   R   │   R   │  None
+CIPE v2               │  R   │  R   │   R    │  R  │   R   │   R   │  SCM,K8s
+Knowledge Fabric v2   │  R   │  R   │   R    │  R  │   R   │   R   │  VectorDB
+VisualForge v2        │  R   │  R   │   R    │  R  │   R   │   R   │  Playwright
+DevSecOps Sentinel v2 │  R   │  R   │   R    │  R  │   R   │   R   │  VulnAPIs
+
+KEY:
+R = Required (hard dependency)
+O = Optional (nice to have)
+E = Eventually consistent (eventual dep)
+
+
+================================================================================
+CROSS-PLUGIN DEPENDENCIES
+================================================================================
+
+API NEXUS v2 (Gateway/REST/GraphQL)
+├─ Provides: REST/GraphQL endpoints, webhooks, rate limiting
+├─ Used by: CIPE (webhooks), DevSecOps (reporting APIs)
+└─ Dependencies:
+    ├─ Infrastructure (mandatory)
+    └─ No other plugins
+
+
+CIPE v2 (CI/Pipeline)
+├─ Provides: Pipeline orchestration, job execution, artifact management
+├─ Uses: API Nexus v2 (webhooks), DevSecOps (security gates)
+└─ Dependencies:
+    ├─ Infrastructure (mandatory)
+    ├─ API Nexus v2 (for webhook callbacks)
+    └─ External: GitHub, GitLab, Docker, Kubernetes
+
+
+KNOWLEDGE FABRIC v2 (RAG/Search)
+├─ Provides: Document indexing, semantic search, RAG
+├─ Can be used by: API Nexus (search endpoints), DevSecOps (doc search)
+└─ Dependencies:
+    ├─ Infrastructure (mandatory)
+    └─ External: Vector Database, LLM API
+
+
+VISUALFORGE v2 (Design System)
+├─ Provides: Design components, visual testing, theming
+├─ Standalone (no plugin dependencies)
+└─ Dependencies:
+    ├─ Infrastructure (mandatory)
+    └─ External: Playwright/Puppeteer
+
+
+DEVSECOPS SENTINEL v2 (Security)
+├─ Provides: Vulnerability scanning, compliance, threat detection
+├─ Uses: CIPE (security in pipelines), API Nexus (reporting)
+└─ Dependencies:
+    ├─ Infrastructure (mandatory)
+    ├─ CIPE v2 (security gates in pipelines)
+    ├─ API Nexus v2 (security API endpoints)
+    └─ External: Snyk, Sonarqube, Fortify, Vault
+
+
+================================================================================
+IMPLEMENTATION TIMELINE (CRITICAL PATH)
+================================================================================
+
+PHASE 0: FOUNDATION (SEQUENTIAL - Must complete before Phase 1)
+┌─────────────────────────────────────────────────────────────────┐
+│ Day 1-3:   Plugin Schema v2 (2-3 days)                          │
+│            Output: plugin.json structure, validation rules      │
+└──────────┬──────────────────────────────────────────────────────┘
+           │
+           ├─ Can proceed to Phase 1 only after completion
+
+
+PHASE 1: INFRASTRUCTURE SETUP (PARALLEL - 2-way parallelism)
+┌──────────────────────────────────────────────────────────────────┐
+│ Day 4-7:   OAuth2 Security ← ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐         │
+│            (3-4 days)                               │         │
+│                                    ┌────────────────┘         │
+│ Day 4-6:   Message Bus (Redis) ◄ ─┘                          │
+│            (2-3 days)                                        │
+│                                                              │
+│ Parallelism: 2-way                                           │
+│ Duration: 3-4 days (parallel, not sequential)              │
+└──────────┬───────────────────────────────────────────────────┘
+           │
+           └─ Can proceed to Phase 2 after completion
+
+
+PHASE 2: CORE INFRASTRUCTURE (PARALLEL - 2-way parallelism)
+┌──────────────────────────────────────────────────────────────────┐
+│ Day 8-10:  Agent Registry ◄ ─ ─ ─ ┐                            │
+│            (2-3 days)           │                            │
+│                          ┌──────┘                            │
+│ Day 8-11:  State Management (PostgreSQL + Redis)             │
+│            (3-4 days)                                        │
+│                                                              │
+│ Parallelism: 2-way                                           │
+│ Duration: 3-4 days (parallel)                               │
+└──────────┬───────────────────────────────────────────────────┘
+           │
+           └─ Can proceed to Phase 3 after completion
+
+
+PHASE 3: ROUTING ENGINE (SEQUENTIAL - BLOCKS ALL PLUGINS)
+┌──────────────────────────────────────────────────────────────────┐
+│ Day 12-15: Routing Engine (3-4 days)                            │
+│            Output: Request router, load balancer                │
+│                                                                  │
+│ ⚠️  CRITICAL BOTTLENECK - Nothing starts until complete!       │
+└──────────┬───────────────────────────────────────────────────────┘
+           │
+           ├─ Can proceed to Phase 4 after completion
+
+
+PHASE 4: PLUGIN IMPLEMENTATION (PARALLEL - 5-way max)
+┌──────────────────────────────────────────────────────────────────┐
+│ Day 16-25: Parallel plugin development                          │
+│            Maximum parallelism: 5 threads                       │
+│                                                                  │
+│ Thread 1 (5-7 days):   API Nexus v2          ╔═══════════════╗ │
+│ Thread 2 (7-10 days):  CIPE v2               ║ Can start Day │ │
+│ Thread 3 (6-8 days):   Knowledge Fabric v2   ║ 16 in         ║ │
+│ Thread 4 (5-6 days):   VisualForge v2        ║ parallel      ║ │
+│ Thread 5 (7-9 days):   DevSecOps Sentinel v2 ╚═══════════════╝ │
+│                                                                  │
+│ ⚠️  DevSecOps requires CIPE phase 1 complete (day 19)          │
+│ ⚠️  Earliest DevSecOps start: Day 20 (after CIPE phase 1)     │
+└──────────┬───────────────────────────────────────────────────────┘
+           │
+           └─ Can proceed to Phase 5 after all complete
+
+
+PHASE 5: INTEGRATION & TESTING (SEQUENTIAL - 3-5 days)
+┌──────────────────────────────────────────────────────────────────┐
+│ Day 25-29: Cross-plugin testing                                 │
+│            Output: Test reports, integration validation         │
+└──────────┬───────────────────────────────────────────────────────┘
+           │
+           └─ Can proceed to Phase 6 after completion
+
+
+PHASE 6: DEPLOYMENT (SEQUENTIAL - 2-3 days)
+┌──────────────────────────────────────────────────────────────────┐
+│ Day 30-32: Production deployment                                │
+│            Output: Live system, monitoring active              │
+└──────────────────────────────────────────────────────────────────┘
+
+TOTAL DURATION: 26-35 days
+CRITICAL PATH: Schema → OAuth2 → Routing Engine → Plugins
+
+
+================================================================================
+PARALLELIZATION OPPORTUNITIES
+================================================================================
+
+BLOCK A (Days 1-3): SEQUENTIAL
+┌─────────────────────────────────────┐
+│ Phase 0: Plugin Schema v2            │ ✓ 1 thread only
+│ Duration: 2-3 days                  │
+└─────────────────────────────────────┘
+
+BLOCK B (Days 4-7): 2-WAY PARALLEL
+┌──────────────────────┐  ┌──────────────────────┐
+│ OAuth2 Security      │  │ Message Bus (Redis)  │
+│ 3-4 days             │  │ 2-3 days             │
+└──────────────────────┘  └──────────────────────┘
+Speedup: 1.8x (vs. sequential)
+
+BLOCK C (Days 8-11): 2-WAY PARALLEL
+┌──────────────────────┐  ┌──────────────────────┐
+│ Agent Registry       │  │ State Management     │
+│ 2-3 days             │  │ 3-4 days             │
+└──────────────────────┘  └──────────────────────┘
+Speedup: 1.7x (vs. sequential)
+
+BLOCK D (Days 12-15): SEQUENTIAL (BOTTLENECK)
+┌─────────────────────────────────────┐
+│ Routing Engine (CRITICAL PATH)       │ ✗ Must be sequential
+│ Duration: 3-4 days                  │   (blocks everything)
+└─────────────────────────────────────┘
+
+BLOCK E (Days 16-25): 5-WAY PARALLEL ⭐ MAXIMUM EFFICIENCY
+┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐
+│ API Nexus  │  │ CIPE v2    │  │ KnFabric   │  │ VisualForge│  │ DevSecOps  │
+│ 5-7 days   │  │ 7-10 days  │  │ 6-8 days   │  │ 5-6 days   │  │ 7-9 days   │
+│            │  │            │  │            │  │            │  │            │
+│ ✓ Start d16│  │ ✓ Start d16│  │ ✓ Start d16│  │ ✓ Start d16│  │ ✗ Wait 'til│
+│            │  │            │  │            │  │            │  │   day 20   │
+└────────────┘  └────────────┘  └────────────┘  └────────────┘  └────────────┘
+Speedup: 4.8x (vs. sequential)
+
+ACTUAL PARALLELISM:
+Days 16-19: 4-way parallel (4 plugins)
+Days 20-25: 5-way parallel (5 plugins, DevSecOps starts)
+
+
+================================================================================
+CRITICAL RESOURCE BOTTLENECKS
+================================================================================
+
+BOTTLENECK 1: Routing Engine (Days 12-15)
+┌─────────────────────────────────────┐
+│ Impact: Blocks ALL plugin development│
+│ Severity: CRITICAL                   │
+│ Mitigation:                          │
+│  - Start early (day 10, not day 12) │
+│  - Dedicate senior engineer         │
+│  - Design doc review by 2+ people   │
+│  - Implement mock version first     │
+└─────────────────────────────────────┘
+
+BOTTLENECK 2: OAuth2 Security (Days 4-7)
+┌─────────────────────────────────────┐
+│ Impact: Blocks agent registry setup  │
+│ Severity: HIGH                       │
+│ Mitigation:                          │
+│  - Dedicate security team           │
+│  - Use proven OAuth2 library        │
+│  - Security audit before phase 1    │
+└─────────────────────────────────────┘
+
+BOTTLENECK 3: External API Dependencies
+┌─────────────────────────────────────┐
+│ Plugins affected: CIPE, DevSecOps   │
+│ Risk: API rate limits, outages      │
+│ Severity: MEDIUM                    │
+│ Mitigation:                         │
+│  - Implement circuit breaker        │
+│  - Use caching with TTL             │
+│  - Create mock implementations      │
+│  - Plan fallback strategies         │
+└─────────────────────────────────────┘
+
+
+================================================================================
+RISK DEPENDENCY MATRIX
+================================================================================
+
+                    PROBABILITY  IMPACT   RISK   MITIGATION
+─────────────────── ──────────── ────── ────── ────────────────────
+Routing Engine delay    40%      HIGH    H×H   Start 2 days early
+OAuth2 security bug     30%      HIGH    H×H   Peer review, testing
+Redis downtime          15%      HIGH    M×H   Cluster setup, failover
+PostgreSQL query slow   25%      MED     M×M   Schema review, indexing
+SCM API rate limit      20%      MED     L×M   Caching, retry logic
+Vector DB failures      15%      HIGH    M×H   Fallback search, cache
+Kubernetes issues       20%      HIGH    M×H   Staging tests, runbooks
+External API outages    10%      HIGH    L×H   Circuit breaker, mocks
+
+
+================================================================================
+DEPENDENCY RELEASE STRATEGY
+================================================================================
+
+STAGE 1: INFRASTRUCTURE STABLE (Day 15)
+┌─────────────────────────────────────┐
+│ Requirements:                        │
+│ ✓ All 6 infrastructure components   │
+│ ✓ Unit tests: 90% coverage          │
+│ ✓ Integration tests passing         │
+│ ✓ Security audit complete           │
+│                                      │
+│ Output: Stable infrastructure API   │
+│         Available for plugins        │
+└─────────────────────────────────────┘
+
+STAGE 2: FIRST PLUGIN RELEASE (Day 22)
+┌─────────────────────────────────────┐
+│ Release order:                       │
+│ 1. VisualForge v2 (independent)     │
+│ 2. API Nexus v2 (foundation)        │
+│ 3. Knowledge Fabric v2 (independent)│
+│ 4. CIPE v2 (with API Nexus)         │
+│ 5. DevSecOps (with CIPE, API Nexus) │
+│                                      │
+│ Strategy: Feature flags for rollout │
+│           Canary deployment first   │
+└─────────────────────────────────────┘
+
+STAGE 3: FULL DEPLOYMENT (Day 32)
+┌─────────────────────────────────────┐
+│ All plugins live                     │
+│ Production monitoring active         │
+│ Support team trained                │
+│ Runbooks prepared                   │
+└─────────────────────────────────────┘
+
+
+================================================================================
+DEPENDENCY CONFLICT RESOLUTION GUIDE
+================================================================================
+
+SCENARIO 1: Circular Dependencies
+Problem: Plugin A depends on Plugin B, Plugin B depends on Plugin A
+Solution: Break circle with adapter/facade pattern
+Example:  CIPE ← API Nexus (webhook callbacks)
+          Solution: Implement CIPE first, add webhooks in phase 2
+
+
+SCENARIO 2: Version Conflicts
+Problem: Plugin X needs Library v2.5, Plugin Y needs v2.3
+Solution: Check backward compatibility, use v2.5 for all
+Fallback:  Implement compatibility layer in Routing Engine
+Last resort: Plugin-scoped versions (avoid complexity)
+
+
+SCENARIO 3: Resource Contention
+Problem: Multiple plugins needing high Redis/DB resources
+Solution:
+  Step 1: Profile resource usage in development
+  Step 2: Implement resource quotas per plugin
+  Step 3: Use separate Redis clusters if needed
+  Step 4: Monitor and alert on resource saturation
+
+
+SCENARIO 4: External API Rate Limits
+Problem: CIPE hitting SCM API rate limits during testing
+Solution:
+  Step 1: Implement exponential backoff retry logic
+  Step 2: Use response caching (ETags, timestamps)
+  Step 3: Batch API requests where possible
+  Step 4: Contact API provider for rate limit increase
+
+
+================================================================================
+QUICK REFERENCE: WHICH PLUGIN TO START FIRST?
+================================================================================
+
+START ORDER (Dependency-based):
+1. Infrastructure (Days 1-15)   ← Must complete first
+2. VisualForge v2 (Day 16)      ← Least dependent
+3. API Nexus v2 (Day 16)        ← Foundation for others
+4. Knowledge Fabric v2 (Day 16) ← Independent
+5. CIPE v2 (Day 16)             ← Uses API Nexus
+6. DevSecOps Sentinel (Day 20)  ← Depends on CIPE
+
+PARALLEL EXECUTION (Recommended):
+├─ Day 16-19: Run threads 1-4 in parallel
+├─ Day 20-25: Run all 5 threads in parallel
+└─ Day 25-29: Integration testing phase
+
+
+CRITICAL MILESTONES:
+□ Day 3:  Schema validation complete
+□ Day 7:  OAuth2 + Message Bus stable
+□ Day 11: Agent Registry + State Mgmt ready
+□ Day 15: Routing Engine production-ready
+□ Day 22: First plugin (VisualForge) testable
+□ Day 29: All plugins integrated & tested
+□ Day 32: Production deployment
+
+
+================================================================================
+SUMMARY
+================================================================================
+
+Total Implementation Time:     26-35 days
+Critical Path Length:          6 sequential tasks
+Maximum Parallelism:           5-way (Days 20-25)
+Bottleneck:                    Routing Engine (Days 12-15)
+Risk Level:                    MEDIUM (external dependencies)
+Recommendation:                Start infrastructure immediately,
+                              parallelize plugins aggressively
+
+Key Success Factors:
+  1. Deliver Routing Engine on schedule
+  2. Setup Redis/PostgreSQL clusters properly
+  3. Secure OAuth2 implementation
+  4. Implement circuit breakers for external APIs
+  5. Run integration tests early and often
+
+================================================================================

@@ -1,0 +1,384 @@
+================================================================================
+                    PLUGIN DEPENDENCY GRAPH - QUICK REFERENCE
+================================================================================
+Analysis Date: 2025-12-26 | Target: 5 v2 Plugins | Total Resources: 103 commands, 78 agents
+================================================================================
+
+DEPENDENCY CHAIN (Top-to-Bottom)
+
+   [Plugin Schema v2] ◄─ REQUIRED BY ALL
+          │
+   ┌──────┴──────────────────────────┐
+   │                                  │
+   ▼                                  ▼
+[OAuth2 Security]              [Message Bus (Redis)]
+   │                                  │
+   └──────────────┬───────────────────┘
+                  │
+   ┌──────────────┴──────────────┐
+   │                             │
+   ▼                             ▼
+[Agent Registry]         [State Management]
+   │                             │
+   └──────────────┬──────────────┘
+                  │
+                  ▼
+         [Routing Engine] ◄─ CRITICAL BOTTLENECK
+          │ │ │ │ │
+   ┌──────┼─┼─┼─┼─┴─────────┐
+   │      │ │ │ │           │
+   ▼      ▼ ▼ ▼ ▼           ▼
+  API   CIPE KnFb Visual  DevSec
+  Nxs   v2  v2  Forge    Sentinel
+  v2       v2    v2      v2
+
+================================================================================
+
+MATRIX: WHICH PLUGIN DEPENDS ON WHAT?
+
+                  | Schema | OAuth2 | MsgBus | Registry | State | Routing
+──────────────────┼────────┼────────┼────────┼──────────┼───────┼────────
+API Nexus v2      |   ✓    |   ✓    |   ✓    |    ✓     |   ✓   |   ✓
+CIPE v2           |   ✓    |   ✓    |   ✓    |    ✓     |   ✓   |   ✓
+Knowledge Fabric  |   ✓    |   ✓    |   ✓    |    ✓     |   ✓   |   ✓
+VisualForge v2    |   ✓    |   ✓    |   ✓    |    ✓     |   ✓   |   ✓
+DevSecOps v2      |   ✓    |   ✓    |   ✓    |    ✓     |   ✓   |   ✓
+──────────────────┴────────┴────────┴────────┴──────────┴───────┴────────
+
+ADDITIONAL PLUGIN DEPENDENCIES:
+
+API Nexus v2:
+  └─ No other plugins (standalone)
+
+CIPE v2:
+  └─ API Nexus v2 (for webhooks)
+
+Knowledge Fabric v2:
+  └─ No other plugins (standalone, but can expose APIs via API Nexus)
+
+VisualForge v2:
+  └─ No other plugins (fully independent)
+
+DevSecOps Sentinel v2:
+  ├─ CIPE v2 (for security gates in pipelines)
+  └─ API Nexus v2 (for security reporting APIs)
+
+================================================================================
+
+EXTERNAL DEPENDENCIES (Services/APIs needed):
+
+Plugin              | External Services Required
+────────────────────┼──────────────────────────────────────────────────────
+API Nexus v2        | None
+CIPE v2             | GitHub/GitLab/Bitbucket, Docker Registry, Kubernetes
+Knowledge Fabric    | Vector DB (Pinecone/Weaviate/Chroma), LLM API
+VisualForge v2      | Playwright/Puppeteer
+DevSecOps Sentinel  | Snyk, Sonarqube, Fortify, HashiCorp Vault
+────────────────────┴──────────────────────────────────────────────────────
+
+================================================================================
+
+IMPLEMENTATION SCHEDULE (Weeks)
+
+Week 1: Infrastructure
+  Day 1-3:   Plugin Schema v2
+  Day 4-7:   OAuth2 + Message Bus (parallel)
+  Day 8-11:  Agent Registry + State Mgmt (parallel)
+
+Week 2: Routing Engine (BLOCKING)
+  Day 12-15: Routing Engine (cannot parallelize, blocks all plugins)
+
+Week 2-3: Plugins (MAXIMUM PARALLELISM - 5-way)
+  Day 16-25: All plugins in parallel
+  └─ Note: DevSecOps starts Day 20 (depends on CIPE phase 1)
+
+Week 4: Integration
+  Day 25-29: Cross-plugin testing & validation
+
+Week 4-5: Deployment
+  Day 30-32: Production deployment
+
+TOTAL TIME: 26-35 days
+CRITICAL PATH BOTTLENECK: Routing Engine (Days 12-15)
+PARALLELIZATION FACTOR: 5x max (Days 20-25)
+
+================================================================================
+
+WHAT CAN RUN IN PARALLEL?
+
+Phase 1: Schema (Day 1-3)
+  └─ Sequential only (1 thread)
+
+Phase 2: Infrastructure (Days 4-7)
+  └─ 2-way parallel: OAuth2 + Message Bus
+
+Phase 3: Core Systems (Days 8-11)
+  └─ 2-way parallel: Registry + State Mgmt
+
+Phase 4: Routing Engine (Days 12-15)
+  └─ Sequential only (CRITICAL BOTTLENECK - nothing can start until done)
+
+Phase 5: Plugins (Days 16-25)
+  └─ UP TO 5-WAY parallel (DevSecOps starts later, Day 20)
+
+ACTUAL PARALLEL EXECUTION:
+  Days 16-19: 4 plugins  (API Nexus, CIPE, KnFabric, VisualForge)
+  Days 20-25: 5 plugins  (+ DevSecOps Sentinel)
+
+
+Maximum Speedup Possible: 26.5x if truly unlimited parallelism
+                          but limited by critical path of 6 sequential tasks
+
+Achievable Speedup:      ~4.5x with infrastructure + 5-way plugin parallelism
+
+================================================================================
+
+RISK LEVELS & CRITICAL ITEMS
+
+CRITICAL PATH (6 sequential items):
+  1. Plugin Schema v2 ...................... 2-3 days
+  2. OAuth2 + Message Bus ................. 3-4 days (can be 2-way parallel)
+  3. Agent Registry + State Mgmt .......... 3-4 days (can be 2-way parallel)
+  4. Routing Engine ◄─ BOTTLENECK ........ 3-4 days (CANNOT PARALLELIZE)
+  5. Plugin Development ................... 7-10 days (max parallelism available)
+  6. Integration & Deployment ............ 5-8 days
+
+CRITICAL BOTTLENECK: Routing Engine (Days 12-15)
+  Mitigation: Start early, assign senior engineer, pre-design thoroughly
+
+HIGH RISK ITEMS:
+  - External API dependencies (CIPE, DevSecOps)
+  - OAuth2 security implementation
+  - PostgreSQL transaction consistency
+  - Redis Streams event ordering
+
+MEDIUM RISK ITEMS:
+  - Vector database integration (Knowledge Fabric)
+  - Visual testing (VisualForge)
+  - Multi-job parallelism in CIPE
+
+================================================================================
+
+STARTING PRIORITY
+
+✓ HIGHEST PRIORITY (Start immediately, no dependencies):
+  1. Plugin Schema v2
+
+✓ HIGH PRIORITY (Start after Schema, build foundation):
+  2. OAuth2 Security Framework
+  3. Message Bus (Redis Streams)
+
+✓ MEDIUM PRIORITY (Start after foundation):
+  4. Agent Registry
+  5. State Management
+
+✗ CANNOT START UNTIL DAY 12:
+  6. Routing Engine (blocks everything else)
+
+✓ PARALLEL THREADS (Start Day 16, after Routing Engine):
+  - Thread 1: API Nexus v2 (5-7 days)
+  - Thread 2: CIPE v2 (7-10 days)
+  - Thread 3: Knowledge Fabric v2 (6-8 days)
+  - Thread 4: VisualForge v2 (5-6 days)
+  - Thread 5: DevSecOps Sentinel v2 (starts Day 20, 7-9 days)
+
+================================================================================
+
+DEPENDENCY GRAPH (SIMPLE VERSION)
+
+All plugins depend on:
+  1. Plugin Schema v2 (defines structure)
+  2. OAuth2 Security (authentication/audit)
+  3. Message Bus (event streaming)
+  4. Agent Registry (agent discovery)
+  5. State Management (persistent state)
+  6. Routing Engine (request routing)
+
+Inter-plugin dependencies:
+  - CIPE v2 → API Nexus v2 (webhooks)
+  - DevSecOps Sentinel v2 → CIPE v2 (pipeline security)
+  - DevSecOps Sentinel v2 → API Nexus v2 (reporting APIs)
+
+All others are independent (can develop in parallel).
+
+================================================================================
+
+COMMAND & AGENT BREAKDOWN
+
+API Nexus v2:
+  12 agents distributed as:
+    - API Gateway (3) / REST (2) / GraphQL (2)
+    - Rate Limiter (1) / Rate Monitor (1) / Caching (1) / Webhooks (1) / Analytics (1)
+  15 commands:
+    - REST endpoints (5) / GraphQL (3) / Webhooks (3) / Rate limits (2) / Analytics (2)
+
+CIPE v2:
+  18 agents distributed as:
+    - Pipeline (2) / Build (2) / Test (2) / Deploy (2) / Rollback (1)
+    - Environment (1) / Release (1) / Notification (1) / Approval (1) / Parallel (1)
+    - Container (1) / K8s (1) / Health (1) / Performance (1) / Compliance (1)
+  25 commands:
+    - Pipeline (5) / Build (4) / Deploy (4) / Test (3) / Release (3) / Health (2) / Other (4)
+
+Knowledge Fabric v2:
+  15 agents distributed as:
+    - Ingestion (1) / OCR (1) / Indexing (2) / Analysis (1) / RAG (1)
+    - Vector DB (1) / Query (2) / Embedding (1) / Ranking (1) / Cache (1)
+    - Access (1) / Metadata (1) / Analytics (1)
+  20 commands:
+    - Document ops (4) / Search (5) / RAG (4) / Admin (3) / Analytics (4)
+
+VisualForge v2:
+  15 agents distributed as:
+    - Component Builder (2) / Design System (2) / Theme (2) / Visual Test (2)
+    - Accessibility (1) / Performance (1) / Docs (1) / Design-to-Code (1)
+    - Preview (1) / Assets (1) / Typography (1) / Responsive (1)
+  18 commands:
+    - Components (4) / Design (4) / Testing (4) / Assets (3) / Admin (3)
+
+DevSecOps Sentinel v2:
+  18 agents distributed as:
+    - Scanning (2) / Dependencies (2) / Secrets (1) / SBOM (1)
+    - Compliance (2) / Container (1) / Policy (1) / Threat (1) / Incident (1)
+    - Remediation (1) / Risk (1) / Approval (1) / Patch (1) / Network (1) / Access (1) / Crypto (1) / Monitor (1)
+  25 commands:
+    - Scanning (5) / Compliance (5) / Vulnerability (4) / Patches (3) / Policy (3) / Reporting (3) / Other (2)
+
+TOTAL: 78 agents, 103 commands
+
+================================================================================
+
+CIRCULAR DEPENDENCY CHECK
+
+✓ NO circular dependencies found
+✓ Dependency graph is acyclic (DAG)
+✓ Topological sort is possible
+
+Note: DevSecOps Sentinel v2 has "double dependency" on OAuth2 (auth + audit),
+      but this is NOT circular. Mitigation: Separate audit logging from auth.
+
+================================================================================
+
+RESOURCE REQUIREMENTS
+
+Infrastructure Hardware:
+  - PostgreSQL: 4 cores, 16GB RAM, 500GB SSD minimum
+  - Redis Cluster: 3 nodes, 4 cores each, 16GB RAM each
+  - Kubernetes: 3 master, 5 worker nodes (or equiv. capacity)
+
+Development Time:
+  - Infrastructure: 11 days (sequential phases)
+  - Schema/Registry/Routing: 3-4 days each
+  - Plugins: 5-10 days each (parallel)
+  - Integration/Testing: 3-5 days
+  - Deployment: 2-3 days
+
+Team Composition Needed:
+  - 1 Infrastructure Architect (critical path items)
+  - 1 Security Engineer (OAuth2, audit)
+  - 1 Database DBA (PostgreSQL, Redis)
+  - 5 Plugin Developers (1-2 per plugin)
+  - 1 QA/Integration tester
+  - 1 DevOps/Deployment engineer
+
+================================================================================
+
+KEY METRICS & KPIs
+
+Dependency Coverage: 100% (all dependencies documented)
+Circular Dependencies: 0 (clean DAG)
+External Dependencies: 8 services (Snyk, Sonarqube, etc.)
+Critical Path Length: 6 items, 26-35 days
+Parallelization Opportunity: 5-way max (Days 20-25)
+
+Recommended Success Metrics:
+  □ Infrastructure uptime: 99.9%
+  □ Plugin startup time: <2 seconds each
+  □ API response time: <100ms median
+  □ Test coverage: >80%
+  □ On-time delivery: Within ±2 days of estimate
+
+================================================================================
+
+QUICK CHECKLIST
+
+Infrastructure Phase:
+  ☐ Day 1-3:    Plugin Schema v2 complete
+  ☐ Day 4-7:    OAuth2 + Message Bus stable
+  ☐ Day 8-11:   Agent Registry + State Mgmt working
+  ☐ Day 12-15:  Routing Engine production-ready
+
+Plugin Phase:
+  ☐ Day 16:     Start 4 plugins (API Nexus, CIPE phase 1, KnFabric, VisualForge)
+  ☐ Day 20:     DevSecOps Sentinel starts (after CIPE phase 1)
+  ☐ Day 25:     All plugins feature-complete
+
+Integration Phase:
+  ☐ Day 25-29:  Cross-plugin testing, contract validation
+  ☐ Day 29:     Integration tests passing
+  ☐ Day 30-32:  Staging → Production deployment
+  ☐ Day 32:     All plugins live, monitoring active
+
+================================================================================
+
+MITIGATION STRATEGIES
+
+If Routing Engine Delayed:
+  Impact: Entire plugin development blocked (critical!)
+  Mitigation: Start 2 days early, assign senior engineer, extensive peer review
+
+If External API Unavailable (GitHub, Snyk, etc.):
+  Impact: CIPE or DevSecOps can't function
+  Mitigation: Circuit breaker, caching, mock implementations, fallback logic
+
+If PostgreSQL Performance Issues:
+  Impact: State Management bottleneck
+  Mitigation: Schema optimization, indexing, query analysis, connection pooling
+
+If Redis Memory Exhausted:
+  Impact: Message Bus failure
+  Mitigation: Cluster mode, memory tiers, event expiration, monitoring alerts
+
+If OAuth2 Has Security Flaw:
+  Impact: All plugins affected
+  Mitigation: Design review by 2+ security engineers, penetration testing
+
+================================================================================
+
+IMPLEMENTATION SEQUENCE (SEQUENTIAL ONLY)
+
+1. Plugin Schema v2
+   └─ Wait for approval
+
+2. OAuth2 Security + Message Bus (parallel allowed)
+   └─ Wait for both complete
+
+3. Agent Registry + State Management (parallel allowed)
+   └─ Wait for both complete
+
+4. Routing Engine
+   ├─ This is the critical bottleneck
+   ├─ Cannot proceed to plugins until complete
+   └─ Estimated 3-4 days (no parallelization)
+
+5. Plugin Development (5-way parallel recommended)
+   ├─ Can start Day 16 (after routing engine)
+   ├─ DevSecOps must wait until Day 20 (CIPE phase 1)
+   └─ Estimated 7-10 days total
+
+6. Integration Testing (sequential)
+   └─ Estimated 3-5 days
+
+7. Production Deployment (sequential)
+   └─ Estimated 2-3 days
+
+TOTAL: 26-35 days (optimized with parallelization)
+
+================================================================================
+
+END OF QUICK REFERENCE
+For detailed analysis, see: PLUGIN_DEPENDENCY_ANALYSIS.md
+For visualizations, see: DEPENDENCY_GRAPH_VISUALIZATION.txt
+
+Last Updated: 2025-12-26
+Status: Ready for implementation planning

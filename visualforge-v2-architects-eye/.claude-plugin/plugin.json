@@ -1,0 +1,98 @@
+{
+  "name": "visualforge-v2-architects-eye",
+  "version": "2.0.0",
+  "description": "Architect's Eye - Zero-Touch Design-to-Deploy Visual Development. Multi-modal processing for screenshot/Figma to production React code generation, design system synthesis, visual regression testing, animation generation, and accessibility auditing. Provides 15 specialized agents and 18 commands for 85-95% UI development time reduction.",
+  "author": {
+    "name": "The Lobbi",
+    "email": "developers@thelobbi.io"
+  },
+  "callsign": "Architect's Eye",
+  "faction": "Promethean",
+  "keywords": [
+    "design-to-code",
+    "figma-integration",
+    "screenshot-analysis",
+    "react-generation",
+    "visual-regression",
+    "design-system",
+    "accessibility",
+    "responsive-design",
+    "theme-generation",
+    "storybook",
+    "chromatic",
+    "visual-testing",
+    "brand-compliance",
+    "component-generation",
+    "style-extraction",
+    "animation-synthesis",
+    "wcag-compliance",
+    "multi-modal"
+  ],
+  "features": [
+    "Screenshot/Figma to React (v2.0) - Vision AI-powered code generation",
+    "Design System Generation (v2.0) - Auto-create tokens, components, themes",
+    "Visual Regression Testing (v2.0) - AI-powered visual diff detection",
+    "Animation Synthesis (v2.0) - Auto-generate micro-interactions",
+    "Responsive Generation (v2.0) - Multi-breakpoint layouts from single design",
+    "Accessibility Auditor (v2.0) - WCAG 2.1 AA/AAA compliance scanning",
+    "Storybook Integration (v2.0) - Auto-generate component stories",
+    "Chromatic Deployment (v2.0) - Visual regression CI/CD pipeline",
+    "Brand Compliance (v2.0) - Logo, font, color validation",
+    "Design Token Manager (v2.0) - Style Dictionary integration"
+  ],
+  "agents": [
+    "design-system-curator",
+    "figma-connector",
+    "screenshot-analyzer",
+    "visual-differ",
+    "component-generator",
+    "style-extractor",
+    "accessibility-auditor",
+    "responsive-tester",
+    "theme-generator",
+    "design-token-manager",
+    "storybook-integrator",
+    "chromatic-deployer",
+    "visual-regression-tester",
+    "brand-compliance-checker",
+    "design-to-code-translator"
+  ],
+  "commands": [
+    "visual:design",
+    "visual:figma",
+    "visual:screenshot",
+    "visual:diff",
+    "visual:generate",
+    "visual:extract",
+    "visual:a11y",
+    "visual:responsive",
+    "visual:theme",
+    "visual:tokens",
+    "visual:storybook",
+    "visual:chromatic",
+    "visual:regression",
+    "visual:brand",
+    "visual:translate",
+    "visual:export",
+    "visual:deploy",
+    "visual:compare"
+  ],
+  "provides": {
+    "commands": 18,
+    "agents": 15,
+    "skills": 3,
+    "hooks": 2
+  },
+  "dependencies": {
+    "api-nexus-v2-conduit": ">=2.0.0",
+    "cipe-v2-oracle-prime": ">=2.0.0",
+    "knowledge-fabric-v2-librarian": ">=2.0.0"
+  },
+  "routing": {
+    "domains": ["frontend", "design", "ui", "visual", "accessibility"],
+    "keywords": ["design", "figma", "screenshot", "component", "visual", "a11y", "accessibility", "theme", "storybook"],
+    "triggers": ["design to code", "figma convert", "visual regression", "accessibility audit", "component generate"]
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Lobbi-Docs/visualforge-v2-architects-eye"
+}
