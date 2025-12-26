@@ -1,12 +1,15 @@
 ---
 name: jira:work
-description: Start working on a Jira issue with full 6-phase orchestration workflow. Use this when the user says "work on issue", "start JIRA-123", "work on PROJ-456", or wants to begin development on a Jira ticket with automated orchestration.
-version: 4.0.0
+description: Start working on a Jira issue with full 7-phase orchestration workflow including 5 quality gates. Use this when the user says "work on issue", "start JIRA-123", "work on PROJ-456", or wants to begin development on a Jira ticket with automated orchestration and quality enforcement.
+version: 4.1.0
+qualityGatesIntegration: code-quality-orchestrator
 ---
 
 # Jira Work Orchestration
 
-Start working on a Jira issue with the full 6-phase development workflow: EXPLORE -> PLAN -> CODE -> TEST -> FIX -> COMMIT
+Start working on a Jira issue with the full 7-phase development workflow: EXPLORE -> PLAN -> CODE -> TEST -> QUALITY GATES -> FIX -> COMMIT
+
+**Quality Gates Integration:** This workflow is integrated with the Code Quality Orchestrator (Curator) plugin to enforce 5 quality gates before code can be committed.
 
 ## When to Use This Skill
 
@@ -56,12 +59,23 @@ The main command file is located at: `jira-orchestrator/commands/work.md`
 - Validate acceptance criteria
 - Security scanning
 
-### Phase 5: FIX (1-2 agents)
+### Phase 5: QUALITY GATES (5 gates via Curator)
+**Integrated with Code Quality Orchestrator (Curator)**
+- **Gate 1: Static Analysis** - ESLint, Prettier, Pylint auto-fix
+- **Gate 2: Test Coverage** - 80% minimum coverage enforcement
+- **Gate 3: Security Scanner** - Secrets, CVEs, OWASP issues
+- **Gate 4: Complexity Analyzer** - Cyclomatic ≤10, cognitive ≤15
+- **Gate 5: Dependency Health** - Outdated, vulnerable, license check
+
+All gates must pass before proceeding to COMMIT phase.
+
+### Phase 6: FIX (1-2 agents)
 - Address test failures
+- Fix quality gate violations
 - Fix code review feedback
 - Refactor as needed
 
-### Phase 6: COMMIT (1-2 agents)
+### Phase 7: COMMIT (1-2 agents)
 - Create feature branch
 - Commit with Jira issue key
 - Create pull request
@@ -78,7 +92,27 @@ This command automatically:
 
 ## Related Commands
 
+### Jira Commands
 - `/jira:status` - Check current work session status
 - `/jira:sync` - Sync changes with Jira
 - `/jira:pr` - Create pull request
 - `/jira:commit` - Create smart commit
+
+### Quality Gate Commands (from Curator)
+- `/quality-check` - Run all 5 quality gates
+- `/quality-fix` - Auto-fix issues where possible
+- `/coverage-check` - Check test coverage (80% min)
+- `/security-scan` - Run security vulnerability scan
+- `/complexity-audit` - Check code complexity
+- `/dependency-audit` - Check dependency health
+
+## Quality Gate Thresholds
+
+| Gate | Metric | Threshold |
+|------|--------|-----------|
+| Static Analysis | Errors | 0 |
+| Test Coverage | Line Coverage | ≥ 80% |
+| Security Scanner | Critical/High CVEs | 0 |
+| Complexity | Cyclomatic | ≤ 10 |
+| Complexity | Cognitive | ≤ 15 |
+| Dependencies | Critical Vulns | 0 |
