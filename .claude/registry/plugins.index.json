@@ -107,6 +107,21 @@
       "source": "local",
       "installedAt": "2025-12-17T18:00:00Z",
       "dependencies": {}
+    },
+    "code-quality-orchestrator": {
+      "callsign": "Curator",
+      "faction": "Forerunner",
+      "version": "1.0.0",
+      "path": "plugins/code-quality-orchestrator",
+      "source": "local",
+      "installedAt": "2025-12-26T12:00:00Z",
+      "dependencies": {},
+      "provides": {
+        "commands": 12,
+        "agents": 8,
+        "skills": 5,
+        "hooks": 6
+      }
     }
   },
 
@@ -513,17 +528,42 @@
     "createdAt": "2025-12-26T00:00:00Z"
   },
 
+  "corePlugins": {
+    "code-quality-orchestrator": {
+      "callsign": "Curator",
+      "faction": "Forerunner",
+      "name": "code-quality-orchestrator",
+      "version": "1.0.0",
+      "description": "Curator - Ancient guardian of code excellence. Orchestrates 5 quality gates (Static Analysis, Test Coverage, Security Scanning, Complexity Analysis, Dependency Health) in a unified flow. Ensures pristine code through Forerunner precision and automated enforcement.",
+      "author": "Brookside BI",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["code-quality", "linting", "eslint", "prettier", "static-analysis", "test-coverage", "security-scanning", "complexity", "dependencies", "pre-commit", "ci-cd", "quality-gates", "orchestration", "clean-code"],
+      "categories": ["devops", "testing", "security", "code-generation"],
+      "dependencies": {},
+      "provides": {
+        "commands": 12,
+        "agents": 8,
+        "skills": 5,
+        "hooks": 6
+      },
+      "qualityGates": ["static-analysis", "test-coverage", "security-scanner", "complexity-analyzer", "dependency-health"],
+      "isCore": true
+    }
+  },
+
   "stats": {
-    "totalInstalled": 10,
-    "totalAvailable": 19,
+    "totalInstalled": 11,
+    "totalAvailable": 20,
     "v2PluginsScaffolded": 5,
+    "corePlugins": 1,
     "byFaction": {
-      "Forerunner": 8,
+      "Forerunner": 9,
       "Promethean": 6,
       "Spartan": 4,
       "Monitor": 1
     },
-    "lastUpdated": "2025-12-26T00:00:00Z",
-    "note": "19 plugins with unique Halo-themed callsigns. 5 new v2 plugins scaffolded for Mantle of Responsibility initiative."
+    "lastUpdated": "2025-12-26T12:00:00Z",
+    "note": "20 plugins with unique Halo-themed callsigns. Code Quality Orchestrator (Curator) added as core plugin for quality gate enforcement."
   }
 }
