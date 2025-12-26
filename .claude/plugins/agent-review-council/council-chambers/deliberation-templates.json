@@ -1,0 +1,503 @@
+{
+  "$schema": "../schemas/deliberation-template.schema.json",
+  "version": "1.0.0",
+  "templates": {
+    "adversarial": {
+      "name": "Adversarial Review",
+      "structure": {
+        "phases": [
+          {
+            "name": "opening-positions",
+            "duration": "5min",
+            "participants": ["defender", "attacker"],
+            "instructions": {
+              "defender": "Present the code changes and justify design decisions",
+              "attacker": "Identify potential flaws, edge cases, and vulnerabilities"
+            }
+          },
+          {
+            "name": "cross-examination",
+            "duration": "10min",
+            "participants": ["defender", "attacker"],
+            "format": "alternating-turns",
+            "instructions": {
+              "attacker": "Challenge defender's justifications with specific concerns",
+              "defender": "Address concerns with evidence and mitigations"
+            }
+          },
+          {
+            "name": "judgment",
+            "duration": "5min",
+            "participants": ["judge"],
+            "instructions": {
+              "judge": "Weigh both sides and render verdict based on evidence"
+            }
+          }
+        ],
+        "outputs": ["attack-points", "defense-responses", "verdict"]
+      }
+    },
+    "round-robin": {
+      "name": "Round Robin",
+      "structure": {
+        "phases": [
+          {
+            "name": "initial-round",
+            "rounds": 1,
+            "turnOrder": "randomized",
+            "instructions": "Each agent provides initial analysis in sequence. Build on insights from previous speakers."
+          },
+          {
+            "name": "refinement-round",
+            "rounds": 1,
+            "turnOrder": "same-as-initial",
+            "instructions": "Refine or challenge points made in round 1. Focus on areas needing deeper exploration."
+          },
+          {
+            "name": "synthesis",
+            "participants": ["synthesis-agent"],
+            "instructions": "Synthesize layered insights into coherent verdict"
+          }
+        ],
+        "rules": {
+          "speakingTime": "equal",
+          "buildingRequired": true,
+          "skipAllowed": false
+        }
+      }
+    },
+    "autogen-team": {
+      "name": "AutoGen Team",
+      "structure": {
+        "hierarchy": {
+          "manager": {
+            "agent": "team-manager-agent",
+            "responsibilities": ["decompose", "delegate", "synthesize"],
+            "reports_to": null
+          },
+          "workers": {
+            "agents": ["code-architect-agent", "security-sentinel-agent", "performance-guardian-agent", "maintainability-advocate-agent"],
+            "responsibilities": ["analyze", "report"],
+            "reports_to": "manager"
+          },
+          "critic": {
+            "agent": "devils-advocate-agent",
+            "responsibilities": ["validate", "challenge"],
+            "reports_to": "manager"
+          }
+        },
+        "workflow": [
+          {
+            "step": "decomposition",
+            "actor": "manager",
+            "action": "Break review into specialized tasks",
+            "output": "task-assignments"
+          },
+          {
+            "step": "parallel-analysis",
+            "actor": "workers",
+            "action": "Each worker analyzes their assigned domain",
+            "parallel": true,
+            "output": "worker-reports"
+          },
+          {
+            "step": "integration",
+            "actor": "manager",
+            "action": "Integrate worker findings, identify gaps",
+            "output": "integrated-findings"
+          },
+          {
+            "step": "critique",
+            "actor": "critic",
+            "action": "Challenge integrated findings for blind spots",
+            "output": "critique-report"
+          },
+          {
+            "step": "refinement",
+            "actor": "manager",
+            "action": "Address critique and produce final verdict",
+            "output": "team-validated-verdict"
+          }
+        ],
+        "maxIterations": 5
+      }
+    },
+    "panel-discussion": {
+      "name": "Panel Discussion",
+      "structure": {
+        "setup": {
+          "moderator": "moderator-agent",
+          "panelists": "all-available-agents",
+          "format": "open-forum"
+        },
+        "phases": [
+          {
+            "name": "opening-statements",
+            "duration": "5min",
+            "format": "each-panelist-speaks-once",
+            "instructions": "Share initial perspectives on code changes"
+          },
+          {
+            "name": "open-discussion",
+            "duration": "15min",
+            "format": "voluntary-turns",
+            "rules": {
+              "crossTalk": true,
+              "moderatorCanInterrupt": true,
+              "filibusteringPrevented": true
+            },
+            "instructions": "Collaborative exploration of topics raised in opening statements"
+          },
+          {
+            "name": "consensus-building",
+            "duration": "5min",
+            "format": "moderator-guided",
+            "instructions": "Moderator summarizes emerging consensus, panelists confirm or dissent"
+          }
+        ],
+        "outputs": ["emergent-consensus", "minority-opinions"]
+      }
+    },
+    "fishbowl": {
+      "name": "Fishbowl",
+      "structure": {
+        "circles": {
+          "inner": {
+            "size": 3,
+            "selection": "random-initial",
+            "role": "active-deliberation"
+          },
+          "outer": {
+            "size": "remaining",
+            "role": "observation"
+          }
+        },
+        "phases": [
+          {
+            "name": "round-1-inner",
+            "duration": "7min",
+            "participants": "inner-circle",
+            "instructions": "Inner circle deliberates while outer circle observes silently"
+          },
+          {
+            "name": "rotation-1",
+            "duration": "1min",
+            "action": "Rotate: 2 inner agents move to outer, 2 outer agents move to inner"
+          },
+          {
+            "name": "round-2-inner",
+            "duration": "7min",
+            "participants": "inner-circle",
+            "instructions": "New inner circle continues deliberation with fresh perspectives"
+          },
+          {
+            "name": "integration",
+            "duration": "5min",
+            "participants": "all",
+            "instructions": "All agents contribute observations and reach verdict"
+          }
+        ],
+        "outputs": ["multi-perspective-verdict"]
+      }
+    },
+    "think-tank": {
+      "name": "Think Tank",
+      "structure": {
+        "phases": [
+          {
+            "name": "parallel-exploration",
+            "duration": "10min",
+            "participants": "all-agents",
+            "parallel": true,
+            "instructions": "Each agent independently explores code from their perspective. Diversity of approach encouraged."
+          },
+          {
+            "name": "synthesis",
+            "duration": "7min",
+            "participants": ["synthesis-agent"],
+            "inputs": "all-agent-explorations",
+            "instructions": "Identify common themes, unique insights, and conflicts across explorations"
+          },
+          {
+            "name": "refinement",
+            "duration": "8min",
+            "participants": "all-agents",
+            "format": "collaborative",
+            "instructions": "Collectively refine synthesized findings and reach consensus"
+          }
+        ],
+        "diversityBonus": true,
+        "outputs": ["comprehensive-multi-angle-verdict"]
+      }
+    },
+    "red-blue-team": {
+      "name": "Red Team / Blue Team",
+      "structure": {
+        "teams": {
+          "red": {
+            "leader": "red-team-leader-agent",
+            "members": ["security-sentinel-agent", "devils-advocate-agent"],
+            "size": "50%",
+            "objective": "Find vulnerabilities and argue against approval"
+          },
+          "blue": {
+            "leader": "blue-team-leader-agent",
+            "members": ["code-architect-agent", "maintainability-advocate-agent"],
+            "size": "50%",
+            "objective": "Defend design and propose mitigations"
+          },
+          "adjudicator": {
+            "agent": "moderator-agent",
+            "role": "neutral-judge"
+          }
+        },
+        "phases": [
+          {
+            "name": "battle-round-1",
+            "duration": "10min",
+            "sequence": [
+              {"actor": "red-team", "action": "Present initial attacks"},
+              {"actor": "blue-team", "action": "Respond with defenses and mitigations"}
+            ]
+          },
+          {
+            "name": "battle-round-2",
+            "duration": "10min",
+            "sequence": [
+              {"actor": "red-team", "action": "Test mitigations and attempt bypasses"},
+              {"actor": "blue-team", "action": "Refine defenses"}
+            ]
+          },
+          {
+            "name": "battle-round-3",
+            "duration": "10min",
+            "sequence": [
+              {"actor": "red-team", "action": "Final offensive push"},
+              {"actor": "blue-team", "action": "Final hardening"}
+            ]
+          },
+          {
+            "name": "adjudication",
+            "duration": "5min",
+            "actor": "adjudicator",
+            "instructions": "Weigh red team findings against blue team mitigations and render verdict"
+          }
+        ],
+        "outputs": ["battle-tested-verdict", "vulnerability-report", "mitigation-plan"]
+      }
+    },
+    "rapid-fire": {
+      "name": "Rapid Fire",
+      "structure": {
+        "phases": [
+          {
+            "name": "rapid-critiques",
+            "duration": "10min",
+            "format": "sequential",
+            "timePerAgent": "30-seconds",
+            "participants": "all-agents",
+            "rules": {
+              "allowRebuttals": false,
+              "onePointPerAgent": true,
+              "concise": true
+            },
+            "instructions": "Each agent provides one quick, focused critique or observation"
+          },
+          {
+            "name": "synthesis",
+            "duration": "5min",
+            "participants": ["synthesis-agent"],
+            "instructions": "Rapidly synthesize critiques into actionable verdict"
+          }
+        ],
+        "outputs": ["quick-consensus"]
+      }
+    },
+    "world-cafe": {
+      "name": "World Café",
+      "structure": {
+        "setup": {
+          "groups": 4,
+          "agentsPerGroup": "2-3",
+          "topics": ["architecture", "security", "performance", "maintainability"]
+        },
+        "phases": [
+          {
+            "name": "round-1-discussions",
+            "duration": "7min",
+            "format": "small-groups",
+            "assignments": [
+              {"group": 1, "topic": "architecture", "host": "code-architect-agent"},
+              {"group": 2, "topic": "security", "host": "security-sentinel-agent"},
+              {"group": 3, "topic": "performance", "host": "performance-guardian-agent"},
+              {"group": 4, "topic": "maintainability", "host": "maintainability-advocate-agent"}
+            ],
+            "instructions": "Each group discusses their assigned topic. Host guides discussion."
+          },
+          {
+            "name": "rotation-1",
+            "duration": "1min",
+            "action": "Agents rotate to new groups. Hosts stay with their topics."
+          },
+          {
+            "name": "round-2-discussions",
+            "duration": "7min",
+            "format": "small-groups",
+            "instructions": "Hosts share insights from round 1. New members contribute fresh perspectives."
+          },
+          {
+            "name": "harvest",
+            "duration": "5min",
+            "participants": "all-agents",
+            "format": "hosts-report",
+            "instructions": "Each host shares key insights from their topic. Synthesis agent integrates."
+          }
+        ],
+        "crossPollination": true,
+        "outputs": ["holistic-multi-topic-verdict"]
+      }
+    },
+    "socratic": {
+      "name": "Socratic Dialogue",
+      "structure": {
+        "phases": [
+          {
+            "name": "initial-questioning",
+            "rounds": 1,
+            "format": "question-answer",
+            "instructions": "Questioner asks probing questions about assumptions and design decisions"
+          },
+          {
+            "name": "deep-exploration",
+            "rounds": 2,
+            "format": "nested-questions",
+            "instructions": "Follow-up questions based on previous answers, revealing deeper truths"
+          },
+          {
+            "name": "synthesis",
+            "rounds": 1,
+            "instructions": "Synthesize insights revealed through questioning into reasoned conclusion"
+          }
+        ]
+      }
+    },
+    "dialectic": {
+      "name": "Dialectic Synthesis",
+      "structure": {
+        "phases": [
+          {
+            "name": "thesis",
+            "participants": "advocates",
+            "instructions": "Present arguments in favor of code approval"
+          },
+          {
+            "name": "antithesis",
+            "participants": "critics",
+            "instructions": "Present counter-arguments and concerns"
+          },
+          {
+            "name": "synthesis",
+            "participants": ["synthesis-agent"],
+            "instructions": "Integrate thesis and antithesis into higher-order verdict"
+          }
+        ]
+      }
+    },
+    "jury": {
+      "name": "Jury Deliberation",
+      "structure": {
+        "setup": {
+          "jurySize": "panel-size-dependent",
+          "foreperson": "randomly-selected"
+        },
+        "phases": [
+          {
+            "name": "evidence-review",
+            "duration": "10min",
+            "instructions": "Review code changes and test results as evidence"
+          },
+          {
+            "name": "deliberation",
+            "duration": "15min",
+            "format": "open-discussion",
+            "instructions": "Discuss evidence and reach consensus"
+          },
+          {
+            "name": "voting",
+            "format": "secret-ballot",
+            "majorityThreshold": 0.66
+          }
+        ]
+      }
+    },
+    "delphi": {
+      "name": "Delphi Method",
+      "structure": {
+        "phases": [
+          {
+            "name": "round-1-individual",
+            "anonymous": true,
+            "instructions": "Each agent independently reviews code and provides verdict with rationale"
+          },
+          {
+            "name": "round-1-summary",
+            "action": "Moderator summarizes verdicts anonymously (no attribution)"
+          },
+          {
+            "name": "round-2-individual",
+            "anonymous": true,
+            "instructions": "Each agent reviews summary and revises their verdict based on collective wisdom"
+          },
+          {
+            "name": "round-2-summary",
+            "action": "Moderator summarizes revised verdicts"
+          },
+          {
+            "name": "round-3-individual",
+            "anonymous": true,
+            "instructions": "Final revision based on round 2 summary"
+          },
+          {
+            "name": "convergence-check",
+            "action": "Moderator checks if consensus has emerged (90%+ agreement)",
+            "output": "converged-consensus or majority-with-dissent"
+          }
+        ],
+        "rounds": 3,
+        "anonymous": true
+      }
+    },
+    "devils-advocate": {
+      "name": "Devil's Advocate",
+      "structure": {
+        "roles": {
+          "advocates": "majority-of-panel",
+          "devils-advocate": "devils-advocate-agent"
+        },
+        "phases": [
+          {
+            "name": "initial-review",
+            "participants": "advocates",
+            "instructions": "Advocates review code and build case for approval"
+          },
+          {
+            "name": "opposition",
+            "participants": ["devils-advocate-agent"],
+            "instructions": "Devil's advocate systematically argues against approval, addressing ALL points made by advocates"
+          },
+          {
+            "name": "rebuttal",
+            "participants": "advocates",
+            "instructions": "Advocates respond to devil's advocate concerns"
+          },
+          {
+            "name": "final-verdict",
+            "participants": ["synthesis-agent"],
+            "instructions": "Synthesize stress-tested verdict after opposition has been heard"
+          }
+        ],
+        "mustAddressAllPoints": true
+      }
+    }
+  }
+}

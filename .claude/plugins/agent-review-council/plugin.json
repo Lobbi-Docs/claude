@@ -17,15 +17,17 @@
     "multi-agent", "deliberation", "debate", "voting", "consensus",
     "adversarial-review", "devils-advocate", "tribunal", "jury",
     "critique", "cross-examination", "minority-opinion", "dialectic",
-    "socratic", "peer-review", "collective-intelligence"
+    "socratic", "peer-review", "collective-intelligence", "round-robin",
+    "autogen", "team-setup", "panel-discussion", "fishbowl", "think-tank",
+    "red-team", "blue-team", "rapid-fire", "world-cafe", "collaborative"
   ],
 
   "provides": {
     "commands": 12,
-    "agents": 15,
+    "agents": 18,
     "skills": 6,
     "hooks": 4,
-    "deliberationProtocols": 6
+    "deliberationProtocols": 14
   },
 
   "integrations": {
@@ -103,6 +105,96 @@
       "advocateRole": "mandatory",
       "mustAddressAllPoints": true,
       "output": "stress-tested-verdict"
+    },
+    "round-robin": {
+      "name": "Round Robin",
+      "description": "Sequential turn-taking where each agent builds on previous insights",
+      "pattern": "sequential-building",
+      "turnOrder": "random-then-fixed",
+      "speakingTime": "equal",
+      "rounds": 2,
+      "buildingRequired": true,
+      "output": "layered-analysis"
+    },
+    "autogen-team": {
+      "name": "AutoGen Team",
+      "description": "Hierarchical manager-worker setup inspired by Microsoft AutoGen",
+      "structure": "hierarchical",
+      "roles": ["manager", "workers", "executor", "critic"],
+      "managerDelegates": true,
+      "workerReports": true,
+      "criticValidates": true,
+      "maxIterations": 5,
+      "output": "team-validated-verdict"
+    },
+    "panel-discussion": {
+      "name": "Panel Discussion",
+      "description": "Open collaborative forum where agents freely discuss",
+      "style": "collaborative",
+      "turnTaking": "voluntary",
+      "crossTalk": true,
+      "moderatorGuides": true,
+      "timeBoxed": true,
+      "output": "emergent-consensus"
+    },
+    "fishbowl": {
+      "name": "Fishbowl",
+      "description": "Inner circle deliberates while outer circle observes, then rotate",
+      "circles": ["inner", "outer"],
+      "innerSize": 3,
+      "outerSize": "remaining",
+      "rotationRounds": 2,
+      "observersContribute": "after-rotation",
+      "output": "multi-perspective-verdict"
+    },
+    "think-tank": {
+      "name": "Think Tank",
+      "description": "Parallel exploration by all agents, then convergence",
+      "phases": ["parallel-exploration", "synthesis", "refinement"],
+      "parallelization": true,
+      "convergenceMethod": "synthesis-agent-led",
+      "diversityBonus": true,
+      "output": "comprehensive-multi-angle-verdict"
+    },
+    "red-blue-team": {
+      "name": "Red Team / Blue Team",
+      "description": "Offensive (red) vs defensive (blue) split with adjudication",
+      "teams": {
+        "red": {
+          "role": "attack",
+          "objective": "find-vulnerabilities-and-flaws",
+          "agents": "50%"
+        },
+        "blue": {
+          "role": "defend",
+          "objective": "justify-and-protect",
+          "agents": "50%"
+        }
+      },
+      "rounds": 3,
+      "adjudicator": "neutral-judge",
+      "output": "battle-tested-verdict"
+    },
+    "rapid-fire": {
+      "name": "Rapid Fire",
+      "description": "Quick successive critiques with minimal deliberation time",
+      "timePerAgent": "30-seconds",
+      "style": "fast-paced",
+      "allowRebuttals": false,
+      "rounds": 1,
+      "synthesisPhase": "mandatory",
+      "output": "quick-consensus"
+    },
+    "world-cafe": {
+      "name": "World Café",
+      "description": "Multiple small groups discuss different aspects, then cross-pollinate",
+      "groups": "3-4",
+      "agentsPerGroup": "2-3",
+      "topics": ["architecture", "security", "performance", "maintainability"],
+      "rotationRounds": 2,
+      "hostStays": true,
+      "crossPollination": true,
+      "output": "holistic-multi-topic-verdict"
     }
   },
 
@@ -243,6 +335,27 @@
       "model": "haiku",
       "role": "calibration",
       "description": "Calibrates council accuracy over time"
+    },
+    "team-manager-agent": {
+      "path": "agents/team-manager-agent.md",
+      "model": "opus",
+      "role": "manager",
+      "expertise": ["delegation", "coordination", "strategy"],
+      "description": "Manages autogen-style team delegation and coordination"
+    },
+    "red-team-leader-agent": {
+      "path": "agents/red-team-leader-agent.md",
+      "model": "sonnet",
+      "role": "red-team-lead",
+      "expertise": ["offensive", "vulnerability-finding", "attack-patterns"],
+      "description": "Leads red team in finding vulnerabilities and flaws"
+    },
+    "blue-team-leader-agent": {
+      "path": "agents/blue-team-leader-agent.md",
+      "model": "sonnet",
+      "role": "blue-team-lead",
+      "expertise": ["defensive", "justification", "mitigation"],
+      "description": "Leads blue team in defending and justifying code"
     }
   },
 
@@ -328,7 +441,7 @@
         },
         "deliberationProtocol": {
           "type": "string",
-          "enum": ["adversarial", "socratic", "dialectic", "jury", "delphi", "devils-advocate"],
+          "enum": ["adversarial", "socratic", "dialectic", "jury", "delphi", "devils-advocate", "round-robin", "autogen-team", "panel-discussion", "fishbowl", "think-tank", "red-blue-team", "rapid-fire", "world-cafe"],
           "default": "adversarial"
         },
         "votingMechanism": {

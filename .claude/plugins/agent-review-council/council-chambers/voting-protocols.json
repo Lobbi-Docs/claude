@@ -1,0 +1,308 @@
+{
+  "$schema": "../schemas/voting-protocol.schema.json",
+  "version": "1.0.0",
+  "mechanisms": {
+    "simple-majority": {
+      "name": "Simple Majority",
+      "threshold": 0.5,
+      "description": "More than 50% of agents must approve",
+      "algorithm": "count-votes",
+      "tieBreaker": "moderator-decides",
+      "useCase": "Low-stakes decisions, simple bug fixes",
+      "example": {
+        "totalAgents": 5,
+        "requiredApprovals": 3,
+        "scenario": "3 approve, 2 reject → APPROVED"
+      },
+      "implementation": {
+        "steps": [
+          "Collect votes from all agents",
+          "Count approvals vs rejections",
+          "If approvals > rejections, verdict is APPROVE",
+          "If rejections >= approvals, verdict is REJECT"
+        ]
+      }
+    },
+    "super-majority": {
+      "name": "Super Majority",
+      "threshold": 0.66,
+      "description": "At least 66% of agents must approve (2/3 threshold)",
+      "algorithm": "count-votes",
+      "tieBreaker": "rejects-when-insufficient",
+      "useCase": "Standard code reviews, normal PRs",
+      "example": {
+        "totalAgents": 6,
+        "requiredApprovals": 4,
+        "scenario": "4 approve, 2 reject → APPROVED (66%)"
+      },
+      "implementation": {
+        "steps": [
+          "Collect votes from all agents",
+          "Calculate approval percentage: approvals / total",
+          "If percentage >= 0.66, verdict is APPROVE",
+          "Otherwise, verdict is REJECT or REQUEST_CHANGES"
+        ]
+      }
+    },
+    "consensus": {
+      "name": "Consensus",
+      "threshold": 0.9,
+      "description": "At least 90% of agents must approve (near-unanimous)",
+      "algorithm": "count-votes",
+      "minorityOpinionRequired": true,
+      "useCase": "Critical decisions, production deployments, architecture changes",
+      "example": {
+        "totalAgents": 10,
+        "requiredApprovals": 9,
+        "scenario": "9 approve, 1 reject → APPROVED with dissent recorded"
+      },
+      "implementation": {
+        "steps": [
+          "Collect votes from all agents",
+          "Calculate approval percentage: approvals / total",
+          "If percentage >= 0.9, verdict is APPROVE",
+          "Record minority opinion if dissent exists",
+          "If percentage < 0.9, verdict is REJECT or REQUEST_CHANGES"
+        ]
+      }
+    },
+    "weighted": {
+      "name": "Weighted Voting",
+      "description": "Agent votes are weighted by expertise match to code domain",
+      "algorithm": "weighted-sum",
+      "expertiseBonus": 1.5,
+      "useCase": "Specialized code (security-critical, performance-critical, domain-specific)",
+      "weights": {
+        "domain-expert": 1.5,
+        "specialist": 1.5,
+        "generalist": 1.0
+      },
+      "example": {
+        "scenario": "Security-critical code review",
+        "votes": [
+          {"agent": "security-sentinel-agent", "vote": "REJECT", "weight": 1.5, "reason": "domain-expert"},
+          {"agent": "code-architect-agent", "vote": "APPROVE", "weight": 1.0, "reason": "generalist"},
+          {"agent": "performance-guardian-agent", "vote": "APPROVE", "weight": 1.0, "reason": "generalist"}
+        ],
+        "calculation": {
+          "rejectScore": "1.5 * 1 = 1.5",
+          "approveScore": "1.0 * 1 + 1.0 * 1 = 2.0",
+          "verdict": "APPROVE (2.0 > 1.5)"
+        }
+      },
+      "implementation": {
+        "steps": [
+          "Identify code domain (e.g., security, performance, architecture)",
+          "Assign weights to each agent based on expertise match",
+          "Multiply each vote by agent's weight",
+          "Sum weighted votes for each verdict option",
+          "Verdict with highest weighted sum wins"
+        ]
+      }
+    },
+    "ranked-choice": {
+      "name": "Ranked Choice",
+      "description": "Agents rank multiple alternatives, instant runoff determines winner",
+      "algorithm": "instant-runoff",
+      "useCase": "Multiple implementation alternatives, library selection, architecture pattern choice",
+      "example": {
+        "alternatives": ["Option A", "Option B", "Option C"],
+        "votes": [
+          {"agent": "agent-1", "ranking": ["A", "B", "C"]},
+          {"agent": "agent-2", "ranking": ["B", "A", "C"]},
+          {"agent": "agent-3", "ranking": ["B", "C", "A"]},
+          {"agent": "agent-4", "ranking": ["A", "C", "B"]},
+          {"agent": "agent-5", "ranking": ["C", "B", "A"]}
+        ],
+        "rounds": [
+          {"round": 1, "firstChoiceVotes": {"A": 2, "B": 2, "C": 1}, "eliminated": "C"},
+          {"round": 2, "redistributedVotes": {"A": 2, "B": 3}, "winner": "B"}
+        ]
+      },
+      "implementation": {
+        "steps": [
+          "Collect ranked ballots from all agents",
+          "Count first-choice votes for each alternative",
+          "If alternative has >50%, it wins",
+          "Otherwise, eliminate alternative with fewest first-choice votes",
+          "Redistribute eliminated alternative's votes to next choice",
+          "Repeat until winner emerges"
+        ]
+      }
+    },
+    "approval": {
+      "name": "Approval Voting",
+      "description": "Agents can approve multiple alternatives, most approvals wins",
+      "algorithm": "approval-count",
+      "useCase": "Selecting multiple features to implement, prioritizing issues",
+      "example": {
+        "alternatives": ["Feature A", "Feature B", "Feature C", "Feature D"],
+        "votes": [
+          {"agent": "agent-1", "approves": ["A", "B"]},
+          {"agent": "agent-2", "approves": ["B", "C"]},
+          {"agent": "agent-3", "approves": ["A", "B", "C"]},
+          {"agent": "agent-4", "approves": ["B"]},
+          {"agent": "agent-5", "approves": ["A", "D"]}
+        ],
+        "results": {
+          "A": 3,
+          "B": 4,
+          "C": 2,
+          "D": 1
+        },
+        "winner": "Feature B (4 approvals)"
+      },
+      "implementation": {
+        "steps": [
+          "Each agent selects 0 or more alternatives to approve",
+          "Count total approvals for each alternative",
+          "Alternative with most approvals wins",
+          "Tie-breaker: random selection or deliberation"
+        ]
+      }
+    },
+    "quadratic": {
+      "name": "Quadratic Voting",
+      "description": "Agents allocate vote points across alternatives, cost is quadratic",
+      "algorithm": "quadratic-cost",
+      "voteCredits": 10,
+      "useCase": "Prioritizing multiple issues with intensity preferences",
+      "example": {
+        "alternatives": ["Fix Bug A", "Improve Performance", "Add Feature C"],
+        "agent1Allocation": [
+          {"alternative": "Fix Bug A", "votes": 3, "cost": 9},
+          {"alternative": "Improve Performance", "votes": 1, "cost": 1},
+          "totalCost": 10
+        ],
+        "calculation": "votes^2 = cost (e.g., 3 votes costs 3^2 = 9 credits)"
+      },
+      "implementation": {
+        "steps": [
+          "Give each agent N vote credits (e.g., 10)",
+          "Agents allocate votes to alternatives",
+          "Cost of V votes on alternative = V^2 credits",
+          "Sum votes across all agents for each alternative",
+          "Alternative with most total votes wins"
+        ]
+      }
+    },
+    "condorcet": {
+      "name": "Condorcet Method",
+      "description": "Alternative that beats all others in pairwise comparisons wins",
+      "algorithm": "pairwise-comparison",
+      "useCase": "Finding consensus winner when preferences are complex",
+      "example": {
+        "alternatives": ["A", "B", "C"],
+        "pairwiseComparisons": [
+          {"matchup": "A vs B", "result": "A wins 3-2"},
+          {"matchup": "A vs C", "result": "A wins 4-1"},
+          {"matchup": "B vs C", "result": "B wins 3-2"}
+        ],
+        "condorcetWinner": "A (beats both B and C)"
+      },
+      "implementation": {
+        "steps": [
+          "Collect ranked ballots from agents",
+          "For each pair of alternatives, count which is preferred",
+          "If alternative beats all others in pairwise comparisons, it's the Condorcet winner",
+          "If no Condorcet winner (cycle), use tie-breaking method"
+        ]
+      }
+    },
+    "borda-count": {
+      "name": "Borda Count",
+      "description": "Points assigned based on ranking position, highest total wins",
+      "algorithm": "positional-scoring",
+      "useCase": "Consensus building when ranking preferences matter",
+      "example": {
+        "alternatives": ["A", "B", "C"],
+        "pointsForRanking": {"1st": 3, "2nd": 2, "3rd": 1},
+        "votes": [
+          {"agent": "agent-1", "ranking": ["A", "B", "C"], "points": {"A": 3, "B": 2, "C": 1}},
+          {"agent": "agent-2", "ranking": ["B", "C", "A"], "points": {"B": 3, "C": 2, "A": 1}},
+          {"agent": "agent-3", "ranking": ["A", "C", "B"], "points": {"A": 3, "C": 2, "B": 1}}
+        ],
+        "totalPoints": {"A": 7, "B": 6, "C": 5},
+        "winner": "A"
+      },
+      "implementation": {
+        "steps": [
+          "Collect ranked ballots from agents",
+          "Assign points: 1st place = N points, 2nd = N-1, ... , last = 1",
+          "Sum points for each alternative across all ballots",
+          "Alternative with highest point total wins"
+        ]
+      }
+    },
+    "veto": {
+      "name": "Veto System",
+      "description": "Any agent with veto power can block approval",
+      "algorithm": "veto-check",
+      "vetoRoles": ["security-sentinel-agent", "devils-advocate-agent"],
+      "useCase": "Security-critical changes where any vulnerability blocks approval",
+      "example": {
+        "votes": [
+          {"agent": "code-architect-agent", "vote": "APPROVE"},
+          {"agent": "performance-guardian-agent", "vote": "APPROVE"},
+          {"agent": "security-sentinel-agent", "vote": "VETO", "reason": "SQL injection vulnerability"}
+        ],
+        "verdict": "REJECTED (veto exercised)"
+      },
+      "implementation": {
+        "steps": [
+          "Collect votes from all agents",
+          "Check if any agent with veto power voted VETO",
+          "If veto exists, verdict is REJECT regardless of other votes",
+          "Otherwise, use standard voting mechanism (e.g., super-majority)"
+        ]
+      },
+      "vetoPower": {
+        "security-sentinel-agent": {
+          "conditions": ["critical-vulnerability", "unmitigated-security-risk"],
+          "override": "council-supermajority (90%)"
+        },
+        "devils-advocate-agent": {
+          "conditions": ["fundamental-design-flaw", "unacceptable-risk"],
+          "override": "unanimous-approval-of-others"
+        }
+      }
+    }
+  },
+  "tieBreakers": {
+    "moderator-decides": {
+      "description": "Moderator agent casts deciding vote",
+      "agent": "moderator-agent"
+    },
+    "status-quo-wins": {
+      "description": "In a tie, reject the change (maintain status quo)"
+    },
+    "random-selection": {
+      "description": "Random selection among tied alternatives"
+    },
+    "extended-deliberation": {
+      "description": "Another round of deliberation to break tie"
+    },
+    "senior-agent-decides": {
+      "description": "Most experienced agent (opus model) decides",
+      "preference": "opus > sonnet > haiku"
+    }
+  },
+  "votingFormats": {
+    "open-ballot": {
+      "description": "All votes are visible to all agents",
+      "transparency": "full",
+      "pressureRisk": "high"
+    },
+    "secret-ballot": {
+      "description": "Votes are anonymous during collection",
+      "transparency": "results-only",
+      "pressureRisk": "low",
+      "revelation": "after-verdict"
+    },
+    "sequential-public": {
+      "description": "Agents vote in sequence, each seeing previous votes",
+      "transparency": "cumulative",
+      "cascadeRisk": "moderate"
+    }
+  }
+}
