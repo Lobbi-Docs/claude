@@ -1,7 +1,7 @@
 ---
 name: jira:work
-description: Start working on a Jira issue with optimized tiered orchestration. FAST mode for trivial changes (3-4 agents), STANDARD for normal work (6-8 agents), FULL for complex features (10-12 agents). Automatic mode selection based on issue analysis.
-version: 5.0.0
+description: Start working on a Jira issue with optimized tiered orchestration. Begins with intelligent question-gathering to ensure complete understanding before implementation.
+version: 5.1.0
 qualityGatesIntegration: code-quality-orchestrator
 agentOrchestration: true
 executionTiers: [FAST, STANDARD, FULL]
@@ -9,24 +9,220 @@ minSubAgents: 3
 maxSubAgents: 12
 caching: true
 parallelExecution: maximized
+questionGathering: mandatory
 ---
 
-# Jira Work Orchestration v5.0 (Optimized)
+# Jira Work Orchestration v5.1 (Optimized)
 
-High-performance workflow with **tiered execution**, **intelligent caching**, and **maximum parallelization**.
+High-performance workflow with **intelligent question-gathering**, **tiered execution**, **caching**, and **maximum parallelization**.
 
-**Key Optimizations in v5.0:**
+**Key Features in v5.1:**
+- ❓ **Question-First Protocol** - Ask all clarifying questions BEFORE starting
 - ⚡ **3 Execution Tiers:** FAST (3-4 agents) | STANDARD (6-8) | FULL (10-12)
 - 🚀 **40% Faster:** Parallel phase execution where possible
 - 💾 **Caching Layer:** Memoized Jira/Confluence lookups
 - 🎯 **Smart Gates:** 5 gates → 3 parallel gate groups
 - 🔀 **Early Exit:** Skip unnecessary phases for trivial changes
 
+---
+
+## PHASE 0: Question-Gathering (MANDATORY)
+
+**Before ANY work begins, Claude MUST gather sufficient context by asking questions.**
+
+```
+QUESTION-GATHERING PROTOCOL:
+═════════════════════════════════════════════════════════════════════════
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  STEP 1: Initial Analysis (~30 seconds)                             │
+  │  ─────────────────────────────────────────                          │
+  │  • Parse Jira issue description                                     │
+  │  • Identify ambiguous requirements                                  │
+  │  • Detect missing technical details                                 │
+  │  • Check for undefined acceptance criteria                          │
+  └─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  STEP 2: Generate Question Categories                               │
+  │  ────────────────────────────────────                               │
+  │                                                                      │
+  │  📋 REQUIREMENTS QUESTIONS                                          │
+  │     • What is the expected behavior?                                │
+  │     • What are the acceptance criteria?                             │
+  │     • Are there edge cases to consider?                             │
+  │     • What should happen on errors?                                 │
+  │                                                                      │
+  │  🔧 TECHNICAL QUESTIONS                                             │
+  │     • Which components/files are affected?                          │
+  │     • Are there existing patterns to follow?                        │
+  │     • What dependencies are involved?                               │
+  │     • Are there performance requirements?                           │
+  │                                                                      │
+  │  🎨 DESIGN QUESTIONS                                                │
+  │     • UI/UX requirements (if applicable)?                           │
+  │     • API contract expectations?                                    │
+  │     • Database schema changes needed?                               │
+  │                                                                      │
+  │  ⚠️ RISK QUESTIONS                                                  │
+  │     • Rollback strategy if something goes wrong?                    │
+  │     • Testing requirements?                                         │
+  │     • Security considerations?                                      │
+  │                                                                      │
+  │  🔗 DEPENDENCY QUESTIONS                                            │
+  │     • Are there blocking issues?                                    │
+  │     • External team dependencies?                                   │
+  │     • Timeline constraints?                                         │
+  └─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  STEP 3: Present Questions & Wait for Answers                       │
+  │  ────────────────────────────────────────────                       │
+  │  • Present grouped questions clearly                                │
+  │  • Wait for user responses                                          │
+  │  • Ask follow-up questions if needed                                │
+  │  • Confirm understanding before proceeding                          │
+  └─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  STEP 4: Confirmation                                               │
+  │  ────────────────────                                               │
+  │  "Based on your answers, here's my understanding:                   │
+  │   [Summary of requirements]                                         │
+  │                                                                      │
+  │   Is this correct? Should I proceed with implementation?"           │
+  └─────────────────────────────────────────────────────────────────────┘
+═════════════════════════════════════════════════════════════════════════
+```
+
+### Question Categories by Tier
+
+| Tier | Min Questions | Focus Areas |
+|------|---------------|-------------|
+| **FAST** | 1-2 | Confirmation only ("Just updating X, correct?") |
+| **STANDARD** | 3-5 | Requirements, affected files, testing approach |
+| **FULL** | 5-10 | Full technical spec, architecture, security, rollback |
+
+### Intelligent Question Generation
+
+```typescript
+interface QuestionContext {
+  issueKey: string;
+  issueType: string;
+  description: string;
+  acceptanceCriteria: string[];
+  labels: string[];
+  components: string[];
+}
+
+function generateQuestions(context: QuestionContext): Question[] {
+  const questions: Question[] = [];
+
+  // Requirements gaps
+  if (!context.acceptanceCriteria?.length) {
+    questions.push({
+      category: 'requirements',
+      priority: 'high',
+      question: 'What are the acceptance criteria for this issue?'
+    });
+  }
+
+  // Technical ambiguity
+  if (context.description.includes('should') || context.description.includes('might')) {
+    questions.push({
+      category: 'technical',
+      priority: 'medium',
+      question: 'The description mentions "should/might" - is this optional or required behavior?'
+    });
+  }
+
+  // Error handling
+  if (context.issueType === 'Story' && !context.description.includes('error')) {
+    questions.push({
+      category: 'requirements',
+      priority: 'medium',
+      question: 'How should the system handle error cases?'
+    });
+  }
+
+  // Testing strategy
+  if (!context.labels.includes('tested') && !context.labels.includes('no-tests')) {
+    questions.push({
+      category: 'technical',
+      priority: 'low',
+      question: 'What level of test coverage is expected?'
+    });
+  }
+
+  // Security implications
+  if (detectSecurityKeywords(context.description)) {
+    questions.push({
+      category: 'security',
+      priority: 'high',
+      question: 'Are there specific security requirements or compliance needs?'
+    });
+  }
+
+  return questions;
+}
+
+// Example question output
+const exampleQuestions = `
+Before I start working on ${issueKey}, I have a few questions:
+
+**Requirements:**
+1. The description mentions "user authentication" - should this support both email/password and OAuth, or just one?
+2. What should happen if a user's session expires mid-action?
+
+**Technical:**
+3. Should I follow the existing auth patterns in src/auth/, or is there a new approach you prefer?
+4. Are there specific performance requirements (e.g., max auth latency)?
+
+**Testing:**
+5. Should I add integration tests with the OAuth provider, or mock those?
+
+Please answer these questions and I'll proceed with implementation.
+`;
+```
+
+### Skip Conditions (FAST tier only)
+
+Questions can be skipped when ALL of these are true:
+- Issue type is: Bug, Sub-task, or Documentation
+- Description is very specific (< 50 words)
+- Acceptance criteria are clearly defined
+- Files to change are explicitly mentioned
+- No security implications detected
+
+```typescript
+function shouldSkipQuestions(context: QuestionContext): boolean {
+  const skipTypes = ['Bug', 'Sub-task', 'Documentation', 'Task'];
+  const hasSpecificDescription = context.description.split(' ').length < 50;
+  const hasClearAC = context.acceptanceCriteria.length >= 2;
+  const hasFilesMentioned = /\.(ts|js|py|go|java|rb)/.test(context.description);
+  const noSecurityImplications = !detectSecurityKeywords(context.description);
+
+  return (
+    skipTypes.includes(context.issueType) &&
+    hasSpecificDescription &&
+    hasClearAC &&
+    hasFilesMentioned &&
+    noSecurityImplications
+  );
+}
+```
+
+---
+
 ## Quick Start
 
 ```
-/jira:work <issue-key> [--tier=auto|fast|standard|full]
+/jira:work <issue-key> [--tier=auto|fast|standard|full] [--skip-questions]
 ```
+
+**Note:** `--skip-questions` is only available for FAST tier and trivial changes.
 
 ### Tier Auto-Selection Logic
 ```
@@ -37,11 +233,11 @@ FULL:     major-feature | architectural | security | 10+ files
 
 ---
 
-## Optimized Architecture (v5.0)
+## Optimized Architecture (v5.1)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│           JIRA WORK ORCHESTRATOR v5.0 - TIERED EXECUTION                 │
+│           JIRA WORK ORCHESTRATOR v5.1 - QUESTION-FIRST EXECUTION         │
 │                    ⚡ Optimized for Speed ⚡                              │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
