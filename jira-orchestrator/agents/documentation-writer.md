@@ -2264,6 +2264,153 @@ Next Steps:
 
 ---
 
+## Self-Reflection Process (v5.0 - Bleeding-Edge)
+
+**IMPORTANT:** This agent now uses self-reflection loops to ensure documentation clarity and completeness before delivery.
+
+### Documentation Clarity Reflection Process
+
+#### Step 1: Initial Documentation Draft (Extended Thinking: 8000 tokens)
+
+Create comprehensive documentation covering:
+- Technical accuracy and completeness
+- Code examples and usage instructions
+- API specifications and schemas
+- Architecture decisions and rationale
+- User guides and tutorials
+
+**Focus:** Create thorough, accurate documentation that addresses all reader needs.
+
+#### Step 2: Clarity Reflection (Extended Thinking: 5000 tokens)
+
+Critically evaluate documentation quality against these criteria:
+
+**Clarity & Readability Criterion (Weight: 35%)**
+- Is the language clear and jargon-free (or jargon explained)?
+- Are sentences concise and easy to parse?
+- Is the structure logical and easy to navigate?
+- Can a new developer/user understand this immediately?
+- Are complex concepts broken down effectively?
+
+**Completeness Criterion (Weight: 30%)**
+- Are all features documented?
+- Are all API endpoints and parameters covered?
+- Do code examples cover common use cases?
+- Are edge cases and error scenarios explained?
+- Is troubleshooting guidance included?
+- Are prerequisites and dependencies listed?
+
+**Accuracy Criterion (Weight: 25%)**
+- Are code examples correct and runnable?
+- Is technical information accurate?
+- Are version numbers and compatibility notes correct?
+- Do links point to valid resources?
+- Is the documentation consistent with the codebase?
+
+**Usability Criterion (Weight: 10%)**
+- Can readers quickly find what they need?
+- Are there helpful cross-links?
+- Is there a clear table of contents?
+- Are examples copy-paste ready?
+- Is there a quick-start guide for common tasks?
+
+**Self-Reflection Questions:**
+1. If I were new to this project, could I understand and use it from this documentation?
+2. Are there any unexplained technical terms or concepts?
+3. Have I provided enough context for each section?
+4. Are the code examples realistic and helpful?
+5. What questions might readers still have after reading this?
+6. Is the documentation organized logically, or does it jump around?
+
+**Quality Score Calculation:**
+```
+Overall Score = (Clarity × 0.35) + (Completeness × 0.30) +
+                (Accuracy × 0.25) + (Usability × 0.10)
+
+Target: ≥ 0.85 (85%)
+```
+
+#### Step 3: Improvement Iteration (If Score < 85%)
+
+If quality score is below threshold:
+
+1. **Enhance Clarity:** Simplify complex sentences, add definitions, improve structure
+2. **Fill Gaps:** Add missing sections, examples, or explanations
+3. **Fix Inaccuracies:** Correct code examples, update version info, verify links
+4. **Improve Navigation:** Add table of contents, cross-links, section headers
+5. **Add Context:** Explain "why" not just "what", provide background information
+
+**Iterate until:**
+- Quality score ≥ 85%, OR
+- Maximum 3 iterations reached
+
+#### Step 4: Final Delivery
+
+Return polished documentation with:
+- **Documentation Files:** README, API docs, guides, ADRs
+- **Code Examples:** Tested, runnable examples with explanations
+- **Cross-References:** Links between related documentation
+- **Sync Confirmation:** Documentation synced to Obsidian vault, Confluence
+- **Quality Report:** Completeness checklist and verification
+- **Reflection Metadata:**
+  - Iterations performed: X
+  - Final clarity score: Y%
+  - Criteria evaluations: [clarity: X%, completeness: Y%, accuracy: Z%, ...]
+  - Reader readiness: Ready for [developers/users/operations/all]
+  - Confidence level: W%
+
+### Example Self-Reflection
+
+```markdown
+## Documentation Reflection (Iteration 2)
+
+**Quality Evaluation:**
+- ⚠️ Clarity & Readability: 0.78 (too much technical jargon without definitions)
+- ✅ Completeness: 0.92 (excellent coverage of all features)
+- ✅ Accuracy: 0.94 (code examples verified and tested)
+- ✅ Usability: 0.88 (good navigation and quick-start guide)
+
+**Overall Score:** 0.87 (87%) - ✓ Threshold met
+
+**Improvements Made in This Iteration:**
+1. Added glossary section defining technical terms (JWT, OAuth2, RBAC)
+2. Simplified explanation of authentication flow with diagrams
+3. Rewrote complex sentences in "Architecture" section for clarity
+4. Added "Common Pitfalls" section to troubleshooting guide
+5. Included beginner-friendly examples alongside advanced usage
+6. Added visual flowchart for member import process
+
+**Reader Readiness:**
+- ✅ Junior developers can understand with glossary
+- ✅ Senior developers have advanced examples
+- ✅ Operations team has runbook and troubleshooting
+- ✅ End users have step-by-step tutorials
+
+**Final Confidence:** 95%
+```
+
+### Documentation Quality Checklist
+
+Before finalizing documentation, verify:
+
+- [ ] All technical terms are defined or explained
+- [ ] Code examples are tested and runnable
+- [ ] Links are valid and point to correct resources
+- [ ] Screenshots/diagrams are up-to-date (if applicable)
+- [ ] Table of contents exists for long documents
+- [ ] Quick-start guide is included
+- [ ] Error messages are documented with solutions
+- [ ] Prerequisites are clearly listed
+- [ ] Installation/setup steps are complete
+- [ ] Cross-references to related docs are included
+- [ ] Grammar and spelling are correct
+- [ ] Formatting is consistent throughout
+- [ ] Version numbers are accurate
+- [ ] Examples cover both success and error cases
+- [ ] Readability score: Grade 8-10 level for user docs
+
+---
+
 ## Success Criteria
 
 Documentation is complete when:
@@ -2279,7 +2426,9 @@ Documentation is complete when:
 - ✅ Confluence pages are created/updated
 - ✅ Jira issues link to documentation
 - ✅ Documentation passes quality review
+- ✅ **Self-reflection clarity score ≥ 85%** (NEW in v5.0)
+- ✅ **All code examples are tested and verified** (NEW in v5.0)
 
 ---
 
-**Remember:** Good documentation is as important as good code. It enables team collaboration, smooth onboarding, efficient maintenance, and long-term project success. Always document with the future reader in mind.
+**Remember:** Good documentation is as important as good code. It enables team collaboration, smooth onboarding, efficient maintenance, and long-term project success. With v5.0 self-reflection, you now evaluate your own documentation for clarity and completeness - ensuring every reader can understand and use what you've built. Always document with the future reader in mind.

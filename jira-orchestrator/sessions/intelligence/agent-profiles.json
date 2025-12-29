@@ -1,0 +1,133 @@
+{
+  "code-reviewer": {
+    "agentName": "code-reviewer",
+    "specialization": ["backend", "api", "security"],
+    "successRate": 0.95,
+    "totalTasks": 47,
+    "successfulTasks": 45,
+    "failedTasks": 2,
+    "averageDuration": 312000,
+    "averageQuality": 0.92,
+    "strengthPatterns": [
+      {
+        "id": "code-reviewer-backend-mastery",
+        "type": "strength",
+        "description": "High success rate in backend domain",
+        "conditions": {
+          "domain": "backend",
+          "minComplexity": 0,
+          "maxComplexity": 100
+        },
+        "frequency": 28,
+        "successRate": 0.964,
+        "transferability": 0.75,
+        "confidence": 0.91,
+        "examples": ["EXAMPLE-101", "EXAMPLE-112", "EXAMPLE-118"],
+        "createdAt": "2025-12-15T10:30:00.000Z",
+        "lastSeen": "2025-12-29T08:15:00.000Z"
+      },
+      {
+        "id": "code-reviewer-complexity-sweet-spot-40",
+        "type": "strength",
+        "description": "Optimal performance at complexity 40-60",
+        "conditions": {
+          "minComplexity": 40,
+          "maxComplexity": 60
+        },
+        "frequency": 18,
+        "successRate": 0.944,
+        "transferability": 0.82,
+        "confidence": 0.88,
+        "examples": ["EXAMPLE-105", "EXAMPLE-121", "EXAMPLE-134"],
+        "createdAt": "2025-12-18T14:20:00.000Z",
+        "lastSeen": "2025-12-29T07:45:00.000Z"
+      }
+    ],
+    "weaknessPatterns": [
+      {
+        "id": "code-reviewer-frontend-gaps",
+        "type": "weakness",
+        "description": "Lower success in frontend/React domain",
+        "conditions": {
+          "domain": "frontend"
+        },
+        "frequency": 8,
+        "successRate": 0.625,
+        "transferability": 0.60,
+        "confidence": 0.73,
+        "examples": ["EXAMPLE-108", "EXAMPLE-127"],
+        "createdAt": "2025-12-20T09:10:00.000Z",
+        "lastSeen": "2025-12-28T16:30:00.000Z"
+      }
+    ],
+    "recentPerformance": {
+      "recentTasks": 12,
+      "recentSuccesses": 11,
+      "recentFailures": 1,
+      "trend": 0.15,
+      "lastUpdated": "2025-12-29T10:00:00.000Z"
+    },
+    "bestDomains": ["backend", "api", "security", "database"],
+    "worstDomains": ["frontend", "ui"],
+    "optimalComplexityRange": [35, 75],
+    "createdAt": "2025-11-15T00:00:00.000Z",
+    "lastUpdated": "2025-12-29T10:00:00.000Z"
+  },
+  "implementation-specialist": {
+    "agentName": "implementation-specialist",
+    "specialization": ["backend", "frontend", "fullstack"],
+    "successRate": 0.89,
+    "totalTasks": 38,
+    "successfulTasks": 34,
+    "failedTasks": 4,
+    "averageDuration": 1098000,
+    "averageQuality": 0.88,
+    "strengthPatterns": [
+      {
+        "id": "implementation-specialist-type-mastery-implementation",
+        "type": "strength",
+        "description": "Mastery of implementation tasks with efficient execution",
+        "conditions": {
+          "type": "implementation"
+        },
+        "frequency": 32,
+        "successRate": 0.906,
+        "transferability": 0.55,
+        "confidence": 0.89,
+        "examples": ["EXAMPLE-201", "EXAMPLE-215", "EXAMPLE-228"],
+        "createdAt": "2025-12-01T11:00:00.000Z",
+        "lastSeen": "2025-12-29T09:30:00.000Z"
+      }
+    ],
+    "weaknessPatterns": [
+      {
+        "id": "implementation-specialist-complexity-struggle-80",
+        "type": "weakness",
+        "description": "Struggles with very high complexity tasks (>80)",
+        "conditions": {
+          "minComplexity": 80,
+          "maxComplexity": 100
+        },
+        "frequency": 5,
+        "successRate": 0.60,
+        "transferability": 0.70,
+        "confidence": 0.75,
+        "examples": ["EXAMPLE-210", "EXAMPLE-223"],
+        "createdAt": "2025-12-22T13:45:00.000Z",
+        "lastSeen": "2025-12-28T11:20:00.000Z"
+      }
+    ],
+    "recentPerformance": {
+      "recentTasks": 10,
+      "recentSuccesses": 9,
+      "recentFailures": 1,
+      "trend": 0.08,
+      "lastUpdated": "2025-12-29T09:45:00.000Z"
+    },
+    "bestDomains": ["backend", "fullstack", "api"],
+    "worstDomains": ["devops", "infrastructure"],
+    "optimalComplexityRange": [40, 80],
+    "createdAt": "2025-11-20T00:00:00.000Z",
+    "lastUpdated": "2025-12-29T09:45:00.000Z"
+  }
+}

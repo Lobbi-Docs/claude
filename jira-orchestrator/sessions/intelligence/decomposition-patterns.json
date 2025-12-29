@@ -1,0 +1,408 @@
+{
+  "version": "5.0.0",
+  "last_updated": "2025-12-29T00:00:00Z",
+  "description": "Adaptive task decomposition learning data - tracks decomposition effectiveness and learned patterns",
+  "history": [
+    {
+      "taskId": "EXAMPLE-001",
+      "timestamp": "2025-12-01T10:00:00Z",
+      "complexity": 65,
+      "decomposition": {
+        "rootTask": {
+          "key": "EXAMPLE-001",
+          "summary": "Implement user authentication system",
+          "description": "Build comprehensive OAuth2 authentication with social login support",
+          "complexity": 65,
+          "storyPoints": 13,
+          "labels": ["authentication", "security", "backend"],
+          "type": "Epic"
+        },
+        "subtasks": [
+          {
+            "title": "User authentication system - Database schema and migrations",
+            "description": "Create users table with OAuth fields, sessions, and refresh tokens",
+            "estimatedPoints": 3,
+            "dependencies": [],
+            "priority": "Must",
+            "type": "Task"
+          },
+          {
+            "title": "User authentication system - OAuth2 provider integration",
+            "description": "Integrate with Google, GitHub, and Microsoft OAuth providers",
+            "estimatedPoints": 5,
+            "dependencies": ["User authentication system - Database schema and migrations"],
+            "priority": "Must",
+            "type": "Task"
+          },
+          {
+            "title": "User authentication system - Session management",
+            "description": "Implement JWT tokens, refresh logic, and session validation",
+            "estimatedPoints": 3,
+            "dependencies": ["User authentication system - OAuth2 provider integration"],
+            "priority": "Must",
+            "type": "Task"
+          },
+          {
+            "title": "User authentication system - Frontend login UI",
+            "description": "Create login page with social provider buttons and error handling",
+            "estimatedPoints": 2,
+            "dependencies": [],
+            "priority": "Should",
+            "type": "Story"
+          }
+        ],
+        "depth": 4,
+        "decompositionStrategy": "technical-layer",
+        "complexity": 65,
+        "totalEstimatedPoints": 13,
+        "metadata": {
+          "createdAt": "2025-12-01T10:00:00Z",
+          "createdBy": "adaptive-decomposer",
+          "rationale": "Selected technical-layer strategy based on backend-focused task"
+        }
+      },
+      "outcome": {
+        "success": true,
+        "actualDuration": 52,
+        "estimatedDuration": 52,
+        "issuesEncountered": ["OAuth scope configuration required clarification"],
+        "velocityAchieved": 13,
+        "blockers": 0,
+        "reworkRequired": false,
+        "completionRate": 1.0,
+        "teamSatisfaction": 4
+      },
+      "effectiveness": 0.92,
+      "features": {
+        "complexity": 65,
+        "uncertainty": 0.3,
+        "novelty": 0.4,
+        "domain": ["authentication", "security", "backend", "database"],
+        "hasExternalDeps": true,
+        "teamSize": 2,
+        "estimatedHours": 52
+      }
+    },
+    {
+      "taskId": "EXAMPLE-002",
+      "timestamp": "2025-12-05T14:30:00Z",
+      "complexity": 45,
+      "decomposition": {
+        "rootTask": {
+          "key": "EXAMPLE-002",
+          "summary": "Add member profile management",
+          "description": "Allow members to view and edit their profile information",
+          "complexity": 45,
+          "storyPoints": 8,
+          "labels": ["frontend", "user-management"],
+          "type": "Story"
+        },
+        "subtasks": [
+          {
+            "title": "Member profile management - View profile page",
+            "description": "Display member information in read-only mode",
+            "estimatedPoints": 2,
+            "dependencies": [],
+            "priority": "Must",
+            "type": "Story"
+          },
+          {
+            "title": "Member profile management - Edit functionality",
+            "description": "Add edit mode with form validation and save",
+            "estimatedPoints": 3,
+            "dependencies": ["Member profile management - View profile page"],
+            "priority": "Must",
+            "type": "Story"
+          },
+          {
+            "title": "Member profile management - Avatar upload",
+            "description": "Support avatar image upload with preview and crop",
+            "estimatedPoints": 3,
+            "dependencies": ["Member profile management - View profile page"],
+            "priority": "Should",
+            "type": "Story"
+          }
+        ],
+        "depth": 3,
+        "decompositionStrategy": "user-journey",
+        "complexity": 45,
+        "totalEstimatedPoints": 8,
+        "metadata": {
+          "createdAt": "2025-12-05T14:30:00Z",
+          "createdBy": "adaptive-decomposer",
+          "rationale": "Selected user-journey strategy for user-facing story"
+        }
+      },
+      "outcome": {
+        "success": true,
+        "actualDuration": 34,
+        "estimatedDuration": 32,
+        "issuesEncountered": ["Avatar cropping library selection took extra time"],
+        "velocityAchieved": 8,
+        "blockers": 0,
+        "reworkRequired": false,
+        "completionRate": 1.0,
+        "teamSatisfaction": 5
+      },
+      "effectiveness": 0.88,
+      "features": {
+        "complexity": 45,
+        "uncertainty": 0.2,
+        "novelty": 0.1,
+        "domain": ["frontend", "user-management", "ui"],
+        "hasExternalDeps": false,
+        "teamSize": 1,
+        "estimatedHours": 32
+      }
+    },
+    {
+      "taskId": "EXAMPLE-003",
+      "timestamp": "2025-12-10T09:15:00Z",
+      "complexity": 80,
+      "decomposition": {
+        "rootTask": {
+          "key": "EXAMPLE-003",
+          "summary": "Implement payment processing system",
+          "description": "Integrate Stripe for subscription billing and one-time payments",
+          "complexity": 80,
+          "storyPoints": 21,
+          "labels": ["payment", "integration", "backend", "frontend"],
+          "type": "Epic"
+        },
+        "subtasks": [
+          {
+            "title": "Payment processing system - Minimum viable implementation",
+            "description": "Basic Stripe integration for one-time payments",
+            "estimatedPoints": 8,
+            "dependencies": [],
+            "priority": "Must",
+            "type": "Story"
+          },
+          {
+            "title": "Payment processing system - Subscription management",
+            "description": "Add recurring subscription support with plan management",
+            "estimatedPoints": 5,
+            "dependencies": ["Payment processing system - Minimum viable implementation"],
+            "priority": "Should",
+            "type": "Story"
+          },
+          {
+            "title": "Payment processing system - Payment history and invoices",
+            "description": "Display payment history and generate invoices",
+            "estimatedPoints": 3,
+            "dependencies": ["Payment processing system - Minimum viable implementation"],
+            "priority": "Should",
+            "type": "Story"
+          },
+          {
+            "title": "Payment processing system - Webhook handling",
+            "description": "Handle Stripe webhooks for payment status updates",
+            "estimatedPoints": 3,
+            "dependencies": ["Payment processing system - Minimum viable implementation"],
+            "priority": "Must",
+            "type": "Task"
+          },
+          {
+            "title": "Payment processing system - Testing and QA",
+            "description": "Test payment flows with Stripe test mode",
+            "estimatedPoints": 2,
+            "dependencies": [
+              "Payment processing system - Minimum viable implementation",
+              "Payment processing system - Subscription management",
+              "Payment processing system - Webhook handling"
+            ],
+            "priority": "Must",
+            "type": "Task"
+          }
+        ],
+        "depth": 5,
+        "decompositionStrategy": "incremental-value",
+        "complexity": 80,
+        "totalEstimatedPoints": 21,
+        "metadata": {
+          "createdAt": "2025-12-10T09:15:00Z",
+          "createdBy": "adaptive-decomposer",
+          "rationale": "Selected incremental-value strategy to deliver payment capability early"
+        }
+      },
+      "outcome": {
+        "success": true,
+        "actualDuration": 89,
+        "estimatedDuration": 84,
+        "issuesEncountered": [
+          "Webhook verification complexity",
+          "PCI compliance documentation needed"
+        ],
+        "velocityAchieved": 21,
+        "blockers": 1,
+        "reworkRequired": false,
+        "completionRate": 1.0,
+        "teamSatisfaction": 4
+      },
+      "effectiveness": 0.85,
+      "features": {
+        "complexity": 80,
+        "uncertainty": 0.5,
+        "novelty": 0.7,
+        "domain": ["payment", "integration", "backend", "frontend", "api"],
+        "hasExternalDeps": true,
+        "teamSize": 3,
+        "estimatedHours": 84
+      }
+    }
+  ],
+  "patterns": [
+    {
+      "complexity_range": [0, 20],
+      "optimal_depth": 2,
+      "avg_effectiveness": 0.90,
+      "sample_size": 8,
+      "strategy": "user-journey",
+      "domains": ["frontend", "ui", "simple-crud"],
+      "characteristics": ["low-uncertainty"]
+    },
+    {
+      "complexity_range": [20, 40],
+      "optimal_depth": 3,
+      "avg_effectiveness": 0.87,
+      "sample_size": 15,
+      "strategy": "user-journey",
+      "domains": ["frontend", "user-management", "ui"],
+      "characteristics": []
+    },
+    {
+      "complexity_range": [40, 60],
+      "optimal_depth": 4,
+      "avg_effectiveness": 0.89,
+      "sample_size": 12,
+      "strategy": "technical-layer",
+      "domains": ["backend", "database", "api"],
+      "characteristics": []
+    },
+    {
+      "complexity_range": [60, 80],
+      "optimal_depth": 4,
+      "avg_effectiveness": 0.88,
+      "sample_size": 7,
+      "strategy": "technical-layer",
+      "domains": ["authentication", "security", "backend", "integration"],
+      "characteristics": ["external-dependencies"]
+    },
+    {
+      "complexity_range": [80, 100],
+      "optimal_depth": 5,
+      "avg_effectiveness": 0.82,
+      "sample_size": 5,
+      "strategy": "incremental-value",
+      "domains": ["payment", "integration", "complex-systems"],
+      "characteristics": ["high-uncertainty", "novel-domain", "external-dependencies"]
+    }
+  ],
+  "anti_patterns": [
+    {
+      "description": "Over-decomposition of simple CRUD operations",
+      "impact": "wasted-time",
+      "frequency": 4,
+      "examples": ["PROJ-123", "PROJ-156", "PROJ-189"],
+      "mitigation": "Use depth 2-3 for tasks with complexity < 30"
+    },
+    {
+      "description": "Creating too many sequential dependencies in parallel-capable work",
+      "impact": "blocked-progress",
+      "frequency": 6,
+      "examples": ["PROJ-145", "PROJ-201", "PROJ-234"],
+      "mitigation": "Identify truly independent subtasks and minimize dependency chains"
+    },
+    {
+      "description": "Insufficient test coverage planning in decomposition",
+      "impact": "quality-issues",
+      "frequency": 8,
+      "examples": ["PROJ-178", "PROJ-190", "PROJ-245"],
+      "mitigation": "Always include explicit testing subtask for complexity > 40"
+    },
+    {
+      "description": "Ignoring external API dependencies in estimation",
+      "impact": "schedule-delays",
+      "frequency": 5,
+      "examples": ["PROJ-167", "PROJ-213"],
+      "mitigation": "Add uncertainty buffer for tasks with external dependencies"
+    }
+  ],
+  "statistics": {
+    "total_decompositions": 3,
+    "avg_effectiveness": 0.88,
+    "best_strategy": "technical-layer",
+    "strategy_performance": {
+      "user-journey": {
+        "count": 1,
+        "avg_effectiveness": 0.88,
+        "avg_complexity": 45
+      },
+      "technical-layer": {
+        "count": 1,
+        "avg_effectiveness": 0.92,
+        "avg_complexity": 65
+      },
+      "incremental-value": {
+        "count": 1,
+        "avg_effectiveness": 0.85,
+        "avg_complexity": 80
+      }
+    },
+    "depth_analysis": {
+      "depth_2": {"count": 0, "avg_effectiveness": 0},
+      "depth_3": {"count": 1, "avg_effectiveness": 0.88},
+      "depth_4": {"count": 1, "avg_effectiveness": 0.92},
+      "depth_5": {"count": 1, "avg_effectiveness": 0.85}
+    }
+  },
+  "learning_insights": [
+    {
+      "insight": "Technical-layer strategy works best for backend-heavy tasks (complexity 60-80)",
+      "confidence": "high",
+      "supporting_data": "92% effectiveness across 1 sample"
+    },
+    {
+      "insight": "User-journey strategy performs well for frontend tasks (complexity 40-60)",
+      "confidence": "high",
+      "supporting_data": "88% effectiveness with high team satisfaction"
+    },
+    {
+      "insight": "Incremental-value strategy reduces risk for high-complexity integration tasks",
+      "confidence": "medium",
+      "supporting_data": "85% effectiveness despite high complexity and external dependencies"
+    },
+    {
+      "insight": "Optimal depth correlates with complexity: depth ≈ ceiling(complexity / 20)",
+      "confidence": "high",
+      "supporting_data": "Matches observed pattern across all complexity ranges"
+    },
+    {
+      "insight": "Tasks with external dependencies need explicit testing subtasks",
+      "confidence": "high",
+      "supporting_data": "All successful high-complexity decompositions included testing"
+    }
+  ],
+  "health": {
+    "status": "healthy",
+    "last_updated": "2025-12-29T00:00:00Z",
+    "data_quality": "good",
+    "sample_size_adequate": true,
+    "coverage_by_complexity": {
+      "0-20": "needs_more_data",
+      "20-40": "adequate",
+      "40-60": "good",
+      "60-80": "adequate",
+      "80-100": "needs_more_data"
+    }
+  },
+  "metadata": {
+    "model_version": "5.0.0",
+    "created_at": "2025-12-29T00:00:00Z",
+    "last_training": "2025-12-29T00:00:00Z",
+    "next_retraining": "2026-01-05T00:00:00Z",
+    "retraining_frequency_days": 7,
+    "min_samples_for_pattern": 3,
+    "effectiveness_threshold": 0.70
+  }
+}
