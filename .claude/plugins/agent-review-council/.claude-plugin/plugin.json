@@ -1,0 +1,40 @@
+{
+  "name": "agent-review-council",
+  "version": "1.0.0",
+  "description": "Tribunal - The Council of Judgment. Revolutionary multi-agent deliberation system where specialized AI agents debate, critique, and vote on code quality like a review panel. Implements adversarial review, devil's advocate patterns, consensus building, and minority opinion preservation. Produces higher quality reviews than any single agent.",
+  "author": {
+    "name": "The Lobbi",
+    "email": "developers@thelobbi.io"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Lobbi-Docs/claude",
+  "keywords": [
+    "multi-agent",
+    "deliberation",
+    "debate",
+    "voting",
+    "consensus",
+    "adversarial-review",
+    "devils-advocate",
+    "tribunal",
+    "jury",
+    "critique",
+    "cross-examination",
+    "minority-opinion",
+    "dialectic",
+    "socratic",
+    "peer-review",
+    "collective-intelligence",
+    "round-robin",
+    "autogen",
+    "team-setup",
+    "panel-discussion",
+    "fishbowl",
+    "think-tank",
+    "red-team",
+    "blue-team",
+    "rapid-fire",
+    "world-cafe",
+    "collaborative"
+  ]
+}

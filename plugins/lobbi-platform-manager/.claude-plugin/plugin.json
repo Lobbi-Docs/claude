@@ -2,7 +2,9 @@
   "name": "lobbi-platform-manager",
   "version": "1.0.0",
   "description": "Streamline development on the-lobbi/keycloak-alpha with Keycloak management, service orchestration, and test generation",
-  "author": "Markus Ahling",
+  "author": {
+    "name": "Markus Ahling"
+  },
   "license": "MIT",
   "keywords": [
     "keycloak",
@@ -14,131 +16,5 @@
     "devops",
     "platform-management"
   ],
-  "categories": [
-    "devops",
-    "authentication",
-    "testing",
-    "platform"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/the-lobbi/keycloak-alpha"
-  },
-  "commands": {
-    "/lobbi:keycloak-setup": {
-      "description": "Initialize Keycloak realm, client, and base configuration for multi-tenant setup",
-      "handler": "commands/keycloak-setup.md"
-    },
-    "/lobbi:keycloak-user": {
-      "description": "Create Keycloak users (single or bulk dummy users with org_id)",
-      "handler": "commands/keycloak-user.md"
-    },
-    "/lobbi:keycloak-theme": {
-      "description": "Generate and deploy tenant-specific Keycloak themes",
-      "handler": "commands/keycloak-theme.md"
-    },
-    "/lobbi:health": {
-      "description": "Check health status of all 8 platform services",
-      "handler": "commands/health.md"
-    },
-    "/lobbi:env-validate": {
-      "description": "Validate .env configuration against platform requirements",
-      "handler": "commands/env-validate.md"
-    },
-    "/lobbi:env-generate": {
-      "description": "Generate .env files for dev/staging/prod environments",
-      "handler": "commands/env-generate.md"
-    },
-    "/lobbi:test-gen": {
-      "description": "Generate Jest tests from API routes and service endpoints",
-      "handler": "commands/test-gen.md"
-    },
-    "/lobbi:service": {
-      "description": "Start, stop, restart, or check individual platform services",
-      "handler": "commands/service.md"
-    }
-  },
-  "agents": {
-    "keycloak-admin": {
-      "description": "Keycloak provisioning, user management, realm configuration, and theme deployment",
-      "model": "sonnet",
-      "handler": "agents/keycloak-admin.md"
-    },
-    "service-orchestrator": {
-      "description": "Health monitoring, dependency validation, service lifecycle management",
-      "model": "sonnet",
-      "handler": "agents/service-orchestrator.md"
-    },
-    "test-generator": {
-      "description": "Generate Jest unit and integration tests from Express routes",
-      "model": "haiku",
-      "handler": "agents/test-generator.md"
-    },
-    "env-manager": {
-      "description": "Environment validation, secret management, configuration generation",
-      "model": "haiku",
-      "handler": "agents/env-manager.md"
-    }
-  },
-  "skills": {
-    "keycloak-admin": {
-      "description": "Keycloak Admin API patterns, realm configuration, multi-tenant setup",
-      "handler": "skills/keycloak-admin/SKILL.md"
-    },
-    "mern-patterns": {
-      "description": "MERN stack best practices for the keycloak-alpha platform",
-      "handler": "skills/mern-patterns/SKILL.md"
-    },
-    "multi-tenant": {
-      "description": "Multi-tenant architecture patterns with org_id isolation",
-      "handler": "skills/multi-tenant/SKILL.md"
-    }
-  },
-  "hooks": {
-    "pre-commit-security": {
-      "description": "Validate no secrets are committed and security best practices are followed",
-      "event": "PreToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "\\.(env|json|js)$",
-      "handler": "hooks/scripts/check-security.sh"
-    },
-    "service-health-check": {
-      "description": "Verify service health after deployment-related changes",
-      "event": "PostToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "(docker-compose|Dockerfile|package\\.json)$",
-      "handler": "hooks/scripts/check-health.sh"
-    },
-    "keycloak-validation": {
-      "description": "Validate Keycloak configuration changes",
-      "event": "PostToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "(keycloak|realm|theme)",
-      "handler": "hooks/scripts/check-keycloak.sh"
-    }
-  },
-  "configuration": {
-    "localConfig": ".claude/lobbi-platform-manager.local.md",
-    "requiredEnvVars": [],
-    "optionalEnvVars": [
-      "KEYCLOAK_URL",
-      "KEYCLOAK_REALM",
-      "KEYCLOAK_ADMIN_USERNAME",
-      "KEYCLOAK_ADMIN_PASSWORD"
-    ]
-  },
-  "resources": {
-    "targetRepo": "the-lobbi/keycloak-alpha",
-    "keycloakPort": 8080,
-    "services": [
-      "keycloak",
-      "mongodb",
-      "postgres",
-      "redis",
-      "api-gateway",
-      "membership",
-      "payment",
-      "web"
-    ]
-  }
+  "repository": "https://github.com/the-lobbi/keycloak-alpha"
 }
