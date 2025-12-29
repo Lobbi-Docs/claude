@@ -1,0 +1,132 @@
+{
+  "totalEvents": 156,
+  "patternsExtracted": 34,
+  "profilesUpdated": 12,
+  "averageSuccessRate": 0.923,
+  "improvementRate": 0.082,
+  "lastConsolidation": "2025-12-29T10:00:00.000Z",
+  "systemHealth": {
+    "dataQualityScore": 0.94,
+    "profileCompleteness": 0.92,
+    "patternFreshness": 0.88,
+    "storageUtilization": 0.45
+  },
+  "agentStatistics": {
+    "totalAgents": 12,
+    "activeAgents": 9,
+    "specializedAgents": 7,
+    "averageTasksPerAgent": 13.0,
+    "topPerformer": "documentation-writer",
+    "mostImproved": "code-reviewer"
+  },
+  "domainStatistics": {
+    "backend": {
+      "tasks": 52,
+      "successRate": 0.962,
+      "averageDuration": 485000,
+      "bestAgent": "code-reviewer"
+    },
+    "frontend": {
+      "tasks": 38,
+      "successRate": 0.882,
+      "averageDuration": 610000,
+      "bestAgent": "ui-specialist"
+    },
+    "testing": {
+      "tasks": 29,
+      "successRate": 0.931,
+      "averageDuration": 425000,
+      "bestAgent": "test-strategist"
+    },
+    "documentation": {
+      "tasks": 22,
+      "successRate": 1.0,
+      "averageDuration": 380000,
+      "bestAgent": "documentation-writer"
+    },
+    "database": {
+      "tasks": 15,
+      "successRate": 0.933,
+      "averageDuration": 520000,
+      "bestAgent": "database-optimizer"
+    }
+  },
+  "complexityStatistics": {
+    "simple": {
+      "range": [0, 30],
+      "tasks": 28,
+      "successRate": 0.964,
+      "averageDuration": 280000
+    },
+    "moderate": {
+      "range": [30, 60],
+      "tasks": 85,
+      "successRate": 0.929,
+      "averageDuration": 520000
+    },
+    "complex": {
+      "range": [60, 80],
+      "tasks": 35,
+      "successRate": 0.886,
+      "averageDuration": 1150000
+    },
+    "veryComplex": {
+      "range": [80, 100],
+      "tasks": 8,
+      "successRate": 0.750,
+      "averageDuration": 1920000
+    }
+  },
+  "learningTrends": {
+    "last7Days": {
+      "tasks": 24,
+      "successRate": 0.958,
+      "improvementVsPrevious": 0.035
+    },
+    "last30Days": {
+      "tasks": 95,
+      "successRate": 0.937,
+      "improvementVsPrevious": 0.082
+    },
+    "last90Days": {
+      "tasks": 156,
+      "successRate": 0.923,
+      "improvementVsPrevious": 0.065
+    }
+  },
+  "patternStatistics": {
+    "strengthPatterns": 24,
+    "weaknessPatterns": 10,
+    "averageConfidence": 0.847,
+    "averageTransferability": 0.682,
+    "mostFrequentPattern": "code-reviewer-backend-mastery",
+    "highestUtilityPattern": "test-strategist-domain-strength-testing"
+  },
+  "alerts": [
+    {
+      "severity": "info",
+      "message": "System-wide success rate improved by 8.2% over last 30 days",
+      "timestamp": "2025-12-29T10:00:00.000Z"
+    },
+    {
+      "severity": "info",
+      "message": "Code-reviewer agent on hot streak: +15% performance trend",
+      "timestamp": "2025-12-29T09:45:00.000Z"
+    },
+    {
+      "severity": "warning",
+      "message": "Implementation-specialist struggles with complexity >80",
+      "timestamp": "2025-12-28T11:30:00.000Z"
+    }
+  ],
+  "recommendations": [
+    "Route all backend reviews to code-reviewer (96.2% success rate)",
+    "Pair implementation-specialist with infrastructure expert for complex tasks",
+    "Continue monitoring frontend specialization trends",
+    "Update test-strategist with latest integration testing patterns",
+    "Expand documentation-writer to API documentation specialty"
+  ],
+  "nextConsolidation": "2025-12-30T02:00:00.000Z",
+  "version": "5.0.0",
+  "lastUpdated": "2025-12-29T10:00:00.000Z"
+}

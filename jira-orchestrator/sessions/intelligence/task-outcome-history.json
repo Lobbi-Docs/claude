@@ -1,0 +1,250 @@
+[
+  {
+    "timestamp": "2025-12-29T08:15:00.000Z",
+    "agent": "code-reviewer",
+    "task": {
+      "id": "EXAMPLE-118",
+      "type": "code-review",
+      "complexity": 45,
+      "domains": ["backend", "api"],
+      "description": "Review FastAPI endpoint implementation with authentication",
+      "estimatedDuration": 600000,
+      "metadata": {
+        "priority": "high",
+        "linesOfCode": 280,
+        "filesChanged": 4
+      }
+    },
+    "outcome": {
+      "success": true,
+      "duration": 305000,
+      "qualityScore": 0.94,
+      "testsPass": true,
+      "userSatisfaction": 0.96,
+      "tokensUsed": 5200,
+      "iterations": 1
+    },
+    "context": {
+      "timeOfDay": "morning",
+      "workloadLevel": "medium",
+      "previousAgent": "implementation-specialist"
+    }
+  },
+  {
+    "timestamp": "2025-12-29T07:45:00.000Z",
+    "agent": "code-reviewer",
+    "task": {
+      "id": "EXAMPLE-134",
+      "type": "code-review",
+      "complexity": 52,
+      "domains": ["backend", "database"],
+      "description": "Review MongoDB aggregation pipeline optimization",
+      "estimatedDuration": 480000,
+      "metadata": {
+        "priority": "medium",
+        "linesOfCode": 156,
+        "filesChanged": 2
+      }
+    },
+    "outcome": {
+      "success": true,
+      "duration": 412000,
+      "qualityScore": 0.91,
+      "testsPass": true,
+      "userSatisfaction": 0.92,
+      "tokensUsed": 4800,
+      "iterations": 1
+    },
+    "context": {
+      "timeOfDay": "morning",
+      "workloadLevel": "low",
+      "previousAgent": "database-optimizer"
+    }
+  },
+  {
+    "timestamp": "2025-12-29T09:30:00.000Z",
+    "agent": "implementation-specialist",
+    "task": {
+      "id": "EXAMPLE-228",
+      "type": "implementation",
+      "complexity": 68,
+      "domains": ["backend", "api", "authentication"],
+      "description": "Implement OAuth2 refresh token flow with Keycloak",
+      "estimatedDuration": 1200000,
+      "metadata": {
+        "priority": "high",
+        "storyPoints": 8,
+        "acceptanceCriteria": 5
+      }
+    },
+    "outcome": {
+      "success": true,
+      "duration": 1150000,
+      "qualityScore": 0.89,
+      "testsPass": true,
+      "userSatisfaction": 0.90,
+      "tokensUsed": 12400,
+      "iterations": 2
+    },
+    "context": {
+      "timeOfDay": "morning",
+      "workloadLevel": "high",
+      "previousAgent": "task-analyzer"
+    }
+  },
+  {
+    "timestamp": "2025-12-28T16:30:00.000Z",
+    "agent": "code-reviewer",
+    "task": {
+      "id": "EXAMPLE-127",
+      "type": "code-review",
+      "complexity": 38,
+      "domains": ["frontend", "react"],
+      "description": "Review React component with hooks and context",
+      "estimatedDuration": 420000,
+      "metadata": {
+        "priority": "medium",
+        "linesOfCode": 190,
+        "filesChanged": 3
+      }
+    },
+    "outcome": {
+      "success": false,
+      "duration": 510000,
+      "error": "Missed performance optimization opportunity in useEffect dependencies",
+      "qualityScore": 0.68,
+      "testsPass": true,
+      "tokensUsed": 4200,
+      "iterations": 1
+    },
+    "context": {
+      "timeOfDay": "afternoon",
+      "workloadLevel": "medium",
+      "previousAgent": "frontend-developer"
+    }
+  },
+  {
+    "timestamp": "2025-12-29T06:30:00.000Z",
+    "agent": "test-strategist",
+    "task": {
+      "id": "EXAMPLE-325",
+      "type": "test-planning",
+      "complexity": 55,
+      "domains": ["testing", "integration"],
+      "description": "Design integration test strategy for microservices",
+      "estimatedDuration": 540000,
+      "metadata": {
+        "priority": "high",
+        "services": 4,
+        "endpoints": 12
+      }
+    },
+    "outcome": {
+      "success": true,
+      "duration": 485000,
+      "qualityScore": 0.93,
+      "testsPass": true,
+      "userSatisfaction": 0.94,
+      "tokensUsed": 7800,
+      "iterations": 1
+    },
+    "context": {
+      "timeOfDay": "morning",
+      "workloadLevel": "medium",
+      "previousAgent": "architecture-reviewer"
+    }
+  },
+  {
+    "timestamp": "2025-12-29T08:00:00.000Z",
+    "agent": "documentation-writer",
+    "task": {
+      "id": "EXAMPLE-415",
+      "type": "documentation",
+      "complexity": 30,
+      "domains": ["documentation", "api"],
+      "description": "Document new API endpoints with examples and usage",
+      "estimatedDuration": 480000,
+      "metadata": {
+        "priority": "medium",
+        "endpoints": 6,
+        "examples": 12
+      }
+    },
+    "outcome": {
+      "success": true,
+      "duration": 375000,
+      "qualityScore": 0.98,
+      "testsPass": true,
+      "userSatisfaction": 1.0,
+      "tokensUsed": 6200,
+      "iterations": 1
+    },
+    "context": {
+      "timeOfDay": "morning",
+      "workloadLevel": "low",
+      "previousAgent": "api-developer"
+    }
+  },
+  {
+    "timestamp": "2025-12-28T11:20:00.000Z",
+    "agent": "implementation-specialist",
+    "task": {
+      "id": "EXAMPLE-223",
+      "type": "implementation",
+      "complexity": 85,
+      "domains": ["backend", "infrastructure", "realtime"],
+      "description": "Implement WebSocket server with Redis pub/sub clustering",
+      "estimatedDuration": 1800000,
+      "metadata": {
+        "priority": "critical",
+        "storyPoints": 13,
+        "acceptanceCriteria": 8
+      }
+    },
+    "outcome": {
+      "success": false,
+      "duration": 2100000,
+      "error": "Redis pub/sub configuration incorrect, clustering not working",
+      "qualityScore": 0.62,
+      "testsPass": false,
+      "tokensUsed": 18500,
+      "iterations": 3
+    },
+    "context": {
+      "timeOfDay": "afternoon",
+      "workloadLevel": "high",
+      "previousAgent": "system-architect"
+    }
+  },
+  {
+    "timestamp": "2025-12-29T09:00:00.000Z",
+    "agent": "api-integration-specialist",
+    "task": {
+      "id": "EXAMPLE-515",
+      "type": "integration",
+      "complexity": 48,
+      "domains": ["backend", "api", "external"],
+      "description": "Integrate Stripe payment API with webhook handling",
+      "estimatedDuration": 900000,
+      "metadata": {
+        "priority": "high",
+        "webhooks": 5,
+        "paymentMethods": 3
+      }
+    },
+    "outcome": {
+      "success": true,
+      "duration": 820000,
+      "qualityScore": 0.91,
+      "testsPass": true,
+      "userSatisfaction": 0.93,
+      "tokensUsed": 9400,
+      "iterations": 1
+    },
+    "context": {
+      "timeOfDay": "morning",
+      "workloadLevel": "medium",
+      "previousAgent": "payment-architect"
+    }
+  }
+]

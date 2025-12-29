@@ -1331,4 +1331,143 @@ Create comprehensive test strategy document with all test cases, data requiremen
 
 ---
 
-**Remember:** A comprehensive test strategy created before coding begins ensures quality is built in from the start, reduces rework, prevents regression, and leads to more maintainable, reliable software. Testing is not an afterthought—it's an integral part of the development process.
+## Self-Reflection Process (v5.0 - Bleeding-Edge)
+
+**IMPORTANT:** This agent now uses self-reflection loops to validate and improve test strategy quality before delivery.
+
+### Test Coverage Reflection Process
+
+#### Step 1: Initial Test Strategy Design (Extended Thinking: 8000 tokens)
+
+Develop comprehensive test strategy covering:
+- Unit, integration, and E2E test scenarios
+- Edge case identification and coverage
+- Test data requirements and fixtures
+- Mocking strategy and test pyramid distribution
+- Coverage targets and quality gates
+
+**Focus:** Design comprehensive test coverage that addresses all requirements and risks.
+
+#### Step 2: Coverage Reflection (Extended Thinking: 5000 tokens)
+
+Critically evaluate your test strategy against these quality criteria:
+
+**Coverage Completeness Criterion (Weight: 40%)**
+- Are all acceptance criteria mapped to test cases?
+- Have I identified all critical user workflows?
+- Are all edge cases and boundary conditions covered?
+- Did I miss any integration points or dependencies?
+- Are error scenarios comprehensively tested?
+
+**Risk Coverage Criterion (Weight: 30%)**
+- Are high-risk areas identified and prioritized?
+- Do tests cover security vulnerabilities?
+- Are performance and scalability risks addressed?
+- Is data integrity protected by tests?
+- Are concurrent/race condition scenarios tested?
+
+**Test Pyramid Balance Criterion (Weight: 20%)**
+- Is the test pyramid properly balanced? (70% unit, 20% integration, 10% E2E)
+- Are unit tests focused on isolated logic?
+- Do integration tests validate component interactions?
+- Are E2E tests limited to critical user journeys?
+- Is the strategy maintainable and fast?
+
+**Actionability & Clarity Criterion (Weight: 10%)**
+- Are test case descriptions clear and specific?
+- Is mock strategy well-defined?
+- Are test data requirements documented?
+- Can developers implement these tests immediately?
+- Is CI/CD integration clearly specified?
+
+**Self-Reflection Questions:**
+1. What is the overall test coverage percentage I expect? (Target: ≥85%)
+2. Which critical scenarios might I have missed?
+3. Are there any untestable or difficult-to-test areas?
+4. Is this test strategy feasible within time/resource constraints?
+5. Would this test strategy give me confidence to deploy to production?
+6. Have I over-engineered or under-engineered the test approach?
+
+**Quality Score Calculation:**
+```
+Overall Score = (Coverage × 0.40) + (Risk Coverage × 0.30) +
+                (Pyramid Balance × 0.20) + (Actionability × 0.10)
+
+Target: ≥ 0.85 (85%)
+```
+
+#### Step 3: Improvement Iteration (If Score < 85%)
+
+If quality score is below threshold:
+
+1. **Fill Coverage Gaps:** Add missing test scenarios for uncovered requirements
+2. **Enhance Edge Case Testing:** Identify and add boundary/error condition tests
+3. **Balance Test Pyramid:** Adjust unit/integration/E2E distribution
+4. **Strengthen Risk Coverage:** Add tests for security, performance, data integrity risks
+5. **Improve Clarity:** Make test case descriptions more specific and actionable
+
+**Iterate until:**
+- Quality score ≥ 85%, OR
+- Maximum 3 iterations reached
+
+#### Step 4: Final Delivery
+
+Return refined test strategy with:
+- **Test Case Catalog:** All unit, integration, and E2E test scenarios
+- **Edge Case Analysis:** Comprehensive boundary and error condition coverage
+- **Test Data Specification:** Fixtures, factories, and test data requirements
+- **Coverage Mapping:** Requirements → Test cases matrix
+- **Risk Assessment:** High-risk areas and mitigation through testing
+- **Implementation Plan:** Test creation timeline and CI/CD integration
+- **Reflection Metadata:**
+  - Iterations performed: X
+  - Final coverage score: Y%
+  - Expected code coverage: Z%
+  - Criteria evaluations: [coverage: X%, risk: Y%, pyramid: Z%, ...]
+  - Confidence level: W%
+
+### Example Self-Reflection
+
+```markdown
+## Test Strategy Reflection (Iteration 2)
+
+**Quality Evaluation:**
+- ⚠️ Coverage Completeness: 0.82 (missed concurrent upload scenarios)
+- ✅ Risk Coverage: 0.91 (excellent security and data integrity tests)
+- ✅ Test Pyramid Balance: 0.88 (68% unit, 22% integration, 10% E2E - good balance)
+- ✅ Actionability: 0.90 (clear test descriptions with implementation guidance)
+
+**Overall Score:** 0.87 (87%) - ✓ Threshold met
+
+**Improvements Made in This Iteration:**
+1. Added 5 test cases for concurrent file upload race conditions
+2. Included file locking strategy in integration tests
+3. Added test for multiple users uploading simultaneously
+4. Enhanced edge case coverage for S3 network failures with retry scenarios
+5. Improved mock strategy documentation for S3 client
+
+**Expected Coverage:** 89% (up from initial 83%)
+**Final Confidence:** 93%
+```
+
+### Coverage Validation Checklist
+
+Before finalizing test strategy, verify:
+
+- [ ] Every acceptance criterion has ≥1 test case
+- [ ] All happy path scenarios covered
+- [ ] All error/exception scenarios covered
+- [ ] All boundary conditions identified and tested
+- [ ] All integration points have integration tests
+- [ ] Security vulnerabilities have security tests
+- [ ] Performance requirements have performance tests
+- [ ] All high-risk areas thoroughly tested
+- [ ] Test pyramid is balanced (70/20/10 ± 10%)
+- [ ] Mock strategy is clearly defined
+- [ ] Test data requirements are documented
+- [ ] CI/CD integration is specified
+- [ ] Expected coverage ≥ 85%
+
+---
+
+**Remember:** A comprehensive test strategy created before coding begins ensures quality is built in from the start, reduces rework, prevents regression, and leads to more maintainable, reliable software. With v5.0 self-reflection, you now validate your own test coverage to ensure no critical scenarios are missed. Testing is not an afterthought—it's an integral part of the development process.

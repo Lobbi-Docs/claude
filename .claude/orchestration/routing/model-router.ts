@@ -16,16 +16,23 @@ import {
   TaskComplexity,
 } from './types';
 
+import {
+  TokenBudgetPredictor,
+  BudgetPrediction,
+} from '../../jira-orchestrator/lib/token-budget-predictor';
+
 export class ModelRouter {
   private profiles: Map<ModelName, ModelProfile>;
   private config: RouterConfig;
   private outcomes: OutcomeRecord[] = [];
   private routingHistory: RoutingDecision[] = [];
   private decisionCache: Map<string, RoutingDecision> = new Map();
+  private budgetPredictor: TokenBudgetPredictor;
 
-  constructor(config: RouterConfig) {
+  constructor(config: RouterConfig, budgetPredictorPath?: string) {
     this.config = config;
     this.profiles = new Map(config.models.map(m => [m.name, m]));
+    this.budgetPredictor = new TokenBudgetPredictor(budgetPredictorPath);
   }
 
   /**
@@ -465,5 +472,134 @@ export class ModelRouter {
   clearCache(): void {
     this.decisionCache.clear();
     console.log('[Router] Cache cleared');
+  }
+
+  /**
+   * Select model and predict optimal token budget
+   *
+   * This method combines model selection with budget prediction for optimal
+   * resource allocation. It returns both the routing decision and budget prediction.
+   *
+   * @param task Task descriptor
+   * @param agent Agent name (optional)
+   * @returns Combined model and budget configuration
+   */
+  async selectModelAndBudget(
+    task: TaskDescriptor,
+    agent?: string
+  ): Promise<{
+    routing: RoutingDecision;
+    budget: BudgetPrediction;
+    config: {
+      model: ModelName;
+      modelId: string;
+      extended_thinking: boolean;
+      thinking_budget: number;
+      confidence: number;
+      reasoning: string;
+    };
+  }> {
+    // Select optimal model
+    const routing = this.route(task);
+
+    // Predict optimal budget
+    const budget = await this.budgetPredictor.predictOptimalBudget(task, agent);
+
+    // Determine if extended thinking should be enabled
+    const extended_thinking = budget.recommended >= 5000 ||
+                             task.requiresExtendedThinking ||
+                             task.complexity === 'critical' ||
+                             task.complexity === 'complex';
+
+    // Build configuration object
+    const config = {
+      model: routing.model.name,
+      modelId: routing.model.modelId,
+      extended_thinking,
+      thinking_budget: budget.recommended,
+      confidence: budget.confidence,
+      reasoning: this.buildBudgetReasoning(routing, budget),
+    };
+
+    console.log(
+      `[Router] Selected ${config.model} with ${config.thinking_budget} token budget ` +
+      `(confidence: ${(budget.confidence * 100).toFixed(1)}%)`
+    );
+
+    return { routing, budget, config };
+  }
+
+  /**
+   * Build combined reasoning for model and budget selection
+   */
+  private buildBudgetReasoning(
+    routing: RoutingDecision,
+    budget: BudgetPrediction
+  ): string {
+    const modelReasoning = routing.reasoning.join('. ');
+    const budgetReasoning = budget.reasoning;
+
+    return `Model Selection: ${modelReasoning}\n\nBudget Allocation: ${budgetReasoning}`;
+  }
+
+  /**
+   * Record outcome with budget tracking
+   *
+   * Enhanced version that also records budget usage for learning
+   */
+  async recordOutcomeWithBudget(
+    taskId: string,
+    task: TaskDescriptor,
+    model: ModelName,
+    success: boolean,
+    quality: number,
+    actualCost: number,
+    actualLatency: number,
+    tokensUsed: { input: number; output: number },
+    thinkingTokensUsed: number,
+    budgetAllocated: number,
+    agent?: string
+  ): Promise<void> {
+    // Record in router
+    this.recordOutcome(
+      taskId,
+      model,
+      success,
+      quality,
+      actualCost,
+      actualLatency,
+      tokensUsed
+    );
+
+    // Record in budget predictor
+    await this.budgetPredictor.recordBudgetUsage(
+      taskId,
+      task,
+      budgetAllocated,
+      thinkingTokensUsed,
+      thinkingTokensUsed,
+      {
+        success,
+        quality,
+        completedInTime: true, // Could be enhanced with actual timing data
+        requiredReflection: quality < 85, // Heuristic for reflection need
+      },
+      agent,
+      model
+    );
+  }
+
+  /**
+   * Get budget predictor for direct access
+   */
+  getBudgetPredictor(): TokenBudgetPredictor {
+    return this.budgetPredictor;
+  }
+
+  /**
+   * Get budget efficiency report
+   */
+  getBudgetEfficiencyReport() {
+    return this.budgetPredictor.generateEfficiencyReport();
   }
 }

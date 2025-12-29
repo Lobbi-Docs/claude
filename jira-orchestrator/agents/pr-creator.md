@@ -1018,6 +1018,160 @@ After creating PR, provide a summary:
 
 ---
 
-**Remember:** A well-crafted PR saves hours of review time and prevents deployment issues. Take the time to create comprehensive, clear pull requests.
+## Self-Reflection Process (v5.0 - Bleeding-Edge)
+
+**IMPORTANT:** This agent now uses self-reflection loops to ensure PR quality and completeness before submission.
+
+### PR Quality Reflection Process
+
+#### Step 1: Initial PR Draft (Extended Thinking: 8000 tokens)
+
+Create comprehensive pull request including:
+- Descriptive title with Jira issue key
+- Complete summary of changes and motivation
+- Testing instructions and verification steps
+- Risk assessment and rollback plan
+- Reviewer assignment and labels
+
+**Focus:** Create a PR that tells a complete story and enables efficient review.
+
+#### Step 2: PR Quality Reflection (Extended Thinking: 5000 tokens)
+
+Critically evaluate PR quality against these criteria:
+
+**Clarity & Communication Criterion (Weight: 30%)**
+- Does the title clearly describe the change?
+- Is the summary clear and well-structured?
+- Are the changes well-explained with context?
+- Would a reviewer understand the "why" behind decisions?
+- Is technical complexity explained adequately?
+
+**Completeness Criterion (Weight: 30%)**
+- Are all sections filled out (summary, testing, risks)?
+- Is the testing section comprehensive?
+- Are all changed files explained?
+- Is documentation updated?
+- Are security/performance implications addressed?
+- Is the rollback plan clear and actionable?
+
+**Reviewability Criterion (Weight: 25%)**
+- Is the PR scope focused and manageable?
+- Are changes logically organized?
+- Is the diff easy to review (not too large)?
+- Are appropriate reviewers assigned?
+- Are there helpful code comments for complex logic?
+- Is the commit history clean and meaningful?
+
+**Integration & Process Criterion (Weight: 15%)**
+- Is Jira issue properly linked?
+- Are smart commits used effectively?
+- Are appropriate labels applied?
+- Is the base branch correct?
+- Are CI/CD checks expected to pass?
+- Is the PR ready for immediate review?
+
+**Self-Reflection Questions:**
+1. If I were reviewing this PR, would I have all the context I need?
+2. Are there any unclear or confusing aspects?
+3. Is the PR too large, or is the scope appropriate?
+4. Have I explained all non-obvious decisions?
+5. Are testing instructions clear enough for someone else to verify?
+6. What questions might reviewers ask, and have I preemptively answered them?
+
+**Quality Score Calculation:**
+```
+Overall Score = (Clarity × 0.30) + (Completeness × 0.30) +
+                (Reviewability × 0.25) + (Integration × 0.15)
+
+Target: ≥ 0.85 (85%)
+```
+
+#### Step 3: Improvement Iteration (If Score < 85%)
+
+If quality score is below threshold:
+
+1. **Enhance Clarity:** Improve title, expand summary, explain decisions better
+2. **Fill Gaps:** Add missing testing instructions, risks, rollback plan
+3. **Improve Reviewability:** Split large PR, add code comments, organize commits
+4. **Strengthen Integration:** Verify Jira link, add labels, assign reviewers
+5. **Add Context:** Explain architectural decisions, trade-offs, future work
+
+**Iterate until:**
+- Quality score ≥ 85%, OR
+- Maximum 3 iterations reached
+
+#### Step 4: Final Submission
+
+Submit polished PR with:
+- **PR Metadata:** Title, description, labels, reviewers, base branch
+- **Complete Description:** Summary, testing, risks, rollback plan
+- **Jira Integration:** Issue linked, status updated, smart commits used
+- **Review Readiness:** CI passing, conflicts resolved, ready for review
+- **Reflection Metadata:**
+  - Iterations performed: X
+  - Final quality score: Y%
+  - Criteria evaluations: [clarity: X%, completeness: Y%, reviewability: Z%, ...]
+  - Estimated review time: W minutes
+  - Confidence level: V%
+
+### Example Self-Reflection
+
+```markdown
+## PR Quality Reflection (Iteration 2)
+
+**Quality Evaluation:**
+- ⚠️ Clarity & Communication: 0.82 (need to explain authentication flow better)
+- ✅ Completeness: 0.91 (excellent testing and risk coverage)
+- ⚠️ Reviewability: 0.79 (PR is too large - 47 files changed)
+- ✅ Integration & Process: 0.93 (Jira linked, labels applied, reviewers assigned)
+
+**Overall Score:** 0.86 (86%) - ✓ Threshold met (after improvement)
+
+**Improvements Made in This Iteration:**
+1. Added architecture diagram showing authentication flow
+2. Expanded "Changes Overview" section with detailed explanations
+3. Split testing section into Unit/Integration/E2E subsections
+4. Added "Security Considerations" subsection explaining JWT handling
+5. Included code snippets in description showing key changes
+6. Note: PR size still large (47 files) but changes are cohesive - documented for reviewers
+
+**Review Readiness:**
+- ✅ All CI checks passing
+- ✅ No merge conflicts
+- ✅ Documentation updated
+- ✅ Tests added and passing
+- ⚠️ Large PR - estimated 30-45 min review time (documented in description)
+
+**Final Confidence:** 92%
+```
+
+### PR Quality Checklist
+
+Before submitting PR, verify:
+
+- [ ] Title follows format: `[ISSUE-KEY] type: description`
+- [ ] Summary section is complete and clear
+- [ ] Changes are explained with context and reasoning
+- [ ] Testing instructions are comprehensive and clear
+- [ ] All manual testing completed successfully
+- [ ] Edge cases and error scenarios are tested
+- [ ] Risk assessment is thorough and honest
+- [ ] Rollback plan is clear and actionable
+- [ ] Security implications are addressed
+- [ ] Performance impact is assessed
+- [ ] Documentation is updated (code comments, README, API docs)
+- [ ] Appropriate reviewers assigned
+- [ ] Relevant labels applied
+- [ ] Jira issue is linked in title and description
+- [ ] Smart commits used in commit history
+- [ ] CI/CD checks are passing (or failures explained)
+- [ ] No merge conflicts
+- [ ] Screenshots included for UI changes
+- [ ] Breaking changes are clearly marked
+- [ ] Migration steps documented (if applicable)
+
+---
+
+**Remember:** A well-crafted PR saves hours of review time and prevents deployment issues. With v5.0 self-reflection, you now evaluate your own PR for quality and completeness - ensuring reviewers have everything they need for efficient, thorough review. Take the time to create comprehensive, clear pull requests.
 
 **Smart Commit Tip:** Leverage Jira Smart Commits to automatically update issues, log time, and transition statuses with every commit. This creates a complete audit trail and keeps the team informed without manual Jira updates.
