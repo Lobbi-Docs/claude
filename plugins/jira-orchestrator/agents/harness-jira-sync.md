@@ -133,6 +133,14 @@ You are a specialized agent for automating bidirectional synchronization between
     - Update Jira when PRs are approved/changes requested
     - Add Jira comments with PR review summary
 
+11. **PR Comment & Review Operations (REST API)**
+    - Create PR comments (general and inline code comments)
+    - Reply to existing comment threads
+    - Submit reviews (approve, request changes, reviewed)
+    - Add reviewers to pull requests
+    - Merge pull requests with various strategies
+    - Update comment status (resolve/unresolve)
+
 ## Git & Pull Request Workflows
 
 ### PR-to-Jira Linking
@@ -232,6 +240,150 @@ else:
         body=f"❌ PR checks failed: {', '.join(failed_checks)}"
     )
 ```
+
+## Harness REST API Operations
+
+For write operations (creating comments, submitting reviews, merging PRs), use the Harness Code REST API directly via Bash/curl commands.
+
+### API Configuration
+
+```bash
+# Environment variables required
+export HARNESS_API_KEY="your-api-key"
+export HARNESS_BASE_URL="https://app.harness.io"
+export HARNESS_CODE_API="${HARNESS_BASE_URL}/code/api/v1"
+```
+
+### Creating PR Comments
+
+#### General Comment
+
+```bash
+# Add a comment to PR conversation
+curl -X POST "${HARNESS_CODE_API}/repos/${REPO}/pullreq/${PR_NUM}/comments" \
+  -H "x-api-key: ${HARNESS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "LGTM! Great implementation."}'
+```
+
+#### Inline Code Comment
+
+```bash
+# Add comment on specific lines
+curl -X POST "${HARNESS_CODE_API}/repos/${REPO}/pullreq/${PR_NUM}/comments" \
+  -H "x-api-key: ${HARNESS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Consider adding error handling here",
+    "path": "src/services/auth.ts",
+    "line_start": 42,
+    "line_end": 45,
+    "line_start_new": true,
+    "line_end_new": true
+  }'
+```
+
+### Submitting Reviews
+
+```bash
+# Approve PR
+curl -X POST "${HARNESS_CODE_API}/repos/${REPO}/pullreq/${PR_NUM}/reviews" \
+  -H "x-api-key: ${HARNESS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"commit_sha": "abc123...", "decision": "approved"}'
+
+# Request changes
+curl -X POST "${HARNESS_CODE_API}/repos/${REPO}/pullreq/${PR_NUM}/reviews" \
+  -H "x-api-key: ${HARNESS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"commit_sha": "abc123...", "decision": "changereq"}'
+
+# Mark as reviewed (no approval)
+curl -X POST "${HARNESS_CODE_API}/repos/${REPO}/pullreq/${PR_NUM}/reviews" \
+  -H "x-api-key: ${HARNESS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"commit_sha": "abc123...", "decision": "reviewed"}'
+```
+
+### Merging PRs
+
+```bash
+# Merge with squash
+curl -X POST "${HARNESS_CODE_API}/repos/${REPO}/pullreq/${PR_NUM}/merge" \
+  -H "x-api-key: ${HARNESS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "method": "squash",
+    "source_sha": "abc123...",
+    "title": "feat: PROJ-123 Add authentication",
+    "message": "Implements user auth\n\nCloses PROJ-123",
+    "delete_source_branch": true
+  }'
+```
+
+### Claude Code Review Workflow
+
+```python
+# Automated code review with Jira sync
+def claude_review_pr(repo: str, pr_number: int, jira_key: str):
+    # 1. Get PR details via MCP
+    pr = harness_get_pull_request(repo_id=repo, pr_number=pr_number)
+
+    # 2. Analyze code and find issues
+    issues = analyze_pr_changes(pr.diff)
+
+    # 3. Add inline comments for each issue via REST API
+    for issue in issues:
+        bash(f'''
+        curl -X POST "{HARNESS_CODE_API}/repos/{repo}/pullreq/{pr_number}/comments" \\
+          -H "x-api-key: {HARNESS_API_KEY}" \\
+          -H "Content-Type: application/json" \\
+          -d '{{"text": "{issue.message}", "path": "{issue.file}", "line_start": {issue.line}}}'
+        ''')
+
+    # 4. Submit review decision
+    decision = "changereq" if any(i.critical for i in issues) else "approved"
+    bash(f'''
+    curl -X POST "{HARNESS_CODE_API}/repos/{repo}/pullreq/{pr_number}/reviews" \\
+      -H "x-api-key: {HARNESS_API_KEY}" \\
+      -H "Content-Type: application/json" \\
+      -d '{{"commit_sha": "{pr.source_sha}", "decision": "{decision}"}}'
+    ''')
+
+    # 5. Update Jira
+    jira_add_comment(
+        issue_key=jira_key,
+        body=f"Code review complete: {len(issues)} issues found. Status: {decision}"
+    )
+```
+
+### REST API Endpoints Reference
+
+| Operation | Method | Endpoint |
+|-----------|--------|----------|
+| Create Comment | POST | `/v1/repos/{repo}/pullreq/{pr}/comments` |
+| Update Comment | PATCH | `/v1/repos/{repo}/pullreq/{pr}/comments/{id}` |
+| Delete Comment | DELETE | `/v1/repos/{repo}/pullreq/{pr}/comments/{id}` |
+| Submit Review | POST | `/v1/repos/{repo}/pullreq/{pr}/reviews` |
+| Add Reviewer | POST | `/v1/repos/{repo}/pullreq/{pr}/reviewers` |
+| Merge PR | POST | `/v1/repos/{repo}/pullreq/{pr}/merge` |
+
+### Review Decision Types
+
+| Decision | Description |
+|----------|-------------|
+| `approved` | Approve PR for merge |
+| `changereq` | Request changes before merge |
+| `reviewed` | Mark as reviewed without approval |
+
+### Merge Methods
+
+| Method | Description |
+|--------|-------------|
+| `merge` | Create merge commit |
+| `squash` | Combine all commits into one |
+| `rebase` | Rebase onto target branch |
+| `fast-forward` | Fast-forward if possible |
 
 ## Configuration
 
