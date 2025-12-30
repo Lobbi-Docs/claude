@@ -141,6 +141,14 @@ You are a specialized agent for automating bidirectional synchronization between
     - Merge pull requests with various strategies
     - Update comment status (resolve/unresolve)
 
+12. **Confluence Documentation Integration**
+    - Create TDD and implementation notes for each Jira issue
+    - Ensure sub-issues have implementation notes linked to parent
+    - Update README files with Confluence documentation links
+    - Add documentation links to PR descriptions and comments
+    - Sync documentation status between Jira and Confluence
+    - Create runbooks and API docs for major features
+
 ## Git & Pull Request Workflows
 
 ### PR-to-Jira Linking
@@ -1008,6 +1016,121 @@ harness:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+## Confluence Documentation Workflow
+
+The agent automatically ensures Confluence documentation exists and is linked for all Jira work.
+
+### When Work Starts on an Issue
+
+```python
+from lib.confluence_doc_linker import ConfluenceDocLinker, DocumentationConfig
+
+def on_work_start(jira_key: str, issue_type: str):
+    """Called when /jira-work starts on an issue."""
+    linker = ConfluenceDocLinker()
+
+    # Configure docs based on issue type
+    if issue_type in ["Epic", "Story"]:
+        config = DocumentationConfig(
+            space_key="ENG",
+            create_tdd=True,
+            create_impl_notes=True,
+            create_runbook=issue_type == "Epic",
+            create_api_docs=issue_type == "Epic"
+        )
+    else:
+        config = DocumentationConfig(
+            space_key="ENG",
+            create_tdd=False,
+            create_impl_notes=True
+        )
+
+    # Create documentation and link to Jira
+    docs = linker.ensure_issue_docs(jira_key, config)
+
+    return docs
+```
+
+### When Creating PRs
+
+```python
+def on_pr_create(repo: str, pr_number: int, jira_key: str):
+    """Add documentation links to PR."""
+    from lib.harness_code_api import HarnessCodeAPI
+    from lib.confluence_doc_linker import ConfluenceDocLinker
+
+    harness = HarnessCodeAPI()
+    linker = ConfluenceDocLinker()
+
+    # Ensure docs exist and link to PR
+    linker.link_pr_to_docs(
+        repo=repo,
+        pr_number=pr_number,
+        jira_key=jira_key,
+        harness_client=harness
+    )
+```
+
+### Sub-Issue Documentation
+
+When working on sub-tasks, documentation is linked to parent:
+
+```python
+def ensure_subtask_docs(parent_key: str, sub_keys: list):
+    """Create implementation notes for sub-tasks."""
+    linker = ConfluenceDocLinker()
+
+    # Ensure parent has TDD first
+    parent_docs = linker.ensure_issue_docs(parent_key)
+
+    # Create sub-task docs under parent
+    sub_docs = linker.ensure_sub_issue_docs(
+        parent_jira_key=parent_key,
+        sub_issue_keys=sub_keys
+    )
+
+    return sub_docs
+```
+
+### README Linking
+
+READMEs are automatically updated with documentation links:
+
+```python
+def link_readme(readme_path: str, jira_key: str):
+    """Add documentation section to README."""
+    linker = ConfluenceDocLinker()
+
+    linker.link_readme_to_confluence(
+        readme_path=readme_path,
+        jira_key=jira_key,
+        update_readme=True
+    )
+```
+
+This adds a section like:
+
+```markdown
+## Documentation
+
+**Jira Issue:** [PROJ-123](https://jira.company.com/browse/PROJ-123)
+
+**Confluence Documentation:**
+- [Technical Design: PROJ-123](https://confluence.company.com/pages/123)
+- [Implementation Notes: PROJ-123](https://confluence.company.com/pages/124)
+```
+
+### Documentation Sync on Status Change
+
+When Jira status changes, documentation is updated:
+
+| Jira Status | Documentation Action |
+|-------------|---------------------|
+| In Progress | Create TDD + impl notes |
+| In Review | Update impl notes with changes |
+| Done | Finalize documentation |
+| Released | Update release notes |
+
 ## Reference Links
 
 - [Harness MCP Server Documentation](https://developer.harness.io/docs/platform/harness-aida/harness-mcp-server/)
@@ -1015,3 +1138,5 @@ harness:
 - [Jira Connector Settings Reference](https://developer.harness.io/docs/platform/approvals/w_approval-ref/jira-connector-settings-reference/)
 - [Create Jira Issues in CD Stages](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/ticketing-systems/create-jira-issues-in-cd-stages/)
 - [Update Jira Issues in CD Stages](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/ticketing-systems/update-jira-issues-in-cd-stages/)
+- [Confluence Documentation Patterns](../skills/confluence/SKILL.md)
+- [Documentation Sync Agent](documentation-sync-agent.md)

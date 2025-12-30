@@ -25,8 +25,16 @@ triggers:
   - harness pull request
   - harness repository
   - harness comment
+  - harness workspace
+  - harness multi-repo
+  - harness create repo
   - mcp server
   - cd automation
+  - harness confluence
+  - documentation sync
+  - link confluence
+  - readme docs
+  - issue documentation
 ---
 
 # Harness MCP Skill
@@ -653,6 +661,186 @@ export MCP_DEBUG=true
 4. **Audit Trail**: Enable logging for all Jira operations
 5. **Least Privilege**: Scope API tokens to minimum required permissions
 
+## Multi-Repository Workspace Support
+
+The Jira orchestrator supports VS Code workspaces with multiple repositories, enabling coordinated operations across all repos linked to a Jira issue.
+
+### Workspace Detection
+
+The system automatically detects repositories in:
+
+1. **VS Code Workspace File** (`.code-workspace`)
+2. **Git Repositories** in the current directory tree
+3. **Git Submodules** in the main repository
+
+### Configuration
+
+Create `.jira/harness-workspace.yml` in your workspace root:
+
+```yaml
+harness:
+  workspace:
+    # Repositories in this workspace
+    repositories:
+      - identifier: frontend-app
+        path: ./frontend
+        jira_project: FRONT
+        description: "React frontend application"
+
+      - identifier: backend-api
+        path: ./backend
+        jira_project: BACK
+        description: "Node.js API backend"
+
+      - identifier: shared-libs
+        path: ./libs
+        jira_project: SHARED
+        description: "Shared TypeScript libraries"
+
+    # Auto-create repos if they don't exist
+    auto_create_repos: true
+
+    # Default branch for all repos
+    default_branch: main
+
+  # PR review settings
+  review:
+    # Review all PRs across workspace
+    cross_repo_review: true
+
+    # Auto-approve thresholds
+    auto_approve:
+      enabled: false
+      max_files: 5
+      excluded_patterns:
+        - "*.md"
+        - "*.txt"
+
+  # Jira integration
+  jira:
+    sync_enabled: true
+    aggregate_prs: true  # Show all PRs in single Jira comment
+```
+
+### Python API for Workspace Operations
+
+```python
+from lib.harness_code_api import HarnessCodeAPI
+
+client = HarnessCodeAPI()
+
+# Setup workspace repos (creates if missing)
+repos = client.setup_workspace_repos([
+    {"identifier": "frontend", "description": "React frontend", "path": "./frontend"},
+    {"identifier": "backend", "description": "API backend", "path": "./backend"},
+    {"identifier": "shared", "description": "Shared libs", "path": "./libs"}
+])
+
+# Get all PRs across workspace for a Jira issue
+prs = client.get_workspace_prs(
+    repo_identifiers=["frontend", "backend", "shared"],
+    state="open",
+    jira_key="PROJ-123"
+)
+
+# Review all PRs in workspace
+results = client.review_workspace_prs(
+    repo_identifiers=["frontend", "backend", "shared"],
+    jira_key="PROJ-123",
+    auto_approve=False
+)
+```
+
+### Bash Functions for Workspace
+
+```bash
+source lib/harness-code-api.sh
+
+# Detect repos in VS Code workspace
+harness_detect_workspace_repos
+
+# Show status of all workspace repos
+harness_workspace_status
+
+# Create PRs for all changed repos
+harness_workspace_create_prs "PROJ-123" "main"
+```
+
+---
+
+## Repository Creation
+
+Create repositories programmatically via the Harness Code REST API.
+
+### Create Repository via Python
+
+```python
+from lib.harness_code_api import HarnessCodeAPI
+
+client = HarnessCodeAPI()
+
+# Create a new repository
+repo = client.create_repository(
+    identifier="my-new-service",
+    description="Microservice for user management",
+    default_branch="main",
+    is_public=False,
+    readme=True,
+    license="MIT",
+    gitignore="Node"
+)
+
+print(f"Created: {repo['identifier']}")
+```
+
+### Create Repository via Bash
+
+```bash
+source lib/harness-code-api.sh
+
+# Create repository
+harness_create_repo "my-service" "User management service" "main" "false"
+```
+
+### Ensure Repository Exists
+
+The `ensure_repository_exists` method checks if a repo exists and creates it if not:
+
+```python
+# Will get existing or create new
+repo = client.ensure_repository_exists(
+    identifier="my-service",
+    description="My service description"
+)
+```
+
+### REST API for Repository Operations
+
+| Operation | Method | Endpoint |
+|-----------|--------|----------|
+| List Repos | GET | `/v1/repos` or `/v1/spaces/{space}/repos` |
+| Get Repo | GET | `/v1/repos/{repo}` |
+| Create Repo | POST | `/v1/repos` |
+| Update Repo | PATCH | `/v1/repos/{repo}` |
+| Delete Repo | DELETE | `/v1/repos/{repo}` |
+
+### Create Repository Request Body
+
+```json
+{
+  "identifier": "my-repo",
+  "description": "Repository description",
+  "default_branch": "main",
+  "is_public": false,
+  "parent_ref": "my-space",
+  "readme": true,
+  "license": "MIT",
+  "gitignore": "Node"
+}
+```
+
+---
+
 ## Harness REST API for PR Comments & Reviews
 
 The Harness MCP Server provides **read** operations for PR activities, but for **write** operations (creating comments, submitting reviews, merging), use the Harness Code REST API directly.
@@ -1200,6 +1388,117 @@ def claude_code_review(repo: str, pr_number: int, jira_key: str):
 
 ---
 
+## Confluence Documentation Integration
+
+The Jira orchestrator automatically creates and links Confluence documentation for all Jira work items. This ensures every issue, sub-issue, and PR has proper documentation.
+
+### Automatic Documentation Creation
+
+When work starts on a Jira issue, the following documentation is automatically created:
+
+| Issue Type | Documents Created |
+|------------|-------------------|
+| Epic | TDD, Implementation Notes, Runbook, API Docs |
+| Story | TDD, Implementation Notes |
+| Task | Implementation Notes |
+| Sub-task | Implementation Notes (linked to parent) |
+| Bug | Implementation Notes |
+
+### Python API for Documentation Linking
+
+```python
+from lib.confluence_doc_linker import ConfluenceDocLinker, DocumentationConfig
+
+# Initialize linker
+linker = ConfluenceDocLinker()
+
+# Ensure documentation exists for an issue
+docs = linker.ensure_issue_docs("PROJ-123")
+
+# Create docs for sub-issues (linked to parent)
+sub_docs = linker.ensure_sub_issue_docs(
+    parent_jira_key="PROJ-123",
+    sub_issue_keys=["PROJ-124", "PROJ-125", "PROJ-126"]
+)
+
+# Link README to Confluence
+linker.link_readme_to_confluence(
+    readme_path="./README.md",
+    jira_key="PROJ-123"
+)
+```
+
+### PR Documentation Integration
+
+When creating or reviewing PRs, documentation links are automatically added:
+
+```python
+from lib.harness_code_api import HarnessCodeAPI
+from lib.confluence_doc_linker import ConfluenceDocLinker
+
+harness = HarnessCodeAPI()
+linker = ConfluenceDocLinker()
+
+# Link PR to documentation
+linker.link_pr_to_docs(
+    repo="my-service",
+    pr_number=42,
+    jira_key="PROJ-123",
+    harness_client=harness
+)
+```
+
+### README Documentation Section
+
+READMEs are automatically updated with a Documentation section:
+
+```markdown
+## Documentation
+
+**Jira Issue:** [PROJ-123](https://jira.company.com/browse/PROJ-123)
+
+**Confluence Documentation:**
+- [Technical Design: PROJ-123](https://confluence.company.com/pages/123)
+- [Implementation Notes: PROJ-123](https://confluence.company.com/pages/124)
+```
+
+### Configuration
+
+Create `.jira/doc-sync.yml` in your workspace:
+
+```yaml
+documentation:
+  confluence:
+    base_url: "${CONFLUENCE_BASE_URL}"
+    space_key: "ENG"
+    parent_pages:
+      tdd: "12345678"
+      impl_notes: "12345679"
+
+  auto_create:
+    enabled: true
+    on_work_start: true
+    on_pr_create: true
+
+  readme:
+    auto_update: true
+
+  pr:
+    add_doc_links: true
+    update_on_merge: true
+```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `CONFLUENCE_BASE_URL` | Yes | Confluence instance URL |
+| `CONFLUENCE_SPACE_KEY` | No | Default space (default: ENG) |
+| `CONFLUENCE_PARENT_PAGE_ID` | No | Default parent page for docs |
+| `JIRA_BASE_URL` | Yes | Jira instance URL |
+
+---
+
 ## Related Documentation
 
 - [Harness MCP Server](https://developer.harness.io/docs/platform/harness-aida/harness-mcp-server/)
@@ -1209,3 +1508,5 @@ def claude_code_review(repo: str, pr_number: int, jira_key: str):
 - [Connect to Jira](https://developer.harness.io/docs/platform/connectors/ticketing-systems/connect-to-jira/)
 - [Jira Connector Settings Reference](https://developer.harness.io/docs/platform/approvals/w_approval-ref/jira-connector-settings-reference/)
 - [Create Jira Issues in CD Stages](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/ticketing-systems/create-jira-issues-in-cd-stages/)
+- [Confluence Documentation Patterns](../confluence/SKILL.md)
+- [Documentation Sync Agent](../../agents/documentation-sync-agent.md)
