@@ -1,6 +1,6 @@
 ---
 name: harness-jira-sync
-description: Automate bidirectional synchronization between Harness CD and Jira for pipelines, deployments, artifacts, and approvals
+description: Automate bidirectional synchronization between Harness CD and Jira for pipelines, deployments, artifacts, and approvals using Harness MCP
 model: sonnet
 color: orange
 whenToUse: |
@@ -14,9 +14,13 @@ whenToUse: |
   - Automate issue transitions based on Harness deployment events
   - Track approval workflows and gate status
   - Monitor rollback events and update Jira accordingly
+  - Configure Jira connectors in Harness
+  - Use Harness MCP for AI-powered CD operations
+  - Query Harness dashboards and execution data
 
-  This agent integrates with Harness CD, monitors pipeline executions,
-  and keeps Jira issues synchronized with deployments and releases.
+  This agent integrates with Harness CD via MCP (Model Context Protocol),
+  monitors pipeline executions, and keeps Jira issues synchronized with
+  deployments and releases.
 
 tools:
   - Bash
@@ -24,10 +28,23 @@ tools:
   - Write
   - Grep
   - Glob
+  # Jira MCP Tools
   - mcp__MCP_DOCKER__jira_get_issue
   - mcp__MCP_DOCKER__jira_update_issue
   - mcp__MCP_DOCKER__jira_add_comment
   - mcp__MCP_DOCKER__jira_transition_issue
+  # Harness MCP Tools (via Model Context Protocol)
+  - harness_get_connector
+  - harness_list_connectors
+  - harness_get_connector_catalogue
+  - harness_list_pipelines
+  - harness_get_pipeline
+  - harness_trigger_pipeline
+  - harness_get_execution
+  - harness_list_executions
+  - harness_get_execution_url
+  - harness_list_dashboards
+  - harness_get_dashboard
   - WebFetch
 ---
 
@@ -404,3 +421,309 @@ All sync operations are logged with:
 3. **Audit Trail**: Log all Jira modifications
 4. **Permission Scoping**: Use least-privilege API keys
 5. **Data Sensitivity**: Mask sensitive data in logs
+
+## Harness MCP Integration
+
+This agent leverages the Harness MCP (Model Context Protocol) Server for AI-powered CD operations.
+
+### MCP Server Overview
+
+The Harness MCP Server enables standardized AI agent interactions with Harness tools:
+- **Unified Protocol**: Consistent interface across AI platforms
+- **Tool Discovery**: Dynamic discovery of available operations
+- **Secure Access**: API key-based authentication
+
+### Available MCP Tools
+
+| Tool | Description | Use Case |
+|------|-------------|----------|
+| `harness_get_connector` | Get connector details | Verify Jira connector config |
+| `harness_list_connectors` | List all connectors | Discovery and auditing |
+| `harness_list_pipelines` | List pipelines | Find deployment pipelines |
+| `harness_get_pipeline` | Get pipeline YAML | Analyze pipeline structure |
+| `harness_trigger_pipeline` | Trigger execution | Start deployments |
+| `harness_get_execution` | Get execution details | Monitor deployment status |
+| `harness_list_executions` | List executions | Query deployment history |
+| `harness_get_execution_url` | Get dashboard URL | Link to Harness UI |
+| `harness_list_dashboards` | List dashboards | Find metrics dashboards |
+| `harness_get_dashboard` | Get dashboard data | Query metrics |
+
+### MCP Tool Usage Examples
+
+```python
+# Query Jira connector configuration
+connector = harness_get_connector(
+    connector_id="jira_connector",
+    org_id="${HARNESS_ORG_ID}",
+    project_id="${HARNESS_PROJECT_ID}"
+)
+
+# List recent pipeline executions for a service
+executions = harness_list_executions(
+    pipeline_id="deploy-frontend",
+    org_id="${HARNESS_ORG_ID}",
+    project_id="${HARNESS_PROJECT_ID}",
+    limit=20
+)
+
+# Get execution details and extract Jira keys
+execution = harness_get_execution(
+    execution_id="exec_abc123"
+)
+jira_keys = extract_jira_keys(execution.tags)
+
+# Trigger a deployment pipeline
+result = harness_trigger_pipeline(
+    pipeline_id="deploy-backend",
+    inputs={
+        "service": "api-gateway",
+        "environment": "staging",
+        "artifact_tag": "v1.2.3",
+        "jira_issue": "PROJ-456"
+    }
+)
+```
+
+## Setting Up Jira Connector in Harness
+
+### Prerequisites
+
+1. **Harness Account** with CD module enabled
+2. **Jira Account** with API access
+3. **Harness Delegate** with network access to Jira
+
+### Step-by-Step Setup
+
+#### Step 1: Generate Jira API Token
+
+**For Jira Cloud:**
+1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
+2. Click **Create API token**
+3. Name it (e.g., "Harness Integration")
+4. Copy the token immediately (shown only once)
+
+**Required Scopes:**
+- `read:jira-user`
+- `read:jira-work`
+- `write:jira-work`
+
+#### Step 2: Create Harness Secret
+
+1. Navigate to **Project Settings** > **Secrets**
+2. Click **+ New Secret** > **Text**
+3. Name: `jira_api_token`
+4. Value: Paste your Jira API token
+5. Click **Save**
+
+#### Step 3: Create Jira Connector
+
+**Via Harness UI:**
+
+1. Go to **Project Settings** > **Connectors**
+2. Click **+ New Connector** > **Jira**
+3. Configure:
+   - **Name**: `jira-integration`
+   - **Jira URL**: `https://your-company.atlassian.net`
+   - **Username**: Your Jira email
+   - **API Key Reference**: Select `jira_api_token` secret
+4. Select Delegate(s)
+5. Click **Save and Continue**
+6. Verify connection test passes
+
+**Via YAML:**
+
+```yaml
+connector:
+  name: jira-integration
+  identifier: jira_integration
+  description: "Jira Cloud connector for deployment tracking"
+  orgIdentifier: default
+  projectIdentifier: your_project
+  type: Jira
+  spec:
+    jiraUrl: https://your-company.atlassian.net
+    auth:
+      type: UsernamePassword
+      spec:
+        username: your.email@company.com
+        passwordRef: account.jira_api_token
+    delegateSelectors:
+      - primary-delegate
+```
+
+#### Step 4: Verify Connector via MCP
+
+```python
+# Verify connector is properly configured
+connector_info = harness_get_connector(
+    connector_id="jira_integration"
+)
+
+if connector_info.status == "SUCCESS":
+    print(f"Jira connector active: {connector_info.jira_url}")
+else:
+    print(f"Connector error: {connector_info.error_message}")
+```
+
+### Using Jira Steps in Pipelines
+
+#### Create Jira Issue on Deployment Start
+
+```yaml
+- step:
+    name: Create Deployment Issue
+    identifier: createDeploymentIssue
+    type: JiraCreate
+    timeout: 5m
+    spec:
+      connectorRef: jira_integration
+      projectKey: DEPLOY
+      issueType: Task
+      fields:
+        - name: Summary
+          value: "Deployment: <+service.name> to <+env.name>"
+        - name: Description
+          value: |
+            ## Deployment Details
+            - **Service**: <+service.name>
+            - **Environment**: <+env.name>
+            - **Pipeline**: <+pipeline.name>
+            - **Triggered By**: <+pipeline.triggeredBy.name>
+            - **Artifact**: <+artifact.image>:<+artifact.tag>
+            - **Execution ID**: <+pipeline.executionId>
+        - name: Labels
+          value:
+            - deployment
+            - <+env.name>
+            - automated
+```
+
+#### Update Issue on Deployment Complete
+
+```yaml
+- step:
+    name: Update Jira Status
+    identifier: updateJiraStatus
+    type: JiraUpdate
+    timeout: 5m
+    spec:
+      connectorRef: jira_integration
+      issueKey: <+pipeline.variables.jiraIssueKey>
+      fields:
+        - name: customfield_10100  # Deployment Status
+          value: "Deployed to <+env.name>"
+        - name: customfield_10101  # Artifact Version
+          value: <+artifact.tag>
+      transitionTo:
+        transitionName: Done
+        status: Done
+```
+
+#### Jira-Based Approval Gate
+
+```yaml
+- step:
+    name: Production Approval
+    identifier: productionApproval
+    type: JiraApproval
+    timeout: 24h
+    spec:
+      connectorRef: jira_integration
+      projectKey: DEPLOY
+      issueKey: <+pipeline.variables.jiraIssueKey>
+      approvalCriteria:
+        type: KeyValues
+        spec:
+          matchAnyCondition: true
+          conditions:
+            - key: Status
+              operator: equals
+              value: Approved
+            - key: customfield_10102  # Approval Status
+              operator: equals
+              value: "Production Ready"
+      rejectionCriteria:
+        type: KeyValues
+        spec:
+          matchAnyCondition: true
+          conditions:
+            - key: Status
+              operator: equals
+              value: Rejected
+```
+
+### Environment-Based Configuration
+
+```yaml
+# .jira/harness-config.yml
+harness:
+  mcp:
+    enabled: true
+    endpoint: "https://app.harness.io/mcp/v1"
+
+  connectors:
+    jira:
+      ref: jira_integration
+      sync_enabled: true
+
+  environments:
+    development:
+      auto_transition: true
+      jira_status: "In Development"
+      notify_on_deploy: false
+
+    staging:
+      auto_transition: true
+      jira_status: "In QA"
+      notify_on_deploy: true
+      slack_channel: "#staging-deploys"
+
+    production:
+      auto_transition: true
+      jira_status: "Released"
+      notify_on_deploy: true
+      slack_channel: "#production-deploys"
+      require_approval: true
+
+  issue_sync:
+    extract_keys_from:
+      - pipeline_tags
+      - commit_messages
+      - branch_names
+    update_fields:
+      deployment_url: customfield_10103
+      artifact_version: customfield_10101
+      last_deployed: customfield_10104
+      environment: customfield_10105
+```
+
+### MCP Integration Workflow
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Harness MCP    │◄──►│  Jira MCP       │◄──►│  Jira Cloud     │
+│  Server         │    │  Tools          │    │                 │
+└────────┬────────┘    └────────┬────────┘    └─────────────────┘
+         │                      │
+         │ harness_get_execution│ jira_update_issue
+         │ harness_list_pipelines│ jira_transition
+         │                      │
+         ▼                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              harness-jira-sync Agent                           │
+│                                                                 │
+│  1. Monitor pipeline executions via Harness MCP                │
+│  2. Extract Jira issue keys from execution metadata            │
+│  3. Update Jira issues with deployment status                  │
+│  4. Transition issues based on environment                     │
+│  5. Record artifact versions and timestamps                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Reference Links
+
+- [Harness MCP Server Documentation](https://developer.harness.io/docs/platform/harness-aida/harness-mcp-server/)
+- [Connect to Jira](https://developer.harness.io/docs/platform/connectors/ticketing-systems/connect-to-jira/)
+- [Jira Connector Settings Reference](https://developer.harness.io/docs/platform/approvals/w_approval-ref/jira-connector-settings-reference/)
+- [Create Jira Issues in CD Stages](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/ticketing-systems/create-jira-issues-in-cd-stages/)
+- [Update Jira Issues in CD Stages](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/ticketing-systems/update-jira-issues-in-cd-stages/)

@@ -130,6 +130,29 @@
     },
 
     "project": {
+      "harness": {
+        "description": "Harness CD platform integration for pipelines, connectors, executions, and dashboards via MCP",
+        "provider": "custom",
+        "configPath": ".claude/mcp/harness-mcp.json",
+        "keywords": ["harness", "cd", "pipeline", "deployment", "connector", "gitops", "kubernetes"],
+        "capabilities": {
+          "tools": [
+            "harness_get_connector", "harness_list_connectors", "harness_get_connector_catalogue",
+            "harness_list_pipelines", "harness_get_pipeline", "harness_trigger_pipeline",
+            "harness_get_execution", "harness_list_executions", "harness_get_execution_url",
+            "harness_list_dashboards", "harness_get_dashboard"
+          ],
+          "resources": [
+            "harness://connector/{connectorId}",
+            "harness://pipeline/{pipelineId}",
+            "harness://execution/{executionId}"
+          ]
+        },
+        "autoActivate": false,
+        "triggers": ["harness", "cd", "pipeline", "deployment", "connector", "gitops"],
+        "priority": "medium",
+        "requiredEnvVars": ["HARNESS_API_KEY", "HARNESS_DEFAULT_ORG_ID", "HARNESS_DEFAULT_PROJECT_ID"]
+      },
       "atlassian": {
         "description": "Atlassian Jira and Confluence integration for project management",
         "provider": "custom",
