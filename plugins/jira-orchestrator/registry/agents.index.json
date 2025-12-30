@@ -1,8 +1,13 @@
 {
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Jira Orchestrator agent registry - load individual agents on-demand",
-  "total_agents": 64,
+  "total_agents": 65,
   "categories": {
+    "council": {
+      "description": "NEW v5.0 - Agent council for collaborative review",
+      "agents": ["council-coordinator"],
+      "new": true
+    },
     "core": {
       "description": "Primary orchestration agents",
       "agents": ["triage-agent", "task-enricher", "requirements-analyzer", "code-reviewer", "pr-creator", "documentation-writer"]
@@ -65,6 +70,7 @@
     }
   },
   "quick_lookup": {
+    "council": "council-coordinator",
     "triage": "triage-agent",
     "enrich": "task-enricher",
     "review": "code-reviewer",
@@ -84,8 +90,11 @@
   },
   "model_assignments": {
     "opus": ["code-reviewer", "advanced-orchestration-patterns", "governance-auditor"],
-    "sonnet": ["triage-agent", "task-enricher", "requirements-analyzer", "confluence-manager", "intelligence-analyzer", "quality-intelligence", "sprint-planner", "portfolio-manager"],
+    "sonnet": ["council-coordinator", "triage-agent", "task-enricher", "requirements-analyzer", "confluence-manager", "intelligence-analyzer", "quality-intelligence", "sprint-planner", "portfolio-manager"],
     "haiku": ["pr-creator", "documentation-writer", "notification-router", "tag-manager", "transition-manager", "batch-processor"]
+  },
+  "new_in_v5": {
+    "council-coordinator": "Orchestrates multi-agent reviews using blackboard pattern"
   },
   "load_pattern": "agents/{agent-name}.md"
 }

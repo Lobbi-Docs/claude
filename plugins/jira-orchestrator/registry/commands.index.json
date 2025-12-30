@@ -1,9 +1,17 @@
 {
-  "version": "4.0.0",
-  "description": "Jira Orchestrator commands - 36 slash commands for complete Jira automation",
+  "version": "5.0.0",
+  "description": "Jira Orchestrator commands - 39 slash commands for complete Jira automation",
   "prefix": "/jira:",
-  "total_commands": 36,
+  "total_commands": 39,
   "categories": {
+    "ship": {
+      "description": "NEW v5.0 - Ultra-simple shipping workflow",
+      "commands": {
+        "ship": {"desc": "One command: prepare → code → PR → council review", "args": "ISSUE-KEY [--council] [--depth]", "agents": "5-13", "new": true},
+        "iterate": {"desc": "Fix review feedback, update PR, re-review", "args": "ISSUE-KEY [--pr] [--auto_review]", "new": true},
+        "council": {"desc": "Agent council (blackboard) for PR review", "args": "TARGET [--preset] [--depth]", "new": true}
+      }
+    },
     "core": {
       "description": "Essential daily workflow commands",
       "commands": {
@@ -102,10 +110,16 @@
     }
   },
   "quick_reference": {
+    "recommended": ["ship", "iterate", "council"],
     "daily": ["work", "status", "commit", "pr"],
     "planning": ["triage", "prepare", "sprint-plan"],
     "analytics": ["metrics", "quality", "intelligence"],
     "enterprise": ["notify", "approve", "portfolio", "sla", "compliance"]
+  },
+  "new_in_v5": {
+    "ship": "One command to rule them all - prepare, code, PR, council review",
+    "iterate": "Fix review feedback and trigger re-review automatically",
+    "council": "Multi-agent council review using blackboard pattern"
   },
   "load_pattern": "commands/{command-name}.md"
 }
