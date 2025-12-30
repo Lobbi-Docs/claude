@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 
 # Plugin information
 PLUGIN_NAME="jira-orchestrator"
-PLUGIN_VERSION="1.1.0"
+PLUGIN_VERSION="4.1.0"
 MCP_SERVER_NAME="atlassian"
 MCP_SERVER_URL="https://mcp.atlassian.com/v1/sse"
 
@@ -172,6 +172,57 @@ make_scripts_executable() {
     success "Scripts are executable"
 }
 
+# Link plugin commands to .claude/commands directory
+link_plugin_commands() {
+    log "Linking plugin commands to Claude commands directory..."
+
+    # Find the project root (parent of plugins directory)
+    local PROJECT_ROOT="$(dirname "$(dirname "$PLUGIN_ROOT")")"
+    local CLAUDE_COMMANDS_DIR="${PROJECT_ROOT}/.claude/commands"
+    local PLUGIN_COMMANDS_DIR="${PLUGIN_ROOT}/commands"
+
+    # Check if .claude/commands exists
+    if [ ! -d "$CLAUDE_COMMANDS_DIR" ]; then
+        warn ".claude/commands directory not found at $CLAUDE_COMMANDS_DIR"
+        warn "Commands will need to be linked manually"
+        return 1
+    fi
+
+    # Check if plugin commands directory exists
+    if [ ! -d "$PLUGIN_COMMANDS_DIR" ]; then
+        error "Plugin commands directory not found at $PLUGIN_COMMANDS_DIR"
+        return 1
+    fi
+
+    local linked_count=0
+    local skipped_count=0
+
+    # Link each command file
+    for file in "$PLUGIN_COMMANDS_DIR"/*.md; do
+        if [ -f "$file" ]; then
+            local basename="${file##*/}"
+            local target="${CLAUDE_COMMANDS_DIR}/jira-${basename}"
+            local relative_path="../../plugins/jira-orchestrator/commands/${basename}"
+
+            if [ -L "$target" ]; then
+                # Already a symlink, skip
+                ((skipped_count++))
+            elif [ -f "$target" ]; then
+                # Regular file exists, back it up and create symlink
+                mv "$target" "${target}.bak"
+                ln -sf "$relative_path" "$target"
+                ((linked_count++))
+            else
+                # No file exists, create symlink
+                ln -sf "$relative_path" "$target"
+                ((linked_count++))
+            fi
+        fi
+    done
+
+    success "Linked $linked_count commands ($skipped_count already linked)"
+}
+
 # Display OAuth information
 display_oauth_info() {
     echo ""
@@ -287,6 +338,9 @@ main() {
 
     # Make scripts executable
     make_scripts_executable
+
+    # Link plugin commands to .claude/commands
+    link_plugin_commands
 
     # Check Claude CLI and add MCP server
     if check_claude_cli; then

@@ -1,0 +1,1 @@
+../../plugins/jira-orchestrator/commands/council.md
