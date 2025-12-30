@@ -1,0 +1,148 @@
+{
+  "mcpServers": {
+    "harness": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@harness/mcp-server"
+      ],
+      "env": {
+        "HARNESS_API_KEY": "${HARNESS_API_KEY}",
+        "HARNESS_DEFAULT_ORG_ID": "${HARNESS_DEFAULT_ORG_ID}",
+        "HARNESS_DEFAULT_PROJECT_ID": "${HARNESS_DEFAULT_PROJECT_ID}",
+        "HARNESS_ACCOUNT_ID": "${HARNESS_ACCOUNT_ID}",
+        "HARNESS_BASE_URL": "${HARNESS_BASE_URL:-https://app.harness.io}"
+      },
+      "description": "Harness CD MCP Server for AI-powered pipeline, connector, Git repository, pull request, and code review management"
+    }
+  },
+  "toolAliases": {
+    "harness-connector": "harness_get_connector",
+    "harness-pipelines": "harness_list_pipelines",
+    "harness-exec": "harness_get_execution",
+    "harness-trigger": "harness_trigger_pipeline",
+    "harness-repos": "harness_list_repositories",
+    "harness-pr": "harness_get_pull_request",
+    "harness-prs": "harness_list_pull_requests",
+    "harness-pr-create": "harness_create_pull_request",
+    "harness-pr-comments": "harness_get_pull_request_activities"
+  },
+  "documentation": {
+    "overview": "Harness MCP Server enables AI agents to interact with Harness CD platform, manage Git repositories, create and monitor pull requests, and track code review comments",
+    "capabilities": [
+      "Connector management (Jira, GitHub, Docker, Kubernetes)",
+      "Pipeline listing and execution",
+      "Execution monitoring and status tracking",
+      "Dashboard data retrieval",
+      "Git repository listing and management",
+      "Pull request creation and monitoring",
+      "PR status checks and pipeline results",
+      "Code review comments and activities"
+    ],
+    "setup": {
+      "required_env_vars": [
+        "HARNESS_API_KEY - API key from Harness Account Settings",
+        "HARNESS_DEFAULT_ORG_ID - Default organization identifier",
+        "HARNESS_DEFAULT_PROJECT_ID - Default project identifier"
+      ],
+      "optional_env_vars": [
+        "HARNESS_ACCOUNT_ID - Account identifier",
+        "HARNESS_BASE_URL - API base URL (default: https://app.harness.io)"
+      ],
+      "api_key_generation": "Navigate to Account Settings > API Keys in Harness UI"
+    },
+    "tools": {
+      "harness_get_connector": {
+        "description": "Get details of a specific connector",
+        "params": ["connector_id", "org_id", "project_id"],
+        "example": "harness_get_connector(connector_id='jira_connector')"
+      },
+      "harness_list_connectors": {
+        "description": "List all connectors with optional filtering",
+        "params": ["type", "org_id", "project_id", "search_term"],
+        "example": "harness_list_connectors(type='Jira')"
+      },
+      "harness_list_pipelines": {
+        "description": "List pipelines in project",
+        "params": ["org_id", "project_id", "filter_type"],
+        "example": "harness_list_pipelines()"
+      },
+      "harness_get_pipeline": {
+        "description": "Get pipeline details and YAML",
+        "params": ["pipeline_id", "org_id", "project_id"],
+        "example": "harness_get_pipeline(pipeline_id='deploy-prod')"
+      },
+      "harness_trigger_pipeline": {
+        "description": "Trigger pipeline execution",
+        "params": ["pipeline_id", "inputs", "org_id", "project_id"],
+        "example": "harness_trigger_pipeline(pipeline_id='deploy', inputs={'env': 'staging'})"
+      },
+      "harness_get_execution": {
+        "description": "Get execution details",
+        "params": ["execution_id", "org_id", "project_id"],
+        "example": "harness_get_execution(execution_id='exec_abc123')"
+      },
+      "harness_list_executions": {
+        "description": "List recent executions",
+        "params": ["pipeline_id", "limit", "org_id", "project_id"],
+        "example": "harness_list_executions(pipeline_id='deploy', limit=10)"
+      },
+      "harness_get_execution_url": {
+        "description": "Get execution dashboard URL",
+        "params": ["execution_id"],
+        "example": "harness_get_execution_url(execution_id='exec_abc123')"
+      },
+      "harness_list_dashboards": {
+        "description": "List all dashboards",
+        "params": [],
+        "example": "harness_list_dashboards()"
+      },
+      "harness_get_dashboard": {
+        "description": "Get specific dashboard data",
+        "params": ["dashboard_id"],
+        "example": "harness_get_dashboard(dashboard_id='deploy_metrics')"
+      },
+      "harness_get_repository": {
+        "description": "Get details of a specific repository",
+        "params": ["repo_id", "org_id", "project_id"],
+        "example": "harness_get_repository(repo_id='my-app')"
+      },
+      "harness_list_repositories": {
+        "description": "List all repositories in project",
+        "params": ["org_id", "project_id"],
+        "example": "harness_list_repositories()"
+      },
+      "harness_get_pull_request": {
+        "description": "Get details of a specific pull request",
+        "params": ["repo_id", "pr_number"],
+        "example": "harness_get_pull_request(repo_id='my-app', pr_number=42)"
+      },
+      "harness_list_pull_requests": {
+        "description": "List pull requests in a repository",
+        "params": ["repo_id", "state", "limit"],
+        "example": "harness_list_pull_requests(repo_id='my-app', state='open')"
+      },
+      "harness_create_pull_request": {
+        "description": "Create a new pull request",
+        "params": ["repo_id", "title", "source_branch", "target_branch", "description"],
+        "example": "harness_create_pull_request(repo_id='my-app', title='PROJ-123: Add feature', source_branch='feature/PROJ-123', target_branch='main')"
+      },
+      "harness_get_pull_request_checks": {
+        "description": "Get status checks for a PR (pipeline results)",
+        "params": ["repo_id", "pr_number"],
+        "example": "harness_get_pull_request_checks(repo_id='my-app', pr_number=42)"
+      },
+      "harness_get_pull_request_activities": {
+        "description": "Get comments, reviews, and activities for a PR",
+        "params": ["repo_id", "pr_number"],
+        "example": "harness_get_pull_request_activities(repo_id='my-app', pr_number=42)"
+      }
+    },
+    "references": [
+      "https://developer.harness.io/docs/platform/harness-aida/harness-mcp-server/",
+      "https://developer.harness.io/docs/platform/connectors/ticketing-systems/connect-to-jira/",
+      "https://developer.harness.io/docs/open-source/repositories/pull-requests/",
+      "https://github.com/harness/mcp-server"
+    ]
+  }
+}
