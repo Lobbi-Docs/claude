@@ -546,6 +546,34 @@ Total Estimate: 10 points → Consider breaking into subtasks
 Risk: Low (standard CRUD operation)
 ```
 
+### Coding Standards Reference (MANDATORY)
+
+**All generated code, subtasks, and technical requirements MUST reference coding standards.**
+
+When enriching tasks, always include relevant coding standards in technical requirements:
+
+```markdown
+### Coding Standards Compliance
+
+This task must follow `config/coding-standards.yaml`:
+
+| Item | Standard | Example |
+|------|----------|---------|
+| Python Functions | snake_case verbs | `create_member()` |
+| Python Classes | PascalCase | `MemberService` |
+| API Routes | /api/v{n}/{plural} | `/api/v1/members` |
+| HTTP Methods | GET, POST, PATCH, DELETE | (no PUT) |
+| TypeScript Functions | camelCase | `createMember()` |
+| React Components | PascalCase | `MemberProfile.tsx` |
+| Database Tables | snake_case plural | `members` |
+```
+
+**Include in Acceptance Criteria:**
+- [ ] All code follows naming conventions in `config/coding-standards.yaml`
+- [ ] API routes use versioned plural pattern
+- [ ] Type hints present on all Python functions
+- [ ] Docstrings follow Google style
+
 ### Complexity Indicators
 
 **Low Complexity (1-3 points):**

@@ -1,0 +1,100 @@
+{
+  "version": "5.0.0",
+  "description": "Jira Orchestrator agent registry - load individual agents on-demand",
+  "total_agents": 65,
+  "categories": {
+    "council": {
+      "description": "NEW v5.0 - Agent council for collaborative review",
+      "agents": ["council-coordinator"],
+      "new": true
+    },
+    "core": {
+      "description": "Primary orchestration agents",
+      "agents": ["triage-agent", "task-enricher", "requirements-analyzer", "code-reviewer", "pr-creator", "documentation-writer"]
+    },
+    "intelligence": {
+      "description": "AI-powered analytics",
+      "agents": ["intelligence-analyzer", "pattern-analyzer", "quality-intelligence", "expert-agent-matcher", "agent-router"]
+    },
+    "workflows": {
+      "description": "Workflow orchestration",
+      "agents": ["completion-orchestrator", "completion-flow-orchestrator", "approval-orchestrator", "event-sourcing-orchestrator", "advanced-orchestration-patterns"]
+    },
+    "confluence": {
+      "description": "Confluence documentation",
+      "agents": ["confluence-manager", "confluence-documentation-creator", "qa-confluence-documenter"]
+    },
+    "git": {
+      "description": "Git and PR operations",
+      "agents": ["commit-message-generator", "commit-tracker", "smart-commit-validator", "checkpoint-pr-manager", "draft-pr-manager", "batch-commit-processor", "pr-documentation-logger"]
+    },
+    "sprint": {
+      "description": "Sprint and capacity planning",
+      "agents": ["sprint-planner", "team-capacity-planner", "workload-balancer", "skill-mapper", "performance-tracker"]
+    },
+    "enterprise": {
+      "description": "Enterprise features (v4.0)",
+      "agents": ["notification-router", "slack-notifier", "webhook-publisher", "escalation-manager", "governance-auditor", "policy-enforcer", "compliance-reporter", "sla-monitor"]
+    },
+    "portfolio": {
+      "description": "Portfolio management",
+      "agents": ["portfolio-manager", "roadmap-planner", "release-coordinator", "dependency-mapper"]
+    },
+    "batch": {
+      "description": "Batch operations",
+      "agents": ["batch-processor", "bulk-importer", "export-generator"]
+    },
+    "qa": {
+      "description": "QA and review",
+      "agents": ["qa-ticket-reviewer", "qa-comment-responder", "qa-transition", "review-facilitator", "review-progress-tracker"]
+    },
+    "testing": {
+      "description": "Testing strategy",
+      "agents": ["test-strategist", "quality-enhancer"]
+    },
+    "documentation": {
+      "description": "Documentation automation",
+      "agents": ["documentation-sync-agent", "sub-item-documenter", "learning-coordinator"]
+    },
+    "management": {
+      "description": "Task management",
+      "agents": ["tag-manager", "transition-manager", "worklog-manager", "parallel-sub-issue-worker"]
+    },
+    "analysis": {
+      "description": "Analysis and estimation",
+      "agents": ["pr-size-estimator", "epic-decomposer", "metrics-dashboard"]
+    },
+    "harness": {
+      "description": "Harness CD integration",
+      "agents": ["harness-jira-sync"]
+    }
+  },
+  "quick_lookup": {
+    "council": "council-coordinator",
+    "triage": "triage-agent",
+    "enrich": "task-enricher",
+    "review": "code-reviewer",
+    "pr": "pr-creator",
+    "docs": "documentation-writer",
+    "confluence": "confluence-manager",
+    "sprint": "sprint-planner",
+    "capacity": "team-capacity-planner",
+    "notify": "notification-router",
+    "batch": "batch-processor",
+    "export": "export-generator",
+    "sla": "sla-monitor",
+    "compliance": "compliance-reporter",
+    "portfolio": "portfolio-manager",
+    "release": "release-coordinator",
+    "analytics": "intelligence-analyzer"
+  },
+  "model_assignments": {
+    "opus": ["code-reviewer", "advanced-orchestration-patterns", "governance-auditor"],
+    "sonnet": ["council-coordinator", "triage-agent", "task-enricher", "requirements-analyzer", "confluence-manager", "intelligence-analyzer", "quality-intelligence", "sprint-planner", "portfolio-manager"],
+    "haiku": ["pr-creator", "documentation-writer", "notification-router", "tag-manager", "transition-manager", "batch-processor"]
+  },
+  "new_in_v5": {
+    "council-coordinator": "Orchestrates multi-agent reviews using blackboard pattern"
+  },
+  "load_pattern": "agents/{agent-name}.md"
+}

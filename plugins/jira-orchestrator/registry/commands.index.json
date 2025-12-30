@@ -1,0 +1,125 @@
+{
+  "version": "5.0.0",
+  "description": "Jira Orchestrator commands - 39 slash commands for complete Jira automation",
+  "prefix": "/jira:",
+  "total_commands": 39,
+  "categories": {
+    "ship": {
+      "description": "NEW v5.0 - Ultra-simple shipping workflow",
+      "commands": {
+        "ship": {"desc": "One command: prepare → code → PR → council review", "args": "ISSUE-KEY [--council] [--depth]", "agents": "5-13", "new": true},
+        "iterate": {"desc": "Fix review feedback, update PR, re-review", "args": "ISSUE-KEY [--pr] [--auto_review]", "new": true},
+        "council": {"desc": "Agent council (blackboard) for PR review", "args": "TARGET [--preset] [--depth]", "new": true}
+      }
+    },
+    "core": {
+      "description": "Essential daily workflow commands",
+      "commands": {
+        "work": {"desc": "Start orchestrated work on issue", "args": "ISSUE-KEY", "agents": "3-13"},
+        "status": {"desc": "Check orchestration progress", "args": "[ISSUE-KEY]"},
+        "sync": {"desc": "Sync state with Jira", "args": "[ISSUE-KEY]"},
+        "cancel": {"desc": "Cancel with checkpoint", "args": "ISSUE-KEY [--reason] [--checkpoint]"}
+      }
+    },
+    "planning": {
+      "description": "Triage and preparation",
+      "commands": {
+        "triage": {"desc": "Classify and route issue", "args": "ISSUE-KEY [--auto-assign]"},
+        "prepare": {"desc": "Create subtasks with details", "args": "ISSUE-KEY [depth=standard]"}
+      }
+    },
+    "sprint": {
+      "description": "Sprint planning and metrics",
+      "commands": {
+        "sprint-plan": {"desc": "Sprint capacity and velocity", "args": "[--sprint-id]"},
+        "metrics": {"desc": "Real-time dashboard", "args": "[--format=dashboard]"},
+        "quality": {"desc": "Tech debt and health", "args": "[ISSUE-KEY]"}
+      }
+    },
+    "git": {
+      "description": "Git and PR operations",
+      "commands": {
+        "branch": {"desc": "Create linked branch", "args": "ISSUE-KEY"},
+        "commit": {"desc": "Smart commit with validation", "args": "[ISSUE-KEY]"},
+        "bulk-commit": {"desc": "Batch commit multiple issues"},
+        "pr": {"desc": "Create PR linked to issue", "args": "ISSUE-KEY [--draft]"},
+        "review": {"desc": "AI code review", "args": "[ISSUE-KEY]"},
+        "plan-prs": {"desc": "Plan PR strategy for epic"}
+      }
+    },
+    "documentation": {
+      "description": "Documentation automation",
+      "commands": {
+        "docs": {"desc": "Generate and sync docs", "args": "ISSUE-KEY [--obsidian] [--readme]"},
+        "confluence": {"desc": "Confluence operations", "args": "ACTION [args]"}
+      }
+    },
+    "enterprise_v4": {
+      "description": "Enterprise features (v4.0)",
+      "commands": {
+        "notify": {"desc": "Configure Slack/Teams/Email alerts", "args": "CHANNEL CONFIG"},
+        "approve": {"desc": "Multi-level approval workflows", "args": "ISSUE-KEY"},
+        "portfolio": {"desc": "Multi-project dashboard", "args": "[--project-keys]"},
+        "release": {"desc": "Release planning and notes", "args": "[--version]"},
+        "batch": {"desc": "Bulk update/transition/assign", "args": "OPERATION [JQL]"},
+        "export": {"desc": "PDF/Excel/CSV export", "args": "FORMAT [JQL]"},
+        "team": {"desc": "Capacity and workload", "args": "[--team-id]"},
+        "sla": {"desc": "SLA monitoring and alerts", "args": "[--customer-tier]"},
+        "compliance": {"desc": "SOC2/GDPR/ISO27001 reports", "args": "FRAMEWORK"}
+      }
+    },
+    "intelligence": {
+      "description": "AI analytics (v3.0)",
+      "commands": {
+        "intelligence": {"desc": "Predictive analytics", "args": "[--type=risk|velocity|priority]"},
+        "events": {"desc": "Event sourcing audit trail", "args": "[--time-travel] [--replay]"},
+        "orchestrate-advanced": {"desc": "Advanced patterns", "args": "PATTERN ISSUE-KEY"}
+      }
+    },
+    "harness": {
+      "description": "Harness CD integration",
+      "commands": {
+        "deploy": {"desc": "Track deployment status", "args": "[ISSUE-KEY]"},
+        "harness-review": {"desc": "PR review via Harness API", "args": "PR-URL"}
+      }
+    },
+    "qa": {
+      "description": "QA workflows",
+      "commands": {
+        "qa-review": {"desc": "QA ticket review workflow"}
+      }
+    },
+    "setup": {
+      "description": "Installation and config",
+      "commands": {
+        "setup": {"desc": "Interactive setup wizard"},
+        "install-hooks": {"desc": "Install git hooks"}
+      }
+    },
+    "worklogs": {
+      "description": "Time tracking",
+      "commands": {
+        "process-worklogs": {"desc": "Process work logs", "args": "[--since]"}
+      }
+    },
+    "templates": {
+      "description": "Commit templates",
+      "commands": {
+        "commit-template": {"desc": "Generate commit template"}
+      }
+    }
+  },
+  "quick_reference": {
+    "recommended": ["ship", "iterate", "council"],
+    "daily": ["work", "status", "commit", "pr"],
+    "planning": ["triage", "prepare", "sprint-plan"],
+    "analytics": ["metrics", "quality", "intelligence"],
+    "enterprise": ["notify", "approve", "portfolio", "sla", "compliance"]
+  },
+  "new_in_v5": {
+    "ship": "One command to rule them all - prepare, code, PR, council review",
+    "iterate": "Fix review feedback and trigger re-review automatically",
+    "council": "Multi-agent council review using blackboard pattern"
+  },
+  "load_pattern": "commands/{command-name}.md"
+}

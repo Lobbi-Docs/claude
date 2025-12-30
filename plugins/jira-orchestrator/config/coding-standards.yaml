@@ -1,0 +1,361 @@
+# Coding Standards Configuration
+# All code produced by this plugin MUST follow these conventions
+
+version: "1.0.0"
+description: "Mandatory coding standards for all generated code"
+
+# =============================================================================
+# TERRAFORM STANDARDS
+# =============================================================================
+terraform:
+  repository_naming:
+    pattern: "iac-{provider}-{component}"
+    examples:
+      - "iac-aws-eks"
+      - "iac-azure-aks"
+      - "iac-gcp-gke"
+
+  resource_naming:
+    iterated_resources: "this"    # For resources in for_each/count
+    primary_resources: "main"     # For single primary resources
+    examples:
+      - 'resource "aws_instance" "this" { for_each = ... }'
+      - 'resource "aws_vpc" "main" { ... }'
+
+  variables:
+    case: snake_case
+    examples:
+      - "cluster_name"
+      - "node_min_size"
+      - "vpc_cidr_block"
+    anti_patterns:
+      - "clusterName"      # No camelCase
+      - "node-min-size"    # No kebab-case
+      - "CLUSTER_NAME"     # No SCREAMING_SNAKE
+
+  outputs:
+    case: snake_case
+    prefix_with_resource: true
+    examples:
+      - "cluster_id"
+      - "vpc_id"
+      - "subnet_ids"
+
+  aws_name_tags:
+    pattern: "${var.cluster_name}-{resource}-{suffix}"
+    examples:
+      - "${var.cluster_name}-node-primary"
+      - "${var.cluster_name}-sg-ingress"
+
+  tag_keys:
+    case: PascalCase
+    required_tags:
+      - "Project"
+      - "ManagedBy"
+      - "Environment"
+    examples:
+      - "Project"
+      - "ManagedBy"
+      - "Environment"
+      - "CostCenter"
+    anti_patterns:
+      - "project"          # No lowercase
+      - "managed_by"       # No snake_case
+      - "ENVIRONMENT"      # No SCREAMING_SNAKE
+
+  modules:
+    name_case: snake_case
+    directory_case: kebab-case
+    examples:
+      module_names:
+        - "vpc_network"
+        - "eks_cluster"
+      directories:
+        - "code-artifact/"
+        - "container-registry/"
+
+  backend_workspaces:
+    case: lowercase
+    separators: none
+    examples:
+      - "iacawsmain"
+      - "iacawsdev"
+      - "iacazureprod"
+    anti_patterns:
+      - "iac-aws-main"     # No hyphens
+      - "iac_aws_main"     # No underscores
+      - "IacAwsMain"       # No PascalCase
+
+# =============================================================================
+# PYTHON/FASTAPI STANDARDS
+# =============================================================================
+python:
+  repository_naming:
+    pattern: "svc-{service-name}"
+    examples:
+      - "svc-membership"
+      - "svc-authentication"
+      - "svc-billing"
+
+  classes:
+    case: PascalCase
+    examples:
+      - "Member"
+      - "MembershipService"
+      - "PaymentProcessor"
+    anti_patterns:
+      - "member"           # No lowercase
+      - "membership_service"  # No snake_case
+
+  interfaces:
+    case: IPascalCase
+    prefix: "I"
+    examples:
+      - "IMembershipService"
+      - "IPaymentGateway"
+      - "INotificationService"
+
+  functions:
+    case: snake_case
+    style: verb_first
+    examples:
+      - "create_member"
+      - "get_settings"
+      - "update_subscription"
+      - "delete_account"
+      - "validate_input"
+    anti_patterns:
+      - "memberCreate"     # No camelCase
+      - "CreateMember"     # No PascalCase
+      - "member_creation"  # Use verbs, not nouns
+
+  variables:
+    case: snake_case
+    private_prefix: "_"
+    examples:
+      public:
+        - "member_id"
+        - "subscription_status"
+      private:
+        - "_internal_cache"
+        - "_db_connection"
+
+  constants:
+    case: SCREAMING_SNAKE_CASE
+    examples:
+      - "MAX_RETRIES"
+      - "DEFAULT_TIMEOUT"
+      - "API_VERSION"
+
+  type_hints:
+    required: true
+    examples:
+      - "def create_member(data: MemberCreate) -> Member:"
+      - "def get_by_id(member_id: UUID) -> Optional[Member]:"
+      - "async def list_all(skip: int = 0, limit: int = 100) -> List[Member]:"
+
+  api_routes:
+    pattern: "/api/v{version}/{resource}"
+    resource_naming: plural
+    examples:
+      - "/api/v1/members"
+      - "/api/v1/subscriptions"
+      - "/api/v2/payments"
+    anti_patterns:
+      - "/api/member"      # No singular
+      - "/members"         # Missing version
+      - "/api/v1/Member"   # No PascalCase
+
+  http_methods:
+    allowed:
+      - "GET"      # Retrieve
+      - "POST"     # Create
+      - "PATCH"    # Partial update
+      - "DELETE"   # Remove
+    not_allowed:
+      - "PUT"      # Use PATCH instead
+    examples:
+      - "GET /api/v1/members/{id}"
+      - "POST /api/v1/members"
+      - "PATCH /api/v1/members/{id}"
+      - "DELETE /api/v1/members/{id}"
+
+  imports:
+    order:
+      1: "Standard library"
+      2: "Third-party packages"
+      3: "Local modules"
+    example: |
+      # Standard library
+      import os
+      from datetime import datetime
+      from typing import Optional, List
+
+      # Third-party
+      from fastapi import APIRouter, HTTPException
+      from pydantic import BaseModel
+
+      # Local
+      from app.services import MembershipService
+      from app.models import Member
+
+  docstrings:
+    style: "Google"
+    required_sections:
+      - "Args"
+      - "Returns"
+      - "Raises"
+    example: |
+      def create_member(data: MemberCreate) -> Member:
+          """Create a new member in the system.
+
+          Args:
+              data: The member creation data containing name, email, etc.
+
+          Returns:
+              The newly created Member object with assigned ID.
+
+          Raises:
+              DuplicateEmailError: If email already exists.
+              ValidationError: If data fails validation.
+          """
+
+  tests:
+    naming_pattern: "test_{action}_{condition}"
+    examples:
+      - "test_create_member_success"
+      - "test_create_member_duplicate_email_fails"
+      - "test_get_member_not_found_returns_404"
+      - "test_update_member_partial_update"
+
+# =============================================================================
+# DIRECTORY CONVENTIONS
+# =============================================================================
+directories:
+  terraform_modules:
+    case: kebab-case
+    examples:
+      - "code-artifact/"
+      - "container-registry/"
+      - "vpc-network/"
+
+  python_packages:
+    case: lowercase
+    examples:
+      - "app/"
+      - "tests/"
+      - "migrations/"
+
+  deployment:
+    case: lowercase
+    examples:
+      - "deployment/helm/"
+      - "deployment/docker/"
+      - "deployment/kubernetes/"
+
+# =============================================================================
+# TYPESCRIPT/REACT STANDARDS (Inferred from patterns)
+# =============================================================================
+typescript:
+  classes:
+    case: PascalCase
+    examples:
+      - "UserService"
+      - "ApiClient"
+
+  interfaces:
+    case: PascalCase
+    prefix: "I"  # Optional but recommended
+    examples:
+      - "IUserService"
+      - "UserProps"  # For React props, no prefix
+
+  functions:
+    case: camelCase
+    examples:
+      - "createUser"
+      - "fetchData"
+      - "handleSubmit"
+
+  variables:
+    case: camelCase
+    private_prefix: "_"
+    examples:
+      - "userId"
+      - "isLoading"
+      - "_internalState"
+
+  constants:
+    case: SCREAMING_SNAKE_CASE
+    examples:
+      - "MAX_RETRIES"
+      - "API_BASE_URL"
+
+  react_components:
+    case: PascalCase
+    file_naming: PascalCase
+    examples:
+      - "UserProfile.tsx"
+      - "MemberList.tsx"
+      - "PaymentForm.tsx"
+
+  hooks:
+    prefix: "use"
+    case: camelCase
+    examples:
+      - "useAuth"
+      - "useMember"
+      - "useFormValidation"
+
+# =============================================================================
+# DATABASE/SQL STANDARDS
+# =============================================================================
+database:
+  tables:
+    case: snake_case
+    style: plural
+    examples:
+      - "members"
+      - "subscriptions"
+      - "payment_transactions"
+
+  columns:
+    case: snake_case
+    examples:
+      - "member_id"
+      - "created_at"
+      - "is_active"
+
+  indexes:
+    pattern: "idx_{table}_{columns}"
+    examples:
+      - "idx_members_email"
+      - "idx_subscriptions_member_id"
+
+  foreign_keys:
+    pattern: "fk_{table}_{referenced_table}"
+    examples:
+      - "fk_subscriptions_members"
+
+# =============================================================================
+# ENFORCEMENT
+# =============================================================================
+enforcement:
+  level: strict
+  on_violation: warn_and_suggest
+
+  code_review_checks:
+    - "Variable naming matches language conventions"
+    - "Function names are verb-first"
+    - "Classes use PascalCase"
+    - "Constants use SCREAMING_SNAKE_CASE"
+    - "API routes follow versioned plural pattern"
+    - "Type hints present on all Python functions"
+    - "Docstrings follow Google style"
+    - "Imports are properly ordered"
+    - "Terraform resources use 'this' or 'main'"
+    - "Tag keys are PascalCase"
+
+  auto_fix:
+    enabled: false
+    suggest_fixes: true

@@ -340,7 +340,87 @@ useEffect(() => {
 }, []);
 ```
 
-#### Dimension 4: Accessibility Review (WCAG 2.1 AA)
+#### Dimension 4: Coding Standards Compliance (MANDATORY)
+
+**CRITICAL:** All code MUST follow the coding standards defined in `config/coding-standards.yaml`.
+
+🏷️ **Quick Reference:**
+
+| Language | Item | Convention | Example |
+|----------|------|------------|---------|
+| **Terraform** | Variables | snake_case | `cluster_name` |
+| **Terraform** | Resources | `this` (iterated) or `main` (primary) | `resource "aws_vpc" "main"` |
+| **Terraform** | Tag Keys | PascalCase | `Project`, `Environment` |
+| **Terraform** | Workspaces | lowercase, no separators | `iacawsdev` |
+| **Python** | Classes | PascalCase | `MembershipService` |
+| **Python** | Interfaces | IPascalCase | `IMembershipService` |
+| **Python** | Functions | snake_case verbs | `create_member()` |
+| **Python** | Constants | SCREAMING_SNAKE_CASE | `MAX_RETRIES` |
+| **Python** | API Routes | `/api/v{n}/{plural}` | `/api/v1/members` |
+| **Python** | HTTP Methods | GET, POST, PATCH, DELETE | (no PUT) |
+| **TypeScript** | Functions | camelCase | `createUser()` |
+| **TypeScript** | Classes | PascalCase | `UserService` |
+| **TypeScript** | Components | PascalCase | `UserProfile.tsx` |
+| **TypeScript** | Hooks | use prefix | `useAuth()` |
+| **Database** | Tables | snake_case plural | `members` |
+| **Database** | Columns | snake_case | `member_id` |
+
+**Coding Standards Review Checklist:**
+
+✅ **Variable/Function Naming**
+```typescript
+// BAD: Wrong casing
+const MemberID = getData();  // Should be memberId
+function CreateMember() {}   // Should be createMember
+
+// GOOD: Correct casing
+const memberId = getData();
+function createMember() {}
+```
+
+✅ **Python API Routes**
+```python
+# BAD: Singular, no version
+@app.get("/member/{id}")
+
+# GOOD: Versioned, plural
+@app.get("/api/v1/members/{id}")
+```
+
+✅ **Terraform Resources**
+```hcl
+# BAD: Arbitrary name
+resource "aws_instance" "my_server" {}
+
+# GOOD: Standard naming
+resource "aws_instance" "main" {}      # Primary resource
+resource "aws_instance" "this" {       # Iterated resource
+  for_each = var.instances
+}
+```
+
+✅ **Tag Keys**
+```hcl
+# BAD: lowercase/snake_case
+tags = {
+  project = "my-app"
+  managed_by = "terraform"
+}
+
+# GOOD: PascalCase
+tags = {
+  Project   = var.project_name
+  ManagedBy = "Terraform"
+}
+```
+
+**On Standards Violation:**
+1. Flag as WARNING (non-blocking but should fix)
+2. Provide correct naming with example
+3. Reference `config/coding-standards.yaml` section
+4. Add to auto-fix suggestions where applicable
+
+#### Dimension 5: Accessibility Review (WCAG 2.1 AA)
 
 **Critical Accessibility Checks:**
 

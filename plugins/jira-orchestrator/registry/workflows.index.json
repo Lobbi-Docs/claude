@@ -1,0 +1,80 @@
+{
+  "version": "4.0.0",
+  "description": "Orchestration workflows - 6-phase protocol with variants",
+  "protocol": {
+    "phases": ["EXPLORE", "PLAN", "CODE", "TEST", "FIX", "DOCUMENT"],
+    "min_agents": 3,
+    "max_agents": 13,
+    "enforcement": "mandatory"
+  },
+  "workflows": {
+    "quick-fix": {
+      "description": "Simple issues, single file, complexity 1-10",
+      "phases": ["EXPLORE", "CODE", "TEST", "DOCUMENT"],
+      "agents": "3-5",
+      "duration": "1-4h",
+      "trigger": "complexity <= 10 AND single_file"
+    },
+    "standard-feature": {
+      "description": "Standard features, clear scope",
+      "phases": ["EXPLORE", "PLAN", "CODE", "TEST", "FIX", "DOCUMENT"],
+      "agents": "5-8",
+      "duration": "4-16h",
+      "trigger": "type = Story AND complexity 11-40"
+    },
+    "complex-feature": {
+      "description": "Complex multi-component features",
+      "phases": ["EXPLORE", "PLAN", "CODE", "TEST", "FIX", "DOCUMENT"],
+      "agents": "8-13",
+      "duration": "1-3 days",
+      "trigger": "complexity > 40 OR multi_component"
+    },
+    "epic-decomposition": {
+      "description": "Break epics into stories",
+      "phases": ["EXPLORE", "PLAN", "DOCUMENT"],
+      "agents": "4-6",
+      "duration": "1-2 days",
+      "trigger": "type = Epic",
+      "output": "child_stories_in_jira"
+    },
+    "critical-bug": {
+      "description": "Production issues, immediate priority",
+      "phases": ["EXPLORE", "CODE", "TEST", "DOCUMENT"],
+      "agents": "3-5",
+      "duration": "2-8h",
+      "trigger": "priority = Highest AND type = Bug",
+      "expedited": true
+    },
+    "spike": {
+      "description": "Research and investigation",
+      "phases": ["EXPLORE", "PLAN", "DOCUMENT"],
+      "agents": "2-4",
+      "duration": "4-8h",
+      "trigger": "type = Spike",
+      "output": "research_findings"
+    }
+  },
+  "advanced_patterns": {
+    "blackboard": "Collaborative multi-agent problem-solving",
+    "circuit_breaker": "Fault-tolerant with graceful degradation",
+    "saga": "Distributed transactions with compensation",
+    "dynamic_replanning": "Continuous plan evaluation",
+    "hierarchical_decomposition": "Recursive task breakdown"
+  },
+  "quality_gates": {
+    "code_review": {
+      "required": true,
+      "blocking": true,
+      "agent": "code-reviewer"
+    },
+    "tests_passing": {
+      "required": true,
+      "coverage_threshold": 80
+    },
+    "documentation": {
+      "required": true,
+      "sync_to_obsidian": true
+    }
+  },
+  "external_docs": "System/Claude-Instructions/Jira-Orchestrator-Workflows.md"
+}
