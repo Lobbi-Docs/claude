@@ -1,7 +1,13 @@
-# Jira Orchestrator Quick Reference
+# Jira Orchestrator Quick Reference v5.0
 # Load full details from registry/*.index.json on-demand
 
-version: "4.0.0"
+version: "5.0.0"
+
+# NEW v5.0 - Recommended commands
+recommended_commands:
+  ship: "/jira:ship ISSUE-KEY [--resume] [--dry-run]"
+  iterate: "/jira:iterate ISSUE-KEY [--pr PR#]"
+  council: "/jira:council TARGET [--preset=standard]"
 
 # Essential daily commands
 essential_commands:
@@ -13,7 +19,7 @@ essential_commands:
 
 # 6-phase protocol (mandatory)
 protocol:
-  sequence: "EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT"
+  sequence: "QUESTIONS → EXPLORE → PLAN → CODE → TEST → FIX → DOCUMENT"
   agents:
     min: 3
     max: 13
@@ -36,9 +42,44 @@ gates:
     coverage: 80
   documentation:
     required: true
+  coding_standards:
+    required: true
+    config: "config/coding-standards.yaml"
+
+# =============================================================================
+# CODING STANDARDS (MANDATORY)
+# =============================================================================
+# Full config: config/coding-standards.yaml
+coding_standards:
+  terraform:
+    variables: snake_case
+    resources: "this (iterated) or main (primary)"
+    tag_keys: PascalCase
+    workspaces: "lowercase, no separators"
+
+  python:
+    classes: PascalCase
+    interfaces: IPascalCase
+    functions: "snake_case verbs (create_member)"
+    constants: SCREAMING_SNAKE_CASE
+    api_routes: "/api/v{version}/{plural}"
+    http_methods: "GET, POST, PATCH, DELETE (no PUT)"
+    type_hints: required
+    docstrings: Google style
+
+  typescript:
+    functions: camelCase
+    classes: PascalCase
+    components: PascalCase
+    hooks: "use prefix (useAuth)"
+
+  database:
+    tables: "snake_case plural"
+    columns: snake_case
 
 # Agent lookup by task
 agent_lookup:
+  council: "council-coordinator"
   triage: "triage-agent"
   enrich: "task-enricher"
   review: "code-reviewer"
@@ -68,6 +109,7 @@ env_vars:
   optional:
     - OBSIDIAN_VAULT_PATH
     - GITHUB_TOKEN
+    - HARNESS_API_KEY
 
 # External documentation
 external_docs:
@@ -75,4 +117,5 @@ external_docs:
   installation: "INSTALLATION.md"
   agents: "agents/*.md"
   commands: "commands/*.md"
+  coding_standards: "config/coding-standards.yaml"
   obsidian: "System/Claude-Instructions/Jira-Orchestrator-Workflows.md"
