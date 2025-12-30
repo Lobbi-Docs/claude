@@ -1,9 +1,9 @@
 {
   "name": "jira-orchestrator",
-  "version": "4.1.0",
-  "description": "Enterprise Jira orchestration - 65 agents, 39 commands, 6-phase protocol",
+  "version": "5.1.0",
+  "description": "Enterprise Jira orchestration - 66 agents, 40 commands, 6-phase protocol, infrastructure expertise",
   "author": {"name": "The Lobbi", "email": "developers@thelobbi.io"},
-  "keywords": ["jira", "confluence", "orchestration", "automation", "agile", "sprint", "enterprise", "compliance"],
+  "keywords": ["jira", "confluence", "orchestration", "automation", "agile", "sprint", "enterprise", "compliance", "harness", "helm", "terraform", "kubernetes", "infrastructure", "gitops"],
   "license": "MIT",
   "registry": {
     "agents": "registry/agents.index.json",

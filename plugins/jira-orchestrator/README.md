@@ -1,6 +1,6 @@
 # Jira Orchestrator Plugin
 
-**Version:** 4.1.0 | **Agents:** 65 | **Commands:** 39 | **Context Budget:** Optimized
+**Version:** 5.1.0 | **Agents:** 66 | **Commands:** 40 | **Context Budget:** Optimized
 
 ---
 

@@ -1,8 +1,8 @@
 {
-  "version": "5.0.0",
-  "description": "Jira Orchestrator commands - 39 slash commands for complete Jira automation",
+  "version": "5.1.0",
+  "description": "Jira Orchestrator commands - 40 slash commands for complete Jira automation",
   "prefix": "/jira:",
-  "total_commands": 39,
+  "total_commands": 40,
   "categories": {
     "ship": {
       "description": "NEW v5.0 - Ultra-simple shipping workflow",
@@ -83,6 +83,12 @@
         "harness-review": {"desc": "PR review via Harness API", "args": "PR-URL"}
       }
     },
+    "infrastructure": {
+      "description": "NEW v5.1 - Infrastructure and modular repo management",
+      "commands": {
+        "create-repo": {"desc": "Create modular Harness repo with Helm/Terraform/K8s", "args": "SERVICE-NAME [--jira] [--type]", "agents": "1", "new": true}
+      }
+    },
     "qa": {
       "description": "QA workflows",
       "commands": {
@@ -114,12 +120,16 @@
     "daily": ["work", "status", "commit", "pr"],
     "planning": ["triage", "prepare", "sprint-plan"],
     "analytics": ["metrics", "quality", "intelligence"],
-    "enterprise": ["notify", "approve", "portfolio", "sla", "compliance"]
+    "enterprise": ["notify", "approve", "portfolio", "sla", "compliance"],
+    "infrastructure": ["create-repo", "deploy"]
   },
   "new_in_v5": {
     "ship": "One command to rule them all - prepare, code, PR, council review",
     "iterate": "Fix review feedback and trigger re-review automatically",
     "council": "Multi-agent council review using blackboard pattern"
+  },
+  "new_in_v5_1": {
+    "create-repo": "Create modular Harness repos with Helm, Terraform, K8s scaffolding and concise README"
   },
   "load_pattern": "commands/{command-name}.md"
 }

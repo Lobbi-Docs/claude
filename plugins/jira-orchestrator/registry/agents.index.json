@@ -1,11 +1,16 @@
 {
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Jira Orchestrator agent registry - load individual agents on-demand",
-  "total_agents": 65,
+  "total_agents": 66,
   "categories": {
     "council": {
       "description": "NEW v5.0 - Agent council for collaborative review",
       "agents": ["council-coordinator"],
+      "new": true
+    },
+    "infrastructure": {
+      "description": "NEW v5.1 - Infrastructure, Helm, Terraform, K8s expertise with Harness repo creation",
+      "agents": ["infrastructure-orchestrator"],
       "new": true
     },
     "core": {
@@ -65,8 +70,8 @@
       "agents": ["pr-size-estimator", "epic-decomposer", "metrics-dashboard"]
     },
     "harness": {
-      "description": "Harness CD integration",
-      "agents": ["harness-jira-sync"]
+      "description": "Harness CD integration and repo management",
+      "agents": ["harness-jira-sync", "infrastructure-orchestrator"]
     }
   },
   "quick_lookup": {
@@ -86,15 +91,25 @@
     "compliance": "compliance-reporter",
     "portfolio": "portfolio-manager",
     "release": "release-coordinator",
-    "analytics": "intelligence-analyzer"
+    "analytics": "intelligence-analyzer",
+    "infrastructure": "infrastructure-orchestrator",
+    "helm": "infrastructure-orchestrator",
+    "terraform": "infrastructure-orchestrator",
+    "k8s": "infrastructure-orchestrator",
+    "kubernetes": "infrastructure-orchestrator",
+    "repo": "infrastructure-orchestrator",
+    "harness": "harness-jira-sync"
   },
   "model_assignments": {
-    "opus": ["code-reviewer", "advanced-orchestration-patterns", "governance-auditor"],
-    "sonnet": ["council-coordinator", "triage-agent", "task-enricher", "requirements-analyzer", "confluence-manager", "intelligence-analyzer", "quality-intelligence", "sprint-planner", "portfolio-manager"],
+    "opus": ["code-reviewer", "advanced-orchestration-patterns", "governance-auditor", "infrastructure-orchestrator"],
+    "sonnet": ["council-coordinator", "triage-agent", "task-enricher", "requirements-analyzer", "confluence-manager", "intelligence-analyzer", "quality-intelligence", "sprint-planner", "portfolio-manager", "harness-jira-sync"],
     "haiku": ["pr-creator", "documentation-writer", "notification-router", "tag-manager", "transition-manager", "batch-processor"]
   },
   "new_in_v5": {
     "council-coordinator": "Orchestrates multi-agent reviews using blackboard pattern"
+  },
+  "new_in_v5_1": {
+    "infrastructure-orchestrator": "Expert in creating modular Harness repos, Helm, Terraform, K8s with concise README templates"
   },
   "load_pattern": "agents/{agent-name}.md"
 }
