@@ -1,32 +1,34 @@
 {
-  "hooks": [
-    {
-      "name": "style-consistency-checker",
-      "event": "PreToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "\\.(css|scss|tsx|jsx)$",
-      "script": "scripts/check-style-consistency.sh"
-    },
-    {
-      "name": "accessibility-validator",
-      "event": "PreToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "\\.(tsx|jsx)$",
-      "script": "scripts/validate-accessibility.sh"
-    },
-    {
-      "name": "theme-sync",
-      "event": "PostToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "(theme|tokens).*\\.(ts|json|css)$",
-      "script": "scripts/sync-themes.sh"
-    },
-    {
-      "name": "design-token-updater",
-      "event": "PostToolUse",
-      "toolPattern": "Edit",
-      "filePattern": "design-tokens\\.(json|ts)$",
-      "script": "scripts/update-tokens.sh"
-    }
-  ]
+  "style-consistency-checker": {
+    "event": "PreToolUse",
+    "description": "Checks style consistency before writing CSS/SCSS/TSX/JSX files",
+    "toolPattern": "(Write|Edit)",
+    "filePattern": "\\.(css|scss|tsx|jsx)$",
+    "type": "command",
+    "script": "scripts/check-style-consistency.sh"
+  },
+  "accessibility-validator": {
+    "event": "PreToolUse",
+    "description": "Validates accessibility before writing TSX/JSX component files",
+    "toolPattern": "(Write|Edit)",
+    "filePattern": "\\.(tsx|jsx)$",
+    "type": "command",
+    "script": "scripts/validate-accessibility.sh"
+  },
+  "theme-sync": {
+    "event": "PostToolUse",
+    "description": "Syncs themes after writing theme or token files",
+    "toolPattern": "(Write|Edit)",
+    "filePattern": "(theme|tokens).*\\.(ts|json|css)$",
+    "type": "command",
+    "script": "scripts/sync-themes.sh"
+  },
+  "design-token-updater": {
+    "event": "PostToolUse",
+    "description": "Updates design tokens after editing token files",
+    "toolPattern": "Edit",
+    "filePattern": "design-tokens\\.(json|ts)$",
+    "type": "command",
+    "script": "scripts/update-tokens.sh"
+  }
 }

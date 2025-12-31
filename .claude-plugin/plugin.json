@@ -1,15 +1,15 @@
 {
-  "name": "claude-orchestration",
+  "name": "golden-armada",
   "version": "4.0.0",
   "description": "Professional-grade multi-LLM agent coordination with comprehensive registry system, mandatory orchestration protocol, and production-ready DevOps workflows. Portable and customizable for any project.",
   "author": {
-    "name": "Your Organization",
+    "name": "Markus Ahling",
     "email": "contact@example.com",
-    "url": "https://github.com/your-org/your-repo"
+    "url": "https://github.com/markus41/claude"
   },
   "license": "MIT",
-  "homepage": "https://github.com/your-org/your-repo",
-  "repository": "https://github.com/your-org/your-repo",
+  "homepage": "https://github.com/markus41/claude",
+  "repository": "https://github.com/markus41/claude",
   "keywords": [
     "orchestration",
     "multi-agent",
@@ -21,5 +21,30 @@
     "docker",
     "ci-cd",
     "testing"
-  ]
+  ],
+  "categories": ["orchestration", "agents", "devops"],
+  "provides": {
+    "agents": "dynamic",
+    "skills": "dynamic",
+    "commands": "dynamic",
+    "workflows": "dynamic",
+    "hooks": "dynamic"
+  },
+  "discovery": {
+    "agents": {
+      "enabled": true,
+      "directory": "../.claude/registry",
+      "pattern": "agents.index.json"
+    },
+    "skills": {
+      "enabled": true,
+      "directory": "../.claude/registry",
+      "pattern": "skills.index.json"
+    },
+    "commands": {
+      "enabled": true,
+      "directory": "../.claude/commands",
+      "pattern": "*.md"
+    }
+  }
 }

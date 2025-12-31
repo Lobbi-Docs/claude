@@ -17,5 +17,34 @@
     "ui-ux",
     "multi-tenant",
     "accessibility"
-  ]
+  ],
+  "categories": ["frontend", "code-generation"],
+  "provides": {
+    "commands": 8,
+    "agents": 6,
+    "skills": 4,
+    "hooks": 4
+  },
+  "discovery": {
+    "commands": {
+      "enabled": true,
+      "directory": "../commands",
+      "pattern": "*.md"
+    },
+    "agents": {
+      "enabled": true,
+      "directory": "../agents",
+      "pattern": "*.md"
+    },
+    "skills": {
+      "enabled": true,
+      "directory": "../skills",
+      "pattern": "**/SKILL.md"
+    },
+    "hooks": {
+      "enabled": true,
+      "directory": "../hooks",
+      "pattern": "hooks.json"
+    }
+  }
 }

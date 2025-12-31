@@ -1,23 +1,20 @@
 {
-  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/hooks.schema.json",
-  "hooks": [
-    {
-      "name": "tf-pre-apply",
-      "description": "Security and compliance validation before Terraform apply operations",
-      "event": "Bash",
-      "pattern": "terraform\\s+apply",
-      "type": "prompt",
-      "timeout": 120000,
-      "prompt": "# Terraform Apply Security Validation\n\nBefore executing `terraform apply`, you MUST perform the following security and compliance checks:\n\n## 1. Security Scanning\n\nRun these security scanners in parallel:\n\n```bash\n# tfsec - Terraform security scanner\ntfsec . --format json --out tfsec-results.json\n\n# checkov - Policy-as-code scanner\ncheckov -d . --framework terraform --output json --output-file checkov-results.json\n\n# terrascan - Compliance scanner\nterrascan scan -t terraform -o json > terrascan-results.json\n```\n\n## 2. Sensitive Data Detection\n\nScan for secrets and sensitive data:\n\n```bash\n# Check for hardcoded secrets\ngrep -r -E '(password|secret|api_key|access_key|private_key)\\s*=\\s*\"[^$]' *.tf\n\n# Check for exposed credentials\ngrep -r -E 'AKIA[0-9A-Z]{16}' *.tf  # AWS access keys\ngrep -r -E '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' *.tf  # UUIDs that might be keys\n```\n\n## 3. Compliance Validation\n\nVerify SOC2 compliance requirements:\n\n- [ ] All resources have required tags: `Environment`, `Owner`, `CostCenter`, `DataClassification`\n- [ ] Encryption at rest enabled for all data stores\n- [ ] Encryption in transit enforced (TLS 1.2+)\n- [ ] VPC Flow Logs enabled for all VPCs/VNets\n- [ ] CloudTrail/Activity Logs enabled\n- [ ] No public access to databases or sensitive resources\n- [ ] MFA enabled for privileged access\n- [ ] Backup and retention policies configured\n\n## 4. Cost Impact Analysis\n\nRun terraform plan to estimate cost changes:\n\n```bash\n# Generate plan\nterraform plan -out=tfplan.binary\n\n# Convert to JSON for analysis\nterraform show -json tfplan.binary > tfplan.json\n\n# Optional: Use infracost for cost estimation\ninfracost breakdown --path . --format json > cost-estimate.json\n```\n\n## 5. Validation Rules\n\n### BLOCK execution if:\n- **CRITICAL** security issues found (severity >= HIGH)\n- Hardcoded secrets detected\n- Missing required compliance tags on resources\n- Public access to databases detected\n- Unencrypted data stores found\n- Cost increase > 50% without approval\n\n### WARN but allow if:\n- **MEDIUM** security issues found (require acknowledgment)\n- Non-standard resource naming conventions\n- Missing optional tags\n- Cost increase 20-50%\n\n## 6. Required Actions\n\nAfter running all checks:\n\n1. **Summarize findings**: Create a security report with:\n   - Total issues by severity (CRITICAL, HIGH, MEDIUM, LOW)\n   - List of compliance violations\n   - Estimated cost impact\n   - Resources requiring attention\n\n2. **Decision matrix**:\n   - If 0 CRITICAL issues and 0 compliance violations: ✅ PROCEED\n   - If CRITICAL issues OR compliance violations: ❌ BLOCK with remediation steps\n   - If only MEDIUM issues: ⚠️ WARN and request user confirmation\n\n3. **Generate remediation plan** for any blocked issues:\n   - Specific line numbers and files\n   - Recommended fixes\n   - Links to compliance documentation\n\n## Example Security Report Format\n\n```\n🔒 Terraform Apply Security Validation Report\n=============================================\n\n📊 Summary:\n- Total resources to be created/modified: X\n- Security issues: Y CRITICAL, Z HIGH, W MEDIUM\n- Compliance violations: N\n- Estimated cost impact: +$X.XX/month\n\n🚨 CRITICAL Issues (BLOCKING):\n1. [tfsec:aws-s3-enable-bucket-encryption] S3 bucket 'data-bucket' lacks encryption\n   Location: modules/storage/s3.tf:15\n   Fix: Add server_side_encryption_configuration block\n\n2. [checkov:CKV_AWS_23] RDS instance 'main-db' is publicly accessible\n   Location: modules/database/rds.tf:42\n   Fix: Set publicly_accessible = false\n\n⚠️ Compliance Violations (BLOCKING):\n1. Missing required tag 'DataClassification' on aws_s3_bucket.logs\n2. VPC Flow Logs not enabled for vpc-prod\n3. CloudTrail not configured for audit logging\n\n💰 Cost Impact:\n- Current monthly cost: $1,234.56\n- Projected monthly cost: $1,456.78\n- Increase: +$222.22 (+18%)\n\n🎯 Recommendation:\n❌ BLOCK - Critical security issues and compliance violations must be resolved before apply.\n\nPlease fix the issues above and re-run validation.\n```\n\n## Implementation Notes\n\n- Run all security scanners in parallel for efficiency\n- Cache scanner results for 5 minutes to avoid re-scanning on retry\n- Provide actionable remediation steps, not just issue descriptions\n- Link to internal security policies and compliance documentation\n- Log all validation results for audit trail\n\nOnly proceed with `terraform apply` after all CRITICAL issues are resolved and compliance is verified."
-    },
-    {
-      "name": "tf-format-check",
-      "description": "Ensure Terraform files are properly formatted before git commit",
-      "event": "Bash",
-      "pattern": "git\\s+commit.*\\.tf",
-      "type": "command",
-      "timeout": 30000,
-      "command": "#!/bin/bash\n\nset -e\n\necho \"🔍 Checking Terraform file formatting...\"\n\n# Get list of staged .tf files\nSTAGED_TF_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\\.tf$' || true)\n\nif [ -z \"$STAGED_TF_FILES\" ]; then\n  echo \"✅ No Terraform files staged for commit\"\n  exit 0\nfi\n\necho \"📝 Found staged .tf files:\"\necho \"$STAGED_TF_FILES\"\necho \"\"\n\n# Check if terraform is installed\nif ! command -v terraform &> /dev/null; then\n  echo \"⚠️  WARNING: terraform command not found\"\n  echo \"Install terraform to enable automatic formatting checks\"\n  exit 0\nfi\n\n# Run terraform fmt -check on staged files\necho \"Running terraform fmt -check...\"\n\nUNFORMATTED_FILES=\"\"\nfor file in $STAGED_TF_FILES; do\n  if [ -f \"$file\" ]; then\n    if ! terraform fmt -check \"$file\" > /dev/null 2>&1; then\n      UNFORMATTED_FILES=\"$UNFORMATTED_FILES\\n  - $file\"\n    fi\n  fi\ndone\n\nif [ -n \"$UNFORMATTED_FILES\" ]; then\n  echo \"\"\n  echo \"❌ ERROR: The following Terraform files are not properly formatted:\"\n  echo -e \"$UNFORMATTED_FILES\"\n  echo \"\"\n  echo \"Please run the following command to fix formatting:\"\n  echo \"  terraform fmt -recursive\"\n  echo \"\"\n  echo \"Or format specific files:\"\n  for file in $STAGED_TF_FILES; do\n    if [ -f \"$file\" ]; then\n      if ! terraform fmt -check \"$file\" > /dev/null 2>&1; then\n        echo \"  terraform fmt $file\"\n      fi\n    fi\n  done\n  echo \"\"\n  echo \"Then re-stage the formatted files:\"\n  echo \"  git add <files>\"\n  echo \"\"\n  exit 1\nfi\n\necho \"✅ All Terraform files are properly formatted\"\nexit 0"
-    }
-  ]
+  "tf-pre-apply": {
+    "event": "Bash",
+    "description": "Security and compliance validation before Terraform apply operations",
+    "pattern": "terraform\\s+apply",
+    "type": "prompt",
+    "timeout": 120000,
+    "blocking": true,
+    "prompt": "# Terraform Apply Security Validation\n\nBefore executing `terraform apply`, perform security and compliance checks:\n\n## 1. Security Scanning\n\nRun security scanners:\n- tfsec for Terraform security\n- checkov for policy-as-code\n- terrascan for compliance\n\n## 2. Compliance Validation\n\nVerify SOC2 compliance:\n- Required tags: Environment, Owner, CostCenter, DataClassification\n- Encryption at rest enabled\n- Encryption in transit enforced\n- VPC Flow Logs enabled\n- No public access to databases\n\n## 3. Validation Rules\n\n**BLOCK if**: CRITICAL security issues, hardcoded secrets, missing compliance tags, public database access, unencrypted data stores\n\n**WARN if**: MEDIUM security issues, non-standard naming conventions"
+  },
+  "tf-format-check": {
+    "event": "Bash",
+    "description": "Ensure Terraform files are properly formatted before git commit",
+    "pattern": "git\\s+commit.*\\.tf",
+    "type": "command",
+    "timeout": 30000,
+    "blocking": true,
+    "command": "terraform fmt -check -recursive"
+  }
 }
