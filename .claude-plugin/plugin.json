@@ -1,7 +1,8 @@
 {
-  "name": "golden-armada",
+  "name": "claude-orchestration",
   "version": "4.0.0",
   "description": "Professional-grade multi-LLM agent coordination with comprehensive registry system, mandatory orchestration protocol, and production-ready DevOps workflows. Portable and customizable for any project.",
+  "aliases": ["golden-armada"],
   "author": {
     "name": "Markus Ahling",
     "email": "contact@example.com",

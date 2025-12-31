@@ -1,68 +1,76 @@
 {
-  "detect-jira-issue": {
-    "event": "UserPromptSubmit",
-    "description": "Detects Jira issue keys in user messages and provides context",
-    "type": "prompt",
-    "matcher": {
-      "type": "regex",
-      "pattern": "\\b[A-Z]{2,10}-\\d+\\b"
+  "hooks": [
+    {
+      "name": "detect-jira-issue",
+      "event": "UserPromptSubmit",
+      "description": "Detects Jira issue keys in user messages and provides context",
+      "type": "prompt",
+      "matcher": {
+        "type": "regex",
+        "pattern": "\\b[A-Z]{2,10}-\\d+\\b"
+      },
+      "timeout": 5000,
+      "blocking": false,
+      "prompt": "# Jira Issue Detection Hook\n\nYou have detected one or more Jira issue keys in the user's message.\n\n## Detected Issues\n\nThe user mentioned: ${DETECTED_ISSUES}\n\n## Your Task\n\n1. **Acknowledge the Jira reference**: Briefly acknowledge that you've noticed the Jira issue key(s)\n\n2. **Provide helpful context**: If the user is asking to work on, fix, implement, or complete the issue, suggest using the `/jira:work` command for a structured orchestrated workflow\n\n3. **Don't be intrusive**: If the user is just mentioning the issue in passing or asking a simple question, don't interrupt their flow. Only suggest orchestration if it seems they want to actually work on the issue.\n\n## Detection Patterns\n\nLook for phrases like:\n- \"work on [ISSUE-KEY]\"\n- \"fix [ISSUE-KEY]\"\n- \"implement [ISSUE-KEY]\"\n- \"complete [ISSUE-KEY]\"\n- \"start [ISSUE-KEY]\"\n- \"help with [ISSUE-KEY]\"\n\n## Context Variables\n\n- `${DETECTED_ISSUES}`: Comma-separated list of detected Jira keys\n- `${USER_MESSAGE}`: The full user message\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory"
     },
-    "timeout": 5000,
-    "blocking": false,
-    "prompt": "# Jira Issue Detection Hook\n\nYou have detected one or more Jira issue keys in the user's message.\n\n## Detected Issues\n\nThe user mentioned: ${DETECTED_ISSUES}\n\n## Your Task\n\n1. **Acknowledge the Jira reference**: Briefly acknowledge that you've noticed the Jira issue key(s)\n\n2. **Provide helpful context**: If the user is asking to work on, fix, implement, or complete the issue, suggest using the `/jira:work` command for a structured orchestrated workflow\n\n3. **Don't be intrusive**: If the user is just mentioning the issue in passing or asking a simple question, don't interrupt their flow. Only suggest orchestration if it seems they want to actually work on the issue.\n\n## Detection Patterns\n\nLook for phrases like:\n- \"work on [ISSUE-KEY]\"\n- \"fix [ISSUE-KEY]\"\n- \"implement [ISSUE-KEY]\"\n- \"complete [ISSUE-KEY]\"\n- \"start [ISSUE-KEY]\"\n- \"help with [ISSUE-KEY]\"\n\n## Context Variables\n\n- `${DETECTED_ISSUES}`: Comma-separated list of detected Jira keys\n- `${USER_MESSAGE}`: The full user message\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory"
-  },
-  "triage-completion-trigger": {
-    "event": "PostToolUse",
-    "description": "Auto-suggests triage analysis after fetching Jira issue details",
-    "type": "prompt",
-    "matcher": {
-      "type": "tool_name",
-      "pattern": "jira_get_issue"
+    {
+      "name": "triage-completion-trigger",
+      "event": "PostToolUse",
+      "description": "Auto-suggests triage analysis after fetching Jira issue details",
+      "type": "prompt",
+      "matcher": {
+        "type": "tool_name",
+        "pattern": "jira_get_issue"
+      },
+      "timeout": 5000,
+      "blocking": false,
+      "prompt": "# Triage Completion Trigger\n\nYou just fetched Jira issue details using the `jira_get_issue` tool.\n\n## Context\n\n- **Tool Used**: ${TOOL_NAME}\n- **Issue Key**: ${ISSUE_KEY} (extracted from tool arguments)\n- **Session Context**: ${SESSION_CONTEXT}\n\n## Your Task\n\n1. **Check if triage was requested**: Look at the user's original message to see if they want a full analysis\n\n2. **Suggest triage if appropriate**: If the user is trying to understand or work on this issue, suggest running the triage agent\n\n3. **Don't interrupt simple queries**: If the user just wanted to see the issue details, provide them without pushing for triage\n\n4. **Auto-trigger for /jira:work command**: If this was part of a `/jira:work` workflow, automatically proceed with triage\n\n## Context Variables\n\n- `${TOOL_NAME}`: The tool that was just used\n- `${TOOL_ARGS}`: Arguments passed to the tool\n- `${TOOL_RESULT}`: Result from the tool\n- `${ISSUE_KEY}`: Extracted Jira issue key\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory"
     },
-    "timeout": 5000,
-    "blocking": false,
-    "prompt": "# Triage Completion Trigger\n\nYou just fetched Jira issue details using the `jira_get_issue` tool.\n\n## Context\n\n- **Tool Used**: ${TOOL_NAME}\n- **Issue Key**: ${ISSUE_KEY} (extracted from tool arguments)\n- **Session Context**: ${SESSION_CONTEXT}\n\n## Your Task\n\n1. **Check if triage was requested**: Look at the user's original message to see if they want a full analysis\n\n2. **Suggest triage if appropriate**: If the user is trying to understand or work on this issue, suggest running the triage agent\n\n3. **Don't interrupt simple queries**: If the user just wanted to see the issue details, provide them without pushing for triage\n\n4. **Auto-trigger for /jira:work command**: If this was part of a `/jira:work` workflow, automatically proceed with triage\n\n## Context Variables\n\n- `${TOOL_NAME}`: The tool that was just used\n- `${TOOL_ARGS}`: Arguments passed to the tool\n- `${TOOL_RESULT}`: Result from the tool\n- `${ISSUE_KEY}`: Extracted Jira issue key\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory"
-  },
-  "code-review-gate": {
-    "event": "PreToolUse",
-    "description": "Ensures code review passed before creating pull request",
-    "type": "prompt",
-    "matcher": {
-      "type": "tool_name",
-      "pattern": "harness_deploy|mcp__harness__execute_pipeline|harness_create_deployment"
+    {
+      "name": "code-review-gate",
+      "event": "PreToolUse",
+      "description": "Ensures code review passed before creating pull request",
+      "type": "prompt",
+      "matcher": {
+        "type": "tool_name",
+        "pattern": "harness_deploy|mcp__harness__execute_pipeline|harness_create_deployment"
+      },
+      "timeout": 10000,
+      "blocking": true,
+      "prompt": "# Code Review Gate\n\nYou are about to create a pull request using: ${TOOL_NAME}\n\n## CRITICAL CHECK REQUIRED\n\nBefore creating a PR, you MUST verify:\n\n1. **Code Review Completed**: Was a code review performed by the code-reviewer agent?\n2. **Review Status**: Did the code review pass?\n3. **Issues Addressed**: Were all review findings fixed?\n4. **Tests Passing**: Are all tests passing?\n\n## Your Task\n\nRun the review gate script:\n```bash\n${CLAUDE_PLUGIN_ROOT}/hooks/scripts/review-gate.sh ${JIRA_KEY}\n```\n\nThis will return:\n- `REVIEW_PASSED`: Code review completed and passed\n- `REVIEW_FAILED`: Code review found issues\n- `NO_REVIEW`: No code review was performed\n- `REVIEW_IN_PROGRESS`: Review is currently running\n\n## Context Variables\n\n- `${TOOL_NAME}`: The PR creation tool being invoked\n- `${TOOL_ARGS}`: Arguments for PR creation\n- `${JIRA_KEY}`: Current Jira issue being worked on\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory"
     },
-    "timeout": 10000,
-    "blocking": true,
-    "prompt": "# Code Review Gate\n\nYou are about to create a pull request using: ${TOOL_NAME}\n\n## CRITICAL CHECK REQUIRED\n\nBefore creating a PR, you MUST verify:\n\n1. **Code Review Completed**: Was a code review performed by the code-reviewer agent?\n2. **Review Status**: Did the code review pass?\n3. **Issues Addressed**: Were all review findings fixed?\n4. **Tests Passing**: Are all tests passing?\n\n## Your Task\n\nRun the review gate script:\n```bash\n${CLAUDE_PLUGIN_ROOT}/hooks/scripts/review-gate.sh ${JIRA_KEY}\n```\n\nThis will return:\n- `REVIEW_PASSED`: Code review completed and passed\n- `REVIEW_FAILED`: Code review found issues\n- `NO_REVIEW`: No code review was performed\n- `REVIEW_IN_PROGRESS`: Review is currently running\n\n## Context Variables\n\n- `${TOOL_NAME}`: The PR creation tool being invoked\n- `${TOOL_ARGS}`: Arguments for PR creation\n- `${JIRA_KEY}`: Current Jira issue being worked on\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory"
-  },
-  "documentation-reminder": {
-    "event": "Stop",
-    "description": "Reminds to document work if orchestration completed successfully",
-    "type": "prompt",
-    "timeout": 5000,
-    "blocking": false,
-    "prompt": "# Documentation Reminder\n\nA session or sub-agent has just completed.\n\n## Context\n\n- **Stop Reason**: ${STOP_REASON}\n- **Session Type**: ${SESSION_TYPE}\n- **Work Completed**: ${WORK_SUMMARY}\n\n## Your Task\n\nRun the documentation check script:\n```bash\n${CLAUDE_PLUGIN_ROOT}/hooks/scripts/docs-reminder.sh ${JIRA_KEY}\n```\n\nThis returns:\n- `DOCS_COMPLETE`: Documentation already created\n- `DOCS_NEEDED`: Work was completed but no docs created\n- `NO_WORK`: No significant work to document\n\n## Context Variables\n\n- `${STOP_REASON}`: Why the session stopped\n- `${SESSION_TYPE}`: Type of session (agent, command, user)\n- `${WORK_SUMMARY}`: Summary of work completed\n- `${JIRA_KEY}`: Current Jira issue (if applicable)\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory\n- `${OBSIDIAN_VAULT}`: Path to Obsidian vault"
-  },
-  "active-issue-check": {
-    "event": "SessionStart",
-    "description": "Checks for active Jira orchestrations on session start",
-    "type": "prompt",
-    "timeout": 5000,
-    "blocking": false,
-    "prompt": "# Active Issue Check\n\nA new Claude Code session has started.\n\n## Your Task\n\nRun the session resume script:\n```bash\n${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-resume.sh\n```\n\nThis will return:\n- List of active Jira orchestrations\n- Session IDs and issue keys\n- Current phase for each orchestration\n- Time since last activity\n\n## Context Variables\n\n- `${ACTIVE_SESSIONS}`: List of active session IDs\n- `${ISSUE_KEYS}`: List of active issue keys\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory\n- `${USER}`: Current user\n- `${SESSION_START_TIME}`: When this session started"
-  },
-  "pr-size-guard": {
-    "event": "PreToolUse",
-    "description": "Checks PR size before creation and blocks or warns if too large",
-    "type": "command",
-    "matcher": {
-      "type": "tool_name",
-      "pattern": "harness_deploy|mcp__harness__execute_pipeline|harness_create_deployment"
+    {
+      "name": "documentation-reminder",
+      "event": "Stop",
+      "description": "Reminds to document work if orchestration completed successfully",
+      "type": "prompt",
+      "timeout": 5000,
+      "blocking": false,
+      "prompt": "# Documentation Reminder\n\nA session or sub-agent has just completed.\n\n## Context\n\n- **Stop Reason**: ${STOP_REASON}\n- **Session Type**: ${SESSION_TYPE}\n- **Work Completed**: ${WORK_SUMMARY}\n\n## Your Task\n\nRun the documentation check script:\n```bash\n${CLAUDE_PLUGIN_ROOT}/hooks/scripts/docs-reminder.sh ${JIRA_KEY}\n```\n\nThis returns:\n- `DOCS_COMPLETE`: Documentation already created\n- `DOCS_NEEDED`: Work was completed but no docs created\n- `NO_WORK`: No significant work to document\n\n## Context Variables\n\n- `${STOP_REASON}`: Why the session stopped\n- `${SESSION_TYPE}`: Type of session (agent, command, user)\n- `${WORK_SUMMARY}`: Summary of work completed\n- `${JIRA_KEY}`: Current Jira issue (if applicable)\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory\n- `${OBSIDIAN_VAULT}`: Path to Obsidian vault"
     },
-    "timeout": 10000,
-    "blocking": true,
-    "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pr-size-guard.sh main"
-  },
+    {
+      "name": "active-issue-check",
+      "event": "SessionStart",
+      "description": "Checks for active Jira orchestrations on session start",
+      "type": "prompt",
+      "timeout": 5000,
+      "blocking": false,
+      "prompt": "# Active Issue Check\n\nA new Claude Code session has started.\n\n## Your Task\n\nRun the session resume script:\n```bash\n${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-resume.sh\n```\n\nThis will return:\n- List of active Jira orchestrations\n- Session IDs and issue keys\n- Current phase for each orchestration\n- Time since last activity\n\n## Context Variables\n\n- `${ACTIVE_SESSIONS}`: List of active session IDs\n- `${ISSUE_KEYS}`: List of active issue keys\n- `${CLAUDE_PLUGIN_ROOT}`: Plugin root directory\n- `${USER}`: Current user\n- `${SESSION_START_TIME}`: When this session started"
+    },
+    {
+      "name": "pr-size-guard",
+      "event": "PreToolUse",
+      "description": "Checks PR size before creation and blocks or warns if too large",
+      "type": "command",
+      "matcher": {
+        "type": "tool_name",
+        "pattern": "harness_deploy|mcp__harness__execute_pipeline|harness_create_deployment"
+      },
+      "timeout": 10000,
+      "blocking": true,
+      "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pr-size-guard.sh main"
+    }
+  ],
   "scripts": {
     "detect-jira-key": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/detect-jira-key.sh",
     "triage-check": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/triage-check.sh",

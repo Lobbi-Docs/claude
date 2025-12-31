@@ -9,15 +9,16 @@
   },
   "plugins": [
     {
-      "name": "golden-armada",
-      "description": "Multi-LLM agent orchestration with 97+ specialized agents across 21 categories, mandatory orchestration protocol, and registry-first architecture",
+      "name": "claude-orchestration",
+      "description": "Root orchestration system - Multi-LLM agent orchestration with 97+ specialized agents across 21 categories, mandatory orchestration protocol, and registry-first architecture",
       "version": "4.0.0",
       "author": {
         "name": "Markus Ahling",
         "email": "markus@example.com"
       },
       "source": "./",
-      "category": "orchestration"
+      "category": "orchestration",
+      "aliases": ["golden-armada"]
     },
     {
       "name": "home-assistant-architect",
@@ -124,8 +125,8 @@
     },
     {
       "name": "jira-orchestrator",
-      "description": "Arbiter (Spartan) - Intelligent Jira issue orchestration - automatically selects and coordinates sub-agents to explore, plan, code, test, fix, and commit solutions for Jira issues with OAuth SSO integration",
-      "version": "1.1.0",
+      "description": "Arbiter (Spartan) - Enterprise Jira orchestration - 66 agents, 16 teams, 12 commands, hook-based automation with AutoGen-style team coordination",
+      "version": "7.1.0",
       "author": {
         "name": "Brookside BI",
         "email": "dev@brooksidebi.com"
