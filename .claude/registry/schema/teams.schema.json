@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://anthropic.com/claude-code/teams.schema.v1.json",
+  "title": "Claude Code Agent Teams",
+  "description": "Schema for defining AutoGen-style agent teams with coordination patterns",
+  "type": "object",
+  "required": ["version", "teams"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "description": {
+      "type": "string"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date"
+    },
+    "teamPatterns": {
+      "type": "object",
+      "description": "Available coordination patterns for teams",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "teams": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/team"
+      }
+    },
+    "teamCategories": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "activationRules": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "$ref": "#/definitions/activationConfig"
+        },
+        "byComplexity": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/activationConfig"
+          }
+        }
+      }
+    },
+    "communicationProtocols": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/protocol"
+      }
+    }
+  },
+  "definitions": {
+    "team": {
+      "type": "object",
+      "required": ["name", "callsign", "purpose", "pattern", "lead", "members"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-readable team name"
+        },
+        "callsign": {
+          "type": "string",
+          "description": "Team call sign for identification",
+          "pattern": "^[A-Z]+-\\d+$"
+        },
+        "purpose": {
+          "type": "string",
+          "description": "Team's primary purpose and responsibility"
+        },
+        "pattern": {
+          "type": "string",
+          "enum": ["hierarchical", "round-robin", "broadcast", "debate", "pipeline", "swarm"],
+          "description": "Coordination pattern for team communication"
+        },
+        "faction": {
+          "type": "string",
+          "enum": ["Forerunner", "Promethean", "Spartan", "Mixed"],
+          "description": "Dominant faction alignment"
+        },
+        "lead": {
+          "$ref": "#/definitions/teamMember",
+          "description": "Team leader/coordinator"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/teamMember"
+          },
+          "minItems": 2,
+          "maxItems": 12
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keywords/phrases that activate this team"
+        },
+        "workflow": {
+          "type": "object",
+          "properties": {
+            "phases": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "handoffs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "gates": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "quorum": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "consensusRequired": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "approvalRequired": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "outputs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Combined capabilities of the team"
+        }
+      }
+    },
+    "teamMember": {
+      "type": "object",
+      "required": ["callsign", "agent", "role"],
+      "properties": {
+        "callsign": {
+          "type": "string",
+          "description": "Agent's call sign"
+        },
+        "agent": {
+          "type": "string",
+          "description": "Agent identifier (kebab-case)"
+        },
+        "role": {
+          "type": "string",
+          "description": "Member's role within the team"
+        }
+      }
+    },
+    "activationConfig": {
+      "type": "object",
+      "properties": {
+        "minAgents": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxAgents": {
+          "type": "integer",
+          "maximum": 15
+        },
+        "timeoutMinutes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "required": ["description", "flow", "aggregation"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "flow": {
+          "type": "string"
+        },
+        "aggregation": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

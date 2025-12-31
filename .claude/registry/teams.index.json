@@ -1,0 +1,511 @@
+{
+  "$schema": "./schema/teams.schema.json",
+  "version": "1.0.0",
+  "description": "AutoGen-style agent teams for orchestrated multi-agent collaboration",
+  "lastUpdated": "2024-12-31",
+
+  "teamPatterns": {
+    "hierarchical": "Lead agent coordinates, delegates to specialists, aggregates results",
+    "round-robin": "Agents take turns contributing, each building on previous",
+    "broadcast": "Lead broadcasts task, all agents work in parallel, results merged",
+    "debate": "Agents argue positions, vote on best approach, consensus required",
+    "pipeline": "Sequential handoff, each agent transforms and passes forward",
+    "swarm": "Dynamic self-organization, agents claim tasks based on capability"
+  },
+
+  "teams": {
+    "code-strike": {
+      "name": "Code Strike Team",
+      "callsign": "STRIKE-1",
+      "purpose": "Rapid feature development with built-in architecture review and testing",
+      "pattern": "hierarchical",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "Genesis",
+        "agent": "feature-dev",
+        "role": "Coordinates feature implementation, delegates to specialists"
+      },
+      "members": [
+        {"callsign": "Blueprint", "agent": "code-architect", "role": "System design and architecture decisions"},
+        {"callsign": "Cortex", "agent": "ai-engineer", "role": "AI/ML implementation when needed"},
+        {"callsign": "Nexus", "agent": "api-integration-specialist", "role": "API design and integration"},
+        {"callsign": "Falcon", "agent": "vitest-specialist", "role": "Unit and integration testing"},
+        {"callsign": "Scrutineer", "agent": "code-review-assistant", "role": "Code quality review"},
+        {"callsign": "Veritas", "agent": "double-check", "role": "Final verification"}
+      ],
+      "triggers": ["implement feature", "build new", "add functionality", "create component"],
+      "workflow": {
+        "phases": ["design", "implement", "test", "review", "verify"],
+        "handoffs": {
+          "design": ["Blueprint"],
+          "implement": ["Genesis", "Cortex", "Nexus"],
+          "test": ["Falcon"],
+          "review": ["Scrutineer"],
+          "verify": ["Veritas"]
+        }
+      },
+      "capabilities": ["feature-development", "architecture", "testing", "code-review"]
+    },
+
+    "quality-council": {
+      "name": "Quality Council",
+      "callsign": "COUNCIL-Q",
+      "purpose": "Comprehensive quality assurance and code review tribunal",
+      "pattern": "debate",
+      "faction": "Mixed",
+      "lead": {
+        "callsign": "Paramount",
+        "agent": "ceo-quality-controller-agent",
+        "role": "Final quality arbiter, breaks ties, sets standards"
+      },
+      "members": [
+        {"callsign": "Magistrate", "agent": "code-reviewer", "role": "Code standards enforcement"},
+        {"callsign": "Inspector", "agent": "qa-ticket-reviewer", "role": "QA checklist validation"},
+        {"callsign": "Bulwark", "agent": "spec-validator", "role": "Specification compliance"},
+        {"callsign": "The Ethereal", "agent": "coverage-analyzer", "role": "Test coverage analysis"},
+        {"callsign": "Diagnostician", "agent": "test-results-analyzer", "role": "Test result interpretation"},
+        {"callsign": "Polisher", "agent": "quality-enhancer", "role": "Quality improvement suggestions"}
+      ],
+      "triggers": ["review code", "quality check", "audit", "approve PR", "gate check"],
+      "workflow": {
+        "phases": ["analyze", "debate", "vote", "verdict"],
+        "quorum": 4,
+        "consensusRequired": 0.66
+      },
+      "capabilities": ["code-review", "quality-assurance", "compliance", "coverage-analysis"]
+    },
+
+    "debug-squadron": {
+      "name": "Debug Squadron",
+      "callsign": "DEBUG-1",
+      "purpose": "Rapid bug detection, root cause analysis, and fix implementation",
+      "pattern": "pipeline",
+      "faction": "Spartan",
+      "lead": {
+        "callsign": "Sleuth",
+        "agent": "bug-detective",
+        "role": "Lead investigator, hypothesis generation"
+      },
+      "members": [
+        {"callsign": "Tracer", "agent": "debug-session", "role": "Execution tracing and state inspection"},
+        {"callsign": "The Illuminant", "agent": "error-analyzer", "role": "Error pattern recognition"},
+        {"callsign": "Prism", "agent": "refractor", "role": "Code path analysis"},
+        {"callsign": "Patcher", "agent": "bug-fix", "role": "Fix implementation"},
+        {"callsign": "Mender", "agent": "test-writer-fixer", "role": "Regression test creation"},
+        {"callsign": "Resolver", "agent": "fix-pr", "role": "PR preparation and CI fixes"}
+      ],
+      "triggers": ["debug", "fix bug", "error", "failing test", "investigate", "root cause"],
+      "workflow": {
+        "phases": ["detect", "trace", "analyze", "hypothesize", "fix", "verify"],
+        "handoffs": {
+          "detect": ["Sleuth", "The Illuminant"],
+          "trace": ["Tracer"],
+          "analyze": ["Prism"],
+          "hypothesize": ["Sleuth"],
+          "fix": ["Patcher"],
+          "verify": ["Mender", "Resolver"]
+        }
+      },
+      "capabilities": ["debugging", "root-cause-analysis", "fix-implementation", "regression-testing"]
+    },
+
+    "ship-crew": {
+      "name": "Ship Crew",
+      "callsign": "SHIP-1",
+      "purpose": "End-to-end deployment pipeline from commit to production",
+      "pattern": "pipeline",
+      "faction": "Spartan",
+      "lead": {
+        "callsign": "Launcher",
+        "agent": "project-shipper",
+        "role": "Deployment orchestration and go/no-go decisions"
+      },
+      "members": [
+        {"callsign": "Chronicler-Prime", "agent": "commit", "role": "Git operations and commit management"},
+        {"callsign": "Navigator", "agent": "helm-chart-developer", "role": "Helm chart preparation"},
+        {"callsign": "Quartermaster", "agent": "helm-release-manager", "role": "Release management"},
+        {"callsign": "Orchestrator-Prime", "agent": "k8s-architect", "role": "Kubernetes deployment"},
+        {"callsign": "Beacon", "agent": "deployment-tracker", "role": "Deployment monitoring"},
+        {"callsign": "Configurator", "agent": "helm-values-manager", "role": "Environment configuration"}
+      ],
+      "triggers": ["deploy", "ship", "release", "push to prod", "helm upgrade", "rollout"],
+      "workflow": {
+        "phases": ["prepare", "configure", "deploy", "verify", "announce"],
+        "gates": {
+          "pre-deploy": ["tests-pass", "review-approved", "security-scan"],
+          "post-deploy": ["health-check", "smoke-test", "rollback-ready"]
+        }
+      },
+      "capabilities": ["deployment", "helm", "kubernetes", "release-management"]
+    },
+
+    "documentation-guild": {
+      "name": "Documentation Guild",
+      "callsign": "DOCS-1",
+      "purpose": "Comprehensive documentation creation and maintenance",
+      "pattern": "broadcast",
+      "faction": "Forerunner",
+      "lead": {
+        "callsign": "Archivist",
+        "agent": "codebase-documenter",
+        "role": "Documentation strategy and synthesis"
+      },
+      "members": [
+        {"callsign": "Scrivener", "agent": "documentation-writer", "role": "Technical writing"},
+        {"callsign": "Surveyor", "agent": "analyze-codebase", "role": "Codebase analysis for docs"},
+        {"callsign": "Publisher", "agent": "confluence-documentation-creator", "role": "Confluence publishing"},
+        {"callsign": "Retriever", "agent": "context7-docs-fetcher", "role": "External docs research"},
+        {"callsign": "Librarian", "agent": "confluence-manager", "role": "Documentation organization"},
+        {"callsign": "Scriptor", "agent": "generate-api-docs", "role": "API documentation"}
+      ],
+      "triggers": ["document", "write docs", "update readme", "api docs", "confluence"],
+      "workflow": {
+        "phases": ["analyze", "draft", "review", "publish", "index"],
+        "outputs": ["README.md", "API docs", "Architecture docs", "Confluence pages"]
+      },
+      "capabilities": ["documentation", "technical-writing", "api-docs", "confluence"]
+    },
+
+    "security-tribunal": {
+      "name": "Security Tribunal",
+      "callsign": "SEC-1",
+      "purpose": "Security review, vulnerability assessment, and compliance verification",
+      "pattern": "debate",
+      "faction": "Mixed",
+      "lead": {
+        "callsign": "Bastion",
+        "agent": "security-guidance",
+        "role": "Security strategy and final verdict"
+      },
+      "members": [
+        {"callsign": "Sentinel-Enterprise", "agent": "enterprise-security-reviewer", "role": "Enterprise security review"},
+        {"callsign": "Custodian", "agent": "data-privacy-engineer", "role": "Data privacy assessment"},
+        {"callsign": "Ethicist", "agent": "ai-ethics-governance-specialist", "role": "AI ethics review"},
+        {"callsign": "Guardian-K8s", "agent": "k8s-security-specialist", "role": "Kubernetes security"},
+        {"callsign": "Auditor-Prime", "agent": "legal-compliance-checker", "role": "Compliance verification"},
+        {"callsign": "Counselor", "agent": "legal-advisor", "role": "Legal implications"}
+      ],
+      "triggers": ["security review", "vulnerability", "audit", "compliance", "penetration test", "threat model"],
+      "workflow": {
+        "phases": ["scan", "analyze", "assess", "debate", "verdict", "remediate"],
+        "severityLevels": ["critical", "high", "medium", "low", "informational"],
+        "requiredForMerge": true
+      },
+      "capabilities": ["security-review", "vulnerability-assessment", "compliance", "threat-modeling"]
+    },
+
+    "mobile-force": {
+      "name": "Mobile Force",
+      "callsign": "MOBILE-1",
+      "purpose": "Cross-platform mobile development and optimization",
+      "pattern": "hierarchical",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "Hybrid-Prime",
+        "agent": "react-native-specialist",
+        "role": "Cross-platform strategy and coordination"
+      },
+      "members": [
+        {"callsign": "Apex", "agent": "ios-specialist", "role": "iOS-specific implementation"},
+        {"callsign": "Droid", "agent": "android-specialist", "role": "Android-specific implementation"},
+        {"callsign": "Wings", "agent": "flutter-specialist", "role": "Flutter alternatives"},
+        {"callsign": "Nomad", "agent": "mobile-app-builder", "role": "Mobile app architecture"},
+        {"callsign": "Touch", "agent": "mobile-ux-optimizer", "role": "Mobile UX optimization"},
+        {"callsign": "Ranker", "agent": "app-store-optimizer", "role": "App store optimization"}
+      ],
+      "triggers": ["mobile app", "ios", "android", "react native", "flutter", "app store"],
+      "workflow": {
+        "phases": ["design", "implement", "test-devices", "optimize", "publish"]
+      },
+      "capabilities": ["mobile-development", "ios", "android", "react-native", "flutter"]
+    },
+
+    "data-pipeline": {
+      "name": "Data Pipeline",
+      "callsign": "DATA-1",
+      "purpose": "Data architecture, analytics, and AI/ML implementation",
+      "pattern": "pipeline",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "Cortex",
+        "agent": "ai-engineer",
+        "role": "AI/ML strategy and implementation"
+      },
+      "members": [
+        {"callsign": "Schema-Forge", "agent": "mongodb-schema-designer", "role": "Database schema design"},
+        {"callsign": "Query-Master", "agent": "mongodb-query-optimizer", "role": "Query optimization"},
+        {"callsign": "Aggregator", "agent": "mongodb-aggregation-specialist", "role": "Data aggregation"},
+        {"callsign": "Cipher-Prime", "agent": "analytics-reporter", "role": "Analytics and reporting"},
+        {"callsign": "Epoch", "agent": "kafka-specialist", "role": "Event streaming"},
+        {"callsign": "Spectra", "agent": "prisma-specialist", "role": "ORM and type-safe queries"}
+      ],
+      "triggers": ["data pipeline", "analytics", "ml model", "database", "mongodb", "kafka"],
+      "workflow": {
+        "phases": ["schema", "ingest", "transform", "analyze", "serve"]
+      },
+      "capabilities": ["data-engineering", "analytics", "machine-learning", "databases"]
+    },
+
+    "frontend-forge": {
+      "name": "Frontend Forge",
+      "callsign": "UI-1",
+      "purpose": "Frontend development, theming, and UX optimization",
+      "pattern": "hierarchical",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "Weaver",
+        "agent": "theme-system-architect",
+        "role": "Frontend architecture and design system"
+      },
+      "members": [
+        {"callsign": "Artisan", "agent": "theme-builder", "role": "Theme implementation"},
+        {"callsign": "Chameleon", "agent": "white-label-specialist", "role": "White-label customization"},
+        {"callsign": "Resonant", "agent": "graphql-specialist", "role": "GraphQL data layer"},
+        {"callsign": "Illustrator", "agent": "visual-storyteller", "role": "Visual design"},
+        {"callsign": "Empathist", "agent": "ux-researcher", "role": "UX research and testing"},
+        {"callsign": "Aegis-Prime", "agent": "brand-guardian", "role": "Brand consistency"}
+      ],
+      "triggers": ["frontend", "ui", "theme", "design system", "component", "ux"],
+      "workflow": {
+        "phases": ["design", "prototype", "implement", "test", "polish"]
+      },
+      "capabilities": ["frontend-development", "theming", "design-systems", "ux"]
+    },
+
+    "identity-vault": {
+      "name": "Identity Vault",
+      "callsign": "AUTH-1",
+      "purpose": "Authentication, authorization, and identity management",
+      "pattern": "hierarchical",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "Realm-Master",
+        "agent": "keycloak-realm-admin",
+        "role": "Identity architecture and realm management"
+      },
+      "members": [
+        {"callsign": "Identity", "agent": "keycloak-identity-specialist", "role": "Identity configuration"},
+        {"callsign": "Sentinel-Auth", "agent": "keycloak-auth-flow-designer", "role": "Auth flow design"},
+        {"callsign": "Inquisitor-Auth", "agent": "keycloak-security-auditor", "role": "Security auditing"},
+        {"callsign": "Stylist", "agent": "keycloak-theme-developer", "role": "Login theme customization"},
+        {"callsign": "Custodian", "agent": "data-privacy-engineer", "role": "Privacy compliance"}
+      ],
+      "triggers": ["keycloak", "authentication", "oauth", "sso", "identity", "login"],
+      "workflow": {
+        "phases": ["design", "configure", "secure", "theme", "test"]
+      },
+      "capabilities": ["authentication", "authorization", "keycloak", "sso", "oauth"]
+    },
+
+    "atlassian-ops": {
+      "name": "Atlassian Ops",
+      "callsign": "JIRA-1",
+      "purpose": "Jira and Confluence workflow automation",
+      "pattern": "swarm",
+      "faction": "Forerunner",
+      "lead": {
+        "callsign": "Conductor",
+        "agent": "completion-orchestrator",
+        "role": "Workflow orchestration and completion tracking"
+      },
+      "members": [
+        {"callsign": "Sentinel", "agent": "triage-agent", "role": "Issue triage and prioritization"},
+        {"callsign": "Enhancer", "agent": "task-enricher", "role": "Task enrichment"},
+        {"callsign": "Divider", "agent": "epic-decomposer", "role": "Epic breakdown"},
+        {"callsign": "Liaison", "agent": "github-jira-sync", "role": "GitHub-Jira synchronization"},
+        {"callsign": "Librarian", "agent": "confluence-manager", "role": "Confluence management"},
+        {"callsign": "Tactician", "agent": "test-strategist", "role": "Test strategy planning"},
+        {"callsign": "Gateway", "agent": "pr-creator", "role": "PR creation and linking"},
+        {"callsign": "Quill", "agent": "smart-commit-generator", "role": "Smart commit messages"}
+      ],
+      "triggers": ["jira", "confluence", "sprint", "epic", "story", "ticket"],
+      "workflow": {
+        "phases": ["triage", "enrich", "decompose", "assign", "track", "complete"]
+      },
+      "capabilities": ["jira-automation", "confluence", "workflow-management", "sprint-planning"]
+    },
+
+    "pr-review-panel": {
+      "name": "PR Review Panel",
+      "callsign": "REVIEW-1",
+      "purpose": "Comprehensive pull request review and approval",
+      "pattern": "round-robin",
+      "faction": "Mixed",
+      "lead": {
+        "callsign": "Inquisitor",
+        "agent": "pr-review-toolkit",
+        "role": "Review orchestration and final approval"
+      },
+      "members": [
+        {"callsign": "Examiner", "agent": "analyze-issue", "role": "Issue-PR alignment check"},
+        {"callsign": "Scrutineer", "agent": "code-review-assistant", "role": "Code quality review"},
+        {"callsign": "Magistrate", "agent": "code-reviewer", "role": "Standards enforcement"},
+        {"callsign": "Falcon", "agent": "vitest-specialist", "role": "Test review"},
+        {"callsign": "Moderator", "agent": "review-facilitator", "role": "Discussion facilitation"},
+        {"callsign": "Monitor", "agent": "review-progress-tracker", "role": "Progress tracking"}
+      ],
+      "triggers": ["review pr", "pull request", "code review", "approve", "request changes"],
+      "workflow": {
+        "phases": ["context", "review", "discuss", "iterate", "approve"],
+        "approvalRequired": 2
+      },
+      "capabilities": ["code-review", "pr-management", "quality-gates"]
+    },
+
+    "growth-squad": {
+      "name": "Growth Squad",
+      "callsign": "GROWTH-1",
+      "purpose": "Marketing, growth hacking, and user acquisition",
+      "pattern": "broadcast",
+      "faction": "Spartan",
+      "lead": {
+        "callsign": "Accelerant",
+        "agent": "growth-hacker",
+        "role": "Growth strategy and experimentation"
+      },
+      "members": [
+        {"callsign": "Wordsmith", "agent": "content-creator", "role": "Content creation"},
+        {"callsign": "Tweeter", "agent": "twitter-engager", "role": "Twitter/X engagement"},
+        {"callsign": "Redditor", "agent": "reddit-community-builder", "role": "Reddit community"},
+        {"callsign": "Viral", "agent": "tiktok-strategist", "role": "TikTok strategy"},
+        {"callsign": "Aesthete", "agent": "instagram-curator", "role": "Instagram curation"},
+        {"callsign": "Ranker", "agent": "app-store-optimizer", "role": "ASO optimization"}
+      ],
+      "triggers": ["marketing", "growth", "social media", "content", "viral", "acquisition"],
+      "workflow": {
+        "phases": ["strategize", "create", "distribute", "engage", "analyze"]
+      },
+      "capabilities": ["marketing", "social-media", "content-creation", "growth-hacking"]
+    },
+
+    "migration-convoy": {
+      "name": "Migration Convoy",
+      "callsign": "MIGRATE-1",
+      "purpose": "Code migration, refactoring, and modernization",
+      "pattern": "pipeline",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "Exodus",
+        "agent": "code-migration-specialist",
+        "role": "Migration strategy and execution"
+      },
+      "members": [
+        {"callsign": "Zephyrus", "agent": "refactoring-guru", "role": "Refactoring patterns"},
+        {"callsign": "Surveyor", "agent": "analyze-codebase", "role": "Codebase analysis"},
+        {"callsign": "Blueprint", "agent": "code-architect", "role": "Architecture planning"},
+        {"callsign": "Silhouette", "agent": "dependency-analyzer", "role": "Dependency mapping"},
+        {"callsign": "Mender", "agent": "test-writer-fixer", "role": "Test migration"},
+        {"callsign": "Veritas", "agent": "double-check", "role": "Migration verification"}
+      ],
+      "triggers": ["migrate", "refactor", "modernize", "upgrade", "legacy"],
+      "workflow": {
+        "phases": ["analyze", "plan", "migrate", "test", "verify", "cleanup"]
+      },
+      "capabilities": ["migration", "refactoring", "modernization", "dependency-management"]
+    },
+
+    "messaging-hub": {
+      "name": "Messaging Hub",
+      "callsign": "MSG-1",
+      "purpose": "Event-driven architecture and messaging systems",
+      "pattern": "hierarchical",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "The Solstice",
+        "agent": "event-streaming-architect",
+        "role": "Event architecture design"
+      },
+      "members": [
+        {"callsign": "Epoch", "agent": "kafka-specialist", "role": "Kafka implementation"},
+        {"callsign": "Striker", "agent": "rabbitmq-specialist", "role": "RabbitMQ implementation"},
+        {"callsign": "Conduit", "agent": "enterprise-integrator-architect", "role": "Enterprise integration"},
+        {"callsign": "Static", "agent": "redis-specialist", "role": "Redis pub/sub and caching"}
+      ],
+      "triggers": ["kafka", "rabbitmq", "event-driven", "messaging", "pub-sub", "queue"],
+      "workflow": {
+        "phases": ["design", "implement", "test", "deploy", "monitor"]
+      },
+      "capabilities": ["event-streaming", "messaging", "kafka", "rabbitmq", "redis"]
+    },
+
+    "multi-tenant-architects": {
+      "name": "Multi-Tenant Architects",
+      "callsign": "TENANT-1",
+      "purpose": "Multi-tenant architecture and tenant provisioning",
+      "pattern": "hierarchical",
+      "faction": "Promethean",
+      "lead": {
+        "callsign": "Partitioner",
+        "agent": "multi-tenant-architect",
+        "role": "Multi-tenant architecture design"
+      },
+      "members": [
+        {"callsign": "Provisioner", "agent": "tenant-provisioning-specialist", "role": "Tenant provisioning"},
+        {"callsign": "Realm-Master", "agent": "keycloak-realm-admin", "role": "Tenant identity"},
+        {"callsign": "Schema-Forge", "agent": "mongodb-schema-designer", "role": "Tenant data isolation"},
+        {"callsign": "Merchant", "agent": "stripe-integration-specialist", "role": "Tenant billing"},
+        {"callsign": "Chameleon", "agent": "white-label-specialist", "role": "Tenant branding"}
+      ],
+      "triggers": ["multi-tenant", "tenant", "saas", "isolation", "provisioning"],
+      "workflow": {
+        "phases": ["design", "provision", "configure", "brand", "activate"]
+      },
+      "capabilities": ["multi-tenancy", "saas-architecture", "tenant-isolation", "provisioning"]
+    }
+  },
+
+  "teamCategories": {
+    "development": ["code-strike", "frontend-forge", "mobile-force", "data-pipeline"],
+    "quality": ["quality-council", "debug-squadron", "pr-review-panel", "security-tribunal"],
+    "operations": ["ship-crew", "atlassian-ops", "messaging-hub"],
+    "specialized": ["identity-vault", "multi-tenant-architects", "migration-convoy"],
+    "business": ["growth-squad", "documentation-guild"]
+  },
+
+  "activationRules": {
+    "default": {
+      "minAgents": 3,
+      "maxAgents": 8,
+      "timeoutMinutes": 30
+    },
+    "byComplexity": {
+      "simple": {"minAgents": 2, "maxAgents": 4},
+      "moderate": {"minAgents": 3, "maxAgents": 6},
+      "complex": {"minAgents": 5, "maxAgents": 10},
+      "critical": {"minAgents": 6, "maxAgents": 12}
+    }
+  },
+
+  "communicationProtocols": {
+    "hierarchical": {
+      "description": "Lead coordinates all communication",
+      "flow": "lead -> members -> lead",
+      "aggregation": "lead synthesizes all outputs"
+    },
+    "round-robin": {
+      "description": "Sequential contribution building on previous",
+      "flow": "member1 -> member2 -> ... -> memberN",
+      "aggregation": "final member produces combined output"
+    },
+    "broadcast": {
+      "description": "Parallel execution with merge",
+      "flow": "lead -> all members (parallel) -> lead",
+      "aggregation": "lead merges parallel outputs"
+    },
+    "debate": {
+      "description": "Adversarial discussion with voting",
+      "flow": "all members debate -> vote -> consensus",
+      "aggregation": "majority or consensus decision"
+    },
+    "pipeline": {
+      "description": "Sequential transformation chain",
+      "flow": "stage1 -> stage2 -> ... -> stageN",
+      "aggregation": "final stage output is result"
+    },
+    "swarm": {
+      "description": "Self-organizing task claiming",
+      "flow": "tasks broadcast -> agents claim -> execute",
+      "aggregation": "dynamic based on completion"
+    }
+  }
+}

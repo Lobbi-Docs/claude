@@ -13,6 +13,7 @@
     "totalMcpTools": 80,
     "totalBuiltinTools": 17,
     "totalPlugins": 14,
+    "totalTeams": 16,
     "innovativePlugins": 6
   },
 
@@ -24,7 +25,8 @@
     "workflows": "./workflows.index.json",
     "mcps": "./mcps.index.json",
     "tools": "./tools.index.json",
-    "plugins": "./plugins.index.json"
+    "plugins": "./plugins.index.json",
+    "teams": "./teams.index.json"
   },
 
   "loadStrategy": {
