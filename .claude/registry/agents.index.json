@@ -3107,7 +3107,7 @@
         "priority": "high"
       },
       "claude-desktop-extension": {
-        "callsign": "Nexus",
+        "callsign": "Bridge",
         "faction": "Promethean",
         "path": "agents/orchestration/claude-desktop-extension.md",
         "type": "developer",
@@ -3198,7 +3198,7 @@
         "priority": "medium"
       },
       "model-context-protocol-mcp-expert": {
-        "callsign": "Conduit",
+        "callsign": "Protocol",
         "faction": "Promethean",
         "path": "agents/orchestration/model-context-protocol-mcp-expert.md",
         "type": "developer",
@@ -3598,7 +3598,7 @@
     },
     "atlassian": {
       "github-jira-sync": {
-        "callsign": "Nexus",
+        "callsign": "Liaison",
         "faction": "Forerunner",
         "path": "jira-orchestrator/agents/github-jira-sync.md",
         "type": "coordinator",
@@ -3623,7 +3623,7 @@
         "priority": "high"
       },
       "smart-commit-generator": {
-        "callsign": "Scribe",
+        "callsign": "Quill",
         "faction": "Promethean",
         "path": "jira-orchestrator/agents/smart-commit-generator.md",
         "type": "developer",
@@ -3737,7 +3737,7 @@
         "priority": "high"
       },
       "code-reviewer": {
-        "callsign": "Arbiter",
+        "callsign": "Magistrate",
         "faction": "Spartan",
         "path": "jira-orchestrator/agents/code-reviewer.md",
         "type": "validator",
@@ -3759,7 +3759,7 @@
         "priority": "high"
       },
       "documentation-writer": {
-        "callsign": "Chronicler",
+        "callsign": "Scrivener",
         "faction": "Forerunner",
         "path": "jira-orchestrator/agents/documentation-writer.md",
         "type": "developer",
@@ -3942,7 +3942,7 @@
         "priority": "medium"
       },
       "requirements-analyzer": {
-        "callsign": "Inspector",
+        "callsign": "Analyst",
         "faction": "Promethean",
         "path": "jira-orchestrator/agents/requirements-analyzer.md",
         "type": "analyst",
@@ -3981,7 +3981,7 @@
         "priority": "high"
       },
       "qa-ticket-reviewer": {
-        "callsign": "Examiner",
+        "callsign": "Inspector",
         "faction": "Spartan",
         "path": "jira-orchestrator/agents/qa-ticket-reviewer.md",
         "type": "validator",
@@ -4021,7 +4021,7 @@
         "priority": "medium"
       },
       "qa-confluence-documenter": {
-        "callsign": "Archivist",
+        "callsign": "Chronicler",
         "faction": "Forerunner",
         "path": "jira-orchestrator/agents/qa-confluence-documenter.md",
         "type": "developer",
@@ -4101,7 +4101,7 @@
         "priority": "low"
       },
       "quality-enhancer": {
-        "callsign": "Refiner",
+        "callsign": "Polisher",
         "faction": "Spartan",
         "path": "jira-orchestrator/agents/quality-enhancer.md",
         "type": "developer",
