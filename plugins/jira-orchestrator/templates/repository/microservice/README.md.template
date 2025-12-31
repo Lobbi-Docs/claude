@@ -1,0 +1,124 @@
+# {{SERVICE_NAME}}
+
+**Status:** Active | **Jira:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+
+---
+
+## Quick Start
+
+### Local Development
+
+```bash
+# Start with Docker Compose (local only)
+docker-compose up -d
+
+# Run tests
+npm test
+
+# Run linting
+npm run lint
+```
+
+### Kubernetes Deployment
+
+```bash
+# Development
+helm upgrade --install {{SERVICE_NAME}} ./deployment/helm/{{SERVICE_NAME}} \
+  -n {{NAMESPACE_DEV}} \
+  -f ./deployment/helm/{{SERVICE_NAME}}/values-dev.yaml
+
+# Staging
+helm upgrade --install {{SERVICE_NAME}} ./deployment/helm/{{SERVICE_NAME}} \
+  -n {{NAMESPACE_STAGING}} \
+  -f ./deployment/helm/{{SERVICE_NAME}}/values-staging.yaml
+
+# Production (via Harness pipeline)
+# Use Harness UI or: /jira:deploy production --issue {{JIRA_KEY}}
+```
+
+---
+
+## Documentation
+
+| Document | Description | Link |
+|----------|-------------|------|
+| Technical Design | Architecture & design decisions | [Confluence]({{CONFLUENCE_BASE}}/tdd-{{JIRA_KEY}}) |
+| API Reference | Endpoint documentation | [Confluence]({{CONFLUENCE_BASE}}/api-{{JIRA_KEY}}) |
+| Runbook | Operations & troubleshooting | [Confluence]({{CONFLUENCE_BASE}}/runbook-{{JIRA_KEY}}) |
+| ADRs | Architecture decisions | [docs/adr/](./docs/adr/) |
+
+---
+
+## Architecture
+
+```
+{{SERVICE_NAME}}/
+├── src/
+│   ├── controllers/    # Request handlers
+│   ├── services/       # Business logic
+│   ├── repositories/   # Data access
+│   └── models/         # Domain models
+├── tests/
+├── deployment/
+│   └── helm/           # Kubernetes deployment
+└── docs/
+```
+
+See [docs/architecture.md](./docs/architecture.md) for detailed architecture.
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Health check |
+| GET | `/ready` | Readiness probe |
+| GET | `/metrics` | Prometheus metrics |
+
+See [API Documentation]({{CONFLUENCE_BASE}}/api-{{JIRA_KEY}}) for full API reference.
+
+---
+
+## Environment Variables
+
+| Variable | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `NODE_ENV` | Yes | Environment | `development` |
+| `PORT` | No | Service port | `3000` |
+| `LOG_LEVEL` | No | Logging level | `info` |
+
+---
+
+## Pipeline
+
+| Stage | Description | Trigger |
+|-------|-------------|---------|
+| Build | Build Docker image | PR, Push |
+| Test | Run unit & integration tests | PR, Push |
+| Deploy Dev | Deploy to development | Push to main |
+| Deploy Staging | Deploy to staging | Manual |
+| Deploy Prod | Deploy to production | Manual + Approval |
+
+**Harness:** [View Pipeline]({{HARNESS_URL}}/pipelines/{{SERVICE_NAME}})
+
+---
+
+## Contributing
+
+1. Create feature branch: `feature/{{JIRA_PROJECT}}-XXX-description`
+2. Make changes following [Development Standards](./docs/DEVELOPMENT-STANDARDS.md)
+3. Submit PR (direct commits to main are blocked)
+4. Get approval and merge
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## Team
+
+**Owner:** {{TEAM_NAME}} | **Slack:** #{{SERVICE_NAME}}-support
+
+---
+
+**Created:** {{DATE}} | **Last Updated:** {{DATE}}

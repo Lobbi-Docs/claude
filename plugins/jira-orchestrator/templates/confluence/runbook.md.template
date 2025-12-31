@@ -1,0 +1,312 @@
+# Runbook: {{SERVICE_NAME}}
+
+**Service:** {{SERVICE_NAME}}
+**Team:** {{TEAM_NAME}}
+**Jira:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+**Last Updated:** {{DATE}}
+
+---
+
+## Service Overview
+
+| Property | Value |
+|----------|-------|
+| Repository | [GitHub]({{REPO_URL}}) |
+| Pipeline | [Harness]({{HARNESS_URL}}/pipelines/{{SERVICE_NAME}}) |
+| Namespace (Prod) | `{{NAMESPACE_PROD}}` |
+| Slack | #{{SERVICE_NAME}}-support |
+| On-Call | [PagerDuty](https://pagerduty.com/...) |
+
+---
+
+## Quick Actions
+
+### Health Check
+
+```bash
+# Check pod status
+kubectl get pods -n {{NAMESPACE_PROD}} -l app={{SERVICE_NAME}}
+
+# Check service health
+curl https://{{SERVICE_NAME}}.example.com/health
+
+# View logs
+kubectl logs -n {{NAMESPACE_PROD}} -l app={{SERVICE_NAME}} --tail=100 -f
+```
+
+### Restart Service
+
+```bash
+# Rolling restart
+kubectl rollout restart deployment/{{SERVICE_NAME}} -n {{NAMESPACE_PROD}}
+
+# Watch rollout
+kubectl rollout status deployment/{{SERVICE_NAME}} -n {{NAMESPACE_PROD}}
+```
+
+### Scale Service
+
+```bash
+# Scale to 5 replicas
+kubectl scale deployment/{{SERVICE_NAME}} -n {{NAMESPACE_PROD}} --replicas=5
+
+# Or via Helm
+helm upgrade {{SERVICE_NAME}} ./deployment/helm/{{SERVICE_NAME}} \
+  -n {{NAMESPACE_PROD}} \
+  --set replicaCount=5
+```
+
+---
+
+## Deployment
+
+### Standard Deployment
+
+```bash
+# Via Harness (recommended)
+# 1. Go to Harness UI
+# 2. Select {{SERVICE_NAME}} pipeline
+# 3. Click "Run Pipeline"
+# 4. Select environment (dev/staging/prod)
+
+# Via Helm (manual)
+helm upgrade --install {{SERVICE_NAME}} ./deployment/helm/{{SERVICE_NAME}} \
+  -n {{NAMESPACE_PROD}} \
+  -f ./deployment/helm/{{SERVICE_NAME}}/values-prod.yaml \
+  --wait --timeout 5m
+```
+
+### Rollback
+
+```bash
+# Helm rollback
+helm rollback {{SERVICE_NAME}} -n {{NAMESPACE_PROD}}
+
+# Rollback to specific revision
+helm rollback {{SERVICE_NAME}} 3 -n {{NAMESPACE_PROD}}
+
+# View history
+helm history {{SERVICE_NAME}} -n {{NAMESPACE_PROD}}
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### Issue: Pods Not Starting
+
+**Symptoms:**
+- Pods in `CrashLoopBackOff` or `Pending` state
+- Service unavailable
+
+**Investigation:**
+```bash
+# Check pod events
+kubectl describe pod -n {{NAMESPACE_PROD}} -l app={{SERVICE_NAME}}
+
+# Check logs
+kubectl logs -n {{NAMESPACE_PROD}} -l app={{SERVICE_NAME}} --previous
+
+# Check resource limits
+kubectl top pods -n {{NAMESPACE_PROD}}
+```
+
+**Common Causes:**
+1. **OOM Killed** - Increase memory limit
+2. **Config error** - Check ConfigMap/Secrets
+3. **Image pull error** - Verify registry credentials
+
+---
+
+#### Issue: High Latency
+
+**Symptoms:**
+- Response times > 500ms
+- Alert: High Latency
+
+**Investigation:**
+```bash
+# Check metrics
+kubectl port-forward svc/{{SERVICE_NAME}} 9090:9090 -n {{NAMESPACE_PROD}}
+# Visit http://localhost:9090/metrics
+
+# Check database connections
+kubectl exec -it deployment/{{SERVICE_NAME}} -n {{NAMESPACE_PROD}} -- \
+  node -e "console.log(process.env.DATABASE_POOL_SIZE)"
+```
+
+**Resolutions:**
+1. **Increase replicas** - Scale horizontally
+2. **Check database** - Verify connection pool, slow queries
+3. **Check cache** - Redis connectivity, hit rate
+
+---
+
+#### Issue: High Error Rate
+
+**Symptoms:**
+- Error rate > 1%
+- Alert: High Error Rate
+
+**Investigation:**
+```bash
+# View error logs
+kubectl logs -n {{NAMESPACE_PROD}} -l app={{SERVICE_NAME}} | grep -i error
+
+# Check recent changes
+helm history {{SERVICE_NAME}} -n {{NAMESPACE_PROD}}
+git log --oneline -10
+```
+
+**Resolutions:**
+1. **Recent deployment** - Rollback if needed
+2. **External dependency** - Check downstream services
+3. **Database issues** - Check connection, deadlocks
+
+---
+
+### Database Issues
+
+#### Connection Pool Exhausted
+
+```bash
+# Check active connections
+psql -h $DB_HOST -U $DB_USER -c "SELECT count(*) FROM pg_stat_activity"
+
+# Kill idle connections
+psql -h $DB_HOST -U $DB_USER -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = 'idle'"
+```
+
+#### Slow Queries
+
+```bash
+# Identify slow queries
+psql -h $DB_HOST -U $DB_USER -c "SELECT pid, query, age(clock_timestamp(), query_start) FROM pg_stat_activity WHERE state != 'idle' ORDER BY query_start"
+```
+
+---
+
+## Monitoring
+
+### Dashboards
+
+| Dashboard | URL | Purpose |
+|-----------|-----|---------|
+| Service Overview | [Grafana](https://grafana.example.com/d/{{SERVICE_NAME}}) | General health |
+| API Metrics | [Grafana](https://grafana.example.com/d/{{SERVICE_NAME}}-api) | Endpoint metrics |
+| Database | [Grafana](https://grafana.example.com/d/postgres) | DB performance |
+
+### Key Metrics
+
+| Metric | Good | Warning | Critical |
+|--------|------|---------|----------|
+| Error Rate | < 0.1% | < 1% | > 1% |
+| Latency (p99) | < 200ms | < 500ms | > 500ms |
+| CPU Usage | < 50% | < 80% | > 80% |
+| Memory Usage | < 60% | < 80% | > 90% |
+
+### Alerts
+
+| Alert | Severity | Action |
+|-------|----------|--------|
+| HighErrorRate | Critical | Page on-call, investigate immediately |
+| HighLatency | Warning | Investigate during business hours |
+| PodRestart | Warning | Check logs, investigate cause |
+| HighCPU | Warning | Consider scaling |
+
+---
+
+## Incident Response
+
+### Severity Levels
+
+| Level | Definition | Response Time | Examples |
+|-------|------------|---------------|----------|
+| SEV1 | Service down | 15 min | Complete outage |
+| SEV2 | Degraded | 30 min | High error rate |
+| SEV3 | Minor issue | 4 hours | Non-critical bug |
+
+### Escalation Path
+
+1. **Primary On-Call** - {{TEAM_NAME}} engineer
+2. **Secondary On-Call** - Tech Lead
+3. **Escalation** - Engineering Manager
+
+### Communication
+
+- **Slack:** #{{SERVICE_NAME}}-incidents
+- **Status Page:** https://status.example.com
+- **Post-mortem Template:** [Confluence]({{CONFLUENCE_BASE}}/postmortem-template)
+
+---
+
+## Maintenance
+
+### Regular Tasks
+
+| Task | Frequency | Procedure |
+|------|-----------|-----------|
+| Log rotation | Automatic | Configured via Helm |
+| Dependency updates | Monthly | PR via Dependabot |
+| Security patches | As needed | Emergency deployment |
+| Database vacuum | Weekly | Automated job |
+
+### Backup & Recovery
+
+```bash
+# Database backup (daily, automated)
+# Retention: 30 days
+# Location: S3/GCS bucket
+
+# Manual backup
+pg_dump -h $DB_HOST -U $DB_USER {{SERVICE_NAME}} > backup.sql
+
+# Restore
+psql -h $DB_HOST -U $DB_USER {{SERVICE_NAME}} < backup.sql
+```
+
+---
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Description | Secret |
+|----------|-------------|--------|
+| `DATABASE_URL` | DB connection string | Yes |
+| `REDIS_URL` | Cache connection | Yes |
+| `API_KEY` | External API key | Yes |
+| `LOG_LEVEL` | Logging verbosity | No |
+
+### Secrets Management
+
+```bash
+# View secrets (names only)
+kubectl get secrets -n {{NAMESPACE_PROD}}
+
+# Update secret
+kubectl create secret generic {{SERVICE_NAME}}-secrets \
+  -n {{NAMESPACE_PROD}} \
+  --from-literal=key=value \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+---
+
+## Contacts
+
+| Role | Contact | Availability |
+|------|---------|--------------|
+| Team Lead | @lead | Business hours |
+| On-Call | [PagerDuty](https://pagerduty.com/...) | 24/7 |
+| Database Admin | @dba | Business hours |
+
+---
+
+## Related Documentation
+
+- [Technical Design]({{CONFLUENCE_BASE}}/tdd-{{JIRA_KEY}})
+- [API Documentation]({{CONFLUENCE_BASE}}/api-{{JIRA_KEY}})
+- [Development Standards](../docs/DEVELOPMENT-STANDARDS.md)

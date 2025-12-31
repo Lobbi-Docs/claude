@@ -1,0 +1,257 @@
+# Technical Design Document: {{SERVICE_NAME}}
+
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+**Author:** {{AUTHOR}}
+**Created:** {{DATE}}
+**Status:** Draft | In Review | Approved
+
+---
+
+## Overview
+
+### Problem Statement
+
+{{DESCRIPTION}}
+
+### Goals
+
+- [ ] Goal 1
+- [ ] Goal 2
+- [ ] Goal 3
+
+### Non-Goals
+
+- Non-goal 1
+- Non-goal 2
+
+---
+
+## Architecture
+
+### High-Level Design
+
+```
+[Diagram placeholder - add architecture diagram]
+```
+
+### Component Diagram
+
+| Component | Purpose | Technology |
+|-----------|---------|------------|
+| API Gateway | Request routing | Kong/NGINX |
+| Service | Business logic | Node.js/Python |
+| Database | Data storage | PostgreSQL |
+| Cache | Performance | Redis |
+
+### Data Flow
+
+```
+[Client] → [API Gateway] → [Service] → [Database]
+                              ↓
+                          [Cache]
+```
+
+---
+
+## Technical Decisions
+
+### Technology Stack
+
+| Layer | Technology | Rationale |
+|-------|------------|-----------|
+| Runtime | Node.js 20 | Team expertise, performance |
+| Framework | Fastify | Speed, TypeScript support |
+| Database | PostgreSQL | ACID compliance, JSON support |
+| ORM | Prisma | Type safety, migrations |
+| Container | Docker | Consistency, K8s deployment |
+| Orchestration | Kubernetes | Scalability, Helm charts |
+
+### Architecture Decisions
+
+See [ADR Index](./adr/) for detailed decisions:
+- [ADR-001: Initial Architecture](./adr/0001-initial-architecture.md)
+
+---
+
+## API Design
+
+### Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/v1/resource` | List resources | JWT |
+| POST | `/api/v1/resource` | Create resource | JWT |
+| GET | `/api/v1/resource/:id` | Get resource | JWT |
+| PUT | `/api/v1/resource/:id` | Update resource | JWT |
+| DELETE | `/api/v1/resource/:id` | Delete resource | JWT |
+
+### Request/Response Examples
+
+```json
+// GET /api/v1/resource/:id
+{
+  "id": "123",
+  "name": "Example",
+  "createdAt": "2025-12-31T00:00:00Z"
+}
+```
+
+---
+
+## Data Model
+
+### Entity Diagram
+
+```
+[Entity A] 1──* [Entity B] *──1 [Entity C]
+```
+
+### Database Schema
+
+```sql
+CREATE TABLE resources (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+---
+
+## Security Considerations
+
+### Authentication
+
+- JWT-based authentication
+- Token expiration: 1 hour
+- Refresh token support
+
+### Authorization
+
+- Role-based access control (RBAC)
+- Permission levels: read, write, admin
+
+### Data Protection
+
+- [ ] Encryption at rest
+- [ ] Encryption in transit (TLS)
+- [ ] PII handling compliance
+
+---
+
+## Deployment
+
+### Infrastructure
+
+| Environment | Replicas | Resources |
+|-------------|----------|-----------|
+| Development | 1 | 256Mi/0.5 CPU |
+| Staging | 2 | 512Mi/1 CPU |
+| Production | 3+ | 1Gi/2 CPU |
+
+### Helm Chart
+
+Located in `deployment/helm/{{SERVICE_NAME}}/`
+
+### CI/CD Pipeline
+
+- Build: Docker image
+- Test: Unit + Integration
+- Deploy: Helm via Harness
+
+---
+
+## Monitoring & Observability
+
+### Metrics
+
+| Metric | Description | Alert Threshold |
+|--------|-------------|-----------------|
+| `http_requests_total` | Total requests | N/A |
+| `http_request_duration_seconds` | Latency | p99 > 500ms |
+| `error_rate` | Error percentage | > 1% |
+
+### Logging
+
+- Format: JSON structured
+- Level: INFO (prod), DEBUG (dev)
+- Destination: CloudWatch/Stackdriver
+
+### Alerts
+
+| Alert | Condition | Severity |
+|-------|-----------|----------|
+| High Error Rate | > 1% errors | Critical |
+| High Latency | p99 > 500ms | Warning |
+| Pod Restarts | > 3 in 5min | Warning |
+
+---
+
+## Testing Strategy
+
+### Test Types
+
+| Type | Coverage Target | Tools |
+|------|-----------------|-------|
+| Unit | 80% | Jest/Vitest |
+| Integration | Key flows | Supertest |
+| E2E | Critical paths | Playwright |
+
+### Test Environments
+
+- Unit: In-memory
+- Integration: Docker Compose
+- E2E: Staging cluster
+
+---
+
+## Rollout Plan
+
+### Phase 1: Development
+
+- [ ] Core functionality
+- [ ] Unit tests
+- [ ] Local testing
+
+### Phase 2: Staging
+
+- [ ] Integration tests
+- [ ] Performance testing
+- [ ] Security review
+
+### Phase 3: Production
+
+- [ ] Canary deployment (10%)
+- [ ] Full rollout
+- [ ] Monitoring setup
+
+---
+
+## Risks & Mitigations
+
+| Risk | Impact | Likelihood | Mitigation |
+|------|--------|------------|------------|
+| Database bottleneck | High | Medium | Connection pooling, caching |
+| Third-party API failure | Medium | Low | Circuit breaker, fallbacks |
+
+---
+
+## Open Questions
+
+- [ ] Question 1
+- [ ] Question 2
+
+---
+
+## Appendix
+
+### References
+
+- [SOLID Principles](../docs/DEVELOPMENT-STANDARDS.md#solid-principles--clean-code)
+- [Helm Standards](../docs/DEVELOPMENT-STANDARDS.md#deployment-standards)
+
+### Related Documents
+
+- [API Documentation]({{CONFLUENCE_BASE}}/api-{{JIRA_KEY}})
+- [Runbook]({{CONFLUENCE_BASE}}/runbook-{{JIRA_KEY}})

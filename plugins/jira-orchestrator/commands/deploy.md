@@ -62,11 +62,74 @@ Time logging can be configured in `jira-orchestrator/config/time-logging.yml`:
 
 ---
 
+## MANDATORY DEPLOYMENT STANDARDS
+
+**CRITICAL:** All deployments MUST comply with [Development Standards](../docs/DEVELOPMENT-STANDARDS.md#deployment-standards).
+
+### Helm-First Deployment (ENFORCED)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     HELM-FIRST DEPLOYMENT POLICY                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ✅ ALLOWED DEPLOYMENT METHODS:                                            │
+│                                                                             │
+│   Production  │  Helm + Kubernetes  │  REQUIRED                             │
+│   Staging     │  Helm + Kubernetes  │  REQUIRED                             │
+│   Development │  Helm + Kubernetes  │  RECOMMENDED                          │
+│   Local Dev   │  Docker Compose     │  ALLOWED (dev machines only)          │
+│                                                                             │
+│   ❌ DOCKER COMPOSE FOR STAGING/PRODUCTION IS STRICTLY FORBIDDEN            │
+│                                                                             │
+│   Required Helm Structure:                                                  │
+│   deployment/                                                               │
+│   └── helm/{service-name}/                                                  │
+│       ├── Chart.yaml                                                        │
+│       ├── values.yaml              (defaults)                               │
+│       ├── values-dev.yaml          (development)                            │
+│       ├── values-staging.yaml      (staging)                                │
+│       ├── values-prod.yaml         (production)                             │
+│       └── templates/                                                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Pre-Deployment Validation
+
+Before any deployment to staging or production, this command validates:
+
+| Check | Requirement | Failure Action |
+|-------|-------------|----------------|
+| Helm Charts Exist | `deployment/helm/` directory present | Block deployment |
+| Values Files | Environment-specific values file exists | Block deployment |
+| Chart Valid | `helm lint` passes | Block deployment |
+| Docker Compose Check | Not used for staging/prod | Block deployment |
+| PR Merged | Changes merged via PR (not direct commit) | Block deployment |
+
+### Deployment Commands
+
+```bash
+# ✅ CORRECT: Deploy using Helm
+helm upgrade --install {service} ./deployment/helm/{service} \
+  -n {namespace} \
+  -f ./deployment/helm/{service}/values-prod.yaml
+
+# ❌ WRONG: Docker Compose for production
+docker-compose -f docker-compose.prod.yml up -d  # BLOCKED
+
+# ✅ Via Jira Orchestrator (recommended)
+/jira:deploy production --issue PROJ-123 --version v1.2.0
+```
+
+---
+
 ## Prerequisites
 
 - Atlassian Cloud access configured
 - Jira project with deployment tracking enabled
 - Git repository with commit history
+- **Helm charts in `deployment/helm/`** (REQUIRED for staging/prod)
 - Optional: GitHub Actions integration for CI/CD tracking
 
 ## Workflow Overview

@@ -46,6 +46,60 @@ Time logging can be configured in `jira-orchestrator/config/time-logging.yml`:
 
 ---
 
+## MANDATORY DEVELOPMENT STANDARDS
+
+**CRITICAL:** All work MUST comply with [Development Standards](../docs/DEVELOPMENT-STANDARDS.md).
+
+### PR-Only Workflow (ENFORCED)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     ❌ DIRECT COMMITS TO MAIN ARE BLOCKED                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ALL changes MUST go through Pull Requests:                                │
+│                                                                             │
+│   1. Create feature branch: feature/${issue_key}-description                │
+│   2. Make changes on feature branch                                         │
+│   3. Create PR via /jira:pr command                                         │
+│   4. Get approval (minimum 1 reviewer)                                      │
+│   5. Merge via GitHub/Harness (squash preferred)                            │
+│                                                                             │
+│   ❌ NEVER: git push origin main                                            │
+│   ✅ ALWAYS: Create PR, get approval, merge                                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Code Quality Requirements
+
+| Requirement | Standard | Enforcement |
+|-------------|----------|-------------|
+| SOLID Principles | MANDATORY | Code review |
+| Test Coverage | >= 80% | CI/CD block |
+| Clean Code | Required | Linting + review |
+| Documentation | Required | PR template |
+
+### Deployment Standards
+
+| Environment | Method | Docker Compose |
+|-------------|--------|----------------|
+| Local Dev | Docker Compose | ✅ Allowed |
+| Development | Helm + K8s | ❌ Forbidden |
+| Staging | Helm + K8s | ❌ Forbidden |
+| Production | Helm + K8s | ❌ Forbidden |
+
+### Sub-Agent & Git Worktrees
+
+For complex tasks (multiple sub-issues):
+- **REQUIRED:** Use git worktrees for parallel development
+- **REQUIRED:** Spawn sub-agents per worktree
+- **MINIMUM:** 3-5 sub-agents per task
+
+See [Development Standards](../docs/DEVELOPMENT-STANDARDS.md) for full requirements.
+
+---
+
 ## ENHANCED WORKFLOW OVERVIEW
 
 ```
