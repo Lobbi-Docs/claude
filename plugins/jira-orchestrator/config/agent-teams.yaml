@@ -408,20 +408,238 @@ metrics:
   report_to: "confluence"
   dashboard_page: "Team Performance Dashboard"
 
-# Example Usage in Jira Work Command
+# Parent-Child Issue Orchestration
+# Handles Task with Sub-tasks, Story with Tasks, Epic with Stories
+parent_child_orchestration:
+  # Enable parent-child detection and handling
+  enabled: true
+
+  # Hierarchy definitions
+  hierarchy:
+    Initiative:
+      children: ["Epic"]
+      orchestration_pattern: "cascade"
+    Epic:
+      children: ["Story", "Task", "Bug"]
+      orchestration_pattern: "cascade"
+    Story:
+      children: ["Sub-task", "Task"]
+      orchestration_pattern: "parallel"
+    Task:
+      children: ["Sub-task"]
+      orchestration_pattern: "parallel"
+
+  # Team inheritance rules
+  inheritance:
+    # How child issues inherit team assignments
+    strategy: "merge"  # merge, override, inherit_primary
+
+    # What to inherit from parent
+    inherit_from_parent:
+      - primary_team
+      - domain_teams      # From labels like domain:frontend
+      - technology_teams  # From labels like tech:react
+      - component_teams
+
+    # Child can override these
+    child_can_override:
+      - phase_teams
+      - secondary_teams
+
+    # Always use parent's team for these
+    force_parent_teams:
+      - security_context   # Security team from parent always applies
+      - review_teams       # PR review inherits parent context
+
+  # Parallel Sub-task Execution
+  parallel_subtasks:
+    enabled: true
+    max_concurrent: 5
+
+    # How to distribute work
+    distribution:
+      strategy: "domain_affinity"  # domain_affinity, round_robin, load_balanced
+
+      # Domain affinity rules - route subtasks to specialized teams
+      affinity_rules:
+        - pattern: ".*frontend.*|.*UI.*|.*component.*"
+          team: "frontend-forge"
+        - pattern: ".*backend.*|.*API.*|.*service.*"
+          team: "code-strike"
+        - pattern: ".*test.*|.*spec.*|.*coverage.*"
+          team: "quality-council"
+        - pattern: ".*database.*|.*migration.*|.*schema.*"
+          team: "data-pipeline"
+        - pattern: ".*auth.*|.*login.*|.*permission.*"
+          team: "identity-vault"
+        - pattern: ".*deploy.*|.*infra.*|.*k8s.*"
+          team: "ship-crew"
+        - pattern: ".*doc.*|.*readme.*|.*confluence.*"
+          team: "documentation-guild"
+
+    # Synchronization points
+    sync_points:
+      - after_explore: true    # Sync after all subtasks complete EXPLORE
+      - after_code: true       # Sync after all subtasks complete CODE
+      - before_test: true      # Sync before parent TEST phase
+      - after_fix: true        # Sync fixes before final review
+
+    # Dependency handling
+    dependencies:
+      respect_jira_links: true   # Honor Jira "blocks" relationships
+      auto_sequence: false       # Auto-detect dependencies from code
+      block_on_failure: true     # Block dependent subtasks on failure
+
+  # Parent Task Coordination
+  parent_coordination:
+    # Parent task role during subtask execution
+    parent_role: "coordinator"  # coordinator, participant, observer
+
+    # Teams for parent coordination
+    coordinator_teams:
+      primary: "atlassian-ops"   # JIRA-1: Divider manages decomposition
+      support: "code-strike"     # STRIKE-1: Blueprint for architecture
+
+    # Parent responsibilities
+    responsibilities:
+      - monitor_subtask_progress
+      - resolve_blockers
+      - merge_subtask_results
+      - quality_gate_enforcement
+      - status_aggregation
+
+    # Status propagation rules
+    status_propagation:
+      # When all subtasks complete, update parent
+      all_complete: "mark_parent_ready_for_review"
+      # When any subtask fails, update parent
+      any_failed: "mark_parent_blocked"
+      # When any subtask blocked, notify parent
+      any_blocked: "escalate_to_parent_team"
+
+    # Aggregation rules
+    aggregation:
+      # How to combine subtask outputs
+      code_changes: "merge_to_parent_branch"
+      test_results: "aggregate_coverage"
+      documentation: "compile_to_parent_page"
+
+  # Phase Coordination for Parent-Child
+  phase_coordination:
+    EXPLORE:
+      parent_action: "decompose_and_assign"
+      subtask_action: "analyze_assigned_scope"
+      teams:
+        parent: ["atlassian-ops", "documentation-guild"]
+        subtask: "inherit"  # Inherits from parent
+      sync_required: true
+
+    PLAN:
+      parent_action: "review_subtask_plans"
+      subtask_action: "plan_implementation"
+      teams:
+        parent: ["atlassian-ops"]
+        subtask: ["code-strike"]
+      sync_required: true
+
+    CODE:
+      parent_action: "monitor_and_unblock"
+      subtask_action: "implement"
+      teams:
+        parent: ["atlassian-ops"]
+        subtask: "domain_affinity"  # Based on subtask content
+      sync_required: false  # Parallel execution
+      parallel_allowed: true
+
+    TEST:
+      parent_action: "aggregate_results"
+      subtask_action: "test_scope"
+      teams:
+        parent: ["quality-council"]
+        subtask: ["quality-council"]
+      sync_required: true  # Wait for all tests
+
+    FIX:
+      parent_action: "coordinate_fixes"
+      subtask_action: "fix_assigned"
+      teams:
+        parent: ["debug-squadron"]
+        subtask: ["debug-squadron", "code-strike"]
+      sync_required: false
+      parallel_allowed: true
+
+    DOCUMENT:
+      parent_action: "compile_documentation"
+      subtask_action: "document_scope"
+      teams:
+        parent: ["documentation-guild", "atlassian-ops"]
+        subtask: ["documentation-guild"]
+      sync_required: true
+
+  # Subtask Creation Rules
+  subtask_creation:
+    # When parent detects need for subtasks
+    auto_create: false  # Manual or via /jira:prepare
+
+    # Template for new subtasks
+    template:
+      inherit_labels: true
+      inherit_components: true
+      inherit_sprint: true
+      add_labels:
+        - "auto-created"
+        - "parent:${PARENT_KEY}"
+
+    # Team assignment for new subtasks
+    team_assignment:
+      strategy: "domain_detection"  # Analyze subtask summary for domain
+      fallback: "parent_primary"    # Use parent's primary team
+
+  # Completion Criteria
+  completion:
+    # Parent can only complete when:
+    require_all_subtasks_done: true
+    require_all_tests_pass: true
+    require_documentation: true
+
+    # Automatic status transitions
+    auto_transitions:
+      all_subtasks_in_review: "parent_to_review"
+      all_subtasks_done: "parent_to_qa"
+      qa_passed: "parent_to_done"
+
+# Example Usage for Task with Subtasks
 #
-# 1. On /jira:work ABC-123:
-#    - Fetch issue type, labels, components
-#    - Match against label_teams, component_teams
-#    - Activate phase_teams[EXPLORE].primary
-#    - Use team leads for coordination
+# 1. On /jira:work TASK-123 (has 3 subtasks):
+#    - Detect parent-child relationship
+#    - Load parent context (labels, components, teams)
+#    - Identify subtasks: TASK-123-1, TASK-123-2, TASK-123-3
 #
-# 2. During CODE phase with labels ["domain:frontend", "tech:react"]:
-#    - Primary: code-strike (STRIKE-1)
-#    - Additional: frontend-forge (UI-1)
-#    - Lead coordination: Genesis -> Weaver
+# 2. EXPLORE Phase:
+#    - Parent Team (JIRA-1): Analyze full scope
+#    - Assign subtasks to teams based on domain affinity
+#    - TASK-123-1 (frontend) -> UI-1
+#    - TASK-123-2 (backend) -> STRIKE-1
+#    - TASK-123-3 (tests) -> COUNCIL-Q
 #
-# 3. On transition to Code Review:
-#    - Activate: pr-review-panel (REVIEW-1)
-#    - Activate: quality-council (COUNCIL-Q)
-#    - Lead: Inquisitor coordinates review
+# 3. CODE Phase (Parallel):
+#    - Launch parallel agents for each subtask
+#    - UI-1 works on TASK-123-1
+#    - STRIKE-1 works on TASK-123-2
+#    - COUNCIL-Q prepares test scaffolding for TASK-123-3
+#    - Parent coordinator (JIRA-1) monitors progress
+#
+# 4. Sync Point (after CODE):
+#    - Aggregate changes from all subtasks
+#    - Merge to parent branch
+#    - Run integration tests
+#
+# 5. TEST Phase:
+#    - COUNCIL-Q runs full test suite
+#    - Includes tests from all subtasks
+#    - Report to parent issue
+#
+# 6. Completion:
+#    - All subtasks marked Done
+#    - Parent automatically transitions to Done
+#    - Documentation compiled to Confluence
