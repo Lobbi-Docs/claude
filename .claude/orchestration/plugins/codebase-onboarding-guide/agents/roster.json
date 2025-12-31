@@ -1,0 +1,359 @@
+{
+  "agents": [
+    {
+      "id": "architect",
+      "name": "Architecture Analyst",
+      "callsign": "Architect",
+      "role": "primary-analyzer",
+      "specialty": "System architecture and high-level structure analysis",
+      "responsibilities": [
+        "Identify main architectural patterns (MVC, microservices, layered, etc.)",
+        "Map system boundaries and component interactions",
+        "Detect technology stack and framework usage",
+        "Create high-level architecture diagrams",
+        "Identify architectural layers (frontend, backend, database, etc.)",
+        "Document design patterns in use"
+      ],
+      "outputs": [
+        "architecture-overview.md",
+        "architecture-diagram.mermaid",
+        "tech-stack.json"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "file-tree-analyzer",
+        "dependency-graph-builder",
+        "pattern-detector"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["navigator", "integrator"],
+        "provides_context_for": ["all"]
+      }
+    },
+    {
+      "id": "navigator",
+      "name": "Code Navigator",
+      "callsign": "Navigator",
+      "role": "indexer",
+      "specialty": "File organization and navigation mapping",
+      "responsibilities": [
+        "Create 'where is X?' index for all major features",
+        "Map feature names to file locations",
+        "Identify entry points for different functionality",
+        "Build searchable navigation index",
+        "Tag files by purpose (config, model, view, controller, utility, etc.)",
+        "Create file importance rankings"
+      ],
+      "outputs": [
+        "navigation-index.json",
+        "feature-to-file-map.md",
+        "important-files-ranked.md"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "file-scanner",
+        "grep-analyzer",
+        "naming-convention-detector"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["architect", "pattern-finder"],
+        "provides_context_for": ["tracer", "tutorial-writer"]
+      }
+    },
+    {
+      "id": "tracer",
+      "name": "Code Flow Tracer",
+      "callsign": "Tracer",
+      "role": "execution-analyzer",
+      "specialty": "Tracing code execution paths and data flow",
+      "responsibilities": [
+        "Trace request/response flows through the system",
+        "Follow data transformations from input to output",
+        "Map event chains and async operations",
+        "Identify critical execution paths",
+        "Document component interaction sequences",
+        "Create sequence diagrams for key features"
+      ],
+      "outputs": [
+        "flow-diagrams/",
+        "execution-paths.md",
+        "data-flow-analysis.md"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "call-graph-analyzer",
+        "import-tracker",
+        "sequence-diagram-generator"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["integrator", "api-mapper"],
+        "depends_on": ["navigator"]
+      }
+    },
+    {
+      "id": "linguist",
+      "name": "Domain Linguist",
+      "callsign": "Linguist",
+      "role": "terminology-expert",
+      "specialty": "Project-specific terminology and glossary creation",
+      "responsibilities": [
+        "Extract domain-specific terms from code and docs",
+        "Build comprehensive glossary with definitions",
+        "Identify acronyms and abbreviations",
+        "Explain business logic terminology",
+        "Map technical terms to business concepts",
+        "Create term-to-code references"
+      ],
+      "outputs": [
+        "glossary.md",
+        "terminology-index.json",
+        "acronyms.md"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "term-extractor",
+        "comment-analyzer",
+        "documentation-parser"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["data-modeler"],
+        "provides_context_for": ["all"]
+      }
+    },
+    {
+      "id": "pattern-finder",
+      "name": "Pattern Detective",
+      "callsign": "Detective",
+      "role": "pattern-analyzer",
+      "specialty": "Identifying coding patterns and conventions",
+      "responsibilities": [
+        "Detect common code patterns in the project",
+        "Identify naming conventions and style guides",
+        "Find repeated structures and templates",
+        "Document best practices observed in code",
+        "Highlight anti-patterns to avoid",
+        "Create pattern libraries for reference"
+      ],
+      "outputs": [
+        "coding-patterns.md",
+        "conventions.md",
+        "pattern-examples/"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "pattern-matcher",
+        "style-analyzer",
+        "example-extractor"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["navigator", "tutorial-writer"],
+        "provides_context_for": ["tutorial-writer"]
+      }
+    },
+    {
+      "id": "tutorial-writer",
+      "name": "Tutorial Creator",
+      "callsign": "Tutor",
+      "role": "guide-generator",
+      "specialty": "Creating step-by-step how-to guides",
+      "responsibilities": [
+        "Generate 'how to add X' tutorials",
+        "Create step-by-step implementation guides",
+        "Build scaffolding templates for common tasks",
+        "Write beginner-friendly explanations",
+        "Include code examples and boilerplate",
+        "Document common development workflows"
+      ],
+      "outputs": [
+        "tutorials/",
+        "how-to-guides.md",
+        "templates/"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "code-template-generator",
+        "tutorial-formatter",
+        "example-creator"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["pattern-finder", "api-mapper"],
+        "depends_on": ["pattern-finder", "navigator"]
+      }
+    },
+    {
+      "id": "integrator",
+      "name": "Integration Mapper",
+      "callsign": "Integrator",
+      "role": "connection-analyzer",
+      "specialty": "Mapping component interactions and integrations",
+      "responsibilities": [
+        "Document internal component dependencies",
+        "Map external service integrations",
+        "Identify API boundaries and contracts",
+        "Trace data exchange between modules",
+        "Create component interaction diagrams",
+        "Document integration points"
+      ],
+      "outputs": [
+        "integration-map.md",
+        "component-diagram.mermaid",
+        "dependencies.json"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "dependency-analyzer",
+        "api-detector",
+        "diagram-generator"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["architect", "api-mapper"],
+        "provides_context_for": ["tracer"]
+      }
+    },
+    {
+      "id": "data-modeler",
+      "name": "Data Model Analyst",
+      "callsign": "Modeler",
+      "role": "data-expert",
+      "specialty": "Understanding data structures and models",
+      "responsibilities": [
+        "Map database schema and relationships",
+        "Document data models and entities",
+        "Explain data validation rules",
+        "Identify data transformation points",
+        "Create entity-relationship diagrams",
+        "Document data flow through system"
+      ],
+      "outputs": [
+        "data-models.md",
+        "schema-diagram.mermaid",
+        "entity-reference.md"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "schema-analyzer",
+        "model-extractor",
+        "erd-generator"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["linguist", "api-mapper"],
+        "provides_context_for": ["tutorial-writer"]
+      }
+    },
+    {
+      "id": "api-mapper",
+      "name": "API Cartographer",
+      "callsign": "Cartographer",
+      "role": "api-specialist",
+      "specialty": "Mapping APIs, endpoints, and interfaces",
+      "responsibilities": [
+        "Catalog all API endpoints",
+        "Document request/response formats",
+        "Map authentication and authorization",
+        "Create API reference documentation",
+        "Identify public vs internal APIs",
+        "Document API versioning strategy"
+      ],
+      "outputs": [
+        "api-reference.md",
+        "endpoints-catalog.json",
+        "api-examples.md"
+      ],
+      "model_preference": "sonnet",
+      "tools": [
+        "endpoint-detector",
+        "openapi-generator",
+        "route-analyzer"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["tracer", "integrator"],
+        "provides_context_for": ["tutorial-writer"]
+      }
+    },
+    {
+      "id": "synthesizer",
+      "name": "Knowledge Synthesizer",
+      "callsign": "Synthesizer",
+      "role": "documentation-lead",
+      "specialty": "Synthesizing all findings into cohesive onboarding guide",
+      "responsibilities": [
+        "Aggregate outputs from all agents",
+        "Create comprehensive onboarding document",
+        "Build mental model frameworks",
+        "Prioritize learning paths",
+        "Ensure documentation coherence",
+        "Generate final deliverables"
+      ],
+      "outputs": [
+        "ONBOARDING-GUIDE.md",
+        "GETTING-STARTED.md",
+        "learning-path.md"
+      ],
+      "model_preference": "opus",
+      "tools": [
+        "markdown-generator",
+        "template-engine",
+        "diagram-embedder"
+      ],
+      "coordination": {
+        "reports_to": "orchestrator",
+        "collaborates_with": ["all"],
+        "synthesizes_from": ["all"],
+        "final_output": true
+      }
+    }
+  ],
+  "orchestration_strategy": {
+    "pattern": "hierarchical-with-synthesis",
+    "phases": [
+      {
+        "name": "discovery",
+        "agents": ["architect", "navigator"],
+        "parallel": true,
+        "description": "Initial codebase structure and architecture discovery"
+      },
+      {
+        "name": "analysis",
+        "agents": ["tracer", "linguist", "pattern-finder", "integrator", "data-modeler", "api-mapper"],
+        "parallel": true,
+        "depends_on": ["discovery"],
+        "description": "Deep analysis of code patterns, flows, and components"
+      },
+      {
+        "name": "documentation",
+        "agents": ["tutorial-writer"],
+        "parallel": false,
+        "depends_on": ["analysis"],
+        "description": "Generate practical how-to guides and tutorials"
+      },
+      {
+        "name": "synthesis",
+        "agents": ["synthesizer"],
+        "parallel": false,
+        "depends_on": ["documentation"],
+        "description": "Create final comprehensive onboarding guide"
+      }
+    ],
+    "communication": {
+      "format": "structured-json",
+      "shared_context": ["codebase-metadata", "file-index", "glossary"],
+      "handoff_protocol": "phase-completion-report"
+    }
+  },
+  "agent_selection": {
+    "full_onboarding": ["all"],
+    "quick_overview": ["architect", "navigator", "synthesizer"],
+    "feature_explanation": ["navigator", "tracer", "tutorial-writer", "synthesizer"],
+    "api_documentation": ["api-mapper", "data-modeler", "tutorial-writer"],
+    "architecture_only": ["architect", "integrator", "synthesizer"]
+  }
+}

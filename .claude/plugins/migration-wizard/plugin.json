@@ -1,0 +1,400 @@
+{
+  "$schema": "../../core/schemas/plugin.schema.json",
+  "name": "migration-wizard",
+  "displayName": "Migration Wizard",
+  "callsign": "Migrator",
+  "faction": "Forerunner",
+  "version": "1.0.0",
+  "description": "Migrator - The architect of transformation. Orchestrates complex code migrations between frameworks, libraries, and API versions with precision codemods, incremental strangler fig patterns, and automated transformation. Ensures zero-downtime migrations with comprehensive test coverage and rollback strategies.",
+  "author": {
+    "name": "Brookside BI",
+    "email": "plugins@brooksidebi.com"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Lobbi-Docs/claude",
+  "categories": ["code-generation", "refactoring", "automation", "devops"],
+  "keywords": [
+    "migration", "codemod", "refactor", "transform", "modernize",
+    "react-hooks", "vue2-vue3", "express-fastify", "angular-react",
+    "webpack-vite", "jest-vitest", "class-to-hooks", "strangler-fig",
+    "ast", "jscodeshift", "babel", "typescript", "eslint-codemod",
+    "api-migration", "breaking-changes", "deprecation", "upgrade"
+  ],
+
+  "provides": {
+    "commands": 15,
+    "agents": 12,
+    "skills": 6,
+    "hooks": 4,
+    "workflows": 8
+  },
+
+  "migrationTypes": {
+    "react": {
+      "name": "React Migrations",
+      "targets": {
+        "class-to-hooks": {
+          "name": "Class Components to Hooks",
+          "difficulty": "medium",
+          "description": "Transform class components to functional components with hooks",
+          "codemods": ["class-to-functional", "lifecycle-to-useeffect", "state-to-usestate"]
+        },
+        "hoc-to-hooks": {
+          "name": "HOC to Hooks",
+          "difficulty": "medium",
+          "description": "Replace Higher-Order Components with custom hooks",
+          "codemods": ["hoc-to-custom-hook", "prop-extraction"]
+        },
+        "context-to-zustand": {
+          "name": "Context API to Zustand",
+          "difficulty": "hard",
+          "description": "Migrate from Context API to Zustand state management",
+          "codemods": ["context-to-store", "provider-removal", "hook-migration"]
+        },
+        "prop-types-to-typescript": {
+          "name": "PropTypes to TypeScript",
+          "difficulty": "easy",
+          "description": "Convert PropTypes definitions to TypeScript interfaces",
+          "codemods": ["proptypes-to-interface", "type-inference"]
+        }
+      }
+    },
+    "vue": {
+      "name": "Vue Migrations",
+      "targets": {
+        "vue2-to-vue3": {
+          "name": "Vue 2 to Vue 3",
+          "difficulty": "hard",
+          "description": "Full Vue 2 to Vue 3 migration with Composition API",
+          "codemods": ["options-to-composition", "global-api", "v-model-syntax", "filters-removal"]
+        },
+        "vuex3-to-vuex4": {
+          "name": "Vuex 3 to Vuex 4",
+          "difficulty": "medium",
+          "description": "Migrate Vuex store to version 4",
+          "codemods": ["vuex-store-migration", "module-updates"]
+        },
+        "vuex-to-pinia": {
+          "name": "Vuex to Pinia",
+          "difficulty": "hard",
+          "description": "Replace Vuex with Pinia state management",
+          "codemods": ["store-migration", "actions-mutations-merge", "getters-to-computed"]
+        }
+      }
+    },
+    "backend": {
+      "name": "Backend Framework Migrations",
+      "targets": {
+        "express-to-fastify": {
+          "name": "Express to Fastify",
+          "difficulty": "hard",
+          "description": "Migrate Express.js routes and middleware to Fastify",
+          "codemods": ["route-migration", "middleware-to-hooks", "error-handling", "req-res-transform"]
+        },
+        "mongoose-to-prisma": {
+          "name": "Mongoose to Prisma",
+          "difficulty": "hard",
+          "description": "Convert Mongoose schemas and queries to Prisma",
+          "codemods": ["schema-migration", "query-transform", "middleware-to-client-extensions"]
+        },
+        "rest-to-graphql": {
+          "name": "REST to GraphQL",
+          "difficulty": "very-hard",
+          "description": "Transform REST endpoints to GraphQL resolvers",
+          "codemods": ["endpoint-to-resolver", "schema-generation", "query-builder"]
+        }
+      }
+    },
+    "build-tools": {
+      "name": "Build Tool Migrations",
+      "targets": {
+        "webpack-to-vite": {
+          "name": "Webpack to Vite",
+          "difficulty": "medium",
+          "description": "Migrate Webpack configuration to Vite",
+          "codemods": ["config-transform", "plugin-migration", "env-vars", "alias-migration"]
+        },
+        "cra-to-vite": {
+          "name": "Create React App to Vite",
+          "difficulty": "medium",
+          "description": "Eject from CRA and migrate to Vite",
+          "codemods": ["config-extraction", "build-script-update", "env-migration"]
+        }
+      }
+    },
+    "testing": {
+      "name": "Testing Framework Migrations",
+      "targets": {
+        "jest-to-vitest": {
+          "name": "Jest to Vitest",
+          "difficulty": "easy",
+          "description": "Migrate Jest tests to Vitest",
+          "codemods": ["config-migration", "mock-updates", "timer-mocks"]
+        },
+        "enzyme-to-rtl": {
+          "name": "Enzyme to React Testing Library",
+          "difficulty": "hard",
+          "description": "Replace Enzyme with React Testing Library",
+          "codemods": ["query-migration", "assertion-updates", "wrapper-removal"]
+        }
+      }
+    }
+  },
+
+  "commands": {
+    "migrate:analyze": "commands/analyze.md",
+    "migrate:plan": "commands/plan.md",
+    "migrate:file": "commands/file.md",
+    "migrate:batch": "commands/batch.md",
+    "migrate:incremental": "commands/incremental.md",
+    "migrate:generate-codemod": "commands/generate-codemod.md",
+    "migrate:dry-run": "commands/dry-run.md",
+    "migrate:test": "commands/test.md",
+    "migrate:rollback": "commands/rollback.md",
+    "migrate:validate": "commands/validate.md",
+    "migrate:breaking-changes": "commands/breaking-changes.md",
+    "migrate:manual-fixes": "commands/manual-fixes.md",
+    "migrate:status": "commands/status.md",
+    "migrate:report": "commands/report.md",
+    "migrate:strangler-setup": "commands/strangler-setup.md"
+  },
+
+  "agents": {
+    "pattern-analyzer-agent": {
+      "path": "agents/pattern-analyzer-agent.md",
+      "model": "sonnet",
+      "description": "Analyzes current codebase patterns and usage to understand migration scope",
+      "triggers": ["analyze patterns", "find usage", "identify dependencies", "scan codebase"]
+    },
+    "api-mapper-agent": {
+      "path": "agents/api-mapper-agent.md",
+      "model": "sonnet",
+      "description": "Maps old API to new API with compatibility matrix and transformation rules",
+      "triggers": ["map api", "api mapping", "compatibility", "api changes"]
+    },
+    "codemod-generator-agent": {
+      "path": "agents/codemod-generator-agent.md",
+      "model": "opus",
+      "description": "Generates AST-based codemods using jscodeshift/babel for automated transformation",
+      "triggers": ["generate codemod", "create transformation", "ast transform", "jscodeshift"]
+    },
+    "codemod-executor-agent": {
+      "path": "agents/codemod-executor-agent.md",
+      "model": "sonnet",
+      "description": "Safely executes codemods with rollback capability and validation",
+      "triggers": ["run codemod", "execute transformation", "apply changes", "transform code"]
+    },
+    "breaking-change-detector-agent": {
+      "path": "agents/breaking-change-detector-agent.md",
+      "model": "sonnet",
+      "description": "Identifies breaking changes and incompatibilities that require manual intervention",
+      "triggers": ["breaking changes", "incompatibilities", "manual fixes needed"]
+    },
+    "strangler-fig-orchestrator-agent": {
+      "path": "agents/strangler-fig-orchestrator-agent.md",
+      "model": "opus",
+      "description": "Orchestrates incremental migration using strangler fig pattern",
+      "triggers": ["incremental migration", "strangler fig", "gradual migration", "phased rollout"]
+    },
+    "test-migration-agent": {
+      "path": "agents/test-migration-agent.md",
+      "model": "sonnet",
+      "description": "Migrates test files and ensures test coverage is maintained",
+      "triggers": ["migrate tests", "test migration", "update test framework"]
+    },
+    "dependency-updater-agent": {
+      "path": "agents/dependency-updater-agent.md",
+      "model": "haiku",
+      "description": "Updates package.json, yarn.lock, and resolves dependency conflicts",
+      "triggers": ["update dependencies", "package migration", "resolve conflicts"]
+    },
+    "migration-validator-agent": {
+      "path": "agents/migration-validator-agent.md",
+      "model": "sonnet",
+      "description": "Validates migrated code for correctness, runtime safety, and regressions",
+      "triggers": ["validate migration", "check correctness", "verify transformation"]
+    },
+    "type-inference-agent": {
+      "path": "agents/type-inference-agent.md",
+      "model": "sonnet",
+      "description": "Infers TypeScript types during migration and adds type annotations",
+      "triggers": ["infer types", "add types", "typescript conversion"]
+    },
+    "rollback-manager-agent": {
+      "path": "agents/rollback-manager-agent.md",
+      "model": "haiku",
+      "description": "Manages rollback strategy with git snapshots and restore points",
+      "triggers": ["rollback", "revert migration", "restore", "undo changes"]
+    },
+    "migration-reporter-agent": {
+      "path": "agents/migration-reporter-agent.md",
+      "model": "haiku",
+      "description": "Generates comprehensive migration reports with success metrics and remaining work",
+      "triggers": ["migration report", "status report", "migration summary"]
+    }
+  },
+
+  "skills": {
+    "ast-transformation": {
+      "path": "skills/ast-transformation.md",
+      "description": "AST manipulation with jscodeshift, babel, and TypeScript compiler API",
+      "triggers": ["ast", "jscodeshift", "babel transform", "syntax tree"]
+    },
+    "strangler-fig-pattern": {
+      "path": "skills/strangler-fig-pattern.md",
+      "description": "Incremental migration using strangler fig pattern for zero-downtime transitions",
+      "triggers": ["strangler fig", "incremental migration", "gradual rollout", "feature flag"]
+    },
+    "breaking-change-analysis": {
+      "path": "skills/breaking-change-analysis.md",
+      "description": "Deep analysis of breaking changes and API incompatibilities",
+      "triggers": ["breaking changes", "api compatibility", "deprecation analysis"]
+    },
+    "codemod-testing": {
+      "path": "skills/codemod-testing.md",
+      "description": "Testing codemods with fixtures and snapshot testing",
+      "triggers": ["test codemod", "codemod testing", "transformation testing"]
+    },
+    "migration-patterns": {
+      "path": "skills/migration-patterns.md",
+      "description": "Common migration patterns for React, Vue, Express, and other frameworks",
+      "triggers": ["migration patterns", "framework migration", "api migration"]
+    },
+    "type-migration": {
+      "path": "skills/type-migration.md",
+      "description": "TypeScript migration patterns and type inference strategies",
+      "triggers": ["typescript migration", "type conversion", "add types"]
+    }
+  },
+
+  "workflows": {
+    "single-file-migration": {
+      "path": "workflows/single-file-migration.md",
+      "description": "Migrate a single file with validation and rollback",
+      "steps": ["analyze", "generate-codemod", "dry-run", "validate", "apply", "test"]
+    },
+    "incremental-codebase-migration": {
+      "path": "workflows/incremental-codebase-migration.md",
+      "description": "Migrate entire codebase incrementally using strangler fig pattern",
+      "steps": ["analyze-all", "prioritize", "setup-strangler", "migrate-batch", "validate-batch", "iterate"]
+    },
+    "react-class-to-hooks": {
+      "path": "workflows/react-class-to-hooks.md",
+      "description": "Complete React class component to hooks migration workflow",
+      "steps": ["scan-classes", "analyze-lifecycle", "generate-hooks", "test-coverage", "apply", "verify"]
+    },
+    "vue2-to-vue3-migration": {
+      "path": "workflows/vue2-to-vue3-migration.md",
+      "description": "Full Vue 2 to Vue 3 migration with composition API",
+      "steps": ["analyze-components", "map-apis", "update-deps", "migrate-options", "test-suite", "validate"]
+    },
+    "express-to-fastify-migration": {
+      "path": "workflows/express-to-fastify-migration.md",
+      "description": "Express to Fastify migration with middleware transformation",
+      "steps": ["analyze-routes", "map-middleware", "transform-handlers", "update-plugins", "test-endpoints", "validate"]
+    },
+    "breaking-change-workflow": {
+      "path": "workflows/breaking-change-workflow.md",
+      "description": "Handle breaking changes that require manual intervention",
+      "steps": ["detect-breaking", "analyze-impact", "suggest-fixes", "document-manual", "track-completion"]
+    },
+    "test-framework-migration": {
+      "path": "workflows/test-framework-migration.md",
+      "description": "Migrate test frameworks (Jest to Vitest, Enzyme to RTL)",
+      "steps": ["analyze-tests", "map-assertions", "transform-mocks", "update-config", "validate-coverage"]
+    },
+    "rollback-workflow": {
+      "path": "workflows/rollback-workflow.md",
+      "description": "Safe rollback of partial or complete migrations",
+      "steps": ["detect-issues", "validate-restore-point", "revert-changes", "clean-artifacts", "verify-state"]
+    }
+  },
+
+  "hooks": {
+    "preMigration": {
+      "script": "hooks/scripts/pre-migration.sh",
+      "description": "Creates git snapshot and backup before migration"
+    },
+    "postMigration": {
+      "script": "hooks/scripts/post-migration-validate.sh",
+      "description": "Runs tests and linters after migration"
+    },
+    "onMigrationFailure": {
+      "script": "hooks/scripts/on-failure-rollback.sh",
+      "description": "Automatic rollback on critical failures"
+    },
+    "postCodemod": {
+      "script": "hooks/scripts/post-codemod-format.sh",
+      "description": "Formats code after codemod execution"
+    }
+  },
+
+  "permissions": {
+    "filesystem": [
+      { "path": "**/*.{js,jsx,ts,tsx,vue}", "access": "readwrite" },
+      { "path": "**/package.json", "access": "readwrite" },
+      { "path": "**/tsconfig.json", "access": "readwrite" },
+      { "path": "**/*.config.{js,ts}", "access": "readwrite" },
+      { "path": ".migration/**", "access": "readwrite" }
+    ],
+    "tools": ["Bash", "Read", "Write", "Edit", "Grep", "Glob", "Task"],
+    "mcpServers": []
+  },
+
+  "configuration": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "autoBackup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically create git backups before migration"
+        },
+        "dryRunFirst": {
+          "type": "boolean",
+          "default": true,
+          "description": "Always run dry-run before actual transformation"
+        },
+        "validateAfterMigration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run tests and linters after migration"
+        },
+        "stranglerFigByDefault": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use incremental strangler fig pattern for large migrations"
+        },
+        "maxFilesPerBatch": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum files to migrate in a single batch"
+        },
+        "breakingChangeHandling": {
+          "type": "string",
+          "enum": ["auto", "manual", "skip"],
+          "default": "manual",
+          "description": "How to handle breaking changes"
+        },
+        "testCoverageThreshold": {
+          "type": "number",
+          "default": 80,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Minimum test coverage required after migration"
+        }
+      }
+    }
+  },
+
+  "activation": {
+    "auto": true,
+    "priority": 850,
+    "conditions": {
+      "filePatterns": ["**/*.{js,jsx,ts,tsx,vue}"],
+      "keywords": ["migrate", "migration", "codemod", "transform", "refactor", "upgrade"]
+    }
+  }
+}

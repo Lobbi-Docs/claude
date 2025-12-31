@@ -1,0 +1,488 @@
+{
+  "$schema": "../../core/schemas/plugin.schema.json",
+  "name": "testforge",
+  "displayName": "Test Generation Factory",
+  "callsign": "TestForge",
+  "faction": "Vanguard",
+  "version": "1.0.0",
+  "description": "TestForge - Master of quality assurance through intelligent test generation. Analyzes code behavior to auto-generate comprehensive tests that catch real bugs, not just boost coverage numbers. Supports Jest, Pytest, Vitest, and more.",
+  "author": {
+    "name": "The Lobbi",
+    "email": "developers@thelobbi.io"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Lobbi-Docs/claude",
+  "categories": ["testing", "automation", "code-quality", "tdd"],
+  "keywords": [
+    "test-generation", "auto-test", "unit-test", "integration-test",
+    "jest", "pytest", "vitest", "mocha", "jasmine",
+    "mock-generation", "stub", "fixture", "test-double",
+    "edge-cases", "boundary-testing", "mutation-testing",
+    "coverage", "test-coverage", "coverage-gap",
+    "tdd", "test-driven", "behavior-testing",
+    "assertion", "test-data", "factory-pattern",
+    "regression-prevention", "bug-detection", "quality"
+  ],
+
+  "provides": {
+    "commands": 10,
+    "agents": 12,
+    "skills": 7,
+    "hooks": 5
+  },
+
+  "integrations": {
+    "testing-orchestrator": {
+      "description": "Executes generated tests and validates coverage improvements",
+      "commands": ["testforge:validate", "testforge:run"],
+      "bidirectional": true
+    },
+    "code-quality-orchestrator": {
+      "description": "Ensures generated tests meet quality standards",
+      "commands": ["testforge:quality-check"],
+      "blocking": false
+    },
+    "git-workflow-orchestrator": {
+      "description": "Generates tests for changed files in PRs",
+      "commands": ["testforge:pr-generate"],
+      "blocking": false
+    },
+    "cognitive-code-reasoner": {
+      "description": "Deep code analysis for behavior understanding",
+      "commands": ["testforge:analyze"],
+      "bidirectional": true
+    }
+  },
+
+  "testFrameworks": {
+    "javascript": {
+      "jest": {
+        "unitTest": true,
+        "integrationTest": true,
+        "mocking": ["jest.fn()", "jest.mock()", "jest.spyOn()"],
+        "assertions": "expect",
+        "async": ["async/await", "done callback"],
+        "templates": "templates/jest/"
+      },
+      "vitest": {
+        "unitTest": true,
+        "integrationTest": true,
+        "mocking": ["vi.fn()", "vi.mock()", "vi.spyOn()"],
+        "assertions": "expect",
+        "async": ["async/await"],
+        "templates": "templates/vitest/"
+      },
+      "mocha": {
+        "unitTest": true,
+        "assertions": "chai",
+        "mocking": "sinon",
+        "templates": "templates/mocha/"
+      }
+    },
+    "python": {
+      "pytest": {
+        "unitTest": true,
+        "integrationTest": true,
+        "mocking": ["unittest.mock", "pytest-mock", "monkeypatch"],
+        "assertions": "assert",
+        "fixtures": true,
+        "parametrize": true,
+        "templates": "templates/pytest/"
+      },
+      "unittest": {
+        "unitTest": true,
+        "mocking": ["unittest.mock"],
+        "assertions": "self.assert*",
+        "templates": "templates/unittest/"
+      }
+    },
+    "go": {
+      "testing": {
+        "unitTest": true,
+        "mocking": ["gomock", "testify/mock"],
+        "assertions": "testify/assert",
+        "tableTests": true,
+        "templates": "templates/go/"
+      }
+    },
+    "rust": {
+      "cargo-test": {
+        "unitTest": true,
+        "assertions": "assert!",
+        "mocking": ["mockall"],
+        "templates": "templates/rust/"
+      }
+    }
+  },
+
+  "generationStrategies": {
+    "edgeCaseDetection": {
+      "description": "Identifies boundary conditions and edge cases",
+      "techniques": [
+        "null/undefined handling",
+        "empty collections",
+        "boundary values (0, -1, max)",
+        "type coercion scenarios",
+        "concurrent access patterns",
+        "resource exhaustion",
+        "malformed input"
+      ]
+    },
+    "behaviorAnalysis": {
+      "description": "Understands function behavior through AST and control flow analysis",
+      "techniques": [
+        "control flow graph analysis",
+        "branch coverage mapping",
+        "state transition detection",
+        "side effect identification",
+        "dependency injection points"
+      ]
+    },
+    "mutationGuidedGeneration": {
+      "description": "Generates tests based on potential mutations",
+      "techniques": [
+        "operator replacement scenarios",
+        "boundary condition changes",
+        "condition negation cases",
+        "return value alterations"
+      ]
+    },
+    "integrationScaffolding": {
+      "description": "Creates integration test structures",
+      "techniques": [
+        "API endpoint testing",
+        "database interaction tests",
+        "external service mocking",
+        "event-driven scenarios"
+      ]
+    }
+  },
+
+  "commands": {
+    "testforge:generate": "commands/generate.md",
+    "testforge:file": "commands/file.md",
+    "testforge:function": "commands/function.md",
+    "testforge:coverage": "commands/coverage.md",
+    "testforge:edge-cases": "commands/edge-cases.md",
+    "testforge:mocks": "commands/mocks.md",
+    "testforge:integration": "commands/integration.md",
+    "testforge:refactor": "commands/refactor.md",
+    "testforge:validate": "commands/validate.md",
+    "testforge:report": "commands/report.md"
+  },
+
+  "agents": {
+    "code-analyzer-agent": {
+      "path": "agents/code-analyzer-agent.md",
+      "model": "sonnet",
+      "description": "Analyzes code structure, dependencies, and behavior patterns",
+      "triggers": ["analyze code", "understand behavior", "code analysis"],
+      "capabilities": [
+        "AST parsing",
+        "control flow analysis",
+        "dependency mapping",
+        "complexity metrics",
+        "side effect detection"
+      ]
+    },
+    "signature-parser-agent": {
+      "path": "agents/signature-parser-agent.md",
+      "model": "haiku",
+      "description": "Parses function signatures, types, and parameter constraints",
+      "triggers": ["parse signature", "function parameters", "type analysis"],
+      "capabilities": [
+        "type inference",
+        "parameter validation",
+        "return type analysis",
+        "generic/template handling"
+      ]
+    },
+    "edge-case-detective-agent": {
+      "path": "agents/edge-case-detective-agent.md",
+      "model": "opus",
+      "description": "Identifies edge cases, boundary conditions, and failure scenarios",
+      "triggers": ["edge cases", "boundary conditions", "failure scenarios"],
+      "capabilities": [
+        "boundary value analysis",
+        "null/undefined scenarios",
+        "resource exhaustion",
+        "race conditions",
+        "error state enumeration"
+      ]
+    },
+    "unit-test-generator-agent": {
+      "path": "agents/unit-test-generator-agent.md",
+      "model": "sonnet",
+      "description": "Generates comprehensive unit tests with meaningful assertions",
+      "triggers": ["generate unit tests", "unit test", "test function"],
+      "capabilities": [
+        "AAA pattern generation",
+        "assertion crafting",
+        "test naming",
+        "setup/teardown"
+      ]
+    },
+    "integration-test-architect-agent": {
+      "path": "agents/integration-test-architect-agent.md",
+      "model": "opus",
+      "description": "Designs integration test structures and scenarios",
+      "triggers": ["integration test", "api test", "service test"],
+      "capabilities": [
+        "test scenario design",
+        "data flow analysis",
+        "service interaction mapping",
+        "test isolation strategies"
+      ]
+    },
+    "mock-factory-agent": {
+      "path": "agents/mock-factory-agent.md",
+      "model": "sonnet",
+      "description": "Generates mocks, stubs, spies, and test doubles",
+      "triggers": ["generate mock", "create stub", "test double", "spy"],
+      "capabilities": [
+        "dependency mocking",
+        "stub generation",
+        "spy creation",
+        "fake implementations",
+        "mock verification"
+      ]
+    },
+    "coverage-analyzer-agent": {
+      "path": "agents/coverage-analyzer-agent.md",
+      "model": "sonnet",
+      "description": "Analyzes coverage gaps and prioritizes test generation",
+      "triggers": ["coverage gap", "uncovered code", "missing tests"],
+      "capabilities": [
+        "branch coverage analysis",
+        "path coverage detection",
+        "untested code identification",
+        "prioritization scoring"
+      ]
+    },
+    "assertion-engineer-agent": {
+      "path": "agents/assertion-engineer-agent.md",
+      "model": "sonnet",
+      "description": "Crafts meaningful assertions that verify actual behavior",
+      "triggers": ["assertions", "verify behavior", "test expectations"],
+      "capabilities": [
+        "behavior verification",
+        "state assertions",
+        "output validation",
+        "side effect checking",
+        "invariant testing"
+      ]
+    },
+    "test-data-builder-agent": {
+      "path": "agents/test-data-builder-agent.md",
+      "model": "haiku",
+      "description": "Generates test fixtures, factories, and data builders",
+      "triggers": ["test data", "fixture", "factory", "builder pattern"],
+      "capabilities": [
+        "fixture generation",
+        "factory pattern implementation",
+        "builder pattern creation",
+        "data variation generation"
+      ]
+    },
+    "mutation-advisor-agent": {
+      "path": "agents/mutation-advisor-agent.md",
+      "model": "sonnet",
+      "description": "Suggests mutations to verify test effectiveness",
+      "triggers": ["mutation test", "test quality", "mutation score"],
+      "capabilities": [
+        "mutation suggestion",
+        "test weakness detection",
+        "survivable mutant analysis",
+        "test improvement recommendations"
+      ]
+    },
+    "framework-adapter-agent": {
+      "path": "agents/framework-adapter-agent.md",
+      "model": "haiku",
+      "description": "Adapts tests to specific testing frameworks",
+      "triggers": ["framework", "jest", "pytest", "vitest", "mocha"],
+      "capabilities": [
+        "framework detection",
+        "syntax adaptation",
+        "idiom application",
+        "best practices enforcement"
+      ]
+    },
+    "test-reviewer-agent": {
+      "path": "agents/test-reviewer-agent.md",
+      "model": "opus",
+      "description": "Reviews generated tests for quality and bug-catching ability",
+      "triggers": ["review tests", "validate tests", "test quality"],
+      "capabilities": [
+        "test quality scoring",
+        "bug-catching potential assessment",
+        "maintainability evaluation",
+        "improvement suggestions"
+      ]
+    }
+  },
+
+  "skills": {
+    "ast-analysis": {
+      "path": "skills/ast-analysis.md",
+      "description": "Abstract Syntax Tree parsing and code structure analysis",
+      "triggers": ["ast", "parse code", "code structure"]
+    },
+    "edge-case-enumeration": {
+      "path": "skills/edge-case-enumeration.md",
+      "description": "Systematic edge case and boundary condition identification",
+      "triggers": ["edge case", "boundary", "corner case"]
+    },
+    "mock-patterns": {
+      "path": "skills/mock-patterns.md",
+      "description": "Mocking patterns: mocks, stubs, spies, fakes, dummies",
+      "triggers": ["mock", "stub", "spy", "test double"]
+    },
+    "assertion-patterns": {
+      "path": "skills/assertion-patterns.md",
+      "description": "Effective assertion strategies and patterns",
+      "triggers": ["assertion", "expect", "verify", "assert"]
+    },
+    "test-data-generation": {
+      "path": "skills/test-data-generation.md",
+      "description": "Factory, builder, and fixture patterns for test data",
+      "triggers": ["test data", "fixture", "factory", "builder"]
+    },
+    "mutation-testing": {
+      "path": "skills/mutation-testing.md",
+      "description": "Mutation testing concepts and implementation",
+      "triggers": ["mutation", "mutant", "mutation score"]
+    },
+    "framework-idioms": {
+      "path": "skills/framework-idioms.md",
+      "description": "Framework-specific patterns and best practices",
+      "triggers": ["jest patterns", "pytest fixtures", "vitest mocks"]
+    }
+  },
+
+  "hooks": {
+    "postCodeEdit": {
+      "script": "hooks/scripts/suggest-tests-for-changes.sh",
+      "description": "Suggests tests for newly edited code"
+    },
+    "prePR": {
+      "script": "hooks/scripts/generate-pr-tests.sh",
+      "description": "Generates tests for PR changes"
+    },
+    "onLowCoverage": {
+      "script": "hooks/scripts/coverage-boost.sh",
+      "description": "Triggered when coverage drops below threshold"
+    },
+    "postTestGeneration": {
+      "script": "hooks/scripts/validate-generated-tests.sh",
+      "description": "Validates quality of generated tests"
+    },
+    "onBugFix": {
+      "script": "hooks/scripts/regression-test-generator.sh",
+      "description": "Generates regression test when bug is fixed"
+    }
+  },
+
+  "permissions": {
+    "filesystem": [
+      { "path": "**/*.test.*", "access": "readwrite" },
+      { "path": "**/*.spec.*", "access": "readwrite" },
+      { "path": "**/tests/**", "access": "readwrite" },
+      { "path": "**/__tests__/**", "access": "readwrite" },
+      { "path": "**/__mocks__/**", "access": "readwrite" },
+      { "path": "**/fixtures/**", "access": "readwrite" },
+      { "path": "**/coverage/**", "access": "read" },
+      { "path": "**/*.{js,ts,py,go,rs}", "access": "read" }
+    ],
+    "tools": ["Bash", "Read", "Write", "Edit", "Grep", "Glob", "Task"],
+    "mcpServers": ["context7", "github"]
+  },
+
+  "configuration": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "defaultFramework": {
+          "type": "string",
+          "enum": ["jest", "vitest", "pytest", "mocha", "go-testing", "cargo-test"],
+          "default": "vitest",
+          "description": "Default testing framework to use"
+        },
+        "generateEdgeCases": {
+          "type": "boolean",
+          "default": true,
+          "description": "Generate tests for edge cases and boundary conditions"
+        },
+        "generateMocks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-generate mocks for dependencies"
+        },
+        "coverageTarget": {
+          "type": "number",
+          "default": 85,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Target code coverage percentage"
+        },
+        "mutationTestingEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable mutation testing validation"
+        },
+        "testNamingStyle": {
+          "type": "string",
+          "enum": ["descriptive", "should", "given-when-then", "it"],
+          "default": "descriptive",
+          "description": "Test naming convention"
+        },
+        "assertionStyle": {
+          "type": "string",
+          "enum": ["expect", "assert", "should"],
+          "default": "expect",
+          "description": "Assertion library style"
+        },
+        "generateIntegrationTests": {
+          "type": "boolean",
+          "default": true,
+          "description": "Generate integration test scaffolds"
+        },
+        "maxTestsPerFunction": {
+          "type": "number",
+          "default": 15,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "Maximum number of tests to generate per function"
+        }
+      }
+    }
+  },
+
+  "activation": {
+    "auto": true,
+    "priority": 850,
+    "conditions": {
+      "filePatterns": ["**/*.{js,ts,py,go,rs}", "**/*.test.*", "**/*.spec.*"],
+      "keywords": [
+        "generate tests",
+        "create tests",
+        "test generation",
+        "increase coverage",
+        "edge cases",
+        "test this",
+        "write tests"
+      ]
+    }
+  },
+
+  "metrics": {
+    "track": [
+      "tests_generated",
+      "coverage_improvement",
+      "edge_cases_identified",
+      "bugs_caught_by_generated_tests",
+      "mutation_score_improvement",
+      "test_generation_time"
+    ]
+  }
+}

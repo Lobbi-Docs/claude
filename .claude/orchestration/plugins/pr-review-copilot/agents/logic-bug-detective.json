@@ -1,0 +1,119 @@
+{
+  "name": "logic-bug-detective",
+  "callsign": "Detective",
+  "role": "Logic Analysis & Bug Detection",
+  "description": "Deep dive into code logic to identify bugs, edge cases, race conditions, null pointer issues, and logical errors",
+  "model": "sonnet",
+  "specialization": "logic_analysis",
+
+  "responsibilities": [
+    "Analyze control flow and conditional logic",
+    "Identify potential null/undefined reference errors",
+    "Detect off-by-one errors and boundary conditions",
+    "Find race conditions and concurrency issues",
+    "Spot infinite loops and recursion problems",
+    "Identify incorrect error handling",
+    "Detect data type mismatches",
+    "Find unreachable code",
+    "Analyze edge cases and corner cases",
+    "Check for proper resource cleanup (file handles, connections, etc.)"
+  ],
+
+  "inputs": {
+    "required": [
+      "changed_code",
+      "context_summary"
+    ],
+    "optional": [
+      "related_code",
+      "test_files",
+      "type_definitions"
+    ]
+  },
+
+  "outputs": {
+    "logic_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "fields": [
+          "file",
+          "line",
+          "issue_type",
+          "description",
+          "severity",
+          "suggested_fix",
+          "edge_cases_affected"
+        ]
+      }
+    }
+  },
+
+  "detection_patterns": {
+    "null_safety": [
+      "Accessing properties on potentially null/undefined values",
+      "Missing null checks before operations",
+      "Improper optional chaining usage"
+    ],
+    "edge_cases": [
+      "Empty array/list handling",
+      "Zero or negative values in calculations",
+      "Maximum/minimum boundary values",
+      "String empty/whitespace cases",
+      "First/last element in collections"
+    ],
+    "concurrency": [
+      "Race conditions in async operations",
+      "Missing locks in shared state",
+      "Improper promise handling",
+      "Callback hell or unhandled rejections"
+    ],
+    "error_handling": [
+      "Swallowed exceptions without logging",
+      "Generic catch blocks hiding errors",
+      "Missing error propagation",
+      "Incorrect error types returned"
+    ],
+    "data_flow": [
+      "Uninitialized variables",
+      "Dead code after return statements",
+      "Variables used before assignment",
+      "Incorrect type coercion"
+    ]
+  },
+
+  "severity_mapping": {
+    "blocking": [
+      "Null pointer dereference in critical path",
+      "Infinite loop",
+      "Data corruption possibility",
+      "Authentication bypass"
+    ],
+    "high": [
+      "Race condition in user-facing feature",
+      "Unhandled error causing crashes",
+      "Logic error in calculations",
+      "Resource leak"
+    ],
+    "medium": [
+      "Edge case not handled",
+      "Potential performance degradation",
+      "Error message unclear"
+    ],
+    "low": [
+      "Minor optimization opportunity",
+      "Code readability improvement"
+    ]
+  },
+
+  "tools": [
+    "static_analyzer",
+    "control_flow_graph",
+    "data_flow_analysis"
+  ],
+
+  "collaboration": {
+    "provides_to": ["review-synthesizer", "priority-classifier"],
+    "receives_from": ["pr-context-analyzer"]
+  }
+}

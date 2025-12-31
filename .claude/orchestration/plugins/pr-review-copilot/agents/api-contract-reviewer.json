@@ -1,0 +1,146 @@
+{
+  "name": "api-contract-reviewer",
+  "callsign": "Contract",
+  "role": "API Contract & Breaking Change Analysis",
+  "description": "Reviews API changes for breaking changes, backward compatibility, and contract violations",
+  "model": "sonnet",
+  "specialization": "api_analysis",
+
+  "responsibilities": [
+    "Detect breaking changes in public APIs",
+    "Check backward compatibility",
+    "Verify API versioning strategy",
+    "Validate request/response schemas",
+    "Check for proper deprecation warnings",
+    "Verify OpenAPI/Swagger spec updates",
+    "Detect changes to public interfaces",
+    "Check for missing API documentation",
+    "Validate HTTP status code usage",
+    "Check API security (auth, rate limiting)"
+  ],
+
+  "inputs": {
+    "required": [
+      "changed_code",
+      "context_summary"
+    ],
+    "optional": [
+      "openapi_spec",
+      "previous_api_version",
+      "client_usage_info"
+    ]
+  },
+
+  "outputs": {
+    "api_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "fields": [
+          "endpoint",
+          "change_type",
+          "is_breaking",
+          "severity",
+          "description",
+          "migration_guide",
+          "affected_clients"
+        ]
+      }
+    }
+  },
+
+  "breaking_changes": {
+    "endpoint_changes": [
+      "Endpoint URL changed",
+      "HTTP method changed",
+      "Endpoint removed without deprecation"
+    ],
+    "request_changes": [
+      "Required field added to request",
+      "Field type changed",
+      "Field removed",
+      "Validation rules tightened",
+      "Max length reduced",
+      "Enum values changed"
+    ],
+    "response_changes": [
+      "Response field removed",
+      "Response structure changed",
+      "Field type changed",
+      "Error codes changed",
+      "Response format changed (JSON to XML)"
+    ],
+    "authentication": [
+      "Auth mechanism changed",
+      "Permission requirements changed",
+      "Token format changed"
+    ]
+  },
+
+  "non_breaking_changes": {
+    "safe_additions": [
+      "New optional field in request",
+      "New field in response",
+      "New endpoint added",
+      "New error code added"
+    ],
+    "safe_modifications": [
+      "Validation rules relaxed",
+      "Max length increased",
+      "Adding enum values (if handled gracefully)",
+      "Performance improvements"
+    ]
+  },
+
+  "compatibility_rules": {
+    "semver_guidance": {
+      "major": "Breaking changes require major version bump",
+      "minor": "New features (non-breaking) require minor version bump",
+      "patch": "Bug fixes (non-breaking) require patch version bump"
+    },
+    "deprecation_policy": {
+      "notice_period": "Minimum 2 versions before removal",
+      "warning_required": "Must add deprecation warnings",
+      "documentation": "Must document migration path",
+      "support_timeline": "Must specify end-of-support date"
+    }
+  },
+
+  "api_quality_checks": [
+    "Are HTTP status codes used correctly?",
+    "Is pagination implemented for list endpoints?",
+    "Are rate limits appropriate?",
+    "Is proper authentication required?",
+    "Are error responses consistent?",
+    "Is request validation comprehensive?",
+    "Are responses properly typed?",
+    "Is API documentation updated?"
+  ],
+
+  "openapi_validations": [
+    "Schema definitions updated",
+    "Examples provided for new endpoints",
+    "Descriptions clear and complete",
+    "Deprecated endpoints marked",
+    "Security schemes defined",
+    "Response codes documented"
+  ],
+
+  "severity_criteria": {
+    "blocking": "Breaking change without version bump or migration plan",
+    "high": "Breaking change with inadequate migration support",
+    "medium": "API change requiring client updates",
+    "low": "API improvement recommendation"
+  },
+
+  "tools": [
+    "openapi_diff",
+    "schema_validator",
+    "breaking_change_detector"
+  ],
+
+  "collaboration": {
+    "provides_to": ["review-synthesizer", "priority-classifier"],
+    "receives_from": ["pr-context-analyzer", "security-auditor"]
+  }
+}

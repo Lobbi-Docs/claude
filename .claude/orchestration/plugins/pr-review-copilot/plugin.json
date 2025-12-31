@@ -1,0 +1,154 @@
+{
+  "name": "pr-review-copilot",
+  "version": "1.0.0",
+  "callsign": "Reviewer",
+  "description": "Intelligent PR review system that catches real bugs, security issues, performance problems, and edge cases through multi-agent code analysis",
+  "author": "Claude Orchestration Team",
+  "license": "MIT",
+
+  "keywords": [
+    "pull request",
+    "pr",
+    "review",
+    "code review",
+    "pr review",
+    "merge request",
+    "diff",
+    "changes",
+    "security audit",
+    "bug detection",
+    "edge cases",
+    "performance",
+    "test coverage",
+    "breaking changes",
+    "api review",
+    "logic review",
+    "vulnerability",
+    "code quality",
+    "peer review",
+    "pr comments",
+    "review comments",
+    "approve pr",
+    "request changes"
+  ],
+
+  "triggers": {
+    "auto": [
+      "review this pr",
+      "review pull request",
+      "check this pr",
+      "pr review",
+      "code review",
+      "review changes",
+      "review my code",
+      "look at this pr",
+      "check pull request",
+      "review diff"
+    ],
+    "manual": [
+      "/review",
+      "/pr-review",
+      "/code-review",
+      "/review-pr"
+    ]
+  },
+
+  "capabilities": {
+    "review_types": [
+      "security_audit",
+      "logic_analysis",
+      "performance_review",
+      "test_coverage",
+      "api_contract_review",
+      "database_migration_review",
+      "pattern_consistency",
+      "edge_case_detection"
+    ],
+    "analysis_depth": [
+      "quick_scan",
+      "standard_review",
+      "deep_audit",
+      "security_focused"
+    ],
+    "outputs": [
+      "review_comments",
+      "severity_classification",
+      "approval_recommendation",
+      "security_report",
+      "test_gap_analysis",
+      "refactor_suggestions"
+    ],
+    "integrations": [
+      "github_pr_comments",
+      "gitlab_mr_comments",
+      "bitbucket_pr",
+      "azure_devops_pr"
+    ]
+  },
+
+  "configuration": {
+    "default_review_depth": "standard_review",
+    "auto_approve_threshold": "none",
+    "block_on_security_issues": true,
+    "block_on_missing_tests": false,
+    "require_breaking_change_docs": true,
+    "max_review_time_minutes": 15,
+    "parallel_agent_reviews": true,
+    "generate_inline_comments": true,
+    "severity_levels": ["blocking", "high", "medium", "low", "nitpick"]
+  },
+
+  "integration": {
+    "required_mcps": ["github"],
+    "optional_mcps": ["context7", "ide"],
+    "required_skills": ["testing", "git-workflows"],
+    "recommended_skills": ["authentication", "database", "rest-api"],
+    "hooks": ["pre-review", "post-review", "comment-generation"]
+  },
+
+  "metrics": {
+    "track": [
+      "reviews_completed",
+      "bugs_caught",
+      "security_issues_found",
+      "performance_issues_detected",
+      "test_gaps_identified",
+      "false_positive_rate",
+      "time_to_review",
+      "developer_satisfaction"
+    ]
+  },
+
+  "workflow_selection": {
+    "small_pr": {
+      "condition": "lines_changed < 100",
+      "workflow": "quick_review",
+      "agents": ["context", "logic", "security", "synthesizer"],
+      "estimated_time": "2-3 minutes"
+    },
+    "medium_pr": {
+      "condition": "100 <= lines_changed < 500",
+      "workflow": "standard_review",
+      "agents": ["context", "logic", "security", "performance", "tests", "patterns", "synthesizer", "priority"],
+      "estimated_time": "5-8 minutes"
+    },
+    "large_pr": {
+      "condition": "lines_changed >= 500",
+      "workflow": "deep_review",
+      "agents": "all",
+      "estimated_time": "10-15 minutes"
+    },
+    "security_critical": {
+      "condition": "files include auth/* or security/* or changes to permissions",
+      "workflow": "security_focused",
+      "agents": ["context", "security", "logic", "api", "tests", "synthesizer"],
+      "estimated_time": "8-12 minutes"
+    },
+    "database_migration": {
+      "condition": "files include migrations/* or schema changes",
+      "workflow": "migration_review",
+      "agents": ["context", "database", "api", "logic", "tests", "synthesizer"],
+      "estimated_time": "6-10 minutes"
+    }
+  }
+}

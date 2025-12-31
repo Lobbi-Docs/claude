@@ -1,0 +1,66 @@
+{
+  "name": "quick_review",
+  "description": "Fast review for small PRs (< 100 lines changed)",
+  "trigger_condition": "lines_changed < 100",
+  "estimated_duration": "2-3 minutes",
+  "max_duration_minutes": 5,
+
+  "phases": [
+    {
+      "name": "context_analysis",
+      "agents": ["pr-context-analyzer"],
+      "execution": "sequential",
+      "timeout_minutes": 1,
+      "outputs_required": ["context_summary", "risk_indicators"]
+    },
+    {
+      "name": "quick_scan",
+      "agents": [
+        "logic-bug-detective",
+        "security-auditor"
+      ],
+      "execution": "parallel",
+      "timeout_minutes": 2,
+      "depends_on": ["context_analysis"],
+      "inputs_from": ["pr-context-analyzer"]
+    },
+    {
+      "name": "synthesis",
+      "agents": [
+        "priority-classifier",
+        "review-synthesizer"
+      ],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "depends_on": ["quick_scan"],
+      "inputs_from": ["logic-bug-detective", "security-auditor", "pr-context-analyzer"]
+    }
+  ],
+
+  "focus_areas": [
+    "critical_bugs",
+    "security_vulnerabilities",
+    "obvious_logic_errors"
+  ],
+
+  "skip_checks": [
+    "pattern_consistency",
+    "performance_deep_dive",
+    "comprehensive_test_coverage"
+  ],
+
+  "fast_fail": {
+    "enabled": true,
+    "conditions": [
+      "critical_security_vulnerability",
+      "syntax_errors",
+      "obvious_null_pointer"
+    ]
+  },
+
+  "output_format": {
+    "inline_comments": true,
+    "summary_only": false,
+    "detailed_explanations": false
+  }
+}

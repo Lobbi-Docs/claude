@@ -1,0 +1,170 @@
+{
+  "name": "security_focused",
+  "description": "Security-focused review for authentication, authorization, and sensitive data changes",
+  "trigger_condition": "files_match('**/auth/**', '**/security/**', '**/permissions/**') OR pr_labels_include('security')",
+  "estimated_duration": "8-12 minutes",
+  "max_duration_minutes": 15,
+
+  "phases": [
+    {
+      "name": "context_and_security_mapping",
+      "agents": ["pr-context-analyzer"],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "outputs_required": [
+        "context_summary",
+        "security_sensitive_files",
+        "authentication_changes",
+        "permission_changes",
+        "data_flow_map"
+      ]
+    },
+    {
+      "name": "deep_security_audit",
+      "agents": ["security-auditor"],
+      "execution": "sequential",
+      "timeout_minutes": 5,
+      "depends_on": ["context_and_security_mapping"],
+      "inputs_from": ["pr-context-analyzer"],
+      "additional_checks": [
+        "owasp_top_10",
+        "cwe_common_weaknesses",
+        "auth_bypass_scenarios",
+        "privilege_escalation",
+        "data_leakage",
+        "crypto_weaknesses"
+      ]
+    },
+    {
+      "name": "supporting_analysis",
+      "agents": [
+        "logic-bug-detective",
+        "api-contract-reviewer",
+        "test-coverage-validator"
+      ],
+      "execution": "parallel",
+      "timeout_minutes": 4,
+      "depends_on": ["context_and_security_mapping"],
+      "inputs_from": ["pr-context-analyzer"],
+      "focus": [
+        "authentication_logic_errors",
+        "authorization_logic_errors",
+        "api_security",
+        "security_test_coverage"
+      ]
+    },
+    {
+      "name": "threat_modeling",
+      "description": "Model potential attack vectors and threat scenarios",
+      "agents": ["priority-classifier"],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "depends_on": ["deep_security_audit", "supporting_analysis"],
+      "inputs_from": "all_previous_agents",
+      "additional_analysis": [
+        "attack_surface_changes",
+        "threat_scenarios",
+        "exploitability_assessment"
+      ]
+    },
+    {
+      "name": "security_synthesis",
+      "agents": ["review-synthesizer"],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "depends_on": ["threat_modeling"],
+      "inputs_from": "all_previous_agents",
+      "additional_outputs": [
+        "security_risk_assessment",
+        "compliance_check",
+        "security_testing_recommendations"
+      ]
+    }
+  ],
+
+  "focus_areas": [
+    "owasp_top_10",
+    "authentication_vulnerabilities",
+    "authorization_vulnerabilities",
+    "injection_attacks",
+    "data_exposure",
+    "cryptographic_issues",
+    "session_management",
+    "input_validation",
+    "output_encoding"
+  ],
+
+  "security_checklist": {
+    "authentication": [
+      "Are passwords hashed using strong algorithms (bcrypt, argon2)?",
+      "Is multi-factor authentication implemented correctly?",
+      "Are session tokens cryptographically secure?",
+      "Is password reset flow secure?",
+      "Are authentication errors generic (no user enumeration)?"
+    ],
+    "authorization": [
+      "Are permission checks present on all endpoints?",
+      "Is vertical privilege escalation prevented?",
+      "Is horizontal privilege escalation prevented (IDOR)?",
+      "Are role checks implemented correctly?",
+      "Is object-level authorization enforced?"
+    ],
+    "input_validation": [
+      "Is all user input validated?",
+      "Are SQL injection vulnerabilities prevented?",
+      "Are NoSQL injection vulnerabilities prevented?",
+      "Is XSS prevention in place?",
+      "Are file uploads validated and sanitized?"
+    ],
+    "sensitive_data": [
+      "Are passwords never logged or exposed?",
+      "Are API keys and secrets properly protected?",
+      "Is PII properly encrypted?",
+      "Are security tokens handled securely?",
+      "Is sensitive data exposure prevented in error messages?"
+    ],
+    "cryptography": [
+      "Are strong encryption algorithms used?",
+      "Are deprecated crypto functions avoided?",
+      "Is cryptographic randomness proper?",
+      "Is key management secure?",
+      "Are secure protocols used (TLS 1.2+)?"
+    ]
+  },
+
+  "compliance_checks": {
+    "enabled": true,
+    "standards": [
+      "OWASP_Top_10",
+      "CWE_Top_25",
+      "PCI_DSS",
+      "GDPR",
+      "SOC2"
+    ]
+  },
+
+  "quality_gates": {
+    "block_on_security_low_or_higher": true,
+    "require_security_tests": true,
+    "require_threat_model_update": true,
+    "require_security_team_review": true
+  },
+
+  "output_format": {
+    "inline_comments": true,
+    "summary_only": false,
+    "detailed_explanations": true,
+    "include_code_suggestions": true,
+    "include_attack_scenarios": true,
+    "include_cve_references": true,
+    "include_owasp_mapping": true,
+    "security_risk_matrix": true,
+    "threat_model_update": true
+  },
+
+  "escalation": {
+    "auto_notify_security_team": true,
+    "create_security_ticket_for_high_findings": true,
+    "require_penetration_testing_if_critical": true
+  }
+}

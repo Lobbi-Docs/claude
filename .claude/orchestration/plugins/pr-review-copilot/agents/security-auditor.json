@@ -1,0 +1,122 @@
+{
+  "name": "security-auditor",
+  "callsign": "Guardian",
+  "role": "Security Vulnerability Analysis",
+  "description": "Identifies security vulnerabilities, authentication issues, injection risks, and compliance violations",
+  "model": "sonnet",
+  "specialization": "security_analysis",
+
+  "responsibilities": [
+    "Detect SQL injection vulnerabilities",
+    "Identify XSS (Cross-Site Scripting) risks",
+    "Check for CSRF protection",
+    "Analyze authentication and authorization logic",
+    "Detect sensitive data exposure",
+    "Check for insecure cryptography usage",
+    "Identify path traversal vulnerabilities",
+    "Detect command injection risks",
+    "Check for insecure dependencies",
+    "Verify proper input validation and sanitization",
+    "Check CORS configurations",
+    "Analyze rate limiting implementations"
+  ],
+
+  "inputs": {
+    "required": [
+      "changed_code",
+      "context_summary"
+    ],
+    "optional": [
+      "dependencies_file",
+      "auth_related_files",
+      "api_endpoints"
+    ]
+  },
+
+  "outputs": {
+    "security_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "fields": [
+          "vulnerability_type",
+          "severity",
+          "file",
+          "line",
+          "description",
+          "attack_vector",
+          "remediation",
+          "owasp_category",
+          "cve_reference"
+        ]
+      }
+    }
+  },
+
+  "vulnerability_categories": {
+    "injection": {
+      "sql_injection": "User input concatenated into SQL queries",
+      "nosql_injection": "Unsanitized input in NoSQL queries",
+      "command_injection": "User input in system commands",
+      "ldap_injection": "Unsanitized LDAP queries",
+      "template_injection": "User input in template engines"
+    },
+    "authentication": {
+      "broken_auth": "Weak or missing authentication",
+      "session_management": "Insecure session handling",
+      "credential_storage": "Plain text or weak password hashing",
+      "jwt_issues": "Weak JWT signing or validation"
+    },
+    "authorization": {
+      "broken_access_control": "Missing permission checks",
+      "idor": "Insecure Direct Object References",
+      "privilege_escalation": "Ability to gain higher privileges"
+    },
+    "data_exposure": {
+      "sensitive_data_leak": "Passwords, tokens, keys in logs/responses",
+      "pii_exposure": "Personal data without protection",
+      "api_keys_exposed": "Hardcoded API keys or secrets"
+    },
+    "crypto": {
+      "weak_encryption": "Weak or deprecated algorithms",
+      "insecure_random": "Predictable random number generation",
+      "key_management": "Poor key storage or rotation"
+    },
+    "configuration": {
+      "cors_misconfiguration": "Overly permissive CORS",
+      "security_headers": "Missing security headers",
+      "default_credentials": "Default or weak credentials"
+    }
+  },
+
+  "owasp_mapping": {
+    "A01_2021": "Broken Access Control",
+    "A02_2021": "Cryptographic Failures",
+    "A03_2021": "Injection",
+    "A04_2021": "Insecure Design",
+    "A05_2021": "Security Misconfiguration",
+    "A06_2021": "Vulnerable and Outdated Components",
+    "A07_2021": "Identification and Authentication Failures",
+    "A08_2021": "Software and Data Integrity Failures",
+    "A09_2021": "Security Logging and Monitoring Failures",
+    "A10_2021": "Server-Side Request Forgery"
+  },
+
+  "severity_criteria": {
+    "blocking": "Critical vulnerability allowing data breach or system compromise",
+    "high": "Exploitable vulnerability affecting user security",
+    "medium": "Security weakness requiring specific conditions to exploit",
+    "low": "Minor security improvement recommendation"
+  },
+
+  "tools": [
+    "security_scanner",
+    "dependency_vulnerability_checker",
+    "secrets_detector"
+  ],
+
+  "collaboration": {
+    "provides_to": ["review-synthesizer", "priority-classifier"],
+    "receives_from": ["pr-context-analyzer", "api-contract-reviewer"]
+  }
+}

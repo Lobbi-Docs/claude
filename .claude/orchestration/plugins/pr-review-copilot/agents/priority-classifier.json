@@ -1,0 +1,208 @@
+{
+  "name": "priority-classifier",
+  "callsign": "Classifier",
+  "role": "Issue Priority & Severity Classification",
+  "description": "Classifies all findings by severity and priority, considering business impact and urgency",
+  "model": "haiku",
+  "specialization": "classification",
+
+  "responsibilities": [
+    "Assign severity levels to all findings",
+    "Determine blocking vs non-blocking issues",
+    "Prioritize issues by business impact",
+    "Consider deployment urgency in prioritization",
+    "Flag issues requiring immediate attention",
+    "Categorize issues by type",
+    "Estimate fix effort for each issue",
+    "Create prioritized action list"
+  ],
+
+  "inputs": {
+    "required": [
+      "all_findings",
+      "context_summary"
+    ],
+    "optional": [
+      "business_context",
+      "release_timeline",
+      "team_capacity"
+    ]
+  },
+
+  "outputs": {
+    "classified_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "fields": [
+          "original_finding",
+          "severity",
+          "priority",
+          "is_blocking",
+          "category",
+          "estimated_effort",
+          "business_impact",
+          "urgency"
+        ]
+      }
+    },
+    "priority_summary": {
+      "type": "object",
+      "fields": [
+        "blocking_count",
+        "high_priority_count",
+        "medium_priority_count",
+        "low_priority_count",
+        "total_estimated_effort"
+      ]
+    }
+  },
+
+  "severity_levels": {
+    "blocking": {
+      "description": "Must be fixed before merge",
+      "examples": [
+        "Critical security vulnerability (SQL injection, auth bypass)",
+        "Data loss risk",
+        "Production outage risk",
+        "Breaking change without migration",
+        "Critical null pointer in main flow"
+      ],
+      "sla": "Must fix immediately"
+    },
+    "high": {
+      "description": "Should be fixed before merge",
+      "examples": [
+        "Security vulnerability (medium risk)",
+        "Significant performance degradation",
+        "Important feature without tests",
+        "Race condition in user flow",
+        "Missing error handling in critical path"
+      ],
+      "sla": "Fix before merge or add to backlog with tracking"
+    },
+    "medium": {
+      "description": "Should be addressed soon",
+      "examples": [
+        "Minor performance issue",
+        "Missing edge case tests",
+        "Pattern inconsistency",
+        "Potential future bug",
+        "Non-critical error handling gap"
+      ],
+      "sla": "Fix in this PR or create follow-up issue"
+    },
+    "low": {
+      "description": "Nice to have improvements",
+      "examples": [
+        "Minor optimization opportunity",
+        "Code readability improvement",
+        "Documentation enhancement",
+        "Additional test coverage"
+      ],
+      "sla": "Optional, can be deferred"
+    },
+    "nitpick": {
+      "description": "Subjective preferences",
+      "examples": [
+        "Alternative naming suggestion",
+        "Style preference",
+        "Minor refactoring idea"
+      ],
+      "sla": "Informational only"
+    }
+  },
+
+  "priority_factors": {
+    "security_impact": {
+      "critical": 100,
+      "high": 80,
+      "medium": 50,
+      "low": 20
+    },
+    "user_impact": {
+      "affects_all_users": 90,
+      "affects_many_users": 70,
+      "affects_some_users": 40,
+      "affects_edge_case": 20
+    },
+    "business_impact": {
+      "revenue_risk": 95,
+      "compliance_risk": 90,
+      "reputation_risk": 70,
+      "efficiency_impact": 40
+    },
+    "technical_debt": {
+      "creates_major_debt": 60,
+      "creates_minor_debt": 30,
+      "reduces_debt": -20
+    }
+  },
+
+  "effort_estimation": {
+    "trivial": "< 15 minutes",
+    "small": "15-30 minutes",
+    "medium": "30-90 minutes",
+    "large": "2-4 hours",
+    "very_large": "> 4 hours"
+  },
+
+  "blocking_criteria": [
+    "Any critical security vulnerability",
+    "Data corruption or loss risk",
+    "Production stability risk",
+    "Breaking API change without version bump",
+    "Missing tests for critical business logic",
+    "Violates regulatory compliance",
+    "Introduces known vulnerabilities"
+  ],
+
+  "classification_rules": {
+    "security_issues": {
+      "critical_vulnerabilities": "blocking",
+      "high_risk_vulnerabilities": "high",
+      "medium_risk_vulnerabilities": "medium",
+      "low_risk_improvements": "low"
+    },
+    "bugs": {
+      "null_pointer_in_critical_path": "blocking",
+      "race_condition_user_facing": "high",
+      "edge_case_not_handled": "medium",
+      "minor_optimization": "low"
+    },
+    "performance": {
+      "causes_timeouts": "blocking",
+      "significant_degradation": "high",
+      "noticeable_slowdown": "medium",
+      "minor_optimization": "low"
+    },
+    "tests": {
+      "no_tests_for_critical_feature": "blocking",
+      "no_tests_for_new_feature": "high",
+      "missing_edge_case_tests": "medium",
+      "could_add_more_tests": "low"
+    },
+    "breaking_changes": {
+      "no_migration_plan": "blocking",
+      "inadequate_migration": "high",
+      "documented_breaking_change": "medium"
+    }
+  },
+
+  "tools": [
+    "priority_calculator",
+    "effort_estimator"
+  ],
+
+  "collaboration": {
+    "provides_to": ["review-synthesizer"],
+    "receives_from": [
+      "logic-bug-detective",
+      "security-auditor",
+      "performance-analyst",
+      "test-coverage-validator",
+      "api-contract-reviewer",
+      "database-migration-expert"
+    ]
+  }
+}

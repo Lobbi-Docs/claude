@@ -1,0 +1,480 @@
+{
+  "workflows": [
+    {
+      "id": "quick-audit",
+      "name": "Quick Dependency Audit",
+      "description": "Fast scan to see what can be safely upgraded today (5-10 minutes)",
+      "use_case": "Daily/weekly maintenance - identify low-risk upgrades",
+      "estimated_duration": "5-10 minutes",
+      "trigger": "Manual or scheduled",
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Scan Dependencies",
+          "agents": ["dependency-analyzer"],
+          "actions": [
+            "Parse package manifests",
+            "Query registries for updates",
+            "Categorize by update type (patch/minor/major)",
+            "Check for security vulnerabilities"
+          ],
+          "output": "DependencyReport"
+        },
+        {
+          "phase": 2,
+          "name": "Risk Assessment",
+          "agents": ["risk-assessor", "compatibility-checker"],
+          "parallel": true,
+          "actions": [
+            "Calculate risk scores for each upgrade",
+            "Check peer dependency compatibility",
+            "Identify conflicts"
+          ],
+          "output": "RiskAssessment, CompatibilityReport"
+        },
+        {
+          "phase": 3,
+          "name": "Generate Report",
+          "agents": ["documentation-generator"],
+          "actions": [
+            "Create upgrade recommendations report",
+            "Categorize: safe-to-upgrade, needs-review, high-risk",
+            "Generate CLI output"
+          ],
+          "output": "Markdown report with actionable recommendations"
+        }
+      ],
+      "deliverables": [
+        "Dependency audit report",
+        "List of safe upgrades",
+        "Security vulnerability summary",
+        "Recommended next steps"
+      ]
+    },
+
+    {
+      "id": "single-package-upgrade",
+      "name": "Single Package Safe Upgrade",
+      "description": "Comprehensive upgrade of a single dependency with full safety checks",
+      "use_case": "Upgrade one package (e.g., 'npm upgrade react to latest')",
+      "estimated_duration": "15-30 minutes",
+      "trigger": "Manual: /upgrade <package> [version]",
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Analysis",
+          "agents": ["dependency-analyzer", "breaking-change-detective"],
+          "parallel": true,
+          "actions": [
+            "Get current and target versions",
+            "Fetch CHANGELOGs and release notes",
+            "Extract breaking changes",
+            "Download migration guides"
+          ],
+          "output": "DependencyInfo, BreakingChangeReport"
+        },
+        {
+          "phase": 2,
+          "name": "Impact Assessment",
+          "agents": ["code-impact-scanner", "risk-assessor", "compatibility-checker"],
+          "parallel": true,
+          "actions": [
+            "Scan codebase for affected code",
+            "Calculate risk score",
+            "Check compatibility with other dependencies"
+          ],
+          "output": "CodeImpactReport, RiskAssessment, CompatibilityReport"
+        },
+        {
+          "phase": 3,
+          "name": "Migration Planning",
+          "agents": ["migration-code-generator", "test-strategy-planner", "rollback-strategist"],
+          "parallel": true,
+          "actions": [
+            "Generate codemods and migration scripts",
+            "Plan targeted test strategy",
+            "Create rollback plan and backup branch"
+          ],
+          "output": "MigrationArtifacts, TestPlan, RollbackPlan"
+        },
+        {
+          "phase": 4,
+          "name": "Approval Gate",
+          "agents": [],
+          "actions": [
+            "Present full upgrade plan to user",
+            "Show risk score, impacts, and migration steps",
+            "Wait for user approval or rejection"
+          ],
+          "user_interaction": true,
+          "approval_required": true
+        },
+        {
+          "phase": 5,
+          "name": "Execute Upgrade",
+          "agents": ["dependency-analyzer", "migration-code-generator"],
+          "sequential": true,
+          "actions": [
+            "Create backup branch",
+            "Update package version in manifest",
+            "Run package manager install/update",
+            "Apply migration scripts and codemods",
+            "Commit changes"
+          ],
+          "output": "Updated codebase"
+        },
+        {
+          "phase": 6,
+          "name": "Testing",
+          "agents": ["test-executor"],
+          "actions": [
+            "Run targeted test suite",
+            "Execute smoke tests",
+            "Parse and report results"
+          ],
+          "output": "TestResults"
+        },
+        {
+          "phase": 7,
+          "name": "Validation",
+          "agents": ["migration-validator", "documentation-generator"],
+          "actions": [
+            "Verify migrations applied correctly",
+            "Check no deprecated APIs remain",
+            "Generate upgrade documentation",
+            "Create PR description and commit message"
+          ],
+          "output": "ValidationReport, UpgradeDocumentation"
+        }
+      ],
+      "deliverables": [
+        "Upgraded package with all migrations applied",
+        "Passing test suite",
+        "Comprehensive documentation",
+        "PR ready for review",
+        "Rollback plan if needed"
+      ]
+    },
+
+    {
+      "id": "major-version-migration",
+      "name": "Major Version Migration (Incremental)",
+      "description": "Safe migration across major versions with incremental steps (e.g., v2 → v5)",
+      "use_case": "Large version jumps that need to be broken into safe steps",
+      "estimated_duration": "1-4 hours",
+      "trigger": "Manual: /upgrade-major <package> <target-version>",
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Path Planning",
+          "agents": ["dependency-analyzer", "incremental-path-planner", "breaking-change-detective"],
+          "actions": [
+            "Analyze version gap (e.g., v2.1.0 → v5.3.0)",
+            "Identify intermediate stable versions",
+            "Calculate optimal path (e.g., v2→v3→v4→v5)",
+            "Fetch breaking changes for each step"
+          ],
+          "output": "UpgradePath with step-by-step plan"
+        },
+        {
+          "phase": 2,
+          "name": "Per-Step Execution",
+          "agents": "All agents (reused for each step)",
+          "iterative": true,
+          "actions": [
+            "For each step in upgrade path:",
+            "  - Analyze breaking changes for this version",
+            "  - Scan code impact",
+            "  - Generate migrations",
+            "  - Apply upgrade",
+            "  - Run tests",
+            "  - Validate checkpoint",
+            "  - Commit changes",
+            "  - Proceed to next step or rollback on failure"
+          ],
+          "checkpoints": true,
+          "output": "Incremental commits, one per major version"
+        },
+        {
+          "phase": 3,
+          "name": "Final Validation",
+          "agents": ["migration-validator", "test-executor"],
+          "actions": [
+            "Run full test suite",
+            "Verify all intermediate migrations successful",
+            "Compare final state to expected target version"
+          ],
+          "output": "ValidationReport"
+        },
+        {
+          "phase": 4,
+          "name": "Documentation",
+          "agents": ["documentation-generator"],
+          "actions": [
+            "Document entire migration journey",
+            "Create summary of all changes",
+            "Generate PR with detailed description",
+            "Provide rollback instructions"
+          ],
+          "output": "Comprehensive migration documentation"
+        }
+      ],
+      "deliverables": [
+        "Package upgraded to target major version",
+        "Multiple commits (one per major version step)",
+        "Full test suite passing",
+        "Detailed migration documentation",
+        "Rollback plan for each step"
+      ]
+    },
+
+    {
+      "id": "bulk-safe-upgrades",
+      "name": "Bulk Safe Upgrades (Patch/Minor Only)",
+      "description": "Upgrade all low-risk dependencies in one operation",
+      "use_case": "Monthly maintenance - apply all safe updates at once",
+      "estimated_duration": "20-40 minutes",
+      "trigger": "Manual: /upgrade-all-safe",
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Identify Safe Upgrades",
+          "agents": ["dependency-analyzer", "risk-assessor"],
+          "actions": [
+            "Scan all dependencies",
+            "Filter to patch/minor updates only",
+            "Check for security vulnerabilities",
+            "Assess risk for each candidate",
+            "Select only low-risk upgrades"
+          ],
+          "output": "List of safe upgrade candidates"
+        },
+        {
+          "phase": 2,
+          "name": "Compatibility Check",
+          "agents": ["compatibility-checker"],
+          "actions": [
+            "Check all upgrades together for conflicts",
+            "Verify peer dependency compatibility",
+            "Resolve any version conflicts"
+          ],
+          "output": "CompatibilityReport for bulk upgrade"
+        },
+        {
+          "phase": 3,
+          "name": "Apply Upgrades",
+          "agents": ["dependency-analyzer", "rollback-strategist"],
+          "actions": [
+            "Create backup branch",
+            "Update all package versions in manifest",
+            "Run package manager update",
+            "Commit changes"
+          ],
+          "output": "Updated package manifest and lockfile"
+        },
+        {
+          "phase": 4,
+          "name": "Testing",
+          "agents": ["test-strategy-planner", "test-executor"],
+          "actions": [
+            "Plan comprehensive test strategy",
+            "Run full test suite (since multiple packages changed)",
+            "Report any failures"
+          ],
+          "output": "TestResults"
+        },
+        {
+          "phase": 5,
+          "name": "Validation & Documentation",
+          "agents": ["migration-validator", "documentation-generator"],
+          "actions": [
+            "Verify all upgrades successful",
+            "Generate summary of all changes",
+            "Create commit message and PR description"
+          ],
+          "output": "ValidationReport, UpgradeDocumentation"
+        }
+      ],
+      "deliverables": [
+        "All safe dependencies upgraded",
+        "Single commit with all changes",
+        "Test suite passing",
+        "Summary report of upgraded packages",
+        "Rollback plan"
+      ]
+    },
+
+    {
+      "id": "breaking-change-analysis",
+      "name": "Breaking Change Deep Dive",
+      "description": "Detailed analysis of what will break without applying the upgrade",
+      "use_case": "Research mode - understand impact before committing to upgrade",
+      "estimated_duration": "10-20 minutes",
+      "trigger": "Manual: /analyze-upgrade <package> <version>",
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Breaking Change Detection",
+          "agents": ["breaking-change-detective"],
+          "actions": [
+            "Fetch all CHANGELOGs between versions",
+            "Parse release notes",
+            "Extract breaking changes",
+            "Categorize by type and severity",
+            "Find migration guides"
+          ],
+          "output": "BreakingChangeReport"
+        },
+        {
+          "phase": 2,
+          "name": "Code Impact Analysis",
+          "agents": ["code-impact-scanner"],
+          "actions": [
+            "Scan entire codebase",
+            "Map each breaking change to affected code",
+            "Estimate refactoring effort",
+            "Identify auto-fixable vs manual changes"
+          ],
+          "output": "CodeImpactReport"
+        },
+        {
+          "phase": 3,
+          "name": "Migration Preview",
+          "agents": ["migration-code-generator"],
+          "actions": [
+            "Generate example migrations (no apply)",
+            "Show before/after code examples",
+            "Estimate total migration effort"
+          ],
+          "output": "MigrationArtifacts (preview mode)"
+        },
+        {
+          "phase": 4,
+          "name": "Risk & Recommendation",
+          "agents": ["risk-assessor", "incremental-path-planner"],
+          "parallel": true,
+          "actions": [
+            "Calculate comprehensive risk score",
+            "If major version jump, suggest incremental path",
+            "Provide go/no-go recommendation"
+          ],
+          "output": "RiskAssessment, UpgradePath (if major)"
+        },
+        {
+          "phase": 5,
+          "name": "Generate Report",
+          "agents": ["documentation-generator"],
+          "actions": [
+            "Create detailed analysis report",
+            "Include: breaking changes, affected files, effort estimate, risk score",
+            "Provide actionable next steps"
+          ],
+          "output": "Comprehensive analysis report (no changes applied)"
+        }
+      ],
+      "deliverables": [
+        "Detailed breaking change report",
+        "Code impact analysis with line numbers",
+        "Effort estimation (hours/days)",
+        "Risk assessment",
+        "Recommendation (upgrade now/later/never)",
+        "Preview of required code changes"
+      ],
+      "read_only": true
+    },
+
+    {
+      "id": "security-patch-urgent",
+      "name": "Urgent Security Patch",
+      "description": "Fast-track security vulnerability patches with minimal validation",
+      "use_case": "Critical security vulnerability needs immediate patching",
+      "estimated_duration": "10-15 minutes",
+      "trigger": "Manual: /security-patch <package>",
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Vulnerability Analysis",
+          "agents": ["dependency-analyzer", "breaking-change-detective"],
+          "actions": [
+            "Identify security vulnerabilities",
+            "Find minimum patch version",
+            "Check for breaking changes in patch"
+          ],
+          "output": "DependencyInfo with vulnerability details"
+        },
+        {
+          "phase": 2,
+          "name": "Quick Impact Check",
+          "agents": ["code-impact-scanner", "compatibility-checker"],
+          "parallel": true,
+          "actions": [
+            "Quick scan for obvious breaking changes",
+            "Check peer dependencies",
+            "Skip deep analysis (urgent mode)"
+          ],
+          "output": "Quick impact summary"
+        },
+        {
+          "phase": 3,
+          "name": "Apply Patch",
+          "agents": ["dependency-analyzer", "rollback-strategist"],
+          "actions": [
+            "Create backup branch",
+            "Apply security patch",
+            "Run smoke tests only (fast)"
+          ],
+          "output": "Patched dependency"
+        },
+        {
+          "phase": 4,
+          "name": "Fast Validation",
+          "agents": ["test-executor", "documentation-generator"],
+          "actions": [
+            "Run critical tests only",
+            "Generate security patch report",
+            "Create PR for immediate review"
+          ],
+          "output": "TestResults, PR ready for merge"
+        }
+      ],
+      "deliverables": [
+        "Security vulnerability patched",
+        "Smoke tests passing",
+        "PR ready for emergency merge",
+        "Rollback plan available"
+      ],
+      "priority": "urgent",
+      "skip_approval": false,
+      "fast_track": true
+    }
+  ],
+
+  "workflow_selection": {
+    "triggers": [
+      {
+        "keywords": ["audit", "check dependencies", "what can I upgrade"],
+        "workflow": "quick-audit"
+      },
+      {
+        "keywords": ["upgrade", "update package", "npm upgrade", "pip upgrade"],
+        "workflow": "single-package-upgrade"
+      },
+      {
+        "keywords": ["major version", "migrate to", "v2 to v3"],
+        "workflow": "major-version-migration"
+      },
+      {
+        "keywords": ["upgrade all", "bulk upgrade", "update all safe"],
+        "workflow": "bulk-safe-upgrades"
+      },
+      {
+        "keywords": ["analyze", "breaking changes", "what will break"],
+        "workflow": "breaking-change-analysis"
+      },
+      {
+        "keywords": ["security", "vulnerability", "CVE", "urgent patch"],
+        "workflow": "security-patch-urgent"
+      }
+    ]
+  }
+}

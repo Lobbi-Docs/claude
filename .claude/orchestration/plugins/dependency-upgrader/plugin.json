@@ -1,0 +1,97 @@
+{
+  "name": "dependency-upgrader",
+  "version": "1.0.0",
+  "callsign": "Upgrader",
+  "description": "Safely upgrade npm/pip/cargo dependencies with automated breaking change detection, migration code generation, and incremental upgrade paths",
+  "author": "Claude Orchestration Team",
+  "license": "MIT",
+
+  "keywords": [
+    "upgrade",
+    "dependency",
+    "dependencies",
+    "npm",
+    "pip",
+    "cargo",
+    "package",
+    "update",
+    "migration",
+    "breaking change",
+    "semver",
+    "outdated",
+    "version",
+    "patch",
+    "minor",
+    "major",
+    "package.json",
+    "requirements.txt",
+    "Cargo.toml",
+    "yarn",
+    "pnpm",
+    "poetry",
+    "pipenv"
+  ],
+
+  "triggers": {
+    "auto": [
+      "upgrade dependency",
+      "update package",
+      "npm upgrade",
+      "pip upgrade",
+      "cargo upgrade",
+      "breaking changes",
+      "major version",
+      "outdated dependencies",
+      "dependency audit"
+    ],
+    "manual": [
+      "/upgrade",
+      "/deps-audit",
+      "/migration-plan"
+    ]
+  },
+
+  "capabilities": {
+    "ecosystems": ["npm", "pip", "cargo", "yarn", "pnpm", "poetry"],
+    "operations": [
+      "breaking_change_detection",
+      "code_impact_analysis",
+      "migration_generation",
+      "incremental_planning",
+      "risk_assessment",
+      "automated_testing"
+    ],
+    "outputs": [
+      "upgrade_reports",
+      "migration_scripts",
+      "test_plans",
+      "rollback_procedures"
+    ]
+  },
+
+  "configuration": {
+    "default_risk_tolerance": "low",
+    "auto_run_tests": true,
+    "create_backup_branch": true,
+    "max_major_version_jump": 2,
+    "parallel_upgrades": false,
+    "require_approval": true
+  },
+
+  "integration": {
+    "required_mcps": ["github"],
+    "optional_mcps": ["context7"],
+    "required_skills": ["testing", "git-workflows"],
+    "hooks": ["pre-upgrade", "post-upgrade", "migration-validation"]
+  },
+
+  "metrics": {
+    "track": [
+      "upgrades_completed",
+      "breaking_changes_detected",
+      "migrations_generated",
+      "test_failures_prevented",
+      "time_saved"
+    ]
+  }
+}

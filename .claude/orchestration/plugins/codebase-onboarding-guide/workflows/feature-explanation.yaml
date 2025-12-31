@@ -1,0 +1,375 @@
+name: Feature Deep Dive Explanation
+description: Focused workflow that explains how a specific feature works in detail
+version: 1.0.0
+trigger:
+  keywords:
+    - "explain feature"
+    - "how does .* work"
+    - "understand feature"
+    - "feature deep dive"
+  commands:
+    - "/explain-feature"
+    - "/feature-deep-dive"
+
+input:
+  required:
+    - feature_name: Name or description of the feature to explain
+    - codebase_path: Path to the codebase root directory
+  optional:
+    - output_path: Where to save feature documentation (default: docs/features/)
+    - include_diagrams: Generate visual diagrams (default: true)
+    - include_tutorial: Include "how to modify" tutorial (default: true)
+    - depth: Analysis depth - quick|standard|deep (default: standard)
+
+phases:
+  # ========================================================================
+  # PHASE 1: FEATURE DISCOVERY
+  # ========================================================================
+  - name: discovery
+    description: Locate and identify all files related to the feature
+    agents:
+      - id: navigator
+        tasks:
+          - Search for feature-related files using keywords
+          - Identify entry points for the feature
+          - Find related components, services, and utilities
+          - Map feature boundaries (what's included, what's not)
+          - Build feature file index
+        inputs:
+          - feature_name: "{feature_name}"
+        outputs:
+          - feature-file-index.json
+          - feature-boundaries.md
+
+    coordination: sequential
+    timeout: 3 minutes
+
+    success_criteria:
+      - Feature entry point identified
+      - Related files cataloged
+      - Feature boundaries defined
+
+  # ========================================================================
+  # PHASE 2: CODE FLOW ANALYSIS
+  # ========================================================================
+  - name: flow-analysis
+    description: Trace how the feature works from start to finish
+    depends_on: [discovery]
+    agents:
+      - id: tracer
+        tasks:
+          - Trace execution flow from trigger to completion
+          - Map data transformations throughout the flow
+          - Identify all touched components
+          - Document decision points and branches
+          - Trace error handling and edge cases
+          - Create sequence diagram
+        inputs:
+          - feature-file-index.json (from navigator)
+        outputs:
+          - feature-flow.md
+          - feature-sequence-diagram.mermaid
+          - data-transformations.json
+
+      - id: integrator
+        tasks:
+          - Map component interactions for this feature
+          - Identify external integrations (APIs, databases, services)
+          - Document data sources and sinks
+          - Create component interaction diagram
+        inputs:
+          - feature-file-index.json (from navigator)
+        outputs:
+          - component-interactions.md
+          - interaction-diagram.mermaid
+
+      - id: data-modeler
+        tasks:
+          - Identify data models used by the feature
+          - Document data validation rules
+          - Explain data state changes
+          - Map database operations (CRUD)
+        inputs:
+          - feature-flow.md (from tracer)
+        outputs:
+          - feature-data-models.md
+          - data-state-diagram.mermaid
+
+    coordination: parallel
+    timeout: 5 minutes
+
+    success_criteria:
+      - Execution flow documented
+      - Sequence diagram created
+      - Component interactions mapped
+      - Data models identified
+
+  # ========================================================================
+  # PHASE 3: CONTEXT & PATTERNS
+  # ========================================================================
+  - name: context-analysis
+    description: Understand the feature in the broader system context
+    depends_on: [flow-analysis]
+    agents:
+      - id: pattern-finder
+        tasks:
+          - Identify coding patterns used in the feature
+          - Find similar features for comparison
+          - Document design decisions observed
+          - Highlight notable implementation details
+        inputs:
+          - feature-file-index.json (from navigator)
+        outputs:
+          - patterns-used.md
+          - similar-features.md
+
+      - id: linguist
+        tasks:
+          - Extract feature-specific terminology
+          - Build mini-glossary for the feature
+          - Explain business logic and domain concepts
+        inputs:
+          - feature-flow.md (from tracer)
+        outputs:
+          - feature-glossary.md
+
+      - id: api-mapper
+        tasks:
+          - Document API endpoints related to feature
+          - Provide request/response examples
+          - Explain API contracts
+        inputs:
+          - feature-file-index.json (from navigator)
+        outputs:
+          - feature-api-reference.md
+        condition: feature_has_api_endpoints
+
+    coordination: parallel
+    timeout: 3 minutes
+
+    success_criteria:
+      - Patterns documented
+      - Glossary created
+      - API reference created (if applicable)
+
+  # ========================================================================
+  # PHASE 4: TUTORIAL GENERATION
+  # ========================================================================
+  - name: tutorial
+    description: Create practical guide for modifying the feature
+    depends_on: [context-analysis]
+    agents:
+      - id: tutorial-writer
+        tasks:
+          - Create "How to modify this feature" guide
+          - Document common modification scenarios
+          - Provide code examples and templates
+          - Explain testing strategies
+          - Include troubleshooting tips
+        inputs:
+          - feature-flow.md (from tracer)
+          - patterns-used.md (from pattern-finder)
+        outputs:
+          - how-to-modify-{feature_name}.md
+          - modification-examples/
+        condition: include_tutorial == true
+
+    coordination: sequential
+    timeout: 3 minutes
+
+    success_criteria:
+      - Modification guide created
+      - Examples provided
+      - Testing strategies documented
+
+  # ========================================================================
+  # PHASE 5: SYNTHESIS
+  # ========================================================================
+  - name: synthesis
+    description: Create comprehensive feature documentation
+    depends_on: [tutorial]
+    agents:
+      - id: synthesizer
+        tasks:
+          - Aggregate all feature analysis outputs
+          - Create comprehensive feature deep dive document
+          - Build visual summary with diagrams
+          - Create quick reference section
+          - Add "Related Features" section
+          - Ensure narrative flow and coherence
+        inputs:
+          - All outputs from previous phases
+        outputs:
+          - FEATURE-{feature_name}-DEEP-DIVE.md
+          - FEATURE-{feature_name}-QUICK-REF.md
+
+    coordination: sequential
+    timeout: 3 minutes
+
+    success_criteria:
+      - Feature deep dive document created
+      - Quick reference created
+      - All diagrams embedded
+      - Related features linked
+
+# ==========================================================================
+# OUTPUT SPECIFICATION
+# ==========================================================================
+output:
+  primary:
+    - path: "{output_path}/FEATURE-{feature_name}-DEEP-DIVE.md"
+      description: "Comprehensive feature explanation"
+      format: markdown
+
+    - path: "{output_path}/FEATURE-{feature_name}-QUICK-REF.md"
+      description: "Quick reference for the feature"
+      format: markdown
+
+  secondary:
+    - path: "{output_path}/{feature_name}/diagrams/"
+      description: "Feature-specific diagrams"
+
+    - path: "{output_path}/{feature_name}/examples/"
+      description: "Code examples and templates"
+
+    - path: "{output_path}/{feature_name}/api/"
+      description: "API documentation (if applicable)"
+
+# ==========================================================================
+# OUTPUT TEMPLATE
+# ==========================================================================
+output_structure:
+  feature_deep_dive:
+    sections:
+      - title: "Overview"
+        content:
+          - What is this feature?
+          - Why does it exist?
+          - When is it used?
+
+      - title: "Architecture"
+        content:
+          - Component diagram
+          - File structure
+          - Key files and their roles
+
+      - title: "How It Works"
+        content:
+          - Step-by-step execution flow
+          - Sequence diagram
+          - Data transformations
+
+      - title: "Data Models"
+        content:
+          - Entities used
+          - Data validation
+          - Database operations
+
+      - title: "API Reference"
+        content:
+          - Endpoints (if applicable)
+          - Request/response examples
+        condition: has_api_endpoints
+
+      - title: "Patterns & Conventions"
+        content:
+          - Coding patterns used
+          - Design decisions
+          - Notable implementation details
+
+      - title: "Glossary"
+        content:
+          - Feature-specific terminology
+          - Business concepts
+
+      - title: "How to Modify"
+        content:
+          - Common modification scenarios
+          - Step-by-step guides
+          - Code examples
+          - Testing strategies
+        condition: include_tutorial
+
+      - title: "Related Features"
+        content:
+          - Similar features
+          - Dependencies
+          - Integration points
+
+      - title: "Troubleshooting"
+        content:
+          - Common issues
+          - Error handling
+          - Debug tips
+
+# ==========================================================================
+# SUCCESS METRICS
+# ==========================================================================
+metrics:
+  required:
+    - feature_deep_dive_created: true
+    - execution_flow_documented: true
+    - minimum_diagrams: 2
+
+  quality:
+    - completeness: ">= 85%"
+    - code_examples_included: true
+    - diagrams_clear: true
+
+  usefulness:
+    - can_understand_feature: true
+    - can_modify_feature: true
+    - time_to_understanding: "< 30 minutes"
+
+# ==========================================================================
+# ERROR HANDLING
+# ==========================================================================
+error_handling:
+  - condition: "Feature not found"
+    action: "Ask user for more specific keywords or file hints"
+    fallback: "List similar feature names found in codebase"
+
+  - condition: "Feature too broad"
+    action: "Break into sub-features and analyze separately"
+
+  - condition: "No clear entry point"
+    action: "Document multiple possible entry points"
+
+  - condition: "External dependencies unavailable"
+    action: "Document integration points without deep dive into external code"
+
+# ==========================================================================
+# CONFIGURATION
+# ==========================================================================
+configuration:
+  search_strategies:
+    - keyword_search: true
+    - file_name_patterns: true
+    - code_content_search: true
+    - import_tracing: true
+
+  depth_settings:
+    quick:
+      max_files: 10
+      max_depth: 2
+      skip_diagrams: false
+      skip_tutorial: true
+
+    standard:
+      max_files: 30
+      max_depth: 4
+      skip_diagrams: false
+      skip_tutorial: false
+
+    deep:
+      max_files: 100
+      max_depth: 6
+      skip_diagrams: false
+      skip_tutorial: false
+      include_tests: true
+      include_dependencies: true
+
+  output_formats:
+    markdown: true
+    html: optional
+    json_metadata: true

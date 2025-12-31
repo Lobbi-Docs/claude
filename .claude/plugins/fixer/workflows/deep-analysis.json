@@ -1,0 +1,277 @@
+{
+  "id": "deep-analysis",
+  "name": "Deep Analysis Workflow",
+  "description": "Investigate recurring or complex errors with root cause analysis and prevention",
+  "trigger": "User asks 'why does this keep happening?' or similar",
+  "use_cases": [
+    "Error keeps recurring despite fixes",
+    "Complex error with unclear cause",
+    "Need to prevent entire error class",
+    "Understanding system-level issues"
+  ],
+  "phases": [
+    {
+      "id": "history-analysis",
+      "name": "Error History Analysis",
+      "agents": ["pattern-matcher"],
+      "timeout": 20,
+      "objectives": [
+        "Search for similar previous errors",
+        "Identify recurrence patterns",
+        "Analyze error frequency over time",
+        "Detect error evolution (how it changed)",
+        "Find related error families"
+      ],
+      "outputs": {
+        "previousOccurrences": "List of similar errors with timestamps",
+        "recurrencePattern": "When/how often error occurs",
+        "errorEvolution": "How error has changed over time",
+        "relatedErrors": "Other errors in same family"
+      }
+    },
+    {
+      "id": "comprehensive-triage",
+      "name": "Comprehensive Error Analysis",
+      "agents": [
+        "error-triage",
+        "stack-parser",
+        "context-analyzer"
+      ],
+      "parallel": true,
+      "timeout": 45,
+      "objectives": [
+        "Full error parsing and classification",
+        "Complete stack trace analysis",
+        "Deep code context extraction",
+        "Dependency chain analysis",
+        "Configuration review"
+      ],
+      "outputs": {
+        "parsedError": "Comprehensive ParsedError",
+        "fullStackAnalysis": "Complete stack trace with all frames analyzed",
+        "codeContext": "Extended code context (±50 lines)",
+        "dependencyGraph": "Dependencies involved in error",
+        "configAnalysis": "All related configuration files"
+      }
+    },
+    {
+      "id": "multi-source-research",
+      "name": "Exhaustive Solution Research",
+      "agents": ["solution-researcher"],
+      "timeout": 60,
+      "dependencies": ["comprehensive-triage"],
+      "objectives": [
+        "Deep StackOverflow search (10+ results)",
+        "GitHub issue search across multiple repos",
+        "Official documentation search",
+        "Known CVE/bug database search",
+        "Framework-specific issue trackers"
+      ],
+      "inputs": {
+        "parsedError": "from:comprehensive-triage.parsedError",
+        "dependencies": "from:comprehensive-triage.dependencyGraph"
+      },
+      "outputs": {
+        "comprehensiveSolutions": "20+ solutions from all sources",
+        "officialBugReports": "Known bugs matching this error",
+        "documentationLinks": "Official docs explaining error",
+        "communityInsights": "Patterns from multiple developers"
+      },
+      "search_config": {
+        "stackoverflow_results": 10,
+        "github_repos_to_search": [
+          "primary_framework",
+          "related_libraries",
+          "language_runtime"
+        ],
+        "include_closed_issues": true,
+        "include_discussions": true
+      }
+    },
+    {
+      "id": "language-expert-analysis",
+      "name": "Language-Specific Deep Dive",
+      "agents": {
+        "typescript": ["typescript-expert"],
+        "python": ["python-expert"],
+        "rust": ["rust-expert"],
+        "go": ["go-expert"]
+      },
+      "timeout": 45,
+      "dependencies": ["comprehensive-triage"],
+      "objectives": [
+        "Language-specific error decoding",
+        "Type system analysis (if applicable)",
+        "Memory/ownership analysis (for Rust/Go)",
+        "Runtime behavior analysis",
+        "Language idiom review"
+      ],
+      "inputs": {
+        "parsedError": "from:comprehensive-triage.parsedError",
+        "codeContext": "from:comprehensive-triage.codeContext"
+      },
+      "outputs": {
+        "languageSpecificInsights": "Deep language expertise",
+        "typeSystemIssues": "Type-related problems (TS/Rust)",
+        "memoryIssues": "Memory/ownership problems (Rust/Go)",
+        "idiomViolations": "Non-idiomatic code patterns"
+      }
+    },
+    {
+      "id": "root-cause-deep-dive",
+      "name": "Root Cause Deep Dive",
+      "agents": ["root-cause-analyst"],
+      "model": "opus",
+      "timeout": 60,
+      "dependencies": [
+        "history-analysis",
+        "comprehensive-triage",
+        "multi-source-research",
+        "language-expert-analysis"
+      ],
+      "objectives": [
+        "Build complete causal chain",
+        "Identify fundamental misconception",
+        "Trace error to system design issue",
+        "Explain why previous fixes failed",
+        "Identify knowledge gaps in team"
+      ],
+      "inputs": {
+        "allPreviousInputs": "Aggregated from all previous phases"
+      },
+      "outputs": {
+        "deepRootCause": "Comprehensive RootCauseAnalysis",
+        "systemLevelIssues": "Design/architecture problems",
+        "whyPreviousFixesFailed": "Analysis of past attempts",
+        "knowledgeGaps": "What the team needs to learn",
+        "educationalPath": "Learning resources and curriculum"
+      }
+    },
+    {
+      "id": "solution-generation",
+      "name": "Multi-Level Solution Generation",
+      "agents": ["fix-generator"],
+      "model": "opus",
+      "timeout": 60,
+      "dependencies": ["root-cause-deep-dive"],
+      "objectives": [
+        "Generate immediate fix (tactical)",
+        "Design medium-term refactor (strategic)",
+        "Propose long-term architecture change (systemic)",
+        "Create multiple fix strategies",
+        "Estimate effort for each solution"
+      ],
+      "outputs": {
+        "tacticalFix": "Quick fix for current error",
+        "strategicRefactor": "Code refactor to address root cause",
+        "systemicChange": "Architecture change to prevent class",
+        "fixStrategies": "Multiple approaches with trade-offs",
+        "effortEstimates": "Time/complexity for each solution"
+      }
+    },
+    {
+      "id": "prevention-design",
+      "name": "Prevention Strategy Design",
+      "agents": ["prevention-architect"],
+      "model": "opus",
+      "timeout": 60,
+      "dependencies": ["root-cause-deep-dive", "solution-generation"],
+      "objectives": [
+        "Design comprehensive prevention strategy",
+        "Create custom linting rules",
+        "Design type system enhancements",
+        "Create test patterns",
+        "Design CI/CD checks",
+        "Write developer guidelines",
+        "Create pre-commit hooks"
+      ],
+      "inputs": {
+        "rootCause": "from:root-cause-deep-dive.deepRootCause",
+        "errorHistory": "from:history-analysis.previousOccurrences"
+      },
+      "outputs": {
+        "preventionStrategy": "Comprehensive prevention plan",
+        "lintingRules": "ESLint/pylint/clippy configs",
+        "typeEnhancements": "Type system improvements",
+        "testPatterns": "Unit/integration test templates",
+        "ciChecks": "CI/CD pipeline additions",
+        "documentation": "Developer guidelines and docs",
+        "preCommitHooks": "Git hook implementations"
+      }
+    },
+    {
+      "id": "implementation-plan",
+      "name": "Implementation Roadmap",
+      "agents": ["prevention-architect", "fix-generator"],
+      "timeout": 30,
+      "dependencies": ["solution-generation", "prevention-design"],
+      "objectives": [
+        "Create prioritized implementation roadmap",
+        "Break down into actionable tasks",
+        "Estimate timelines",
+        "Identify quick wins vs long-term",
+        "Create rollout plan"
+      ],
+      "outputs": {
+        "roadmap": "Phased implementation plan",
+        "quickWins": "Tasks for immediate implementation",
+        "shortTerm": "1-2 week tasks",
+        "mediumTerm": "1 month tasks",
+        "longTerm": "Strategic initiatives",
+        "rolloutPlan": "How to deploy changes safely"
+      }
+    }
+  ],
+  "final_output": {
+    "immediateAction": {
+      "fix": "Tactical fix to apply now",
+      "patch": "Code patch",
+      "verification": "How to verify fix"
+    },
+    "rootCause": {
+      "analysis": "Deep root cause analysis",
+      "whyItKeepsHappening": "Explanation of recurrence",
+      "systemIssues": "Design/architecture problems"
+    },
+    "solutions": {
+      "tactical": "Quick fix",
+      "strategic": "Refactor approach",
+      "systemic": "Architecture change"
+    },
+    "prevention": {
+      "lintingRules": "Rules to prevent error",
+      "tests": "Test patterns",
+      "ciChecks": "CI/CD additions",
+      "documentation": "Developer guidelines",
+      "hooks": "Pre-commit hooks"
+    },
+    "roadmap": {
+      "quickWins": "Immediate tasks",
+      "shortTerm": "Next 2 weeks",
+      "mediumTerm": "Next month",
+      "longTerm": "Strategic initiatives"
+    },
+    "education": {
+      "knowledgeGaps": "What to learn",
+      "resources": "Learning materials",
+      "bestPractices": "How to avoid this pattern"
+    }
+  },
+  "estimated_time": "5-10 minutes",
+  "when_to_use": [
+    "Error has occurred 3+ times",
+    "Previous fixes haven't worked",
+    "User explicitly asks 'why does this keep happening'",
+    "Complex error requiring deep understanding",
+    "Need to prevent entire error category"
+  ],
+  "metrics": {
+    "track": [
+      "time_to_complete_analysis",
+      "number_of_solutions_generated",
+      "prevention_strategies_created",
+      "recurrence_rate_after_prevention",
+      "team_education_effectiveness"
+    ]
+  }
+}

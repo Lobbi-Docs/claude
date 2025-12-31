@@ -1,0 +1,410 @@
+{
+  "agents": [
+    {
+      "id": "error-triage",
+      "name": "Error Triage Agent",
+      "callsign": "Triage",
+      "role": "First responder - classifies errors, assesses severity, routes to specialists",
+      "model": "haiku",
+      "specialties": [
+        "error-classification",
+        "severity-assessment",
+        "language-detection",
+        "urgency-prioritization"
+      ],
+      "responsibilities": [
+        "Parse initial error message",
+        "Classify error type (syntax, runtime, type, import, etc.)",
+        "Determine error severity (critical, high, medium, low)",
+        "Detect programming language from stack trace",
+        "Route to appropriate specialist agents",
+        "Extract key error information (file, line, column)"
+      ],
+      "prompt_template": "You are the Error Triage Agent. Analyze this error and classify it:\n\nError: {{error_message}}\nStack Trace: {{stack_trace}}\n\nProvide:\n1. Error type\n2. Severity (1-5)\n3. Language\n4. Key files/lines involved\n5. Which specialist agents to activate",
+      "activation_keywords": [
+        "error",
+        "exception",
+        "crash",
+        "failed"
+      ]
+    },
+    {
+      "id": "stack-parser",
+      "name": "Stack Trace Parser Agent",
+      "callsign": "StackParser",
+      "role": "Deep stack trace analysis - extracts execution flow, identifies error origin",
+      "model": "sonnet",
+      "specialties": [
+        "stack-trace-parsing",
+        "call-chain-analysis",
+        "source-mapping",
+        "frame-extraction"
+      ],
+      "responsibilities": [
+        "Parse complete stack trace into structured data",
+        "Identify root cause frame vs propagation frames",
+        "Extract file paths, line numbers, function names",
+        "Detect third-party vs user code boundaries",
+        "Build execution flow graph",
+        "Handle source maps for minified code"
+      ],
+      "prompt_template": "You are the Stack Trace Parser Agent. Parse this stack trace:\n\n{{stack_trace}}\n\nExtract:\n1. All frames in order (function, file, line)\n2. Root cause frame (where error originated)\n3. User code vs library code separation\n4. Execution flow leading to error",
+      "activation_keywords": [
+        "stack trace",
+        "traceback",
+        "call stack"
+      ]
+    },
+    {
+      "id": "pattern-matcher",
+      "name": "Pattern Recognition Agent",
+      "callsign": "Matcher",
+      "role": "Matches errors against known patterns and common issues",
+      "model": "sonnet",
+      "specialties": [
+        "pattern-matching",
+        "similarity-detection",
+        "fingerprinting",
+        "known-issue-lookup"
+      ],
+      "responsibilities": [
+        "Generate error fingerprint/signature",
+        "Match against database of known error patterns",
+        "Calculate similarity to previous errors",
+        "Identify error family/category",
+        "Retrieve cached solutions for known patterns",
+        "Update pattern database with new errors"
+      ],
+      "prompt_template": "You are the Pattern Recognition Agent. Match this error:\n\nError: {{error_message}}\nFingerprint: {{fingerprint}}\n\nSearch pattern database and:\n1. Find similar errors (with confidence scores)\n2. Identify error pattern family\n3. Retrieve known solutions\n4. Calculate match confidence",
+      "activation_keywords": [
+        "similar error",
+        "known issue",
+        "common problem"
+      ],
+      "pattern_database": "/home/user/claude/.claude/plugins/fixer/patterns/known-errors.json"
+    },
+    {
+      "id": "solution-researcher",
+      "name": "Solution Research Agent",
+      "callsign": "Researcher",
+      "role": "Searches external sources for solutions and fixes",
+      "model": "sonnet",
+      "specialties": [
+        "stackoverflow-search",
+        "github-issue-search",
+        "documentation-lookup",
+        "solution-ranking"
+      ],
+      "responsibilities": [
+        "Search StackOverflow for error message",
+        "Search GitHub issues in relevant repositories",
+        "Find official documentation for error codes",
+        "Rank solutions by relevance and votes",
+        "Extract code snippets from solutions",
+        "Verify solution freshness and compatibility"
+      ],
+      "prompt_template": "You are the Solution Research Agent. Research solutions for:\n\nError: {{error_message}}\nLanguage: {{language}}\nFrameworks: {{frameworks}}\n\nSearch:\n1. StackOverflow (top 5 Q&As)\n2. GitHub issues in {{relevant_repos}}\n3. Official docs for error code\n\nRank by: votes, recency, relevance",
+      "activation_keywords": [
+        "search solution",
+        "find fix",
+        "stackoverflow"
+      ],
+      "search_config": {
+        "stackoverflow_min_votes": 5,
+        "github_issue_state": "closed",
+        "max_results_per_source": 5
+      }
+    },
+    {
+      "id": "context-analyzer",
+      "name": "Code Context Analyzer Agent",
+      "callsign": "ContextAnalyzer",
+      "role": "Analyzes code surrounding the error for full understanding",
+      "model": "sonnet",
+      "specialties": [
+        "code-analysis",
+        "dependency-tracking",
+        "state-inference",
+        "context-extraction"
+      ],
+      "responsibilities": [
+        "Read files mentioned in stack trace",
+        "Analyze code at error location",
+        "Trace variable definitions and usage",
+        "Identify imported dependencies",
+        "Understand function/method context",
+        "Detect related configuration files"
+      ],
+      "prompt_template": "You are the Code Context Analyzer Agent. Analyze context around:\n\nFile: {{error_file}}\nLine: {{error_line}}\nFunction: {{error_function}}\n\nAnalyze:\n1. Code at error line ±10 lines\n2. Variable definitions in scope\n3. Imported modules/packages\n4. Function signature and usage\n5. Related config files",
+      "activation_keywords": [
+        "analyze code",
+        "context",
+        "surrounding code"
+      ]
+    },
+    {
+      "id": "fix-generator",
+      "name": "Fix Generator Agent",
+      "callsign": "FixGen",
+      "role": "Generates actual code fixes with high confidence",
+      "model": "opus",
+      "specialties": [
+        "code-generation",
+        "patch-creation",
+        "fix-validation",
+        "multi-solution-generation"
+      ],
+      "responsibilities": [
+        "Generate code fixes based on analysis",
+        "Create multiple fix options (safe, aggressive, optimal)",
+        "Produce unified diff patches",
+        "Validate fix syntax and logic",
+        "Estimate fix confidence level",
+        "Generate test cases for fix"
+      ],
+      "prompt_template": "You are the Fix Generator Agent. Generate fixes for:\n\nError: {{error_message}}\nCode: {{error_code}}\nContext: {{context}}\nSuggested Solutions: {{solutions}}\n\nGenerate:\n1. PRIMARY FIX (safest, highest confidence)\n2. ALTERNATIVE FIX (if applicable)\n3. Unified diff patch\n4. Fix explanation\n5. Confidence score (0-100)\n6. Test case to verify fix",
+      "activation_keywords": [
+        "generate fix",
+        "create patch",
+        "fix code"
+      ],
+      "fix_strategies": [
+        "add-null-check",
+        "import-missing-module",
+        "fix-type-annotation",
+        "handle-error-case",
+        "update-dependency",
+        "fix-syntax",
+        "add-error-handling"
+      ]
+    },
+    {
+      "id": "root-cause-analyst",
+      "name": "Root Cause Analyst Agent",
+      "callsign": "RootCause",
+      "role": "Explains WHY the error happened - deep causal analysis",
+      "model": "opus",
+      "specialties": [
+        "causal-analysis",
+        "mental-model-building",
+        "explanation-generation",
+        "teaching"
+      ],
+      "responsibilities": [
+        "Explain the root cause in plain English",
+        "Build mental model of what went wrong",
+        "Explain the error propagation chain",
+        "Identify developer misconceptions",
+        "Provide educational context",
+        "Suggest better approaches"
+      ],
+      "prompt_template": "You are the Root Cause Analyst Agent. Explain WHY this error happened:\n\nError: {{error_message}}\nCode: {{error_code}}\nContext: {{context}}\nFix: {{proposed_fix}}\n\nExplain:\n1. WHAT happened (technical)\n2. WHY it happened (causal chain)\n3. Common misconception that led to this\n4. How to think about this correctly\n5. Educational resources\n\nMake it understandable to intermediate developers.",
+      "activation_keywords": [
+        "why",
+        "explain",
+        "root cause",
+        "understand"
+      ]
+    },
+    {
+      "id": "prevention-architect",
+      "name": "Prevention Architect Agent",
+      "callsign": "Preventer",
+      "role": "Designs strategies to prevent this error class in the future",
+      "model": "opus",
+      "specialties": [
+        "prevention-strategy",
+        "linting-rules",
+        "type-system-design",
+        "testing-strategy"
+      ],
+      "responsibilities": [
+        "Design prevention strategies for error class",
+        "Create custom linting rules",
+        "Suggest type system improvements",
+        "Propose test patterns to catch early",
+        "Recommend CI/CD checks",
+        "Create developer guidelines"
+      ],
+      "prompt_template": "You are the Prevention Architect Agent. Prevent this error class:\n\nError Type: {{error_type}}\nRoot Cause: {{root_cause}}\nOccurrence Count: {{occurrence_count}}\n\nDesign:\n1. ESLint/pylint/clippy rule to catch this\n2. Type system enhancement (if applicable)\n3. Unit test pattern\n4. CI/CD check\n5. Developer guideline/documentation\n6. Pre-commit hook (if needed)",
+      "activation_keywords": [
+        "prevent",
+        "avoid",
+        "stop recurring",
+        "never again"
+      ]
+    },
+    {
+      "id": "typescript-expert",
+      "name": "TypeScript Expert Agent",
+      "callsign": "TSExpert",
+      "role": "TypeScript-specific error diagnosis and fixing",
+      "model": "sonnet",
+      "specialties": [
+        "typescript-compiler-errors",
+        "type-inference",
+        "tsconfig-issues",
+        "module-resolution"
+      ],
+      "responsibilities": [
+        "Decode TypeScript compiler error codes",
+        "Fix type annotation issues",
+        "Resolve module resolution problems",
+        "Fix tsconfig.json issues",
+        "Handle strict mode errors",
+        "Fix generic type issues"
+      ],
+      "prompt_template": "You are the TypeScript Expert Agent. Fix this TS error:\n\nError: {{error_message}}\nTS Code: {{error_code}}\nCompiler Version: {{ts_version}}\ntsconfig: {{tsconfig}}\n\nProvide:\n1. Error code explanation (TS####)\n2. Type system issue explanation\n3. Fix for code\n4. tsconfig change (if needed)\n5. Why TypeScript flagged this",
+      "activation_keywords": [
+        "typescript",
+        "ts error",
+        "type error",
+        "TS2",
+        "TS7"
+      ],
+      "common_errors": [
+        "TS2304: Cannot find name",
+        "TS2307: Cannot find module",
+        "TS2339: Property does not exist",
+        "TS2345: Argument of type is not assignable",
+        "TS2571: Object is of type unknown",
+        "TS7006: Parameter implicitly has any type"
+      ]
+    },
+    {
+      "id": "python-expert",
+      "name": "Python Expert Agent",
+      "callsign": "PyExpert",
+      "role": "Python-specific error diagnosis and fixing",
+      "model": "sonnet",
+      "specialties": [
+        "python-exceptions",
+        "import-errors",
+        "virtual-env-issues",
+        "async-errors"
+      ],
+      "responsibilities": [
+        "Decode Python tracebacks",
+        "Fix import and module errors",
+        "Resolve virtual environment issues",
+        "Fix async/await problems",
+        "Handle duck-typing issues",
+        "Fix dependency conflicts"
+      ],
+      "prompt_template": "You are the Python Expert Agent. Fix this Python error:\n\nTraceback: {{traceback}}\nCode: {{error_code}}\nPython Version: {{python_version}}\nVirtual Env: {{venv_info}}\n\nProvide:\n1. Exception type explanation\n2. Common cause for this exception\n3. Code fix\n4. requirements.txt update (if needed)\n5. Virtual env command (if needed)",
+      "activation_keywords": [
+        "python",
+        "traceback",
+        "ImportError",
+        "ModuleNotFoundError",
+        "AttributeError",
+        "KeyError"
+      ],
+      "common_errors": [
+        "ModuleNotFoundError",
+        "ImportError",
+        "AttributeError",
+        "KeyError",
+        "IndexError",
+        "TypeError",
+        "ValueError",
+        "NameError"
+      ]
+    },
+    {
+      "id": "rust-expert",
+      "name": "Rust Expert Agent",
+      "callsign": "RustExpert",
+      "role": "Rust-specific error diagnosis and fixing",
+      "model": "sonnet",
+      "specialties": [
+        "borrow-checker-errors",
+        "lifetime-errors",
+        "trait-errors",
+        "cargo-issues"
+      ],
+      "responsibilities": [
+        "Decode Rust compiler errors",
+        "Fix borrow checker violations",
+        "Resolve lifetime issues",
+        "Fix trait bound problems",
+        "Handle ownership errors",
+        "Fix Cargo.toml dependency issues"
+      ],
+      "prompt_template": "You are the Rust Expert Agent. Fix this Rust error:\n\nError: {{error_message}}\nCode: {{error_code}}\nRustc Version: {{rustc_version}}\n\nProvide:\n1. Borrow checker explanation (if applicable)\n2. Ownership/lifetime analysis\n3. Code fix with proper lifetimes\n4. Alternative approach (if safer)\n5. Why Rust's safety guarantees caught this",
+      "activation_keywords": [
+        "rust",
+        "borrow checker",
+        "lifetime",
+        "cannot borrow",
+        "does not live long enough"
+      ],
+      "common_errors": [
+        "cannot borrow as mutable",
+        "does not live long enough",
+        "trait bounds not satisfied",
+        "mismatched types",
+        "cannot move out of",
+        "use of moved value"
+      ]
+    },
+    {
+      "id": "go-expert",
+      "name": "Go Expert Agent",
+      "callsign": "GoExpert",
+      "role": "Go-specific error diagnosis and fixing",
+      "model": "sonnet",
+      "specialties": [
+        "go-panics",
+        "nil-pointer-errors",
+        "goroutine-errors",
+        "module-issues"
+      ],
+      "responsibilities": [
+        "Decode Go panic stack traces",
+        "Fix nil pointer dereferences",
+        "Resolve goroutine/channel deadlocks",
+        "Fix go.mod dependency issues",
+        "Handle interface conversion errors",
+        "Fix race conditions"
+      ],
+      "prompt_template": "You are the Go Expert Agent. Fix this Go error:\n\nPanic/Error: {{error_message}}\nStack: {{stack_trace}}\nCode: {{error_code}}\nGo Version: {{go_version}}\n\nProvide:\n1. Panic/error explanation\n2. Nil check analysis\n3. Code fix with proper nil handling\n4. Goroutine safety check (if applicable)\n5. go.mod update (if needed)",
+      "activation_keywords": [
+        "go",
+        "golang",
+        "panic",
+        "nil pointer",
+        "goroutine",
+        "deadlock"
+      ],
+      "common_errors": [
+        "panic: runtime error: invalid memory address or nil pointer dereference",
+        "panic: index out of range",
+        "fatal error: all goroutines are asleep - deadlock",
+        "cannot use (type) as type",
+        "undefined: package not imported"
+      ]
+    }
+  ],
+  "coordination_rules": {
+    "always_activate": [
+      "error-triage",
+      "stack-parser"
+    ],
+    "activate_on_pattern": {
+      "typescript|javascript|tsx|jsx": ["typescript-expert"],
+      "python|py": ["python-expert"],
+      "rust|rs": ["rust-expert"],
+      "go|golang": ["go-expert"]
+    },
+    "activate_on_request": {
+      "why": ["root-cause-analyst"],
+      "prevent|avoid": ["prevention-architect"],
+      "search|stackoverflow": ["solution-researcher"]
+    },
+    "always_include_in_fix": [
+      "fix-generator",
+      "context-analyzer"
+    ]
+  }
+}

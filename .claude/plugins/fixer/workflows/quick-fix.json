@@ -1,0 +1,210 @@
+{
+  "id": "quick-fix",
+  "name": "Quick Fix Workflow",
+  "description": "Rapidly diagnose and fix common errors with high confidence",
+  "trigger": "User provides error message or stack trace",
+  "phases": [
+    {
+      "id": "triage",
+      "name": "Triage & Classification",
+      "agents": ["error-triage", "stack-parser"],
+      "parallel": true,
+      "timeout": 15,
+      "objectives": [
+        "Parse error message and stack trace",
+        "Classify error type and severity",
+        "Detect programming language",
+        "Extract error location (file, line, column)",
+        "Identify root cause frame in stack trace"
+      ],
+      "outputs": {
+        "parsedError": "ParsedError object with full classification",
+        "stackFrames": "List of stack frames with root cause identified",
+        "severity": "Error severity (1-5)",
+        "language": "Detected language (typescript|python|rust|go)"
+      },
+      "success_criteria": [
+        "Error type identified",
+        "Language detected",
+        "Root cause frame found"
+      ]
+    },
+    {
+      "id": "pattern-matching",
+      "name": "Pattern Recognition & Solution Search",
+      "agents": ["pattern-matcher", "solution-researcher"],
+      "parallel": true,
+      "timeout": 30,
+      "dependencies": ["triage"],
+      "objectives": [
+        "Generate error fingerprint",
+        "Match against known error patterns",
+        "Search StackOverflow for solutions",
+        "Search GitHub issues in relevant repos",
+        "Rank solutions by relevance and confidence"
+      ],
+      "inputs": {
+        "parsedError": "from:triage.parsedError",
+        "language": "from:triage.language",
+        "errorType": "from:triage.parsedError.type"
+      },
+      "outputs": {
+        "patternMatches": "List of matched patterns with confidence scores",
+        "stackoverflowSolutions": "Top 5 StackOverflow solutions",
+        "githubSolutions": "Top 5 GitHub issue solutions",
+        "rankedSolutions": "All solutions ranked by relevance"
+      },
+      "success_criteria": [
+        "At least 1 pattern match OR 3 external solutions found"
+      ]
+    },
+    {
+      "id": "context-analysis",
+      "name": "Code Context Analysis",
+      "agents": ["context-analyzer"],
+      "language_experts": {
+        "typescript": ["typescript-expert"],
+        "python": ["python-expert"],
+        "rust": ["rust-expert"],
+        "go": ["go-expert"]
+      },
+      "timeout": 30,
+      "dependencies": ["triage"],
+      "objectives": [
+        "Read file at error location",
+        "Extract code snippet ±10 lines",
+        "Identify variables in scope",
+        "Analyze imported dependencies",
+        "Find related configuration files",
+        "Understand function/class context"
+      ],
+      "inputs": {
+        "errorLocation": "from:triage.parsedError.location",
+        "language": "from:triage.language"
+      },
+      "outputs": {
+        "codeContext": "CodeContext object with full analysis",
+        "relatedFiles": "List of related config/import files",
+        "scopeAnalysis": "Variables and functions in scope"
+      },
+      "success_criteria": [
+        "Code snippet extracted",
+        "Scope analyzed"
+      ]
+    },
+    {
+      "id": "fix-generation",
+      "name": "Fix Generation & Validation",
+      "agents": ["fix-generator"],
+      "model": "opus",
+      "timeout": 45,
+      "dependencies": ["pattern-matching", "context-analysis"],
+      "objectives": [
+        "Generate primary code fix (highest confidence)",
+        "Generate alternative fixes (if applicable)",
+        "Create unified diff patches",
+        "Validate fix syntax and logic",
+        "Estimate confidence score",
+        "Generate test case for fix"
+      ],
+      "inputs": {
+        "parsedError": "from:triage.parsedError",
+        "solutions": "from:pattern-matching.rankedSolutions",
+        "codeContext": "from:context-analysis.codeContext",
+        "patternMatches": "from:pattern-matching.patternMatches"
+      },
+      "outputs": {
+        "primaryFix": "CodeFix with highest confidence",
+        "alternativeFixes": "List of alternative fixes",
+        "patches": "Unified diff patches ready to apply",
+        "confidence": "Confidence score (0-100)",
+        "testCase": "Test to verify fix works"
+      },
+      "success_criteria": [
+        "Primary fix generated",
+        "Confidence >= 75",
+        "Valid patch created"
+      ],
+      "fallback": {
+        "if_low_confidence": "Escalate to manual review with all gathered information"
+      }
+    },
+    {
+      "id": "explanation",
+      "name": "Root Cause Explanation",
+      "agents": ["root-cause-analyst"],
+      "model": "opus",
+      "parallel_with": "fix-generation",
+      "timeout": 30,
+      "dependencies": ["context-analysis"],
+      "objectives": [
+        "Explain what happened (technical)",
+        "Explain why it happened (causal chain)",
+        "Identify common misconceptions",
+        "Provide correct mental model",
+        "Suggest educational resources"
+      ],
+      "inputs": {
+        "parsedError": "from:triage.parsedError",
+        "codeContext": "from:context-analysis.codeContext",
+        "proposedFix": "from:fix-generation.primaryFix"
+      },
+      "outputs": {
+        "rootCauseAnalysis": "RootCauseAnalysis object with full explanation",
+        "misconception": "Common developer misconception",
+        "correctUnderstanding": "How to think about this correctly",
+        "resources": "Educational links and references"
+      },
+      "success_criteria": [
+        "Root cause identified and explained"
+      ]
+    },
+    {
+      "id": "application",
+      "name": "Fix Application & Verification",
+      "agents": ["fix-generator"],
+      "timeout": 30,
+      "dependencies": ["fix-generation"],
+      "objectives": [
+        "Apply fix to code (if auto-apply enabled)",
+        "Run generated test case",
+        "Verify fix resolves error",
+        "Report results to user"
+      ],
+      "inputs": {
+        "primaryFix": "from:fix-generation.primaryFix",
+        "testCase": "from:fix-generation.testCase",
+        "autoApply": "from:config.autoApplyFixes"
+      },
+      "outputs": {
+        "applied": "Boolean - whether fix was applied",
+        "testResult": "Test execution result",
+        "verified": "Boolean - fix verified working"
+      },
+      "conditional": {
+        "auto_apply": "Only if config.autoApplyFixes=true AND confidence >= threshold",
+        "manual_review": "If confidence < threshold, present fix for manual review"
+      }
+    }
+  ],
+  "final_output": {
+    "success": "Boolean - overall success",
+    "appliedFix": "CodeFix that was applied (or null if suggested only)",
+    "alternativeFixes": "List of alternative solutions",
+    "explanation": "RootCauseAnalysis",
+    "patch": "Unified diff (if fix generated)",
+    "confidence": "Confidence score (0-100)",
+    "testResult": "Test results (if run)",
+    "recommendations": "Next steps and prevention advice"
+  },
+  "estimated_time": "60-120 seconds",
+  "confidence_threshold": 75,
+  "metrics": {
+    "track": [
+      "time_to_fix",
+      "confidence_score",
+      "fix_success_rate",
+      "agent_contributions"
+    ]
+  }
+}

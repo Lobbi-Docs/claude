@@ -1,0 +1,150 @@
+{
+  "name": "fixer",
+  "version": "1.0.0",
+  "callsign": "Fixer",
+  "description": "Error Resolution Engine - Diagnoses, fixes, and prevents common programming errors across TypeScript, Python, Rust, and Go",
+  "author": "Claude Orchestration Team",
+  "category": "development",
+  "tags": [
+    "error-resolution",
+    "debugging",
+    "fix-automation",
+    "stack-trace-analysis",
+    "error-prevention"
+  ],
+  "keywords": [
+    "error",
+    "bug",
+    "exception",
+    "crash",
+    "fix",
+    "debug",
+    "stack trace",
+    "traceback",
+    "panic",
+    "segfault",
+    "null pointer",
+    "undefined",
+    "type error",
+    "import error",
+    "module not found",
+    "cannot find",
+    "does not exist",
+    "permission denied",
+    "syntax error",
+    "compilation error",
+    "runtime error",
+    "reference error",
+    "TypeError",
+    "ValueError",
+    "RuntimeError",
+    "NullPointerException",
+    "IndexOutOfBounds",
+    "KeyError",
+    "AttributeError",
+    "NameError",
+    "why does this",
+    "keeps failing",
+    "keeps breaking",
+    "always crashes",
+    "same error"
+  ],
+  "priority": 95,
+  "capabilities": [
+    "error-parsing",
+    "stack-trace-analysis",
+    "pattern-matching",
+    "solution-search",
+    "code-fix-generation",
+    "root-cause-analysis",
+    "prevention-strategies",
+    "multi-language-support"
+  ],
+  "supported_languages": [
+    "typescript",
+    "javascript",
+    "python",
+    "rust",
+    "go"
+  ],
+  "agents": [
+    "error-triage",
+    "stack-parser",
+    "pattern-matcher",
+    "solution-researcher",
+    "context-analyzer",
+    "fix-generator",
+    "root-cause-analyst",
+    "prevention-architect",
+    "typescript-expert",
+    "python-expert",
+    "rust-expert",
+    "go-expert"
+  ],
+  "workflows": [
+    "quick-fix",
+    "deep-analysis",
+    "prevention-audit",
+    "recurring-error-investigation"
+  ],
+  "dependencies": {
+    "mcps": [
+      "github",
+      "obsidian"
+    ],
+    "skills": [
+      "debugging",
+      "testing"
+    ],
+    "external_apis": [
+      "stackoverflow",
+      "github_search"
+    ]
+  },
+  "configuration": {
+    "search_stackoverflow": true,
+    "search_github_issues": true,
+    "auto_apply_fixes": false,
+    "confidence_threshold": 0.75,
+    "max_search_results": 10,
+    "cache_solutions": true,
+    "solution_cache_ttl": 604800,
+    "enable_prevention_analysis": true,
+    "create_test_after_fix": true
+  },
+  "metrics": {
+    "errors_fixed": 0,
+    "auto_fixes_applied": 0,
+    "manual_fixes_suggested": 0,
+    "prevention_rules_created": 0,
+    "average_fix_time_seconds": 0,
+    "success_rate": 0
+  },
+  "activation_patterns": [
+    {
+      "type": "keyword",
+      "pattern": "fix (this )?error",
+      "confidence": 0.95
+    },
+    {
+      "type": "keyword",
+      "pattern": "why (does|is) (this|it) (keep|always|still)",
+      "confidence": 0.90
+    },
+    {
+      "type": "keyword",
+      "pattern": "debug (this|the)",
+      "confidence": 0.85
+    },
+    {
+      "type": "error_detected",
+      "pattern": "stack trace in message",
+      "confidence": 0.98
+    },
+    {
+      "type": "error_detected",
+      "pattern": "error: |Error: |ERROR: |Traceback",
+      "confidence": 0.95
+    }
+  ]
+}

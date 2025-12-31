@@ -1,0 +1,149 @@
+{
+  "name": "deep_review",
+  "description": "Thorough review for large PRs (>= 500 lines) or critical changes",
+  "trigger_condition": "lines_changed >= 500 OR is_critical",
+  "estimated_duration": "10-15 minutes",
+  "max_duration_minutes": 20,
+
+  "pre_review_checks": {
+    "warn_if_too_large": {
+      "enabled": true,
+      "threshold": 1000,
+      "message": "⚠️ This PR is very large (>1000 lines). Consider splitting into smaller PRs for better review quality."
+    }
+  },
+
+  "phases": [
+    {
+      "name": "context_analysis",
+      "agents": ["pr-context-analyzer"],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "outputs_required": [
+        "context_summary",
+        "risk_indicators",
+        "dependencies_map",
+        "breaking_changes",
+        "related_files"
+      ]
+    },
+    {
+      "name": "primary_analysis",
+      "agents": [
+        "logic-bug-detective",
+        "security-auditor",
+        "performance-analyst"
+      ],
+      "execution": "parallel",
+      "timeout_minutes": 5,
+      "depends_on": ["context_analysis"],
+      "inputs_from": ["pr-context-analyzer"]
+    },
+    {
+      "name": "secondary_analysis",
+      "agents": [
+        "test-coverage-validator",
+        "pattern-consistency-checker"
+      ],
+      "execution": "parallel",
+      "timeout_minutes": 4,
+      "depends_on": ["context_analysis"],
+      "inputs_from": ["pr-context-analyzer"]
+    },
+    {
+      "name": "specialized_review",
+      "agents": [
+        "api-contract-reviewer",
+        "database-migration-expert"
+      ],
+      "execution": "parallel",
+      "timeout_minutes": 3,
+      "depends_on": ["context_analysis"],
+      "skip_if_not_applicable": true,
+      "inputs_from": ["pr-context-analyzer"]
+    },
+    {
+      "name": "cross_analysis",
+      "description": "Analyze findings from multiple agents to find compound issues",
+      "agents": ["priority-classifier"],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "depends_on": ["primary_analysis", "secondary_analysis", "specialized_review"],
+      "inputs_from": "all_previous_agents"
+    },
+    {
+      "name": "synthesis",
+      "agents": ["review-synthesizer"],
+      "execution": "sequential",
+      "timeout_minutes": 4,
+      "depends_on": ["cross_analysis"],
+      "inputs_from": "all_previous_agents",
+      "additional_outputs": [
+        "architectural_impact_assessment",
+        "technical_debt_analysis",
+        "long_term_maintainability_notes"
+      ]
+    }
+  ],
+
+  "focus_areas": [
+    "comprehensive_bug_detection",
+    "security_audit",
+    "performance_analysis",
+    "test_coverage",
+    "architectural_consistency",
+    "maintainability",
+    "scalability_concerns"
+  ],
+
+  "skip_checks": [],
+
+  "quality_gates": {
+    "minimum_test_coverage": 85,
+    "block_on_security_medium_or_higher": true,
+    "block_on_missing_tests_for_new_features": true,
+    "block_on_breaking_changes_without_migration": true,
+    "block_on_performance_regressions": true,
+    "require_architectural_review_if_major_changes": true
+  },
+
+  "review_strategies": {
+    "divide_and_conquer": {
+      "enabled": true,
+      "group_files_by": "component",
+      "review_groups_separately": true
+    },
+    "dependency_aware": {
+      "enabled": true,
+      "review_dependencies_first": true
+    },
+    "critical_path_focus": {
+      "enabled": true,
+      "prioritize_high_impact_files": true
+    }
+  },
+
+  "output_format": {
+    "inline_comments": true,
+    "summary_only": false,
+    "detailed_explanations": true,
+    "include_code_suggestions": true,
+    "group_by_file": true,
+    "group_by_severity": true,
+    "include_architectural_notes": true,
+    "include_refactoring_suggestions": true,
+    "provide_priority_matrix": true
+  },
+
+  "recommendations": {
+    "suggest_pr_split": {
+      "enabled": true,
+      "threshold": 800,
+      "provide_split_suggestions": true
+    },
+    "suggest_incremental_merge": {
+      "enabled": true,
+      "identify_independent_changes": true
+    }
+  }
+}

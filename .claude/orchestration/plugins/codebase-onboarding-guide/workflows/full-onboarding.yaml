@@ -1,0 +1,334 @@
+name: Full Codebase Onboarding
+description: Complete onboarding workflow that generates comprehensive documentation for new developers
+version: 1.0.0
+trigger:
+  keywords:
+    - "onboard me"
+    - "full onboarding"
+    - "complete codebase tour"
+    - "comprehensive guide"
+  commands:
+    - "/onboard"
+    - "/full-onboarding"
+
+input:
+  required:
+    - codebase_path: Path to the codebase root directory
+  optional:
+    - output_path: Where to save onboarding documentation (default: docs/onboarding/)
+    - depth: Analysis depth - quick|standard|comprehensive (default: standard)
+    - focus_areas: Specific areas to focus on (array)
+    - include_diagrams: Generate visual diagrams (default: true)
+    - include_examples: Include code examples (default: true)
+
+phases:
+  # ========================================================================
+  # PHASE 1: DISCOVERY
+  # ========================================================================
+  - name: discovery
+    description: Initial codebase structure and architecture discovery
+    agents:
+      - id: architect
+        tasks:
+          - Scan directory structure and identify architectural patterns
+          - Detect technology stack (frameworks, languages, build tools)
+          - Identify main components and their locations
+          - Create high-level architecture overview
+          - Generate architecture diagram (Mermaid)
+        outputs:
+          - architecture-overview.md
+          - architecture-diagram.mermaid
+          - tech-stack.json
+
+      - id: navigator
+        tasks:
+          - Build complete file tree with metadata
+          - Identify entry points (main.js, index.ts, app.py, etc.)
+          - Categorize files by type and purpose
+          - Rank files by importance (dependency count, centrality)
+          - Create feature-to-file mapping
+        outputs:
+          - file-index.json
+          - feature-map.json
+          - important-files.md
+
+    coordination: parallel
+    timeout: 5 minutes
+
+    success_criteria:
+      - Architecture pattern identified
+      - Tech stack documented
+      - File index created
+      - Entry points identified
+
+  # ========================================================================
+  # PHASE 2: DEEP ANALYSIS
+  # ========================================================================
+  - name: analysis
+    description: Deep analysis of code patterns, flows, and components
+    depends_on: [discovery]
+    agents:
+      - id: tracer
+        tasks:
+          - Trace request/response flows for main features
+          - Map data transformations through the system
+          - Identify async operations and event chains
+          - Create sequence diagrams for critical paths
+          - Document error handling strategies
+        inputs:
+          - feature-map.json (from navigator)
+          - important-files.md (from navigator)
+        outputs:
+          - flow-diagrams/
+          - execution-paths.md
+          - data-flow-analysis.md
+
+      - id: linguist
+        tasks:
+          - Extract domain-specific terminology from code
+          - Identify acronyms and abbreviations
+          - Build comprehensive glossary with definitions
+          - Map technical terms to business concepts
+          - Document naming conventions
+        outputs:
+          - glossary.md
+          - terminology-index.json
+          - acronyms.md
+
+      - id: pattern-finder
+        tasks:
+          - Detect common coding patterns
+          - Identify naming conventions and style guides
+          - Find repeated code structures
+          - Document best practices observed
+          - Highlight anti-patterns to avoid
+        inputs:
+          - file-index.json (from navigator)
+        outputs:
+          - coding-patterns.md
+          - conventions.md
+          - pattern-examples/
+
+      - id: integrator
+        tasks:
+          - Map internal component dependencies
+          - Document external service integrations
+          - Identify API boundaries and contracts
+          - Create component interaction diagrams
+          - Trace data exchange between modules
+        inputs:
+          - architecture-overview.md (from architect)
+        outputs:
+          - integration-map.md
+          - component-diagram.mermaid
+          - dependencies.json
+
+      - id: data-modeler
+        tasks:
+          - Map database schema and relationships
+          - Document data models and entities
+          - Explain data validation rules
+          - Create entity-relationship diagrams
+          - Document data transformations
+        outputs:
+          - data-models.md
+          - schema-diagram.mermaid
+          - entity-reference.md
+
+      - id: api-mapper
+        tasks:
+          - Catalog all API endpoints
+          - Document request/response formats
+          - Map authentication strategies
+          - Create API reference documentation
+          - Identify API versioning approach
+        outputs:
+          - api-reference.md
+          - endpoints-catalog.json
+          - api-examples.md
+
+    coordination: parallel
+    timeout: 10 minutes
+
+    success_criteria:
+      - Code flows documented for main features
+      - Glossary contains 20+ terms
+      - Patterns identified and documented
+      - Component interactions mapped
+      - Data models documented
+      - API endpoints cataloged
+
+  # ========================================================================
+  # PHASE 3: TUTORIAL GENERATION
+  # ========================================================================
+  - name: documentation
+    description: Generate practical how-to guides and tutorials
+    depends_on: [analysis]
+    agents:
+      - id: tutorial-writer
+        tasks:
+          - Generate "How to add a new [X]" tutorials
+          - Create step-by-step implementation guides
+          - Build code templates for common tasks
+          - Document development workflows
+          - Include practical examples with explanations
+        inputs:
+          - coding-patterns.md (from pattern-finder)
+          - api-reference.md (from api-mapper)
+          - feature-map.json (from navigator)
+        outputs:
+          - tutorials/how-to-add-endpoint.md
+          - tutorials/how-to-add-component.md
+          - tutorials/how-to-add-model.md
+          - tutorials/development-workflow.md
+          - templates/
+
+    coordination: sequential
+    timeout: 5 minutes
+
+    success_criteria:
+      - At least 3 tutorials created
+      - Code templates provided
+      - Development workflow documented
+
+  # ========================================================================
+  # PHASE 4: SYNTHESIS
+  # ========================================================================
+  - name: synthesis
+    description: Create final comprehensive onboarding guide
+    depends_on: [documentation]
+    agents:
+      - id: synthesizer
+        tasks:
+          - Aggregate all outputs from previous phases
+          - Create comprehensive ONBOARDING-GUIDE.md
+          - Build GETTING-STARTED.md with quickstart
+          - Design learning path for new developers
+          - Ensure documentation coherence
+          - Embed diagrams and examples
+          - Generate table of contents
+          - Create quick reference cards
+        inputs:
+          - All outputs from previous phases
+        outputs:
+          - ONBOARDING-GUIDE.md
+          - GETTING-STARTED.md
+          - QUICK-REFERENCE.md
+          - learning-path.md
+          - index.html (if HTML output requested)
+
+    coordination: sequential
+    timeout: 5 minutes
+
+    success_criteria:
+      - ONBOARDING-GUIDE.md created
+      - GETTING-STARTED.md created
+      - Learning path defined
+      - All sections coherent and connected
+
+# ==========================================================================
+# OUTPUT SPECIFICATION
+# ==========================================================================
+output:
+  primary:
+    - path: "{output_path}/ONBOARDING-GUIDE.md"
+      description: "Comprehensive onboarding guide"
+      format: markdown
+
+    - path: "{output_path}/GETTING-STARTED.md"
+      description: "Quick start guide for immediate productivity"
+      format: markdown
+
+    - path: "{output_path}/QUICK-REFERENCE.md"
+      description: "Quick reference card for common tasks"
+      format: markdown
+
+  secondary:
+    - path: "{output_path}/architecture/"
+      description: "Architecture diagrams and overviews"
+
+    - path: "{output_path}/tutorials/"
+      description: "How-to guides and tutorials"
+
+    - path: "{output_path}/reference/"
+      description: "API reference, glossary, data models"
+
+    - path: "{output_path}/diagrams/"
+      description: "Visual diagrams (Mermaid, PlantUML)"
+
+# ==========================================================================
+# SUCCESS METRICS
+# ==========================================================================
+metrics:
+  required:
+    - onboarding_guide_created: true
+    - getting_started_created: true
+    - minimum_sections: 8
+    - minimum_diagrams: 3
+    - minimum_tutorials: 3
+
+  quality:
+    - readability_score: ">= 70"
+    - completeness: ">= 90%"
+    - accuracy: "reviewed by architect agent"
+
+  time_to_value:
+    - estimated_onboarding_time_reduction: "50%"
+    - time_to_first_commit_target: "< 1 day"
+
+# ==========================================================================
+# ERROR HANDLING
+# ==========================================================================
+error_handling:
+  - condition: "No entry points found"
+    action: "Use heuristics to identify likely entry points"
+
+  - condition: "Architecture pattern unclear"
+    action: "Default to 'mixed' pattern and document uncertainty"
+
+  - condition: "Agent timeout"
+    action: "Continue with partial results, mark section as incomplete"
+
+  - condition: "No API endpoints found"
+    action: "Skip API documentation section"
+
+# ==========================================================================
+# POST-PROCESSING
+# ==========================================================================
+post_processing:
+  - action: validate_markdown
+    description: Ensure all Markdown files are valid
+
+  - action: render_diagrams
+    description: Convert Mermaid diagrams to SVG/PNG if requested
+
+  - action: generate_pdf
+    description: Generate PDF version of onboarding guide if requested
+
+  - action: create_index
+    description: Create searchable index of all documentation
+
+  - action: sync_to_obsidian
+    description: Sync documentation to Obsidian vault if configured
+
+# ==========================================================================
+# CONFIGURATION
+# ==========================================================================
+configuration:
+  concurrency:
+    max_parallel_agents: 6
+
+  resource_limits:
+    max_files_to_analyze: 1000
+    max_file_size: "5MB"
+
+  caching:
+    cache_file_tree: true
+    cache_dependency_graph: true
+    cache_duration: "24 hours"
+
+  output_formats:
+    markdown: true
+    html: optional
+    pdf: optional
+    json: true

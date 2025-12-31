@@ -1,0 +1,239 @@
+{
+  "id": "prevention-audit",
+  "name": "Prevention Audit Workflow",
+  "description": "Proactively scan codebase for potential errors before they happen",
+  "trigger": "User requests error prevention audit or scheduled run",
+  "use_cases": [
+    "Pre-deployment error scanning",
+    "Codebase health check",
+    "Preventing known error patterns",
+    "Team code quality assessment"
+  ],
+  "phases": [
+    {
+      "id": "codebase-scan",
+      "name": "Codebase Scanning",
+      "agents": ["pattern-matcher"],
+      "timeout": 120,
+      "objectives": [
+        "Scan all code files in project",
+        "Identify language distribution",
+        "Find potential error patterns",
+        "Map code structure"
+      ],
+      "outputs": {
+        "filesByLanguage": "Map of files by language",
+        "potentialIssues": "List of potential error patterns found",
+        "codebaseMetrics": "Lines of code, complexity, etc."
+      }
+    },
+    {
+      "id": "pattern-detection",
+      "name": "Known Pattern Detection",
+      "agents": [
+        "pattern-matcher",
+        "typescript-expert",
+        "python-expert",
+        "rust-expert",
+        "go-expert"
+      ],
+      "parallel": true,
+      "timeout": 180,
+      "dependencies": ["codebase-scan"],
+      "objectives": [
+        "Match code against all known error patterns",
+        "Identify anti-patterns",
+        "Find missing null checks",
+        "Detect potential race conditions",
+        "Find unhandled error cases"
+      ],
+      "inputs": {
+        "filesByLanguage": "from:codebase-scan.filesByLanguage"
+      },
+      "outputs": {
+        "foundPatterns": "List of matched error patterns by severity",
+        "riskAreas": "High-risk code areas",
+        "recommendations": "Fix recommendations by priority"
+      },
+      "pattern_categories": [
+        "null-pointer-risks",
+        "type-safety-violations",
+        "unhandled-exceptions",
+        "resource-leaks",
+        "concurrency-issues",
+        "import-dependency-issues"
+      ]
+    },
+    {
+      "id": "vulnerability-check",
+      "name": "Dependency Vulnerability Check",
+      "agents": ["solution-researcher"],
+      "timeout": 60,
+      "dependencies": ["codebase-scan"],
+      "objectives": [
+        "Check dependencies for known vulnerabilities",
+        "Find outdated packages with bug fixes",
+        "Identify deprecated dependencies"
+      ],
+      "outputs": {
+        "vulnerabilities": "List of vulnerable dependencies",
+        "outdatedPackages": "Packages with important updates",
+        "deprecationWarnings": "Deprecated dependencies"
+      }
+    },
+    {
+      "id": "prevention-strategy-generation",
+      "name": "Generate Prevention Strategies",
+      "agents": ["prevention-architect"],
+      "model": "opus",
+      "timeout": 120,
+      "dependencies": ["pattern-detection", "vulnerability-check"],
+      "objectives": [
+        "Create custom linting rules for found patterns",
+        "Generate test cases for risky areas",
+        "Propose type system improvements",
+        "Design CI/CD checks",
+        "Create developer guidelines"
+      ],
+      "inputs": {
+        "foundPatterns": "from:pattern-detection.foundPatterns",
+        "riskAreas": "from:pattern-detection.riskAreas",
+        "vulnerabilities": "from:vulnerability-check.vulnerabilities"
+      },
+      "outputs": {
+        "lintingRules": "Custom linting rules to prevent patterns",
+        "testSuggestions": "Test cases for risky areas",
+        "typeImprovements": "Type system enhancements",
+        "ciChecks": "CI/CD pipeline additions",
+        "guidelines": "Developer documentation"
+      }
+    },
+    {
+      "id": "prioritization",
+      "name": "Risk Prioritization",
+      "agents": ["prevention-architect"],
+      "timeout": 30,
+      "dependencies": ["prevention-strategy-generation"],
+      "objectives": [
+        "Prioritize issues by severity and likelihood",
+        "Estimate effort to fix",
+        "Create action plan"
+      ],
+      "outputs": {
+        "prioritizedIssues": "Issues ranked by risk score",
+        "quickWins": "Low-effort, high-impact fixes",
+        "actionPlan": "Phased remediation plan"
+      }
+    }
+  ],
+  "final_output": {
+    "summary": {
+      "totalIssuesFound": "Count of potential issues",
+      "bySeverity": {
+        "critical": "Count",
+        "high": "Count",
+        "medium": "Count",
+        "low": "Count"
+      },
+      "byCategory": "Issues grouped by category",
+      "riskScore": "Overall codebase risk score (0-100)"
+    },
+    "findings": {
+      "patterns": "Matched error patterns with locations",
+      "vulnerabilities": "Dependency vulnerabilities",
+      "riskAreas": "High-risk code areas"
+    },
+    "prevention": {
+      "lintingRules": "Generated linting rules",
+      "testCases": "Suggested test cases",
+      "ciChecks": "CI/CD improvements",
+      "guidelines": "Developer documentation"
+    },
+    "actionPlan": {
+      "critical": "Immediate action items",
+      "quickWins": "Easy fixes",
+      "shortTerm": "1-2 week items",
+      "mediumTerm": "1 month items"
+    },
+    "report": {
+      "format": "markdown|html|json",
+      "includeCodeSnippets": true,
+      "includeFixExamples": true
+    }
+  },
+  "scheduling": {
+    "recommended_frequency": "weekly",
+    "pre_deployment": true,
+    "on_major_changes": true
+  },
+  "estimated_time": "10-20 minutes (depends on codebase size)",
+  "metrics": {
+    "track": [
+      "issues_found_per_scan",
+      "issues_fixed_per_scan",
+      "risk_score_trend",
+      "prevention_rules_effectiveness"
+    ]
+  },
+  "report_template": {
+    "title": "Error Prevention Audit Report",
+    "sections": [
+      {
+        "name": "Executive Summary",
+        "content": [
+          "Total issues found",
+          "Risk score and trend",
+          "Critical items requiring immediate attention",
+          "Quick wins"
+        ]
+      },
+      {
+        "name": "Findings by Severity",
+        "content": [
+          "Critical issues (with code locations)",
+          "High-priority issues",
+          "Medium-priority issues",
+          "Low-priority issues"
+        ]
+      },
+      {
+        "name": "Findings by Category",
+        "content": [
+          "Null pointer risks",
+          "Type safety violations",
+          "Unhandled exceptions",
+          "Resource leaks",
+          "Concurrency issues",
+          "Dependency vulnerabilities"
+        ]
+      },
+      {
+        "name": "Prevention Strategies",
+        "content": [
+          "Linting rules to implement",
+          "Test cases to add",
+          "CI/CD checks to enable",
+          "Documentation to create"
+        ]
+      },
+      {
+        "name": "Action Plan",
+        "content": [
+          "Critical items (fix today)",
+          "Quick wins (fix this week)",
+          "Short-term items (2 weeks)",
+          "Medium-term items (1 month)"
+        ]
+      },
+      {
+        "name": "Metrics & Trends",
+        "content": [
+          "Risk score over time",
+          "Issues found vs fixed",
+          "Most common error patterns",
+          "Prevention effectiveness"
+        ]
+      }
+    ]
+  }
+}

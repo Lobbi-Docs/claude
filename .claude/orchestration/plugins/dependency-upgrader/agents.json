@@ -1,0 +1,352 @@
+{
+  "agents": [
+    {
+      "id": "dependency-analyzer",
+      "name": "Dependency Analyzer",
+      "callsign": "DepScan",
+      "model": "haiku",
+      "role": "Quickly scan package manifests and identify available updates across npm/pip/cargo ecosystems",
+      "expertise": [
+        "package.json parsing",
+        "requirements.txt analysis",
+        "Cargo.toml inspection",
+        "semver comparison",
+        "registry API queries"
+      ],
+      "tools": ["Read", "Bash", "Grep"],
+      "responsibilities": [
+        "Parse dependency manifests (package.json, requirements.txt, Cargo.toml)",
+        "Query package registries for latest versions",
+        "Categorize updates (patch/minor/major)",
+        "Identify deprecated packages",
+        "Check for security vulnerabilities",
+        "Generate initial upgrade candidates list"
+      ],
+      "output": {
+        "type": "DependencyReport",
+        "format": "JSON with available updates categorized by risk"
+      }
+    },
+
+    {
+      "id": "breaking-change-detective",
+      "name": "Breaking Change Detective",
+      "callsign": "BreakFinder",
+      "model": "sonnet",
+      "role": "Deep analysis of CHANGELOGs, release notes, and migration guides to identify breaking changes",
+      "expertise": [
+        "CHANGELOG parsing",
+        "migration guide analysis",
+        "API diff detection",
+        "semantic versioning interpretation",
+        "release notes comprehension"
+      ],
+      "tools": ["Read", "WebFetch", "Grep", "Bash"],
+      "responsibilities": [
+        "Fetch and parse CHANGELOG.md files from repositories",
+        "Download release notes from GitHub/GitLab",
+        "Extract breaking changes between versions",
+        "Identify deprecated APIs and their replacements",
+        "Parse migration guides for upgrade instructions",
+        "Categorize breaking changes by type (API, config, behavior)",
+        "Use context7 MCP to fetch library documentation"
+      ],
+      "output": {
+        "type": "BreakingChangeReport",
+        "format": "Structured list of breaking changes with migration hints"
+      }
+    },
+
+    {
+      "id": "code-impact-scanner",
+      "name": "Code Impact Scanner",
+      "callsign": "ImpactScan",
+      "model": "sonnet",
+      "role": "Find all code locations affected by breaking changes using AST analysis and pattern matching",
+      "expertise": [
+        "Abstract Syntax Tree analysis",
+        "code pattern matching",
+        "import/require statement analysis",
+        "API usage detection",
+        "configuration file scanning"
+      ],
+      "tools": ["Grep", "Read", "Bash", "Glob"],
+      "responsibilities": [
+        "Search codebase for imports of upgraded dependencies",
+        "Identify usage of deprecated APIs",
+        "Find configuration files that may need updates",
+        "Detect type definition changes (TypeScript)",
+        "Map breaking changes to specific code locations",
+        "Estimate refactoring effort for each impact",
+        "Generate file-level impact report"
+      ],
+      "output": {
+        "type": "CodeImpactReport",
+        "format": "List of affected files with specific line numbers and suggested changes"
+      }
+    },
+
+    {
+      "id": "migration-code-generator",
+      "name": "Migration Code Generator",
+      "callsign": "CodeMigrate",
+      "model": "sonnet",
+      "role": "Auto-generate migration scripts, codemods, and refactoring patches",
+      "expertise": [
+        "jscodeshift codemods",
+        "Python ast.NodeTransformer",
+        "Rust macro-based refactoring",
+        "regex-based replacements",
+        "ESLint auto-fix rules"
+      ],
+      "tools": ["Read", "Write", "Edit", "Bash"],
+      "responsibilities": [
+        "Generate jscodeshift codemods for JavaScript/TypeScript",
+        "Create Python AST transformation scripts",
+        "Write find-and-replace scripts for simple migrations",
+        "Generate patch files for manual review",
+        "Create before/after code examples",
+        "Provide migration validation scripts",
+        "Handle edge cases and complex refactorings"
+      ],
+      "output": {
+        "type": "MigrationArtifacts",
+        "format": "Executable scripts and patch files ready to apply"
+      }
+    },
+
+    {
+      "id": "test-strategy-planner",
+      "name": "Test Strategy Planner",
+      "callsign": "TestPlan",
+      "model": "sonnet",
+      "role": "Identify which tests to run based on code changes and create targeted test plans",
+      "expertise": [
+        "test coverage analysis",
+        "test dependency mapping",
+        "risk-based testing",
+        "integration test selection",
+        "smoke test creation"
+      ],
+      "tools": ["Read", "Grep", "Bash"],
+      "responsibilities": [
+        "Analyze existing test suite structure",
+        "Map code changes to relevant tests",
+        "Identify gaps in test coverage for upgraded code",
+        "Prioritize tests by risk level",
+        "Generate smoke tests for quick validation",
+        "Create regression test recommendations",
+        "Estimate test execution time"
+      ],
+      "output": {
+        "type": "TestPlan",
+        "format": "Prioritized list of tests to run with execution strategy"
+      }
+    },
+
+    {
+      "id": "incremental-path-planner",
+      "name": "Incremental Path Planner",
+      "callsign": "PathPlan",
+      "model": "sonnet",
+      "role": "Create safe, incremental upgrade paths for major version jumps (e.g., v2 → v5)",
+      "expertise": [
+        "version graph analysis",
+        "dependency resolution",
+        "upgrade strategy optimization",
+        "risk mitigation planning",
+        "backward compatibility assessment"
+      ],
+      "tools": ["Bash", "Read"],
+      "responsibilities": [
+        "Analyze version history between current and target versions",
+        "Identify intermediate stable versions",
+        "Calculate optimal upgrade path (e.g., v2→v3→v4→v5)",
+        "Consider peer dependency constraints",
+        "Plan validation checkpoints between steps",
+        "Estimate time and effort per step",
+        "Provide rollback points"
+      ],
+      "output": {
+        "type": "UpgradePath",
+        "format": "Step-by-step upgrade plan with validation gates"
+      }
+    },
+
+    {
+      "id": "compatibility-checker",
+      "name": "Compatibility Checker",
+      "callsign": "CompatCheck",
+      "model": "haiku",
+      "role": "Verify peer dependency compatibility and detect version conflicts",
+      "expertise": [
+        "peer dependency resolution",
+        "version constraint solving",
+        "lockfile analysis",
+        "transitive dependency checking"
+      ],
+      "tools": ["Bash", "Read"],
+      "responsibilities": [
+        "Check peer dependency requirements",
+        "Detect version conflicts with other dependencies",
+        "Analyze lockfile changes (package-lock.json, yarn.lock, Cargo.lock)",
+        "Identify transitive dependency issues",
+        "Suggest compatible version combinations",
+        "Validate against package manager constraints"
+      ],
+      "output": {
+        "type": "CompatibilityReport",
+        "format": "Pass/fail with conflict resolution suggestions"
+      }
+    },
+
+    {
+      "id": "risk-assessor",
+      "name": "Risk Assessor",
+      "callsign": "RiskCalc",
+      "model": "sonnet",
+      "role": "Calculate risk scores for upgrades based on multiple factors",
+      "expertise": [
+        "risk modeling",
+        "impact analysis",
+        "change quantification",
+        "historical data analysis",
+        "probability estimation"
+      ],
+      "tools": ["Read", "Bash"],
+      "responsibilities": [
+        "Calculate risk score (0-100) for each upgrade",
+        "Consider factors: breaking changes, code impact, test coverage, package maturity",
+        "Assess blast radius of potential failures",
+        "Evaluate rollback difficulty",
+        "Provide risk mitigation recommendations",
+        "Categorize as low/medium/high/critical risk"
+      ],
+      "output": {
+        "type": "RiskAssessment",
+        "format": "Scored risk report with mitigation strategies"
+      }
+    },
+
+    {
+      "id": "rollback-strategist",
+      "name": "Rollback Strategist",
+      "callsign": "Rollback",
+      "model": "haiku",
+      "role": "Plan rollback procedures and create safety checkpoints",
+      "expertise": [
+        "git branch management",
+        "backup strategies",
+        "version pinning",
+        "emergency procedures"
+      ],
+      "tools": ["Bash", "Write"],
+      "responsibilities": [
+        "Create backup branch before upgrade",
+        "Document pre-upgrade state",
+        "Generate rollback commands",
+        "Create version pinning instructions",
+        "Set up monitoring checkpoints",
+        "Provide quick-rollback scripts"
+      ],
+      "output": {
+        "type": "RollbackPlan",
+        "format": "Step-by-step rollback procedure with scripts"
+      }
+    },
+
+    {
+      "id": "documentation-generator",
+      "name": "Documentation Generator",
+      "callsign": "DocGen",
+      "model": "haiku",
+      "role": "Create comprehensive upgrade reports and documentation",
+      "expertise": [
+        "technical writing",
+        "markdown generation",
+        "report formatting",
+        "changelog creation"
+      ],
+      "tools": ["Write", "Read"],
+      "responsibilities": [
+        "Generate upgrade summary reports",
+        "Document breaking changes and migrations",
+        "Create team communication templates",
+        "Write commit messages following conventional commits",
+        "Generate PR descriptions",
+        "Create runbook for upgrade process"
+      ],
+      "output": {
+        "type": "UpgradeDocumentation",
+        "format": "Markdown reports, commit messages, PR descriptions"
+      }
+    },
+
+    {
+      "id": "test-executor",
+      "name": "Test Executor",
+      "callsign": "TestRun",
+      "model": "haiku",
+      "role": "Execute targeted test suites and report results",
+      "expertise": [
+        "test runner integration",
+        "CI/CD pipelines",
+        "test result parsing",
+        "failure analysis"
+      ],
+      "tools": ["Bash"],
+      "responsibilities": [
+        "Run test commands (npm test, pytest, cargo test)",
+        "Execute specific test files/suites as planned",
+        "Parse test output and failures",
+        "Track test execution time",
+        "Report pass/fail status with details",
+        "Identify flaky tests"
+      ],
+      "output": {
+        "type": "TestResults",
+        "format": "Pass/fail report with failure details and logs"
+      }
+    },
+
+    {
+      "id": "migration-validator",
+      "name": "Migration Validator",
+      "callsign": "Validate",
+      "model": "sonnet",
+      "role": "Validate that migration was successful and code works as expected",
+      "expertise": [
+        "post-upgrade verification",
+        "integration testing",
+        "smoke testing",
+        "behavior validation"
+      ],
+      "tools": ["Bash", "Read", "Grep"],
+      "responsibilities": [
+        "Verify all migrations were applied correctly",
+        "Check that no deprecated APIs remain",
+        "Validate configuration changes",
+        "Run smoke tests on upgraded code",
+        "Compare behavior before/after upgrade",
+        "Identify any remaining issues",
+        "Sign off on successful upgrade"
+      ],
+      "output": {
+        "type": "ValidationReport",
+        "format": "Comprehensive validation results with pass/fail status"
+      }
+    }
+  ],
+
+  "coordination": {
+    "lead_agent": "dependency-analyzer",
+    "decision_maker": "risk-assessor",
+    "quality_gate": "migration-validator"
+  },
+
+  "communication_protocols": {
+    "data_sharing": "Structured JSON passed between agents via shared state",
+    "status_updates": "Progress reported to orchestrator at each workflow step",
+    "error_handling": "Failures trigger rollback-strategist for safe recovery"
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "name": "codebase-onboarding-guide",
+  "version": "1.0.0",
+  "callsign": "Guide",
+  "description": "Comprehensive developer onboarding system that reduces time-to-productivity by generating architecture overviews, navigation indexes, code flow explanations, and practical how-to guides for new team members",
+  "author": "Claude Orchestration Team",
+  "category": "developer-experience",
+  "tags": [
+    "onboarding",
+    "documentation",
+    "architecture",
+    "learning",
+    "developer-experience"
+  ],
+  "keywords": [
+    "onboard",
+    "onboarding",
+    "new developer",
+    "learn codebase",
+    "understand code",
+    "explain",
+    "architecture",
+    "overview",
+    "where is",
+    "how do I",
+    "getting started",
+    "code flow",
+    "system design",
+    "mental model",
+    "glossary",
+    "terminology",
+    "important files",
+    "key components",
+    "add feature",
+    "how to add",
+    "codebase tour",
+    "code navigation",
+    "system map",
+    "architecture diagram",
+    "data flow",
+    "request flow",
+    "component interaction",
+    "module structure",
+    "file organization",
+    "project structure",
+    "newcomer guide",
+    "developer guide",
+    "code documentation",
+    "explain feature",
+    "how does X work",
+    "what does X do"
+  ],
+  "triggers": {
+    "automatic": [
+      "onboard me",
+      "explain this codebase",
+      "help me understand",
+      "getting started with this project",
+      "new to this repo",
+      "where do I start",
+      "architecture overview",
+      "system overview",
+      "explain how .* works",
+      "how does .* work",
+      "where is .*",
+      "how do I add .*",
+      "create onboarding guide"
+    ],
+    "manual": [
+      "/onboard",
+      "/explain-feature",
+      "/architecture-overview",
+      "/codebase-tour",
+      "/glossary"
+    ]
+  },
+  "capabilities": {
+    "architecture_analysis": {
+      "description": "Analyzes system architecture and generates visual/textual overviews",
+      "output_formats": ["markdown", "mermaid", "json"]
+    },
+    "code_flow_tracing": {
+      "description": "Traces execution paths through the system for key features",
+      "trace_types": ["request-flow", "data-flow", "event-flow", "lifecycle"]
+    },
+    "navigation_indexing": {
+      "description": "Creates searchable indexes for finding specific functionality",
+      "index_types": ["feature-map", "api-endpoints", "ui-components", "utilities", "models"]
+    },
+    "file_prioritization": {
+      "description": "Ranks files by importance for initial learning",
+      "criteria": ["centrality", "dependency-count", "usage-frequency", "abstraction-level"]
+    },
+    "glossary_generation": {
+      "description": "Extracts and explains project-specific terminology",
+      "sources": ["code-comments", "variable-names", "documentation", "test-descriptions"]
+    },
+    "tutorial_creation": {
+      "description": "Generates step-by-step guides for common development tasks",
+      "tutorial_types": ["add-endpoint", "add-component", "add-test", "add-model", "add-integration"]
+    },
+    "mental_model_building": {
+      "description": "Creates conceptual frameworks for understanding the system",
+      "model_types": ["layered-architecture", "component-diagram", "data-model", "state-machine"]
+    }
+  },
+  "agents": {
+    "count": 10,
+    "coordination": "hierarchical",
+    "communication": "structured-reports"
+  },
+  "workflows": {
+    "primary": [
+      "full-onboarding",
+      "feature-explanation",
+      "architecture-overview"
+    ],
+    "secondary": [
+      "glossary-generation",
+      "tutorial-creation",
+      "navigation-index"
+    ]
+  },
+  "outputs": {
+    "documentation": {
+      "formats": ["markdown", "html", "pdf"],
+      "templates": ["onboarding-guide", "feature-deep-dive", "architecture-overview"]
+    },
+    "diagrams": {
+      "types": ["mermaid", "plantuml", "ascii"],
+      "diagram_kinds": ["architecture", "sequence", "component", "data-flow"]
+    },
+    "indexes": {
+      "formats": ["json", "markdown-table", "searchable-html"],
+      "index_types": ["feature-to-file", "concept-to-code", "task-to-tutorial"]
+    }
+  },
+  "configuration": {
+    "analysis_depth": {
+      "type": "enum",
+      "values": ["quick", "standard", "comprehensive"],
+      "default": "standard",
+      "description": "How deep to analyze the codebase"
+    },
+    "include_examples": {
+      "type": "boolean",
+      "default": true,
+      "description": "Include code examples in documentation"
+    },
+    "generate_diagrams": {
+      "type": "boolean",
+      "default": true,
+      "description": "Generate visual diagrams"
+    },
+    "focus_areas": {
+      "type": "array",
+      "default": [],
+      "description": "Specific areas to focus on (e.g., ['authentication', 'api', 'frontend'])"
+    },
+    "output_location": {
+      "type": "string",
+      "default": "docs/onboarding/",
+      "description": "Where to save onboarding documentation"
+    },
+    "update_frequency": {
+      "type": "enum",
+      "values": ["on-demand", "weekly", "on-major-changes"],
+      "default": "on-demand",
+      "description": "How often to regenerate onboarding docs"
+    }
+  },
+  "metrics": {
+    "success_indicators": [
+      "time-to-first-commit",
+      "developer-confidence-score",
+      "onboarding-completion-rate",
+      "documentation-accuracy"
+    ],
+    "tracking": {
+      "onboarding_sessions": "count",
+      "features_explained": "count",
+      "diagrams_generated": "count",
+      "tutorials_created": "count"
+    }
+  },
+  "integration": {
+    "required_mcps": [],
+    "optional_mcps": ["github", "obsidian", "context7"],
+    "file_types": [".js", ".ts", ".tsx", ".jsx", ".py", ".java", ".go", ".rb", ".rs", ".php"],
+    "frameworks_supported": [
+      "react",
+      "nextjs",
+      "vue",
+      "angular",
+      "express",
+      "fastapi",
+      "django",
+      "spring",
+      "rails"
+    ]
+  },
+  "performance": {
+    "estimated_runtime": {
+      "full_onboarding": "10-20 minutes",
+      "feature_explanation": "3-5 minutes",
+      "architecture_overview": "5-10 minutes"
+    },
+    "resource_requirements": {
+      "min_agents": 8,
+      "max_agents": 12,
+      "memory_profile": "medium"
+    }
+  }
+}

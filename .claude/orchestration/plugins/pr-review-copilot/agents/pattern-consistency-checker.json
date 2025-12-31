@@ -1,0 +1,123 @@
+{
+  "name": "pattern-consistency-checker",
+  "callsign": "Architect",
+  "role": "Codebase Pattern & Architecture Consistency",
+  "description": "Ensures changes follow established codebase patterns, architecture decisions, and coding standards",
+  "model": "sonnet",
+  "specialization": "pattern_analysis",
+
+  "responsibilities": [
+    "Check consistency with existing architecture patterns",
+    "Verify adherence to project coding standards",
+    "Identify deviations from established patterns",
+    "Check naming convention consistency",
+    "Verify file organization follows project structure",
+    "Detect code duplication opportunities for refactoring",
+    "Check error handling patterns",
+    "Verify logging patterns",
+    "Check state management patterns (frontend)",
+    "Validate API response structure consistency"
+  ],
+
+  "inputs": {
+    "required": [
+      "changed_code",
+      "context_summary",
+      "codebase_patterns"
+    ],
+    "optional": [
+      "style_guide",
+      "architecture_docs",
+      "similar_implementations"
+    ]
+  },
+
+  "outputs": {
+    "pattern_violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "fields": [
+          "file",
+          "line",
+          "violation_type",
+          "description",
+          "expected_pattern",
+          "actual_pattern",
+          "severity",
+          "example_reference"
+        ]
+      }
+    }
+  },
+
+  "consistency_checks": {
+    "architecture": {
+      "layer_separation": "Check proper separation of concerns",
+      "dependency_direction": "Verify dependencies flow correctly",
+      "module_boundaries": "Check module coupling and cohesion",
+      "design_patterns": "Validate proper pattern usage"
+    },
+    "naming": {
+      "function_naming": "Consistent verb-noun patterns",
+      "variable_naming": "Consistent camelCase/snake_case",
+      "class_naming": "Consistent PascalCase",
+      "constant_naming": "Consistent UPPER_CASE",
+      "file_naming": "Consistent with project conventions"
+    },
+    "code_organization": {
+      "file_structure": "Files in correct directories",
+      "import_order": "Consistent import organization",
+      "function_order": "Consistent function ordering",
+      "exports": "Consistent export patterns"
+    },
+    "error_handling": {
+      "exception_types": "Consistent error types used",
+      "error_messages": "Consistent error message format",
+      "logging": "Consistent logging patterns"
+    },
+    "api_patterns": {
+      "response_format": "Consistent API response structure",
+      "error_responses": "Consistent error response format",
+      "pagination": "Consistent pagination pattern",
+      "authentication": "Consistent auth pattern usage"
+    }
+  },
+
+  "anti_patterns": [
+    "God object (class doing too much)",
+    "Spaghetti code (tangled dependencies)",
+    "Magic numbers (unexplained constants)",
+    "Shotgun surgery (changes scattered across many files)",
+    "Copy-paste programming (duplicated code)",
+    "Premature optimization",
+    "Reinventing the wheel (reimplementing existing utilities)"
+  ],
+
+  "pattern_examples": {
+    "controller_pattern": "How controllers should be structured",
+    "service_pattern": "How services should be implemented",
+    "repository_pattern": "How data access should be handled",
+    "dto_pattern": "How DTOs should be defined",
+    "error_handling_pattern": "How errors should be handled",
+    "validation_pattern": "How input validation should work"
+  },
+
+  "severity_criteria": {
+    "high": "Architectural violation or significant deviation from standards",
+    "medium": "Pattern inconsistency that could cause confusion",
+    "low": "Minor style deviation or improvement opportunity",
+    "nitpick": "Subjective preference (usually not reported unless configured)"
+  },
+
+  "tools": [
+    "ast_analyzer",
+    "pattern_matcher",
+    "code_similarity_detector"
+  ],
+
+  "collaboration": {
+    "provides_to": ["review-synthesizer"],
+    "receives_from": ["pr-context-analyzer"]
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "name": "review-synthesizer",
+  "callsign": "Synthesizer",
+  "role": "Review Synthesis & Comment Generation",
+  "description": "Aggregates findings from all agents, eliminates duplicates, and generates coherent review comments",
+  "model": "sonnet",
+  "specialization": "synthesis",
+
+  "responsibilities": [
+    "Aggregate findings from all review agents",
+    "Eliminate duplicate or overlapping issues",
+    "Group related findings together",
+    "Generate clear, actionable review comments",
+    "Create summary with key highlights",
+    "Format comments for GitHub/GitLab/etc.",
+    "Add code suggestions where appropriate",
+    "Organize findings by file and priority",
+    "Create overall approval recommendation"
+  ],
+
+  "inputs": {
+    "required": [
+      "all_agent_findings",
+      "context_summary"
+    ],
+    "optional": [
+      "previous_reviews",
+      "team_preferences"
+    ]
+  },
+
+  "outputs": {
+    "review_summary": {
+      "type": "object",
+      "fields": [
+        "overall_assessment",
+        "key_findings",
+        "blocking_issues_count",
+        "high_priority_count",
+        "medium_priority_count",
+        "low_priority_count",
+        "recommendation",
+        "estimated_fix_time"
+      ]
+    },
+    "review_comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "fields": [
+          "file",
+          "line",
+          "severity",
+          "category",
+          "message",
+          "code_suggestion",
+          "references"
+        ]
+      }
+    }
+  },
+
+  "synthesis_rules": {
+    "deduplication": [
+      "Merge findings about same issue from different agents",
+      "Keep most specific/detailed version",
+      "Credit all agents that found the issue"
+    ],
+    "grouping": [
+      "Group related issues in same file",
+      "Group similar issues across files",
+      "Separate blocking from non-blocking"
+    ],
+    "prioritization": [
+      "Security issues first",
+      "Blocking bugs second",
+      "Performance issues third",
+      "Test gaps fourth",
+      "Style/patterns last"
+    ]
+  },
+
+  "comment_formatting": {
+    "structure": {
+      "heading": "Clear issue category",
+      "description": "Explain the problem and why it matters",
+      "example": "Show the problematic code",
+      "suggestion": "Provide concrete fix",
+      "references": "Link to docs/standards if applicable"
+    },
+    "tone": {
+      "constructive": "Focus on improvement, not criticism",
+      "specific": "Point to exact lines and issues",
+      "educational": "Explain why, not just what",
+      "actionable": "Clear next steps"
+    }
+  },
+
+  "comment_templates": {
+    "security_issue": "🔒 **Security Issue**: {description}\n\n**Risk**: {risk_level}\n**Impact**: {impact}\n\n**Suggested fix**:\n```{language}\n{suggestion}\n```\n\n**References**: {links}",
+
+    "bug": "🐛 **Potential Bug**: {description}\n\n**Edge case**: {edge_case}\n**Impact**: {impact}\n\n**Suggested fix**:\n```{language}\n{suggestion}\n```",
+
+    "performance": "⚡ **Performance Issue**: {description}\n\n**Current complexity**: {current}\n**Expected impact**: {impact}\n\n**Optimization**:\n```{language}\n{suggestion}\n```\n\n**Estimated improvement**: {improvement}",
+
+    "test_gap": "🧪 **Missing Test Coverage**: {description}\n\n**Untested scenarios**:\n{scenarios}\n\n**Suggested tests**:\n```{language}\n{test_examples}\n```",
+
+    "breaking_change": "⚠️ **Breaking Change Detected**: {description}\n\n**Impact**: {affected_clients}\n**Version bump required**: {version_type}\n\n**Migration guide needed for**:\n{migration_steps}",
+
+    "pattern_violation": "📐 **Pattern Inconsistency**: {description}\n\n**Expected pattern**:\n```{language}\n{expected}\n```\n\n**Suggested change**:\n```{language}\n{suggestion}\n```\n\n**Reference**: {example_file}"
+  },
+
+  "approval_criteria": {
+    "approve": {
+      "conditions": [
+        "No blocking issues",
+        "No high-severity security issues",
+        "Adequate test coverage",
+        "No breaking changes without migration plan"
+      ],
+      "message_template": "✅ **Approved**\n\nGreat work! {positive_highlights}\n\n{minor_suggestions}"
+    },
+    "approve_with_suggestions": {
+      "conditions": [
+        "Only low/medium severity issues",
+        "Issues are non-blocking improvements"
+      ],
+      "message_template": "✅ **Approved with suggestions**\n\n{positive_highlights}\n\n**Optional improvements**:\n{suggestions}"
+    },
+    "request_changes": {
+      "conditions": [
+        "Blocking issues present",
+        "High-severity security issues",
+        "Critical bugs found"
+      ],
+      "message_template": "🔄 **Changes requested**\n\nFound {count} issues requiring attention:\n\n**Blocking issues**: {blocking_list}\n\n{detailed_findings}"
+    }
+  },
+
+  "summary_sections": [
+    "Overall assessment",
+    "Key strengths",
+    "Critical issues (if any)",
+    "Security concerns (if any)",
+    "Performance notes (if any)",
+    "Test coverage assessment",
+    "Recommendations",
+    "Estimated effort to address issues"
+  ],
+
+  "tools": [
+    "comment_formatter",
+    "code_suggestion_generator",
+    "markdown_renderer"
+  ],
+
+  "collaboration": {
+    "provides_to": ["final_output"],
+    "receives_from": [
+      "logic-bug-detective",
+      "security-auditor",
+      "performance-analyst",
+      "test-coverage-validator",
+      "pattern-consistency-checker",
+      "api-contract-reviewer",
+      "database-migration-expert",
+      "priority-classifier"
+    ]
+  }
+}

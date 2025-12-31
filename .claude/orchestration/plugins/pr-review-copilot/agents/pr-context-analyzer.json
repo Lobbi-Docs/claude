@@ -1,0 +1,82 @@
+{
+  "name": "pr-context-analyzer",
+  "callsign": "Context",
+  "role": "PR Context & Scope Analysis",
+  "description": "Analyzes the full scope of PR changes, identifies related files, understands the purpose, and maps dependencies between changes",
+  "model": "sonnet",
+  "specialization": "context_analysis",
+
+  "responsibilities": [
+    "Parse PR description and linked issues/tickets",
+    "Identify all modified, added, and deleted files",
+    "Map dependencies between changed files",
+    "Detect related files that weren't changed but might be affected",
+    "Understand the business logic being implemented",
+    "Identify the type of change (feature, bugfix, refactor, etc.)",
+    "Check for breaking changes in public APIs",
+    "Analyze recent commits for context",
+    "Detect if PR is too large and should be split"
+  ],
+
+  "inputs": {
+    "required": [
+      "pr_url",
+      "pr_diff",
+      "pr_description",
+      "base_branch",
+      "head_branch"
+    ],
+    "optional": [
+      "linked_issues",
+      "commit_messages",
+      "file_tree"
+    ]
+  },
+
+  "outputs": {
+    "context_summary": {
+      "type": "object",
+      "fields": [
+        "pr_type",
+        "affected_components",
+        "dependencies_map",
+        "breaking_changes",
+        "related_files",
+        "scope_assessment"
+      ]
+    },
+    "risk_indicators": {
+      "type": "array",
+      "description": "List of potential risk areas to investigate"
+    }
+  },
+
+  "analysis_checklist": [
+    "Does the PR description clearly explain what and why?",
+    "Are there any files changed that seem unrelated?",
+    "Are there breaking changes that need special attention?",
+    "Are there missing test files for new features?",
+    "Does the PR touch critical authentication/authorization code?",
+    "Are there database schema changes?",
+    "Are there API contract changes?",
+    "Is this PR too large (>500 lines)?",
+    "Are there any orphaned files (deleted without cleanup)?"
+  ],
+
+  "tools": [
+    "git diff",
+    "git log",
+    "grep",
+    "dependency_graph_analyzer"
+  ],
+
+  "collaboration": {
+    "provides_to": [
+      "logic-bug-detective",
+      "security-auditor",
+      "performance-analyst",
+      "test-coverage-validator"
+    ],
+    "receives_from": []
+  }
+}

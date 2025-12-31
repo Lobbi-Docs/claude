@@ -1,0 +1,470 @@
+{
+  "patterns": [
+    {
+      "id": "ts-react-undefined-state",
+      "name": "React State Accessed Before Initialization",
+      "errorType": "TypeError",
+      "languages": ["typescript", "javascript"],
+      "messagePattern": "/Cannot read propert(?:y|ies) .* of undefined/",
+      "stackPattern": "/React\\.Component\\.render/",
+      "codePattern": "/useState.*undefined/",
+      "category": "null-pointer",
+      "occurrenceCount": 1847,
+      "confidenceThreshold": 0.85,
+      "tags": ["react", "hooks", "async", "state"],
+      "knownSolutions": [
+        {
+          "id": "sol-ts-react-undefined-state-1",
+          "title": "Add loading state and conditional rendering",
+          "type": "code-fix",
+          "confidence": 0.95,
+          "explanation": "Add explicit loading state and render conditionally to handle async data loading",
+          "prevention": "Always handle loading/error states when using async data in React"
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-ts-react-undefined-state-1",
+          "name": "Custom ESLint rule for optional state access",
+          "type": "linting-rule",
+          "effectiveness": 0.9,
+          "effort": 3
+        }
+      ]
+    },
+    {
+      "id": "py-import-not-found",
+      "name": "Python Module Not Found",
+      "errorType": "ModuleNotFoundError",
+      "languages": ["python"],
+      "messagePattern": "/ModuleNotFoundError: No module named '(.*)'/",
+      "category": "import",
+      "occurrenceCount": 3421,
+      "confidenceThreshold": 0.95,
+      "tags": ["python", "import", "dependencies", "virtual-env"],
+      "knownSolutions": [
+        {
+          "id": "sol-py-import-not-found-1",
+          "title": "Install missing package",
+          "type": "dependency-update",
+          "confidence": 0.98,
+          "explanation": "Package not installed in current environment. Install with pip/poetry/conda."
+        },
+        {
+          "id": "sol-py-import-not-found-2",
+          "title": "Check virtual environment activation",
+          "type": "environment-setup",
+          "confidence": 0.85,
+          "explanation": "Virtual environment may not be activated or using wrong Python interpreter."
+        },
+        {
+          "id": "sol-py-import-not-found-3",
+          "title": "Add to PYTHONPATH",
+          "type": "configuration-change",
+          "confidence": 0.75,
+          "explanation": "Module exists but not in Python path. Add directory to PYTHONPATH."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-py-import-not-found-1",
+          "name": "Pre-commit hook to verify imports",
+          "type": "pre-commit-hook",
+          "effectiveness": 0.85,
+          "effort": 2
+        },
+        {
+          "id": "prev-py-import-not-found-2",
+          "name": "CI check for missing dependencies",
+          "type": "ci-check",
+          "effectiveness": 0.95,
+          "effort": 2
+        }
+      ]
+    },
+    {
+      "id": "rust-borrow-checker-moved-value",
+      "name": "Rust - Use of Moved Value",
+      "errorType": "E0382",
+      "languages": ["rust"],
+      "messagePattern": "/use of moved value: `(.*)`/",
+      "category": "compilation",
+      "occurrenceCount": 2156,
+      "confidenceThreshold": 0.90,
+      "tags": ["rust", "ownership", "borrow-checker", "move-semantics"],
+      "knownSolutions": [
+        {
+          "id": "sol-rust-moved-value-1",
+          "title": "Clone the value before moving",
+          "type": "code-fix",
+          "confidence": 0.85,
+          "explanation": "If you need to use the value multiple times, clone it before the first use."
+        },
+        {
+          "id": "sol-rust-moved-value-2",
+          "title": "Use references instead of moving",
+          "type": "code-fix",
+          "confidence": 0.90,
+          "explanation": "Pass references (&T) instead of owned values to avoid moving."
+        },
+        {
+          "id": "sol-rust-moved-value-3",
+          "title": "Restructure to avoid multiple uses",
+          "type": "refactor",
+          "confidence": 0.80,
+          "explanation": "Redesign logic to only use the value once, or use it last."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-rust-moved-value-1",
+          "name": "Clippy lint for potential moves",
+          "type": "linting-rule",
+          "effectiveness": 0.75,
+          "effort": 1
+        }
+      ]
+    },
+    {
+      "id": "go-nil-pointer-dereference",
+      "name": "Go - Nil Pointer Dereference",
+      "errorType": "panic",
+      "languages": ["go"],
+      "messagePattern": "/panic: runtime error: invalid memory address or nil pointer dereference/",
+      "category": "null-pointer",
+      "occurrenceCount": 2897,
+      "confidenceThreshold": 0.90,
+      "tags": ["go", "nil", "pointer", "panic"],
+      "knownSolutions": [
+        {
+          "id": "sol-go-nil-pointer-1",
+          "title": "Add nil check before dereferencing",
+          "type": "code-fix",
+          "confidence": 0.95,
+          "explanation": "Check if pointer is nil before accessing its fields or methods."
+        },
+        {
+          "id": "sol-go-nil-pointer-2",
+          "title": "Initialize pointer before use",
+          "type": "code-fix",
+          "confidence": 0.90,
+          "explanation": "Ensure pointer is initialized (e.g., with new() or &Type{}) before use."
+        },
+        {
+          "id": "sol-go-nil-pointer-3",
+          "title": "Use zero value or default instance",
+          "type": "code-fix",
+          "confidence": 0.85,
+          "explanation": "For some types, using zero value or a default instance is safer than pointers."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-go-nil-pointer-1",
+          "name": "Static analysis with go vet and nilaway",
+          "type": "ci-check",
+          "effectiveness": 0.85,
+          "effort": 2
+        },
+        {
+          "id": "prev-go-nil-pointer-2",
+          "name": "Code review checklist for nil checks",
+          "type": "code-review-checklist",
+          "effectiveness": 0.70,
+          "effort": 1
+        }
+      ]
+    },
+    {
+      "id": "ts-type-not-assignable",
+      "name": "TypeScript - Type Not Assignable",
+      "errorType": "TS2345",
+      "languages": ["typescript"],
+      "messagePattern": "/Argument of type '(.*)' is not assignable to parameter of type '(.*)'/",
+      "category": "type",
+      "occurrenceCount": 4532,
+      "confidenceThreshold": 0.85,
+      "tags": ["typescript", "types", "generics", "type-safety"],
+      "knownSolutions": [
+        {
+          "id": "sol-ts-type-not-assignable-1",
+          "title": "Fix type annotation",
+          "type": "code-fix",
+          "confidence": 0.90,
+          "explanation": "Correct the type annotation to match expected type."
+        },
+        {
+          "id": "sol-ts-type-not-assignable-2",
+          "title": "Add type assertion",
+          "type": "code-fix",
+          "confidence": 0.75,
+          "explanation": "Use type assertion if you know the type is correct at runtime."
+        },
+        {
+          "id": "sol-ts-type-not-assignable-3",
+          "title": "Widen function parameter type",
+          "type": "refactor",
+          "confidence": 0.80,
+          "explanation": "Make function accept broader type (e.g., use union type or generic)."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-ts-type-not-assignable-1",
+          "name": "Enable strict type checking",
+          "type": "configuration-change",
+          "effectiveness": 0.90,
+          "effort": 1
+        }
+      ]
+    },
+    {
+      "id": "py-key-error",
+      "name": "Python KeyError",
+      "errorType": "KeyError",
+      "languages": ["python"],
+      "messagePattern": "/KeyError: '(.*)'/",
+      "category": "runtime",
+      "occurrenceCount": 3189,
+      "confidenceThreshold": 0.90,
+      "tags": ["python", "dictionary", "key", "runtime"],
+      "knownSolutions": [
+        {
+          "id": "sol-py-key-error-1",
+          "title": "Use dict.get() with default value",
+          "type": "code-fix",
+          "confidence": 0.95,
+          "explanation": "Use dict.get(key, default) to provide fallback when key doesn't exist."
+        },
+        {
+          "id": "sol-py-key-error-2",
+          "title": "Check key existence with 'in' operator",
+          "type": "code-fix",
+          "confidence": 0.90,
+          "explanation": "Check if key in dict before accessing: if key in my_dict: ..."
+        },
+        {
+          "id": "sol-py-key-error-3",
+          "title": "Use defaultdict for automatic defaults",
+          "type": "refactor",
+          "confidence": 0.85,
+          "explanation": "Use collections.defaultdict to automatically provide default values."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-py-key-error-1",
+          "name": "Pylint check for direct dict access",
+          "type": "linting-rule",
+          "effectiveness": 0.70,
+          "effort": 2
+        },
+        {
+          "id": "prev-py-key-error-2",
+          "name": "Type hints with TypedDict",
+          "type": "type-check",
+          "effectiveness": 0.80,
+          "effort": 3
+        }
+      ]
+    },
+    {
+      "id": "rust-index-out-of-bounds",
+      "name": "Rust - Index Out of Bounds",
+      "errorType": "panic",
+      "languages": ["rust"],
+      "messagePattern": "/index out of bounds: the len is .* but the index is .*/",
+      "category": "bounds",
+      "occurrenceCount": 1543,
+      "confidenceThreshold": 0.95,
+      "tags": ["rust", "array", "bounds", "panic"],
+      "knownSolutions": [
+        {
+          "id": "sol-rust-index-out-of-bounds-1",
+          "title": "Use .get() method instead of indexing",
+          "type": "code-fix",
+          "confidence": 0.95,
+          "explanation": "Use slice.get(index) which returns Option instead of panicking."
+        },
+        {
+          "id": "sol-rust-index-out-of-bounds-2",
+          "title": "Add bounds check before indexing",
+          "type": "code-fix",
+          "confidence": 0.90,
+          "explanation": "Check if index < slice.len() before accessing."
+        },
+        {
+          "id": "sol-rust-index-out-of-bounds-3",
+          "title": "Use iterator methods instead of indexing",
+          "type": "refactor",
+          "confidence": 0.85,
+          "explanation": "Use .iter(), .nth(), or other iterator methods for safer access."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-rust-index-out-of-bounds-1",
+          "name": "Clippy lint to prefer .get() over []",
+          "type": "linting-rule",
+          "effectiveness": 0.80,
+          "effort": 1
+        }
+      ]
+    },
+    {
+      "id": "go-deadlock",
+      "name": "Go - Goroutine Deadlock",
+      "errorType": "fatal error",
+      "languages": ["go"],
+      "messagePattern": "/fatal error: all goroutines are asleep - deadlock!/",
+      "category": "concurrency",
+      "occurrenceCount": 876,
+      "confidenceThreshold": 0.85,
+      "tags": ["go", "concurrency", "channels", "deadlock", "goroutines"],
+      "knownSolutions": [
+        {
+          "id": "sol-go-deadlock-1",
+          "title": "Fix channel usage (send/receive mismatch)",
+          "type": "code-fix",
+          "confidence": 0.85,
+          "explanation": "Ensure every channel send has corresponding receive, and vice versa."
+        },
+        {
+          "id": "sol-go-deadlock-2",
+          "title": "Use buffered channel",
+          "type": "code-fix",
+          "confidence": 0.80,
+          "explanation": "Use buffered channel (make(chan T, size)) if sender shouldn't block."
+        },
+        {
+          "id": "sol-go-deadlock-3",
+          "title": "Close channel when done sending",
+          "type": "code-fix",
+          "confidence": 0.85,
+          "explanation": "Call close(ch) after all sends to signal completion to receivers."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-go-deadlock-1",
+          "name": "Race detector in tests (go test -race)",
+          "type": "ci-check",
+          "effectiveness": 0.75,
+          "effort": 1
+        },
+        {
+          "id": "prev-go-deadlock-2",
+          "name": "Code review checklist for channel patterns",
+          "type": "code-review-checklist",
+          "effectiveness": 0.70,
+          "effort": 2
+        }
+      ]
+    },
+    {
+      "id": "ts-module-not-found",
+      "name": "TypeScript - Cannot Find Module",
+      "errorType": "TS2307",
+      "languages": ["typescript"],
+      "messagePattern": "/Cannot find module '(.*)' or its corresponding type declarations/",
+      "category": "import",
+      "occurrenceCount": 5234,
+      "confidenceThreshold": 0.95,
+      "tags": ["typescript", "modules", "imports", "type-declarations"],
+      "knownSolutions": [
+        {
+          "id": "sol-ts-module-not-found-1",
+          "title": "Install missing package",
+          "type": "dependency-update",
+          "confidence": 0.95,
+          "explanation": "Package not installed. Run: npm install <package>"
+        },
+        {
+          "id": "sol-ts-module-not-found-2",
+          "title": "Install type declarations",
+          "type": "dependency-update",
+          "confidence": 0.90,
+          "explanation": "Package installed but types missing. Run: npm install -D @types/<package>"
+        },
+        {
+          "id": "sol-ts-module-not-found-3",
+          "title": "Fix module resolution in tsconfig",
+          "type": "configuration-change",
+          "confidence": 0.80,
+          "explanation": "Check tsconfig.json moduleResolution, baseUrl, and paths settings."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-ts-module-not-found-1",
+          "name": "CI check for missing dependencies",
+          "type": "ci-check",
+          "effectiveness": 0.95,
+          "effort": 1
+        }
+      ]
+    },
+    {
+      "id": "py-attribute-error",
+      "name": "Python AttributeError",
+      "errorType": "AttributeError",
+      "languages": ["python"],
+      "messagePattern": "/'(.*)' object has no attribute '(.*)'/",
+      "category": "runtime",
+      "occurrenceCount": 4567,
+      "confidenceThreshold": 0.85,
+      "tags": ["python", "attributes", "runtime", "types"],
+      "knownSolutions": [
+        {
+          "id": "sol-py-attribute-error-1",
+          "title": "Check object type and available attributes",
+          "type": "code-fix",
+          "confidence": 0.85,
+          "explanation": "Verify object is correct type and attribute name is spelled correctly."
+        },
+        {
+          "id": "sol-py-attribute-error-2",
+          "title": "Use hasattr() before accessing",
+          "type": "code-fix",
+          "confidence": 0.90,
+          "explanation": "Check with hasattr(obj, 'attr') before accessing optional attributes."
+        },
+        {
+          "id": "sol-py-attribute-error-3",
+          "title": "Use getattr() with default",
+          "type": "code-fix",
+          "confidence": 0.88,
+          "explanation": "Use getattr(obj, 'attr', default) to safely get attributes."
+        }
+      ],
+      "preventionStrategies": [
+        {
+          "id": "prev-py-attribute-error-1",
+          "name": "Type hints with mypy checking",
+          "type": "type-check",
+          "effectiveness": 0.85,
+          "effort": 3
+        },
+        {
+          "id": "prev-py-attribute-error-2",
+          "name": "Use dataclasses or Pydantic for validation",
+          "type": "refactor",
+          "effectiveness": 0.90,
+          "effort": 4
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-01-15T00:00:00Z",
+    "totalPatterns": 10,
+    "totalOccurrences": 30262,
+    "languageCoverage": {
+      "typescript": 3,
+      "python": 4,
+      "rust": 3,
+      "go": 2
+    }
+  }
+}

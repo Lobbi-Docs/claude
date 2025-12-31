@@ -1,0 +1,360 @@
+{
+  "plugin": "dependency-upgrader",
+  "version": "1.0.0",
+
+  "settings": {
+    "default_risk_tolerance": "low",
+    "auto_run_tests": true,
+    "create_backup_branch": true,
+    "max_major_version_jump": 2,
+    "parallel_upgrades": false,
+    "require_approval": true,
+    "auto_apply_codemods": true,
+    "preserve_exact_versions": false
+  },
+
+  "ecosystems": {
+    "npm": {
+      "enabled": true,
+      "manifest": "package.json",
+      "lockfile": "package-lock.json",
+      "registry": "https://registry.npmjs.org",
+      "install_command": "npm install",
+      "test_command": "npm test",
+      "outdated_command": "npm outdated --json"
+    },
+    "yarn": {
+      "enabled": true,
+      "manifest": "package.json",
+      "lockfile": "yarn.lock",
+      "install_command": "yarn install",
+      "test_command": "yarn test",
+      "outdated_command": "yarn outdated --json"
+    },
+    "pnpm": {
+      "enabled": false,
+      "manifest": "package.json",
+      "lockfile": "pnpm-lock.yaml",
+      "install_command": "pnpm install",
+      "test_command": "pnpm test",
+      "outdated_command": "pnpm outdated --json"
+    },
+    "pip": {
+      "enabled": true,
+      "manifest": "requirements.txt",
+      "lockfile": "requirements.lock",
+      "registry": "https://pypi.org",
+      "install_command": "pip install -r requirements.txt",
+      "test_command": "pytest",
+      "outdated_command": "pip list --outdated --format=json"
+    },
+    "poetry": {
+      "enabled": false,
+      "manifest": "pyproject.toml",
+      "lockfile": "poetry.lock",
+      "install_command": "poetry install",
+      "test_command": "poetry run pytest",
+      "outdated_command": "poetry show --outdated --format=json"
+    },
+    "cargo": {
+      "enabled": true,
+      "manifest": "Cargo.toml",
+      "lockfile": "Cargo.lock",
+      "registry": "https://crates.io",
+      "install_command": "cargo build",
+      "test_command": "cargo test",
+      "outdated_command": "cargo outdated --format json"
+    }
+  },
+
+  "risk_assessment": {
+    "factors": {
+      "breaking_changes": {
+        "weight": 0.30,
+        "scoring": {
+          "none": 0,
+          "low": 25,
+          "medium": 50,
+          "high": 75,
+          "critical": 100
+        }
+      },
+      "code_impact": {
+        "weight": 0.25,
+        "scoring": {
+          "files_affected_threshold": {
+            "low": 5,
+            "medium": 20,
+            "high": 50
+          }
+        }
+      },
+      "test_coverage": {
+        "weight": 0.20,
+        "scoring": {
+          "excellent": 0,
+          "good": 20,
+          "fair": 40,
+          "poor": 70,
+          "none": 100
+        },
+        "thresholds": {
+          "excellent": 90,
+          "good": 75,
+          "fair": 50,
+          "poor": 25
+        }
+      },
+      "package_maturity": {
+        "weight": 0.10,
+        "scoring": {
+          "stable": 0,
+          "beta": 30,
+          "alpha": 60,
+          "experimental": 90
+        }
+      },
+      "community_adoption": {
+        "weight": 0.10,
+        "days_since_release": {
+          "safe": 90,
+          "caution": 30,
+          "risky": 7
+        }
+      },
+      "rollback_difficulty": {
+        "weight": 0.05,
+        "scoring": {
+          "trivial": 0,
+          "easy": 20,
+          "moderate": 50,
+          "difficult": 80
+        }
+      }
+    },
+    "risk_levels": {
+      "low": {
+        "max_score": 30,
+        "recommendation": "proceed",
+        "auto_approve": true
+      },
+      "medium": {
+        "max_score": 60,
+        "recommendation": "proceed_with_caution",
+        "auto_approve": false
+      },
+      "high": {
+        "max_score": 85,
+        "recommendation": "defer",
+        "auto_approve": false
+      },
+      "critical": {
+        "max_score": 100,
+        "recommendation": "reject",
+        "auto_approve": false
+      }
+    }
+  },
+
+  "migration": {
+    "codemods": {
+      "npm": {
+        "runner": "jscodeshift",
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "parser": "tsx",
+        "transform_options": {
+          "quote": "single",
+          "trailingComma": true
+        }
+      },
+      "pip": {
+        "runner": "python",
+        "script_template": "ast_transformer.py",
+        "extensions": [".py"]
+      },
+      "cargo": {
+        "runner": "cargo-edit",
+        "extensions": [".rs"]
+      }
+    },
+    "validation": {
+      "require_lint_pass": true,
+      "require_type_check": true,
+      "require_tests_pass": true,
+      "max_warnings": 0
+    }
+  },
+
+  "testing": {
+    "strategies": {
+      "full": {
+        "description": "Run entire test suite",
+        "when": "major version upgrade or bulk upgrades"
+      },
+      "targeted": {
+        "description": "Run tests related to affected code",
+        "when": "single package upgrade with code impact"
+      },
+      "smoke": {
+        "description": "Run critical path tests only",
+        "when": "patch upgrades or low risk changes"
+      },
+      "regression": {
+        "description": "Run tests that previously failed",
+        "when": "retry after fixing test failures"
+      }
+    },
+    "timeout": 600,
+    "retry_failed_tests": true,
+    "max_retries": 2,
+    "parallel_execution": true
+  },
+
+  "rollback": {
+    "always_create_backup_branch": true,
+    "backup_branch_prefix": "backup/upgrade-",
+    "checkpoint_frequency": "per_major_version",
+    "auto_rollback_on_test_failure": false,
+    "keep_backup_days": 30
+  },
+
+  "documentation": {
+    "output_dir": ".upgrade",
+    "generate_reports": true,
+    "generate_commit_messages": true,
+    "generate_pr_descriptions": true,
+    "commit_message_format": "conventional",
+    "conventional_commit_types": {
+      "patch": "chore",
+      "minor": "chore",
+      "major": "feat",
+      "security": "security"
+    }
+  },
+
+  "notifications": {
+    "enabled": false,
+    "slack": {
+      "webhook_url": "",
+      "notify_on": ["upgrade_complete", "security_patch", "upgrade_failed"]
+    },
+    "discord": {
+      "webhook_url": "",
+      "notify_on": ["security_patch"]
+    },
+    "email": {
+      "smtp_host": "",
+      "from": "",
+      "to": [],
+      "notify_on": ["security_patch"]
+    }
+  },
+
+  "security": {
+    "auto_patch_critical": false,
+    "auto_patch_high": false,
+    "security_scan_command": "npm audit --json",
+    "fail_on_vulnerability": {
+      "critical": true,
+      "high": false,
+      "moderate": false,
+      "low": false
+    },
+    "vulnerability_sources": [
+      "npm-audit",
+      "snyk",
+      "github-advisories"
+    ]
+  },
+
+  "automation": {
+    "schedule": {
+      "audit": "weekly",
+      "safe_upgrades": "monthly",
+      "security_patches": "daily"
+    },
+    "ci_integration": {
+      "create_prs": true,
+      "auto_merge_low_risk": false,
+      "require_reviews": true,
+      "label_by_risk": true,
+      "labels": {
+        "low": "upgrade:low-risk",
+        "medium": "upgrade:medium-risk",
+        "high": "upgrade:high-risk",
+        "security": "security"
+      }
+    }
+  },
+
+  "incremental_upgrade": {
+    "prefer_incremental_for_major_gap": 2,
+    "max_steps": 5,
+    "checkpoint_after_each_step": true,
+    "validate_each_step": true,
+    "stop_on_test_failure": true
+  },
+
+  "agent_config": {
+    "dependency_analyzer": {
+      "cache_registry_queries": true,
+      "cache_ttl_seconds": 3600
+    },
+    "breaking_change_detective": {
+      "changelog_sources": ["github", "gitlab", "bitbucket", "package_json"],
+      "use_context7": true,
+      "fallback_to_web_search": true
+    },
+    "code_impact_scanner": {
+      "use_ast_analysis": true,
+      "scan_patterns": [
+        "**/*.{js,jsx,ts,tsx}",
+        "**/*.py",
+        "**/*.rs"
+      ],
+      "exclude_patterns": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.venv/**",
+        "**/target/**"
+      ]
+    },
+    "migration_code_generator": {
+      "dry_run_first": true,
+      "create_patch_files": true,
+      "backup_original_files": false
+    },
+    "test_executor": {
+      "capture_output": true,
+      "parse_coverage": true,
+      "identify_flaky_tests": true
+    }
+  },
+
+  "logging": {
+    "level": "info",
+    "output_file": ".upgrade/upgrade.log",
+    "verbose_mode": false,
+    "include_agent_communications": false
+  },
+
+  "advanced": {
+    "custom_migration_rules": {},
+    "package_specific_configs": {
+      "react": {
+        "always_upgrade_react_dom": true,
+        "upgrade_related_packages": ["react-dom", "@types/react", "@types/react-dom"]
+      },
+      "next": {
+        "run_codemod": "npx @next/codemod",
+        "verify_config_compatibility": true
+      }
+    },
+    "dependency_groups": {
+      "testing": ["jest", "vitest", "@testing-library/react", "playwright"],
+      "linting": ["eslint", "prettier", "eslint-config-*"],
+      "build": ["vite", "webpack", "rollup", "esbuild"]
+    }
+  }
+}

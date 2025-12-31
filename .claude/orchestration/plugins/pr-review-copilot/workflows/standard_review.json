@@ -1,0 +1,90 @@
+{
+  "name": "standard_review",
+  "description": "Comprehensive review for medium-sized PRs (100-500 lines)",
+  "trigger_condition": "100 <= lines_changed < 500",
+  "estimated_duration": "5-8 minutes",
+  "max_duration_minutes": 10,
+
+  "phases": [
+    {
+      "name": "context_analysis",
+      "agents": ["pr-context-analyzer"],
+      "execution": "sequential",
+      "timeout_minutes": 1,
+      "outputs_required": ["context_summary", "risk_indicators", "dependencies_map"]
+    },
+    {
+      "name": "parallel_analysis",
+      "agents": [
+        "logic-bug-detective",
+        "security-auditor",
+        "performance-analyst",
+        "test-coverage-validator",
+        "pattern-consistency-checker"
+      ],
+      "execution": "parallel",
+      "timeout_minutes": 4,
+      "depends_on": ["context_analysis"],
+      "inputs_from": ["pr-context-analyzer"]
+    },
+    {
+      "name": "specialized_review",
+      "agents": [],
+      "execution": "parallel",
+      "timeout_minutes": 2,
+      "depends_on": ["parallel_analysis"],
+      "conditional_agents": {
+        "api-contract-reviewer": "has_api_changes",
+        "database-migration-expert": "has_migration_files"
+      },
+      "inputs_from": ["pr-context-analyzer"]
+    },
+    {
+      "name": "synthesis",
+      "agents": [
+        "priority-classifier",
+        "review-synthesizer"
+      ],
+      "execution": "sequential",
+      "timeout_minutes": 3,
+      "depends_on": ["parallel_analysis", "specialized_review"],
+      "inputs_from": "all_previous_agents"
+    }
+  ],
+
+  "focus_areas": [
+    "bugs_and_edge_cases",
+    "security",
+    "performance",
+    "test_coverage",
+    "code_patterns"
+  ],
+
+  "skip_checks": [],
+
+  "conditional_analysis": {
+    "api_changes": {
+      "trigger": "files_match('**/api/**', '**/routes/**', '**/controllers/**')",
+      "additional_agents": ["api-contract-reviewer"]
+    },
+    "database_changes": {
+      "trigger": "files_match('**/migrations/**', '**/schema/**')",
+      "additional_agents": ["database-migration-expert"]
+    }
+  },
+
+  "quality_gates": {
+    "minimum_test_coverage": 80,
+    "block_on_security_high": true,
+    "block_on_missing_tests_for_new_features": false,
+    "block_on_breaking_changes_without_migration": true
+  },
+
+  "output_format": {
+    "inline_comments": true,
+    "summary_only": false,
+    "detailed_explanations": true,
+    "include_code_suggestions": true,
+    "group_by_file": true
+  }
+}

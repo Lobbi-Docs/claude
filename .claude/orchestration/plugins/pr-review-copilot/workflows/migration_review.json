@@ -1,0 +1,189 @@
+{
+  "name": "migration_review",
+  "description": "Specialized review for database migrations and schema changes",
+  "trigger_condition": "files_match('**/migrations/**', '**/schema/**', '**/db/**') OR has_sql_files",
+  "estimated_duration": "6-10 minutes",
+  "max_duration_minutes": 12,
+
+  "phases": [
+    {
+      "name": "context_and_migration_analysis",
+      "agents": ["pr-context-analyzer"],
+      "execution": "sequential",
+      "timeout_minutes": 1,
+      "outputs_required": [
+        "context_summary",
+        "migration_files",
+        "schema_changes",
+        "affected_tables"
+      ]
+    },
+    {
+      "name": "migration_safety_audit",
+      "agents": ["database-migration-expert"],
+      "execution": "sequential",
+      "timeout_minutes": 4,
+      "depends_on": ["context_and_migration_analysis"],
+      "inputs_from": ["pr-context-analyzer"],
+      "deep_checks": [
+        "data_loss_risks",
+        "locking_analysis",
+        "constraint_validation",
+        "rollback_safety",
+        "performance_impact",
+        "downtime_estimation"
+      ]
+    },
+    {
+      "name": "supporting_reviews",
+      "agents": [
+        "logic-bug-detective",
+        "performance-analyst",
+        "api-contract-reviewer"
+      ],
+      "execution": "parallel",
+      "timeout_minutes": 3,
+      "depends_on": ["context_and_migration_analysis"],
+      "inputs_from": ["pr-context-analyzer", "database-migration-expert"],
+      "focus": [
+        "migration_logic_errors",
+        "query_performance",
+        "api_compatibility_with_schema_changes"
+      ]
+    },
+    {
+      "name": "test_validation",
+      "agents": ["test-coverage-validator"],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "depends_on": ["migration_safety_audit"],
+      "inputs_from": ["database-migration-expert"],
+      "specific_checks": [
+        "migration_up_tested",
+        "migration_down_tested",
+        "data_integrity_tests",
+        "constraint_validation_tests"
+      ]
+    },
+    {
+      "name": "synthesis_and_recommendations",
+      "agents": [
+        "priority-classifier",
+        "review-synthesizer"
+      ],
+      "execution": "sequential",
+      "timeout_minutes": 2,
+      "depends_on": ["migration_safety_audit", "supporting_reviews", "test_validation"],
+      "inputs_from": "all_previous_agents",
+      "additional_outputs": [
+        "deployment_strategy",
+        "rollback_procedure",
+        "monitoring_requirements"
+      ]
+    }
+  ],
+
+  "migration_safety_checks": {
+    "data_integrity": [
+      "Is data backed up before destructive operations?",
+      "Are NOT NULL constraints safe (have defaults or backfill)?",
+      "Are foreign keys validated before addition?",
+      "Are unique constraints verified?",
+      "Is data migrated correctly for type changes?"
+    ],
+    "locking_and_performance": [
+      "Are indexes created CONCURRENTLY (PostgreSQL)?",
+      "Are large table alterations done safely?",
+      "Is migration expected to lock tables? For how long?",
+      "Are there alternative zero-downtime approaches?",
+      "Will migration cause performance degradation?"
+    ],
+    "rollback_safety": [
+      "Is down migration provided?",
+      "Does rollback preserve data?",
+      "Are there irreversible operations?",
+      "Is rollback tested?",
+      "What happens if rollback is needed after data changes?"
+    ],
+    "compatibility": [
+      "Can old code run with new schema?",
+      "Can new code run with old schema?",
+      "Is blue-green deployment possible?",
+      "Are API contracts maintained?",
+      "Is graceful degradation possible?"
+    ]
+  },
+
+  "database_specific_rules": {
+    "postgresql": {
+      "require_concurrent_indexes": true,
+      "check_lock_timeout": true,
+      "validate_vacuum_strategy": true,
+      "check_partition_strategy": true
+    },
+    "mysql": {
+      "check_algorithm": true,
+      "validate_innodb_settings": true,
+      "check_online_ddl": true
+    },
+    "mongodb": {
+      "validate_schema_validation": true,
+      "check_index_build_method": true
+    }
+  },
+
+  "risk_assessment": {
+    "table_size_thresholds": {
+      "small": "< 1M rows",
+      "medium": "1M - 10M rows",
+      "large": "10M - 100M rows",
+      "very_large": "> 100M rows"
+    },
+    "downtime_tolerance": {
+      "none": "zero_downtime_required",
+      "minimal": "< 1 second acceptable",
+      "low": "< 10 seconds acceptable",
+      "medium": "< 1 minute acceptable",
+      "high": "maintenance_window_required"
+    }
+  },
+
+  "quality_gates": {
+    "require_migration_tests": true,
+    "require_rollback_migration": true,
+    "block_on_data_loss_risk": true,
+    "block_on_extended_locking": true,
+    "require_deployment_plan": true,
+    "require_monitoring_plan": true
+  },
+
+  "deployment_strategies": {
+    "recommend_based_on_risk": true,
+    "strategies": {
+      "direct": "Low risk, small tables, quick operations",
+      "blue_green": "Schema changes requiring gradual rollout",
+      "expand_contract": "Breaking schema changes",
+      "maintenance_window": "High risk, large tables, extended locking"
+    }
+  },
+
+  "output_format": {
+    "inline_comments": true,
+    "detailed_explanations": true,
+    "include_code_suggestions": true,
+    "migration_risk_assessment": true,
+    "deployment_plan": true,
+    "rollback_procedure": true,
+    "estimated_downtime": true,
+    "monitoring_requirements": true,
+    "alternative_approaches": true
+  },
+
+  "additional_requirements": {
+    "provide_sql_review": true,
+    "check_naming_conventions": true,
+    "validate_index_strategy": true,
+    "assess_query_performance": true,
+    "recommend_monitoring": true
+  }
+}
