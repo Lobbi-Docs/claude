@@ -1,0 +1,404 @@
+# CSV/Excel Customer Onboarding Workflow
+# The most common migration pattern - customer provides CSV/Excel exports
+
+name: csv-onboarding
+displayName: "Onboard Customer with CSV/Excel Files"
+description: |
+  Standard workflow for onboarding new customers who provide their data
+  in CSV or Excel format. Handles schema detection, mapping, validation,
+  and migration with full audit trail.
+
+version: "1.0.0"
+estimatedDuration: "1-4 hours"
+complexity: "low-medium"
+priority: 100
+
+# When this workflow is triggered
+triggers:
+  keywords:
+    - "import csv"
+    - "upload excel"
+    - "onboard customer"
+    - "migrate spreadsheet"
+    - "load customer data"
+  filePatterns:
+    - "*.csv"
+    - "*.xlsx"
+    - "*.xls"
+  commands:
+    - "/import-csv"
+    - "/import-excel"
+
+# Input requirements
+inputs:
+  required:
+    - name: customer_name
+      type: string
+      description: "Name of the customer being onboarded"
+
+    - name: data_files
+      type: file[]
+      description: "CSV or Excel files to import"
+      validation:
+        extensions: [".csv", ".xlsx", ".xls"]
+        maxSize: "2GB"
+        minFiles: 1
+
+    - name: target_entity
+      type: string
+      description: "Target entity to import into (e.g., Customer, Contact, Order)"
+
+  optional:
+    - name: encoding
+      type: string
+      default: "auto"
+      description: "File encoding (auto, utf-8, utf-16, iso-8859-1)"
+
+    - name: has_header
+      type: boolean
+      default: true
+      description: "Whether files have header rows"
+
+    - name: skip_validation
+      type: boolean
+      default: false
+      description: "Skip validation phase (not recommended)"
+
+    - name: dry_run_only
+      type: boolean
+      default: false
+      description: "Only run dry-run, don't execute actual migration"
+
+# Workflow phases
+phases:
+  - id: analyze
+    name: "Analyze Source Files"
+    description: "Detect schema, encoding, and data patterns"
+    agents:
+      - agent: source-analyzer-agent
+        model: sonnet
+        priority: primary
+        config:
+          sample_size: 10000
+          detect_encoding: true
+          detect_delimiter: true
+
+      - agent: schema-detector-agent
+        model: haiku
+        priority: support
+        config:
+          infer_types: true
+          detect_patterns: true
+
+    parallel: true
+    timeout: 300  # 5 minutes
+    retry: 2
+
+    outputs:
+      - source_schema
+      - encoding_report
+      - sample_data
+      - quality_indicators
+
+    successCriteria:
+      - "source_schema.tables.length > 0"
+      - "source_schema.confidence > 0.8"
+
+  - id: map
+    name: "Generate Field Mappings"
+    description: "AI-assisted field mapping with confidence scores"
+    dependsOn: [analyze]
+
+    agents:
+      - agent: schema-mapper-agent
+        model: opus  # Use best model for critical mapping
+        priority: primary
+        config:
+          confidence_threshold: 0.7
+          suggest_transformations: true
+          use_historical_mappings: true
+
+      - agent: transformation-designer-agent
+        model: sonnet
+        priority: support
+        config:
+          auto_detect_date_formats: true
+          suggest_normalizations: true
+
+    parallel: false
+    timeout: 600  # 10 minutes
+    retry: 1
+
+    outputs:
+      - field_mappings
+      - transformation_rules
+      - unmapped_fields
+      - mapping_confidence
+
+    # Human checkpoint - review mappings before proceeding
+    checkpoint:
+      type: approval
+      prompt: |
+        Review the suggested field mappings:
+
+        {{ mappings_summary }}
+
+        Mappings with confidence < 70% require manual review.
+        Unmapped required fields: {{ unmapped_required }}
+
+        Options:
+        1. Approve and continue
+        2. Modify mappings
+        3. Cancel workflow
+      timeout: 86400  # 24 hours
+      defaultAction: pause
+
+  - id: validate
+    name: "Validate Data Quality"
+    description: "Run comprehensive data quality checks"
+    dependsOn: [map]
+
+    agents:
+      - agent: data-validator-agent
+        model: sonnet
+        priority: primary
+        config:
+          check_required_fields: true
+          check_formats: true
+          check_constraints: true
+
+      - agent: quality-auditor-agent
+        model: haiku
+        priority: support
+        config:
+          calculate_quality_score: true
+          identify_anomalies: true
+
+      - agent: duplicate-detector-agent
+        model: sonnet
+        priority: support
+        config:
+          match_type: "fuzzy"
+          threshold: 0.85
+
+    parallel: true
+    timeout: 1800  # 30 minutes
+    retry: 1
+
+    outputs:
+      - validation_results
+      - quality_score
+      - duplicate_report
+      - fix_suggestions
+
+    successCriteria:
+      - "validation_results.blocking_issues == 0 OR user_approved"
+      - "quality_score > 60"
+
+    # Checkpoint if there are blocking issues
+    conditionalCheckpoint:
+      condition: "validation_results.blocking_issues > 0"
+      type: decision
+      prompt: |
+        Validation found {{ blocking_issues }} blocking issues:
+
+        {{ issue_summary }}
+
+        Quality Score: {{ quality_score }}/100
+
+        Options:
+        1. Fix issues and re-validate
+        2. Skip problematic records and continue
+        3. Cancel migration
+      timeout: 86400
+
+  - id: dryrun
+    name: "Dry Run Migration"
+    description: "Simulate migration without committing changes"
+    dependsOn: [validate]
+
+    agents:
+      - agent: migration-executor-agent
+        model: sonnet
+        priority: primary
+        config:
+          execution_type: "dry-run"
+          batch_size: 1000
+          generate_report: true
+
+    parallel: false
+    timeout: 1800  # 30 minutes
+    retry: 1
+
+    outputs:
+      - dryrun_report
+      - estimated_duration
+      - potential_issues
+
+    successCriteria:
+      - "dryrun_report.success_rate > 0.95"
+      - "dryrun_report.fatal_errors == 0"
+
+    checkpoint:
+      type: approval
+      prompt: |
+        Dry run completed successfully.
+
+        Summary:
+        - Records to create: {{ records_to_create }}
+        - Records to update: {{ records_to_update }}
+        - Records to skip: {{ records_to_skip }}
+        - Estimated duration: {{ estimated_duration }}
+
+        {{ potential_issues_summary }}
+
+        Ready to execute actual migration?
+      timeout: 86400
+      defaultAction: pause
+
+  - id: execute
+    name: "Execute Migration"
+    description: "Run the actual data migration"
+    dependsOn: [dryrun]
+    skipIf: "inputs.dry_run_only == true"
+
+    agents:
+      - agent: migration-executor-agent
+        model: sonnet
+        priority: primary
+        config:
+          execution_type: "full"
+          batch_size: 1000
+          parallel_batches: 4
+          checkpoint_frequency: 10
+
+      - agent: batch-processor-agent
+        model: haiku
+        priority: support
+        config:
+          memory_efficient: true
+
+      - agent: transaction-manager-agent
+        model: sonnet
+        priority: support
+        config:
+          transaction_mode: "per-batch"
+          rollback_on_failure: true
+
+      - agent: audit-logger-agent
+        model: haiku
+        priority: support
+        config:
+          log_level: "standard"
+          mask_pii: true
+
+    parallel: false  # Main executor is single-threaded, uses sub-agents
+    timeout: 10800  # 3 hours
+    retry: 0  # Don't auto-retry full migrations
+
+    outputs:
+      - migration_results
+      - error_log
+      - audit_trail
+
+    # Allow pause/resume
+    pausable: true
+    resumable: true
+
+    successCriteria:
+      - "migration_results.status == 'completed'"
+      - "migration_results.success_rate > 0.90"
+
+  - id: verify
+    name: "Verify Migration"
+    description: "Verify data integrity post-migration"
+    dependsOn: [execute]
+
+    agents:
+      - agent: verification-agent
+        model: sonnet
+        priority: primary
+        config:
+          verify_counts: true
+          sample_verification: true
+          check_referential_integrity: true
+
+    parallel: false
+    timeout: 600  # 10 minutes
+    retry: 2
+
+    outputs:
+      - verification_report
+      - discrepancies
+
+    successCriteria:
+      - "verification_report.passed == true"
+
+  - id: report
+    name: "Generate Final Report"
+    description: "Create comprehensive migration report"
+    dependsOn: [verify]
+
+    agents:
+      - agent: audit-logger-agent
+        model: haiku
+        priority: primary
+        config:
+          generate_report: true
+          include_audit_trail: true
+
+    parallel: false
+    timeout: 300
+
+    outputs:
+      - final_report
+      - audit_export
+
+# Error handling
+errorHandling:
+  onPhaseError:
+    analyze: "retry_then_fail"
+    map: "pause_for_review"
+    validate: "pause_for_review"
+    dryrun: "retry_then_fail"
+    execute: "pause_and_checkpoint"
+    verify: "retry_then_fail"
+    report: "continue"
+
+  onFatalError:
+    action: "rollback_and_notify"
+    notification:
+      channels: ["email", "slack"]
+      recipients: ["migration-team@company.com"]
+
+# Notifications
+notifications:
+  onStart:
+    message: "Migration started for {{ customer_name }}"
+  onCheckpoint:
+    message: "Migration paused - action required"
+  onComplete:
+    message: "Migration completed for {{ customer_name }} - {{ success_rate }}% success"
+  onError:
+    message: "Migration error for {{ customer_name }}: {{ error_message }}"
+
+# Output artifacts
+artifacts:
+  - name: "migration-report"
+    format: "pdf"
+    path: "reports/{{ customer_name }}/migration-report-{{ timestamp }}.pdf"
+
+  - name: "audit-log"
+    format: "json"
+    path: "audit/{{ customer_name }}/audit-{{ timestamp }}.json"
+
+  - name: "field-mapping"
+    format: "yaml"
+    path: "mappings/{{ customer_name }}/mapping-{{ timestamp }}.yaml"
+
+# Metadata
+metadata:
+  author: "Migration Team"
+  createdAt: "2024-01-15"
+  lastModified: "2024-01-15"
+  tags: ["csv", "excel", "onboarding", "standard"]

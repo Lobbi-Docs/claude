@@ -1,0 +1,452 @@
+{
+  "$schema": "../types/migration.types.ts#FieldMappingSet",
+  "_description": "Example output from Schema Mapper Agent showing auto-detected field mappings with confidence scores",
+
+  "mappingSetId": "map-2024-01-15-acme-corp",
+  "sourceId": "src-legacy-customers-csv",
+  "sourceName": "legacy_customers.csv",
+  "targetEntity": "Customer",
+
+  "overallConfidence": 0.87,
+
+  "mappings": [
+    {
+      "id": "map-001",
+      "source": {
+        "fields": ["CustID"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "external_id"
+      },
+      "transformation": {
+        "type": "none",
+        "config": {}
+      },
+      "confidence": 0.95,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.92,
+          "details": "CustID recognized as customer identifier variant"
+        },
+        {
+          "type": "type-compatible",
+          "score": 1.0
+        },
+        {
+          "type": "sample-data-match",
+          "score": 0.93
+        }
+      ],
+      "status": "suggested",
+      "notes": null
+    },
+
+    {
+      "id": "map-002",
+      "source": {
+        "fields": ["CustomerName"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "first_name"
+      },
+      "transformation": {
+        "type": "split",
+        "config": {
+          "type": "split",
+          "delimiter": " ",
+          "outputs": [
+            { "index": 0, "targetField": "first_name" },
+            { "index": -1, "targetField": "last_name" }
+          ]
+        },
+        "chain": [
+          {
+            "type": "string-transform",
+            "config": {
+              "type": "string-transform",
+              "operations": [
+                { "op": "trim" },
+                { "op": "titlecase" }
+              ]
+            }
+          }
+        ]
+      },
+      "confidence": 0.82,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.85,
+          "details": "CustomerName contains full name, splitting to first/last"
+        },
+        {
+          "type": "sample-data-match",
+          "score": 0.78
+        },
+        {
+          "type": "pattern-match",
+          "pattern": "FirstName LastName",
+          "score": 0.84
+        }
+      ],
+      "status": "suggested",
+      "notes": "Splitting full name - handles 'John Smith' pattern. May need review for names with Jr., III, etc."
+    },
+
+    {
+      "id": "map-003",
+      "source": {
+        "fields": ["EmailAddress"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "email"
+      },
+      "transformation": {
+        "type": "string-transform",
+        "config": {
+          "type": "string-transform",
+          "operations": [
+            { "op": "trim" },
+            { "op": "lowercase" }
+          ]
+        }
+      },
+      "confidence": 0.98,
+      "matchReasons": [
+        {
+          "type": "exact-name",
+          "score": 0.95
+        },
+        {
+          "type": "pattern-match",
+          "pattern": "email",
+          "score": 1.0
+        },
+        {
+          "type": "type-compatible",
+          "score": 1.0
+        }
+      ],
+      "status": "suggested",
+      "validation": {
+        "preTransform": [
+          { "id": "email-format", "name": "Email Format", "severity": "error", "enabled": true }
+        ],
+        "postTransform": [],
+        "onError": "reject"
+      }
+    },
+
+    {
+      "id": "map-004",
+      "source": {
+        "fields": ["Phone", "PhoneExt"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "phone"
+      },
+      "transformation": {
+        "type": "combine",
+        "config": {
+          "type": "combine",
+          "sourceFields": ["Phone", "PhoneExt"],
+          "separator": "",
+          "template": "{Phone}x{PhoneExt}",
+          "nullHandling": "skip"
+        },
+        "chain": [
+          {
+            "type": "custom-expression",
+            "config": {
+              "type": "custom-expression",
+              "expression": "value.replace(/[^0-9x]/g, '')"
+            }
+          }
+        ]
+      },
+      "confidence": 0.88,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.9,
+          "details": "Phone and PhoneExt combined into single phone field"
+        },
+        {
+          "type": "pattern-match",
+          "pattern": "phone",
+          "score": 0.85
+        }
+      ],
+      "status": "suggested",
+      "notes": "Combining phone and extension. Extension appended with 'x' separator."
+    },
+
+    {
+      "id": "map-005",
+      "source": {
+        "fields": ["SignUpDate"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "created_at"
+      },
+      "transformation": {
+        "type": "date-format",
+        "config": {
+          "type": "date-format",
+          "inputFormat": ["MM/DD/YYYY", "M/D/YYYY", "MM-DD-YYYY"],
+          "outputFormat": "ISO8601",
+          "inputTimezone": "America/New_York",
+          "outputTimezone": "UTC",
+          "onError": "null",
+          "defaultValue": null
+        }
+      },
+      "confidence": 0.91,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.88,
+          "details": "SignUpDate maps to created_at timestamp"
+        },
+        {
+          "type": "type-compatible",
+          "score": 0.9
+        },
+        {
+          "type": "sample-data-match",
+          "score": 0.95
+        }
+      ],
+      "status": "suggested",
+      "notes": "Multiple date formats detected in source. Standardizing to ISO8601 UTC."
+    },
+
+    {
+      "id": "map-006",
+      "source": {
+        "fields": ["State"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "state_code"
+      },
+      "transformation": {
+        "type": "lookup",
+        "config": {
+          "type": "lookup",
+          "lookupTable": {
+            "California": "CA",
+            "New York": "NY",
+            "Texas": "TX",
+            "Florida": "FL",
+            "Illinois": "IL",
+            "Pennsylvania": "PA",
+            "Ohio": "OH",
+            "Georgia": "GA",
+            "North Carolina": "NC",
+            "Michigan": "MI"
+          },
+          "sourceField": "State",
+          "lookupField": "name",
+          "returnField": "code",
+          "onNotFound": "original",
+          "caseInsensitive": true
+        }
+      },
+      "confidence": 0.85,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.82,
+          "details": "State names need conversion to state codes"
+        },
+        {
+          "type": "sample-data-match",
+          "score": 0.88
+        }
+      ],
+      "status": "suggested",
+      "notes": "Converting full state names to 2-letter codes. 10 states detected in sample, full lookup table will be used."
+    },
+
+    {
+      "id": "map-007",
+      "source": {
+        "fields": ["AccountBalance"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "balance"
+      },
+      "transformation": {
+        "type": "number-format",
+        "config": {
+          "type": "number-format",
+          "decimalSeparator": ".",
+          "thousandsSeparator": ",",
+          "currencySymbol": "$",
+          "precision": 2,
+          "onError": "default",
+          "defaultValue": 0.0
+        }
+      },
+      "confidence": 0.93,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.9
+        },
+        {
+          "type": "type-compatible",
+          "score": 0.95
+        },
+        {
+          "type": "pattern-match",
+          "pattern": "currency",
+          "score": 0.95
+        }
+      ],
+      "status": "suggested"
+    },
+
+    {
+      "id": "map-008",
+      "source": {
+        "fields": ["IsActive"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "status"
+      },
+      "transformation": {
+        "type": "conditional",
+        "config": {
+          "type": "conditional",
+          "conditions": [
+            {
+              "when": "value === 'Y' || value === 'Yes' || value === '1' || value === true",
+              "then": { "type": "none", "config": {}, "value": "active" }
+            },
+            {
+              "when": "value === 'N' || value === 'No' || value === '0' || value === false",
+              "then": { "type": "none", "config": {}, "value": "inactive" }
+            }
+          ],
+          "else": { "type": "none", "config": {}, "value": "unknown" }
+        }
+      },
+      "confidence": 0.89,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.85
+        },
+        {
+          "type": "sample-data-match",
+          "score": 0.92
+        }
+      ],
+      "status": "suggested",
+      "notes": "Converting Y/N/1/0 to status enum values"
+    },
+
+    {
+      "id": "map-009",
+      "source": {
+        "fields": ["SSN"]
+      },
+      "target": {
+        "entity": "Customer",
+        "field": "ssn_last4"
+      },
+      "transformation": {
+        "type": "mask",
+        "config": {
+          "type": "mask",
+          "pattern": "ssn",
+          "customMask": {
+            "showFirst": 0,
+            "showLast": 4,
+            "maskChar": "*"
+          }
+        }
+      },
+      "confidence": 0.75,
+      "matchReasons": [
+        {
+          "type": "semantic-match",
+          "score": 0.7,
+          "details": "SSN detected, masking to last 4 digits for security"
+        },
+        {
+          "type": "pattern-match",
+          "pattern": "ssn",
+          "score": 0.8
+        }
+      ],
+      "status": "suggested",
+      "notes": "SENSITIVE FIELD: Full SSN will be masked to last 4 digits only. Verify this meets compliance requirements."
+    }
+  ],
+
+  "unmappedSourceFields": [
+    "MiddleInitial",
+    "Fax",
+    "Pager",
+    "Notes"
+  ],
+
+  "unmappedRequiredFields": [
+    {
+      "field": "id",
+      "type": "uuid",
+      "suggestion": "Auto-generate UUID during import"
+    }
+  ],
+
+  "lowConfidenceMappings": [
+    {
+      "mappingId": "map-002",
+      "confidence": 0.82,
+      "reason": "Name splitting may not handle all edge cases",
+      "alternatives": [
+        "Keep as single 'full_name' field if schema supports",
+        "Use advanced name parsing library",
+        "Manual review for names with Jr., III, PhD, etc."
+      ]
+    },
+    {
+      "mappingId": "map-009",
+      "confidence": 0.75,
+      "reason": "SSN handling requires compliance verification",
+      "alternatives": [
+        "Store full SSN in encrypted field",
+        "Do not import SSN at all",
+        "Verify with compliance team"
+      ]
+    }
+  ],
+
+  "metadata": {
+    "createdAt": "2024-01-15T10:30:00Z",
+    "createdBy": "auto",
+    "version": 1,
+    "approved": false,
+    "analysisTime": 12340
+  },
+
+  "summary": {
+    "totalSourceFields": 15,
+    "mappedFields": 11,
+    "unmappedFields": 4,
+    "autoAccepted": 7,
+    "needsReview": 4,
+    "avgConfidence": 0.87
+  }
+}

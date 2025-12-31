@@ -1,0 +1,318 @@
+{
+  "$schema": "../types/migration.types.ts#MigrationReport",
+  "_description": "Example migration summary showing before/after statistics and complete audit",
+
+  "reportId": "rpt-2024-01-15-acme-corp-final",
+  "projectId": "proj-acme-corp-migration",
+  "projectName": "Acme Corp Customer Migration",
+  "customerName": "Acme Corporation",
+
+  "generatedAt": "2024-01-15T14:30:00Z",
+  "generatedBy": "Migration System",
+
+  "executionSummary": {
+    "executionId": "exec-2024-01-15-001",
+    "type": "full",
+    "status": "completed",
+    "startedAt": "2024-01-15T10:00:00Z",
+    "completedAt": "2024-01-15T12:47:23Z",
+    "duration": "2h 47m 23s",
+    "durationSeconds": 10043
+  },
+
+  "beforeAfterComparison": {
+    "source": {
+      "name": "legacy_customers.csv",
+      "type": "csv",
+      "encoding": "UTF-8",
+      "totalRecords": 150000,
+      "totalFields": 15,
+      "fileSize": "45.2 MB"
+    },
+    "target": {
+      "entity": "Customer",
+      "totalRecords": 149234,
+      "recordsCreated": 145234,
+      "recordsUpdated": 4000
+    },
+    "delta": {
+      "recordsNotMigrated": 766,
+      "reason": "523 missing required fields, 243 unresolvable duplicates"
+    }
+  },
+
+  "dataSummary": {
+    "sources": [
+      {
+        "name": "legacy_customers.csv",
+        "type": "csv",
+        "recordCount": 150000,
+        "columnsUsed": 11,
+        "columnsIgnored": 4
+      }
+    ],
+    "totalSourceRecords": 150000,
+    "totalTargetRecords": 149234,
+
+    "recordsCreated": 145234,
+    "recordsUpdated": 4000,
+    "recordsSkipped": 523,
+    "recordsFailed": 243,
+
+    "byOutcome": [
+      { "outcome": "Created", "count": 145234, "percentage": 96.82 },
+      { "outcome": "Updated (existing match)", "count": 4000, "percentage": 2.67 },
+      { "outcome": "Skipped (missing required)", "count": 523, "percentage": 0.35 },
+      { "outcome": "Failed (unresolvable)", "count": 243, "percentage": 0.16 }
+    ]
+  },
+
+  "qualitySummary": {
+    "initialQualityScore": 85.5,
+    "finalQualityScore": 99.2,
+
+    "validationErrorsFound": 1543,
+    "validationErrorsFixed": 1300,
+    "validationErrorsRemaining": 243,
+
+    "warningsFound": 634,
+    "warningsResolved": 634,
+
+    "dataQualityImprovements": [
+      {
+        "field": "email",
+        "before": "Mixed case, whitespace",
+        "after": "Lowercase, trimmed",
+        "recordsAffected": 150000
+      },
+      {
+        "field": "phone",
+        "before": "Mixed formats ((555) 123-4567, 555.123.4567, etc.)",
+        "after": "E.164 format (+15551234567)",
+        "recordsAffected": 148477
+      },
+      {
+        "field": "state",
+        "before": "Full names and abbreviations mixed",
+        "after": "2-letter codes only",
+        "recordsAffected": 149234
+      },
+      {
+        "field": "signup_date",
+        "before": "Multiple formats (MM/DD/YYYY, M/D/YY, etc.)",
+        "after": "ISO 8601 UTC",
+        "recordsAffected": 150000
+      }
+    ]
+  },
+
+  "mappingSummary": {
+    "totalSourceFields": 15,
+    "totalTargetFields": 12,
+    "mappedFields": 11,
+    "unmappedSourceFields": 4,
+    "unmappedTargetFields": 1,
+
+    "byConfidence": [
+      { "range": "90-100%", "count": 6 },
+      { "range": "80-89%", "count": 3 },
+      { "range": "70-79%", "count": 2 },
+      { "range": "<70%", "count": 0 }
+    ],
+
+    "averageConfidence": 0.87,
+    "mappingsReviewed": 4,
+    "mappingsModified": 1
+  },
+
+  "transformationSummary": {
+    "totalTransformations": 750000,
+    "byType": [
+      { "type": "string-transform", "count": 300000, "description": "Trim/lowercase" },
+      { "type": "date-format", "count": 150000, "description": "Date standardization" },
+      { "type": "split", "count": 150000, "description": "Name splitting" },
+      { "type": "lookup", "count": 89000, "description": "State code lookup" },
+      { "type": "number-format", "count": 45000, "description": "Currency parsing" },
+      { "type": "conditional", "count": 16000, "description": "Status mapping" }
+    ]
+  },
+
+  "duplicateHandling": {
+    "duplicatesDetected": 987,
+    "strategy": "keep-most-recent",
+    "duplicatesMerged": 744,
+    "duplicatesSkipped": 243,
+    "mergeDetails": [
+      { "field": "email", "duplicatePairs": 987, "resolved": 744 }
+    ]
+  },
+
+  "performanceSummary": {
+    "totalDuration": "2h 47m 23s",
+    "phases": [
+      { "phase": "Analysis", "duration": "4m 12s" },
+      { "phase": "Mapping", "duration": "8m 45s" },
+      { "phase": "Validation", "duration": "12m 33s" },
+      { "phase": "Dry Run", "duration": "15m 22s" },
+      { "phase": "Execution", "duration": "1h 58m 45s" },
+      { "phase": "Verification", "duration": "7m 46s" }
+    ],
+
+    "executionMetrics": {
+      "avgRecordsPerSecond": 21.2,
+      "peakRecordsPerSecond": 35.8,
+      "totalBatches": 150,
+      "batchSize": 1000,
+      "parallelBatches": 4,
+      "failedBatches": 0,
+      "retriedBatches": 2
+    },
+
+    "resourceUsage": {
+      "peakMemory": "1.2 GB",
+      "avgCpu": "45%",
+      "networkIo": "523 MB"
+    }
+  },
+
+  "verificationResults": {
+    "passed": true,
+    "checks": [
+      {
+        "check": "Record Count Match",
+        "passed": true,
+        "expected": 149234,
+        "actual": 149234
+      },
+      {
+        "check": "Sample Data Verification",
+        "passed": true,
+        "sampleSize": 1000,
+        "matched": 998,
+        "mismatched": 2,
+        "mismatchReason": "Expected transformations applied"
+      },
+      {
+        "check": "Referential Integrity",
+        "passed": true,
+        "foreignKeysChecked": 0,
+        "orphanedRecords": 0
+      },
+      {
+        "check": "Unique Constraints",
+        "passed": true,
+        "constraintsVerified": ["email"]
+      }
+    ]
+  },
+
+  "errorSummary": {
+    "totalErrors": 243,
+    "byCategory": [
+      { "category": "Duplicate - Unresolvable", "count": 243, "description": "3+ way duplicates requiring manual review" }
+    ],
+    "errorRecords": {
+      "exported": true,
+      "exportPath": "/exports/acme-corp/error-records-2024-01-15.csv",
+      "recordCount": 243
+    }
+  },
+
+  "auditTrail": {
+    "totalEntries": 150766,
+    "byAction": {
+      "project.created": 1,
+      "source.analyzed": 1,
+      "mapping.created": 1,
+      "mapping.approved": 1,
+      "validation.executed": 2,
+      "migration.started": 1,
+      "record.created": 145234,
+      "record.updated": 4000,
+      "record.skipped": 523,
+      "error.occurred": 243,
+      "batch.completed": 150,
+      "migration.completed": 1
+    },
+    "exportedTo": "/audit/acme-corp/audit-log-2024-01-15.json",
+    "retentionPolicy": "7 years"
+  },
+
+  "artifacts": {
+    "reports": [
+      {
+        "name": "Migration Report (PDF)",
+        "path": "/reports/acme-corp/migration-report-2024-01-15.pdf"
+      },
+      {
+        "name": "Validation Report",
+        "path": "/reports/acme-corp/validation-report-2024-01-15.json"
+      }
+    ],
+    "mappings": [
+      {
+        "name": "Field Mapping Configuration",
+        "path": "/mappings/acme-corp/mapping-2024-01-15.yaml"
+      }
+    ],
+    "exports": [
+      {
+        "name": "Skipped Records",
+        "path": "/exports/acme-corp/skipped-records-2024-01-15.csv",
+        "recordCount": 523
+      },
+      {
+        "name": "Error Records",
+        "path": "/exports/acme-corp/error-records-2024-01-15.csv",
+        "recordCount": 243
+      }
+    ],
+    "audit": [
+      {
+        "name": "Full Audit Log",
+        "path": "/audit/acme-corp/audit-log-2024-01-15.json"
+      }
+    ]
+  },
+
+  "recommendations": [
+    "Review 243 unresolved duplicates manually - exported to error-records CSV",
+    "Contact customer about 523 records with missing emails - exported to skipped-records CSV",
+    "Consider scheduling incremental sync for ongoing updates",
+    "Archive source file after 30-day verification period"
+  ],
+
+  "nextSteps": [
+    {
+      "step": 1,
+      "action": "Review error records with customer",
+      "deadline": "2024-01-22",
+      "owner": "Migration Team"
+    },
+    {
+      "step": 2,
+      "action": "Configure incremental sync (if needed)",
+      "deadline": "2024-01-25",
+      "owner": "Integration Team"
+    },
+    {
+      "step": 3,
+      "action": "Archive source files",
+      "deadline": "2024-02-15",
+      "owner": "Migration Team"
+    }
+  ],
+
+  "signoff": {
+    "technicalApproval": {
+      "approver": null,
+      "date": null,
+      "status": "pending"
+    },
+    "customerApproval": {
+      "approver": null,
+      "date": null,
+      "status": "pending"
+    }
+  }
+}

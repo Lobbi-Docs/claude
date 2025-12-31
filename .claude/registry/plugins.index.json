@@ -93,6 +93,29 @@
       }
     },
 
+    "data": {
+      "customer-data-migration-orchestrator": {
+        "path": "../plugins/customer-data-migration-orchestrator/plugin.json",
+        "callsign": "Importer",
+        "version": "1.0.0",
+        "description": "Customer onboarding and legacy data migration - CSV, Excel, databases, APIs with AI-assisted mapping",
+        "provides": { "commands": 15, "agents": 13, "skills": 8, "hooks": 5, "workflows": 3 },
+        "status": "active",
+        "tier": "standard",
+        "innovative": true,
+        "dataSources": ["csv", "excel", "json", "xml", "postgresql", "mysql", "sqlserver", "oracle", "mongodb", "salesforce", "hubspot", "rest-api"],
+        "features": [
+          "AI-assisted field mapping with confidence scores",
+          "Auto-detect schema, encoding, and data patterns",
+          "Comprehensive validation with fix suggestions",
+          "Batch processing with checkpointing",
+          "Incremental sync for ongoing updates",
+          "Full audit trail for compliance"
+        ],
+        "integrates": ["jira-orchestrator", "notification-hub", "audit-logger"]
+      }
+    },
+
     "ai-advanced": {
       "cognitive-code-reasoner": {
         "path": "../plugins/cognitive-code-reasoner/plugin.json",
@@ -192,6 +215,7 @@
     "Messenger": "notification-hub",
     "Scribe": "documentation-orchestrator",
     "Oracle": "analytics-dashboard",
+    "Importer": "customer-data-migration-orchestrator",
     "Didact": "cognitive-code-reasoner",
     "Strategos": "autonomous-sprint-ai",
     "Librarian": "code-knowledge-graph",
@@ -201,17 +225,18 @@
   },
 
   "stats": {
-    "totalPlugins": 14,
+    "totalPlugins": 15,
     "byTier": {
       "enterprise": 1,
-      "standard": 7,
+      "standard": 8,
       "advanced": 6
     },
-    "totalCommands": 194,
-    "totalAgents": 178,
-    "totalSkills": 78,
-    "totalHooks": 58,
-    "innovativePlugins": 6,
+    "totalCommands": 209,
+    "totalAgents": 191,
+    "totalSkills": 86,
+    "totalHooks": 63,
+    "totalWorkflows": 3,
+    "innovativePlugins": 7,
     "deliberationProtocols": 20
   }
 }

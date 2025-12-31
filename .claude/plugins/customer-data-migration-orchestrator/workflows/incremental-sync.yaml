@@ -1,0 +1,357 @@
+# Incremental Sync Workflow
+# Ongoing delta sync from external API sources
+
+name: incremental-sync
+displayName: "Incremental Sync from API"
+description: |
+  Ongoing synchronization from external API sources.
+  Handles change detection, delta processing, and
+  continuous data integration.
+
+version: "1.0.0"
+estimatedDuration: "ongoing"
+complexity: "medium"
+priority: 80
+
+triggers:
+  keywords:
+    - "sync api"
+    - "incremental import"
+    - "delta sync"
+    - "ongoing sync"
+    - "api integration"
+  commands:
+    - "/import-api"
+    - "/sync-start"
+  scheduled:
+    - cron: "*/15 * * * *"  # Every 15 minutes
+      condition: "sync_enabled == true"
+
+inputs:
+  required:
+    - name: customer_name
+      type: string
+
+    - name: api_connection
+      type: object
+      schema:
+        base_url:
+          type: string
+        endpoint:
+          type: string
+        authentication:
+          type: object
+          properties:
+            type:
+              enum: ["oauth2", "api-key", "bearer"]
+            credentials:
+              type: object
+              sensitive: true
+
+    - name: target_entity
+      type: string
+
+  optional:
+    - name: sync_schedule
+      type: string
+      default: "*/15 * * * *"
+      description: "Cron expression for sync schedule"
+
+    - name: change_detection
+      type: string
+      enum: ["timestamp", "version", "checksum", "full-compare"]
+      default: "timestamp"
+
+    - name: timestamp_field
+      type: string
+      default: "updated_at"
+
+    - name: batch_size
+      type: integer
+      default: 100
+
+    - name: handle_deletes
+      type: boolean
+      default: true
+
+    - name: soft_delete
+      type: boolean
+      default: true
+
+# State management for incremental sync
+state:
+  persist:
+    - last_sync_timestamp
+    - last_sync_cursor
+    - sync_checkpoint
+    - consecutive_failures
+    - total_synced_records
+
+  storage: "database"  # or "file"
+
+phases:
+  - id: check_state
+    name: "Check Sync State"
+    description: "Load last sync state and determine what to fetch"
+
+    agents:
+      - agent: migration-executor-agent
+        model: haiku
+        config:
+          load_state: true
+          calculate_delta: true
+
+    timeout: 60
+
+    outputs:
+      - last_sync
+      - sync_mode  # "full" for first run, "delta" for subsequent
+
+  - id: fetch_changes
+    name: "Fetch Changes from API"
+    description: "Query API for records changed since last sync"
+    dependsOn: [check_state]
+
+    agents:
+      - agent: source-analyzer-agent
+        model: sonnet
+        config:
+          api_mode: true
+          pagination: true
+          change_detection: "{{ inputs.change_detection }}"
+          since: "{{ state.last_sync_timestamp }}"
+
+    timeout: 1800  # 30 minutes
+    retry: 3
+    retryDelay: 60000  # 1 minute
+
+    outputs:
+      - changed_records
+      - deleted_records
+      - api_response_metadata
+
+    # Handle rate limiting
+    rateLimit:
+      maxRequestsPerSecond: 10
+      retryAfterHeader: "Retry-After"
+
+  - id: detect_changes
+    name: "Detect Change Types"
+    description: "Classify records as create, update, or delete"
+    dependsOn: [fetch_changes]
+    condition: "changed_records.length > 0"
+
+    agents:
+      - agent: data-validator-agent
+        model: haiku
+        config:
+          detect_change_type: true
+          compare_with_existing: true
+
+    timeout: 600
+
+    outputs:
+      - records_to_create
+      - records_to_update
+      - records_to_delete
+      - unchanged_records
+
+  - id: transform
+    name: "Transform Records"
+    description: "Apply transformations to changed records"
+    dependsOn: [detect_changes]
+    condition: "records_to_create.length > 0 OR records_to_update.length > 0"
+
+    agents:
+      - agent: transformation-designer-agent
+        model: haiku
+        config:
+          apply_mappings: true
+          use_cached_mappings: true
+
+    timeout: 600
+
+    outputs:
+      - transformed_creates
+      - transformed_updates
+
+  - id: validate_changes
+    name: "Validate Changes"
+    description: "Validate transformed records"
+    dependsOn: [transform]
+
+    agents:
+      - agent: data-validator-agent
+        model: haiku
+        config:
+          quick_validation: true
+          skip_duplicate_check: true  # Already handled by change detection
+
+    timeout: 300
+
+    outputs:
+      - valid_creates
+      - valid_updates
+      - validation_errors
+
+  - id: apply_changes
+    name: "Apply Changes"
+    description: "Insert, update, and delete records"
+    dependsOn: [validate_changes]
+
+    agents:
+      - agent: migration-executor-agent
+        model: sonnet
+        config:
+          mode: "incremental"
+          upsert: true
+
+      - agent: batch-processor-agent
+        model: haiku
+        config:
+          batch_size: "{{ inputs.batch_size }}"
+
+      - agent: audit-logger-agent
+        model: haiku
+        config:
+          log_level: "minimal"
+
+    timeout: 1800
+
+    outputs:
+      - sync_results
+      - applied_creates
+      - applied_updates
+      - applied_deletes
+
+  - id: handle_deletes
+    name: "Process Deletes"
+    description: "Handle deleted records"
+    dependsOn: [fetch_changes, apply_changes]
+    condition: "inputs.handle_deletes == true AND records_to_delete.length > 0"
+
+    agents:
+      - agent: migration-executor-agent
+        model: haiku
+        config:
+          soft_delete: "{{ inputs.soft_delete }}"
+          delete_field: "deleted_at"
+
+    timeout: 300
+
+    outputs:
+      - delete_results
+
+  - id: update_state
+    name: "Update Sync State"
+    description: "Save sync state for next run"
+    dependsOn: [apply_changes, handle_deletes]
+
+    agents:
+      - agent: audit-logger-agent
+        model: haiku
+        config:
+          update_state: true
+          log_sync_summary: true
+
+    timeout: 60
+
+    outputs:
+      - new_sync_state
+      - sync_summary
+
+# Conflict resolution
+conflictResolution:
+  strategy: "last-write-wins"
+  alternatives:
+    - "source-wins"
+    - "target-wins"
+    - "manual-review"
+    - "merge"
+
+  onConflict:
+    action: "log_and_use_strategy"
+    notification: true
+
+# Error handling specific to sync
+errorHandling:
+  onApiError:
+    401: "refresh_token_and_retry"
+    403: "fail_and_alert"
+    429: "backoff_and_retry"
+    500: "retry_with_backoff"
+    502: "retry_with_backoff"
+    503: "retry_with_backoff"
+
+  onSyncError:
+    strategy: "checkpoint_and_retry"
+    maxConsecutiveFailures: 5
+    onMaxFailures: "disable_sync_and_alert"
+
+  backoff:
+    initial: 60000  # 1 minute
+    multiplier: 2
+    max: 3600000  # 1 hour
+
+# Health monitoring
+health:
+  metrics:
+    - name: "sync_success_rate"
+      threshold: 0.95
+      alert: true
+
+    - name: "average_sync_duration"
+      threshold: 1800000  # 30 minutes
+      alert: true
+
+    - name: "records_per_sync"
+      track: true
+
+    - name: "api_error_rate"
+      threshold: 0.1
+      alert: true
+
+  monitoring:
+    dashboard: true
+    alerts:
+      - type: "sync_failure"
+        channels: ["email", "slack"]
+      - type: "data_quality_drop"
+        channels: ["slack"]
+
+# Scheduling
+schedule:
+  default: "*/15 * * * *"  # Every 15 minutes
+  configurable: true
+
+  offHours:
+    enabled: false
+    timezone: "UTC"
+    skip: ["00:00-06:00"]
+
+  catchUp:
+    enabled: true
+    maxCatchUpRuns: 10
+
+notifications:
+  onSyncComplete:
+    condition: "sync_results.changes > 0"
+    message: |
+      Sync completed: +{{ created }} / ~{{ updated }} / -{{ deleted }}
+
+  onSyncError:
+    message: "Sync failed: {{ error_message }}"
+    channels: ["email", "slack"]
+
+  dailySummary:
+    schedule: "0 9 * * *"  # 9 AM daily
+    message: |
+      Daily sync summary for {{ customer_name }}:
+      - Total syncs: {{ total_syncs }}
+      - Records synced: {{ total_records }}
+      - Errors: {{ total_errors }}
+      - Avg duration: {{ avg_duration }}
+
+metadata:
+  author: "Integration Team"
+  tags: ["api", "incremental", "sync", "ongoing"]

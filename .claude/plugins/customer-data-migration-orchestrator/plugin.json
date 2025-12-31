@@ -1,0 +1,510 @@
+{
+  "$schema": "../../core/schemas/plugin.schema.json",
+  "name": "customer-data-migration-orchestrator",
+  "displayName": "Customer Data Migration Orchestrator",
+  "callsign": "Importer",
+  "faction": "Forerunner",
+  "version": "1.0.0",
+  "description": "Importer - Master orchestrator for customer onboarding and legacy data migration. Transforms weeks of manual data work into days through intelligent schema detection, AI-assisted field mapping, comprehensive validation, and fault-tolerant batch processing. Handles CSV, Excel, JSON, XML, legacy databases, and third-party SaaS exports.",
+  "author": {
+    "name": "Brookside BI",
+    "email": "plugins@brooksidebi.com"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Lobbi-Docs/claude",
+  "categories": ["data", "migration", "onboarding", "etl", "integration"],
+  "keywords": [
+    "import", "migrate", "migration", "onboard", "onboarding",
+    "csv", "excel", "xlsx", "json", "xml",
+    "legacy", "legacy-database", "customer-data", "data-import",
+    "etl", "extract-transform-load", "data-quality",
+    "field-mapping", "schema-detection", "data-validation",
+    "salesforce", "hubspot", "saas-export",
+    "mysql", "postgres", "sql-server", "oracle",
+    "batch-processing", "incremental-sync", "delta-migration",
+    "duplicate-detection", "data-normalization", "data-cleansing"
+  ],
+
+  "provides": {
+    "commands": 15,
+    "agents": 13,
+    "skills": 8,
+    "hooks": 5,
+    "workflows": 3
+  },
+
+  "migrationCapabilities": {
+    "description": "Comprehensive data migration from any source to target system",
+    "dataSources": {
+      "files": {
+        "supported": ["csv", "tsv", "xlsx", "xls", "json", "jsonl", "xml", "parquet"],
+        "maxFileSize": "2GB",
+        "encoding": ["utf-8", "utf-16", "iso-8859-1", "windows-1252", "auto-detect"]
+      },
+      "databases": {
+        "supported": ["postgresql", "mysql", "mariadb", "sqlserver", "oracle", "sqlite", "mongodb"],
+        "connectionPooling": true,
+        "sslSupport": true
+      },
+      "saasExports": {
+        "supported": ["salesforce", "hubspot", "pipedrive", "zendesk", "intercom", "stripe", "quickbooks"],
+        "apiIntegration": true
+      },
+      "apis": {
+        "supported": ["rest", "graphql", "soap"],
+        "authentication": ["oauth2", "api-key", "basic", "bearer"],
+        "pagination": ["offset", "cursor", "link-header"]
+      }
+    },
+    "transformations": {
+      "fieldMapping": {
+        "autoDetection": true,
+        "aiAssisted": true,
+        "confidenceScoring": true,
+        "customRules": true
+      },
+      "typeConversions": [
+        "string-to-date", "string-to-number", "currency-normalization",
+        "phone-formatting", "address-parsing", "name-splitting",
+        "boolean-detection", "enum-mapping", "null-handling"
+      ],
+      "dataQuality": [
+        "duplicate-detection", "email-validation", "phone-validation",
+        "address-normalization", "encoding-fix", "whitespace-trim",
+        "case-normalization", "special-char-handling"
+      ]
+    },
+    "execution": {
+      "dryRun": true,
+      "batchProcessing": {
+        "enabled": true,
+        "defaultBatchSize": 1000,
+        "maxBatchSize": 10000,
+        "parallelBatches": 4
+      },
+      "transactionManagement": {
+        "atomicBatches": true,
+        "rollbackSupport": true,
+        "checkpointing": true,
+        "resumability": true
+      },
+      "monitoring": {
+        "progressTracking": true,
+        "errorReporting": true,
+        "auditLogging": true,
+        "alerting": true
+      }
+    }
+  },
+
+  "orchestration": {
+    "enabled": true,
+    "mandatory": true,
+    "protocol": {
+      "version": "2.0.0",
+      "minSubAgents": 5,
+      "maxSubAgents": 13,
+      "defaultSubAgents": 8
+    },
+    "migrationFlow": {
+      "phases": [
+        {
+          "id": "discovery",
+          "name": "Source Discovery & Analysis",
+          "description": "Analyze source data, detect schemas, sample records",
+          "agents": ["source-analyzer-agent", "schema-detector-agent"],
+          "parallel": true,
+          "required": true,
+          "estimatedDuration": "5-15 minutes"
+        },
+        {
+          "id": "mapping",
+          "name": "Field Mapping & Transformation Design",
+          "description": "AI-assisted field mapping with confidence scores",
+          "agents": ["schema-mapper-agent", "transformation-designer-agent"],
+          "parallel": false,
+          "required": true,
+          "estimatedDuration": "10-30 minutes"
+        },
+        {
+          "id": "validation",
+          "name": "Pre-Migration Validation",
+          "description": "Quality checks, referential integrity, business rules",
+          "agents": ["data-validator-agent", "quality-auditor-agent", "reference-resolver-agent"],
+          "parallel": true,
+          "required": true,
+          "estimatedDuration": "15-60 minutes"
+        },
+        {
+          "id": "dryrun",
+          "name": "Dry Run Execution",
+          "description": "Simulate migration without committing changes",
+          "agents": ["migration-executor-agent", "batch-processor-agent"],
+          "parallel": false,
+          "required": true,
+          "estimatedDuration": "5-30 minutes"
+        },
+        {
+          "id": "execution",
+          "name": "Migration Execution",
+          "description": "Execute migration with transaction management",
+          "agents": ["migration-executor-agent", "batch-processor-agent", "transaction-manager-agent"],
+          "parallel": false,
+          "required": true,
+          "estimatedDuration": "30-180 minutes"
+        },
+        {
+          "id": "verification",
+          "name": "Post-Migration Verification",
+          "description": "Verify data integrity, generate audit reports",
+          "agents": ["verification-agent", "audit-logger-agent", "compliance-reporter-agent"],
+          "parallel": true,
+          "required": true,
+          "estimatedDuration": "10-30 minutes"
+        }
+      ],
+      "failurePolicy": {
+        "onError": "pause-and-notify",
+        "onWarning": "log-and-continue",
+        "maxRetries": 3,
+        "retryDelay": "exponential",
+        "rollbackOnFailure": true
+      }
+    }
+  },
+
+  "commands": {
+    "import-csv": "commands/import-csv.md",
+    "import-excel": "commands/import-excel.md",
+    "import-json": "commands/import-json.md",
+    "import-database": "commands/import-database.md",
+    "import-api": "commands/import-api.md",
+    "analyze-source": "commands/analyze-source.md",
+    "generate-mapping": "commands/generate-mapping.md",
+    "validate-data": "commands/validate-data.md",
+    "dry-run": "commands/dry-run.md",
+    "execute-migration": "commands/execute-migration.md",
+    "migration-status": "commands/migration-status.md",
+    "resume-migration": "commands/resume-migration.md",
+    "rollback-migration": "commands/rollback-migration.md",
+    "export-mapping": "commands/export-mapping.md",
+    "migration-report": "commands/migration-report.md"
+  },
+
+  "agents": {
+    "source-analyzer-agent": {
+      "path": "agents/source-analyzer-agent.md",
+      "model": "sonnet",
+      "description": "Analyzes data sources to detect format, encoding, schema structure, and data patterns",
+      "triggers": ["analyze source", "detect schema", "inspect data", "sample records"],
+      "capabilities": [
+        "auto-detect file encoding and delimiter",
+        "sample large files efficiently",
+        "detect data types per column",
+        "identify potential primary keys",
+        "analyze data distribution and patterns"
+      ]
+    },
+    "schema-detector-agent": {
+      "path": "agents/schema-detector-agent.md",
+      "model": "haiku",
+      "description": "Extracts and documents source schema including tables, fields, relationships",
+      "triggers": ["extract schema", "document structure", "map tables"],
+      "capabilities": [
+        "extract database schemas",
+        "parse API response structures",
+        "detect nested object hierarchies",
+        "identify foreign key relationships"
+      ]
+    },
+    "schema-mapper-agent": {
+      "path": "agents/schema-mapper-agent.md",
+      "model": "opus",
+      "description": "AI-powered field mapping between source and target schemas with confidence scoring",
+      "triggers": ["map fields", "match schema", "suggest mapping", "auto-map"],
+      "capabilities": [
+        "semantic field name matching",
+        "data type compatibility analysis",
+        "sample data pattern matching",
+        "confidence score calculation",
+        "suggest alternative mappings"
+      ]
+    },
+    "transformation-designer-agent": {
+      "path": "agents/transformation-designer-agent.md",
+      "model": "sonnet",
+      "description": "Designs data transformation rules including type conversions, splitting, combining",
+      "triggers": ["design transform", "convert field", "split field", "combine fields"],
+      "capabilities": [
+        "date format detection and conversion",
+        "name parsing (full to first/last)",
+        "address normalization",
+        "currency format handling",
+        "custom transformation scripting"
+      ]
+    },
+    "data-validator-agent": {
+      "path": "agents/data-validator-agent.md",
+      "model": "sonnet",
+      "description": "Validates data quality including format validation, required fields, business rules",
+      "triggers": ["validate data", "check quality", "verify format", "run checks"],
+      "capabilities": [
+        "email/phone format validation",
+        "required field checking",
+        "range and constraint validation",
+        "custom validation rules",
+        "generate fix suggestions"
+      ]
+    },
+    "quality-auditor-agent": {
+      "path": "agents/quality-auditor-agent.md",
+      "model": "haiku",
+      "description": "Audits overall data quality and generates quality score metrics",
+      "triggers": ["audit quality", "quality score", "data health", "completeness check"],
+      "capabilities": [
+        "calculate completeness percentage",
+        "identify data anomalies",
+        "detect encoding issues",
+        "measure uniqueness",
+        "generate quality report"
+      ]
+    },
+    "reference-resolver-agent": {
+      "path": "agents/reference-resolver-agent.md",
+      "model": "sonnet",
+      "description": "Resolves foreign key references and handles orphaned records",
+      "triggers": ["resolve references", "fix orphans", "map lookups", "link records"],
+      "capabilities": [
+        "detect orphaned foreign keys",
+        "resolve lookup values (state names to codes)",
+        "handle circular references",
+        "generate reference error report"
+      ]
+    },
+    "duplicate-detector-agent": {
+      "path": "agents/duplicate-detector-agent.md",
+      "model": "sonnet",
+      "description": "Detects and proposes resolution for duplicate records using fuzzy matching",
+      "triggers": ["find duplicates", "dedupe", "merge records", "detect dups"],
+      "capabilities": [
+        "exact match detection",
+        "fuzzy matching (Levenshtein, soundex)",
+        "configurable match thresholds",
+        "propose merge strategies",
+        "identify master records"
+      ]
+    },
+    "migration-executor-agent": {
+      "path": "agents/migration-executor-agent.md",
+      "model": "sonnet",
+      "description": "Executes migration operations with progress tracking and error handling",
+      "triggers": ["execute migration", "run import", "process data", "start migration"],
+      "capabilities": [
+        "coordinate batch processing",
+        "track progress in real-time",
+        "handle errors gracefully",
+        "support pause/resume",
+        "generate execution logs"
+      ]
+    },
+    "batch-processor-agent": {
+      "path": "agents/batch-processor-agent.md",
+      "model": "haiku",
+      "description": "Processes data in configurable batches for large dataset handling",
+      "triggers": ["batch process", "chunk data", "parallel import", "bulk insert"],
+      "capabilities": [
+        "configurable batch sizes",
+        "parallel batch execution",
+        "memory-efficient streaming",
+        "checkpoint after each batch",
+        "resume from last checkpoint"
+      ]
+    },
+    "transaction-manager-agent": {
+      "path": "agents/transaction-manager-agent.md",
+      "model": "sonnet",
+      "description": "Manages database transactions with rollback capabilities",
+      "triggers": ["manage transaction", "commit", "rollback", "savepoint"],
+      "capabilities": [
+        "create transaction savepoints",
+        "atomic batch commits",
+        "rollback on failure",
+        "deadlock detection",
+        "isolation level management"
+      ]
+    },
+    "verification-agent": {
+      "path": "agents/verification-agent.md",
+      "model": "sonnet",
+      "description": "Verifies migration success by comparing source and target data",
+      "triggers": ["verify migration", "compare data", "check counts", "validate import"],
+      "capabilities": [
+        "record count validation",
+        "checksum comparison",
+        "sample record verification",
+        "relationship integrity check",
+        "generate discrepancy report"
+      ]
+    },
+    "audit-logger-agent": {
+      "path": "agents/audit-logger-agent.md",
+      "model": "haiku",
+      "description": "Creates comprehensive audit logs for compliance and troubleshooting",
+      "triggers": ["log audit", "track changes", "compliance log", "audit trail"],
+      "capabilities": [
+        "log all data transformations",
+        "track who/what/when",
+        "record decisions made",
+        "generate compliance reports",
+        "support regulatory requirements"
+      ]
+    }
+  },
+
+  "skills": {
+    "csv-parsing": {
+      "path": "skills/csv-parsing.md",
+      "description": "Advanced CSV parsing with auto-detection of delimiters, quotes, encoding",
+      "triggers": ["parse csv", "csv import", "delimited file"]
+    },
+    "schema-inference": {
+      "path": "skills/schema-inference.md",
+      "description": "Infer schema from sample data including types, constraints, relationships",
+      "triggers": ["infer schema", "detect types", "schema from data"]
+    },
+    "field-mapping": {
+      "path": "skills/field-mapping.md",
+      "description": "AI-assisted field mapping with semantic matching and confidence scoring",
+      "triggers": ["map fields", "field matching", "schema mapping"]
+    },
+    "data-transformation": {
+      "path": "skills/data-transformation.md",
+      "description": "Data transformation including type conversion, normalization, parsing",
+      "triggers": ["transform data", "convert types", "normalize"]
+    },
+    "duplicate-detection": {
+      "path": "skills/duplicate-detection.md",
+      "description": "Detect duplicates using exact and fuzzy matching algorithms",
+      "triggers": ["find duplicates", "deduplicate", "merge duplicates"]
+    },
+    "batch-processing": {
+      "path": "skills/batch-processing.md",
+      "description": "Efficient batch processing for large datasets with checkpointing",
+      "triggers": ["batch import", "bulk processing", "large dataset"]
+    },
+    "database-connectivity": {
+      "path": "skills/database-connectivity.md",
+      "description": "Connect to various databases for import and export operations",
+      "triggers": ["connect database", "db import", "legacy database"]
+    },
+    "api-integration": {
+      "path": "skills/api-integration.md",
+      "description": "Integrate with REST/GraphQL APIs for data extraction",
+      "triggers": ["api import", "fetch data", "rest integration"]
+    }
+  },
+
+  "workflows": {
+    "csv-onboarding": {
+      "path": "workflows/csv-onboarding.yaml",
+      "description": "Onboard new customer with CSV/Excel file uploads (most common)",
+      "estimatedDuration": "1-4 hours",
+      "complexity": "low-medium"
+    },
+    "database-migration": {
+      "path": "workflows/database-migration.yaml",
+      "description": "Migrate from legacy database (complex full migration)",
+      "estimatedDuration": "4-24 hours",
+      "complexity": "high"
+    },
+    "incremental-sync": {
+      "path": "workflows/incremental-sync.yaml",
+      "description": "Ongoing incremental sync from external API source",
+      "estimatedDuration": "ongoing",
+      "complexity": "medium"
+    }
+  },
+
+  "hooks": {
+    "preMigration": "hooks/pre-migration-validation.sh",
+    "postMigration": "hooks/post-migration-verification.sh",
+    "onBatchComplete": "hooks/batch-checkpoint.sh",
+    "onError": "hooks/error-handler.sh",
+    "onComplete": "hooks/completion-notification.sh"
+  },
+
+  "permissions": {
+    "filesystem": [
+      { "path": "**/*.csv", "access": "read" },
+      { "path": "**/*.xlsx", "access": "read" },
+      { "path": "**/*.json", "access": "read" },
+      { "path": "**/*.xml", "access": "read" },
+      { "path": "**/migrations/**", "access": "readwrite" },
+      { "path": "**/import-logs/**", "access": "readwrite" }
+    ],
+    "tools": ["Bash", "Read", "Write", "Edit", "Grep", "Glob", "Task"],
+    "mcpServers": ["supabase", "obsidian"],
+    "network": ["database-connections", "api-endpoints"]
+  },
+
+  "configuration": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "defaultBatchSize": {
+          "type": "number",
+          "default": 1000,
+          "description": "Default number of records per batch"
+        },
+        "parallelBatches": {
+          "type": "number",
+          "default": 4,
+          "description": "Number of batches to process in parallel"
+        },
+        "dryRunByDefault": {
+          "type": "boolean",
+          "default": true,
+          "description": "Always run dry-run before actual migration"
+        },
+        "autoDetectEncoding": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-detect file encoding"
+        },
+        "mappingConfidenceThreshold": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum confidence for auto-accepted mappings"
+        },
+        "duplicateMatchThreshold": {
+          "type": "number",
+          "default": 0.85,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fuzzy match threshold for duplicate detection"
+        },
+        "auditLogRetentionDays": {
+          "type": "number",
+          "default": 365,
+          "description": "Days to retain audit logs"
+        },
+        "notifyOnCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Send notification when migration completes"
+        }
+      }
+    }
+  },
+
+  "activation": {
+    "auto": true,
+    "priority": 850,
+    "conditions": {
+      "filePatterns": ["**/*.csv", "**/*.xlsx", "**/*.json", "**/import/**", "**/migration/**"],
+      "keywords": ["import", "migrate", "onboard", "csv", "legacy", "customer data", "data migration"]
+    }
+  }
+}

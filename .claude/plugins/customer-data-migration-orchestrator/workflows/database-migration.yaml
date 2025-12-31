@@ -1,0 +1,413 @@
+# Legacy Database Migration Workflow
+# Complex migration from legacy database systems
+
+name: database-migration
+displayName: "Migrate from Legacy Database"
+description: |
+  Advanced workflow for migrating data from legacy database systems.
+  Handles complex schemas, relationships, large datasets, and
+  incremental sync capabilities.
+
+version: "1.0.0"
+estimatedDuration: "4-24 hours"
+complexity: "high"
+priority: 90
+
+triggers:
+  keywords:
+    - "migrate database"
+    - "legacy database"
+    - "database import"
+    - "mysql migration"
+    - "postgres migration"
+    - "sql server migration"
+  commands:
+    - "/import-database"
+
+inputs:
+  required:
+    - name: customer_name
+      type: string
+      description: "Name of the customer"
+
+    - name: source_connection
+      type: object
+      description: "Database connection details"
+      schema:
+        type:
+          type: string
+          enum: ["postgresql", "mysql", "sqlserver", "oracle", "sqlite"]
+        host:
+          type: string
+        port:
+          type: integer
+        database:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+          sensitive: true
+        ssl:
+          type: boolean
+          default: true
+
+    - name: tables
+      type: string[]
+      description: "Tables to migrate (empty for all)"
+
+  optional:
+    - name: query_override
+      type: object
+      description: "Custom queries per table"
+
+    - name: incremental
+      type: boolean
+      default: false
+      description: "Enable incremental sync"
+
+    - name: incremental_column
+      type: string
+      description: "Column for change detection"
+
+    - name: parallel_tables
+      type: integer
+      default: 2
+      description: "Number of tables to process in parallel"
+
+    - name: preserve_ids
+      type: boolean
+      default: false
+      description: "Preserve original IDs"
+
+phases:
+  - id: connect
+    name: "Connect to Source Database"
+    description: "Establish connection and verify access"
+
+    agents:
+      - agent: source-analyzer-agent
+        model: sonnet
+        config:
+          connection_test: true
+          permission_check: true
+          version_detection: true
+
+    timeout: 120
+    retry: 3
+
+    outputs:
+      - connection_status
+      - database_version
+      - available_tables
+      - permissions
+
+    successCriteria:
+      - "connection_status.connected == true"
+      - "permissions.select == true"
+
+  - id: discover
+    name: "Discover Database Schema"
+    description: "Extract full schema including relationships"
+    dependsOn: [connect]
+
+    agents:
+      - agent: schema-detector-agent
+        model: haiku
+        priority: primary
+        config:
+          extract_relationships: true
+          detect_indexes: true
+          sample_data: true
+
+      - agent: source-analyzer-agent
+        model: sonnet
+        priority: support
+        config:
+          row_counts: true
+          size_estimates: true
+          query_patterns: true
+
+    parallel: true
+    timeout: 1800
+
+    outputs:
+      - full_schema
+      - table_statistics
+      - relationships
+      - migration_order
+
+  - id: plan
+    name: "Create Migration Plan"
+    description: "Determine table order, batch sizes, and dependencies"
+    dependsOn: [discover]
+
+    agents:
+      - agent: schema-mapper-agent
+        model: opus
+        priority: primary
+        config:
+          analyze_dependencies: true
+          optimize_order: true
+          estimate_duration: true
+
+    timeout: 900
+
+    outputs:
+      - migration_plan
+      - table_order
+      - estimated_duration
+      - resource_requirements
+
+    checkpoint:
+      type: approval
+      prompt: |
+        Migration Plan for {{ customer_name }}:
+
+        Tables to migrate (in order):
+        {{ table_order_summary }}
+
+        Total Records: {{ total_records }}
+        Estimated Duration: {{ estimated_duration }}
+        Recommended Batch Size: {{ recommended_batch_size }}
+
+        Dependencies detected:
+        {{ dependency_graph }}
+
+        Approve migration plan?
+
+  - id: map_all
+    name: "Map All Tables"
+    description: "Create mappings for each table"
+    dependsOn: [plan]
+
+    # This phase runs the mapper for each table
+    forEach:
+      variable: table
+      source: migration_plan.tables
+
+    agents:
+      - agent: schema-mapper-agent
+        model: opus
+        config:
+          table: "{{ table.name }}"
+          confidence_threshold: 0.65
+          preserve_relationships: true
+
+      - agent: transformation-designer-agent
+        model: sonnet
+        config:
+          handle_foreign_keys: true
+
+    parallel: true  # Map tables in parallel
+    maxParallel: 4
+    timeout: 3600
+
+    outputs:
+      - all_mappings
+      - transformation_rules
+      - relationship_mappings
+
+    checkpoint:
+      type: approval
+      prompt: |
+        Field mappings created for {{ tables_mapped }} tables.
+
+        Summary:
+        - Auto-mapped fields: {{ auto_mapped_count }}
+        - Manual review needed: {{ manual_review_count }}
+        - Unmapped fields: {{ unmapped_count }}
+
+        Tables needing review:
+        {{ tables_needing_review }}
+
+  - id: validate_all
+    name: "Validate All Data"
+    description: "Run validation across all tables"
+    dependsOn: [map_all]
+
+    forEach:
+      variable: table
+      source: migration_plan.tables
+
+    agents:
+      - agent: data-validator-agent
+        model: sonnet
+        config:
+          table: "{{ table.name }}"
+          check_foreign_keys: true
+
+      - agent: reference-resolver-agent
+        model: sonnet
+        config:
+          resolve_lookups: true
+          detect_orphans: true
+
+    parallel: true
+    maxParallel: 4
+    timeout: 7200
+
+    outputs:
+      - validation_results
+      - orphan_records
+      - integrity_issues
+
+  - id: resolve_issues
+    name: "Resolve Data Issues"
+    description: "Handle validation issues before migration"
+    dependsOn: [validate_all]
+    condition: "validation_results.has_issues == true"
+
+    agents:
+      - agent: duplicate-detector-agent
+        model: sonnet
+        config:
+          cross_table: true
+
+      - agent: reference-resolver-agent
+        model: sonnet
+        config:
+          fix_orphans: true
+          strategy: "{{ orphan_strategy }}"
+
+    timeout: 3600
+
+    checkpoint:
+      type: decision
+      prompt: |
+        Data issues found:
+
+        - Orphaned records: {{ orphan_count }}
+        - Duplicate candidates: {{ duplicate_count }}
+        - Validation errors: {{ error_count }}
+
+        Resolution options:
+        1. Auto-fix where possible, skip others
+        2. Apply custom resolution rules
+        3. Pause for manual data cleanup
+
+  - id: migrate_tables
+    name: "Migrate Tables"
+    description: "Execute migration in dependency order"
+    dependsOn: [resolve_issues, validate_all]
+
+    # Sequential migration respecting dependencies
+    forEach:
+      variable: table
+      source: migration_plan.ordered_tables
+      sequential: true
+
+    agents:
+      - agent: migration-executor-agent
+        model: sonnet
+        priority: primary
+        config:
+          table: "{{ table.name }}"
+          batch_size: "{{ table.recommended_batch_size }}"
+          preserve_ids: "{{ inputs.preserve_ids }}"
+
+      - agent: batch-processor-agent
+        model: haiku
+        config:
+          parallel_batches: 4
+
+      - agent: transaction-manager-agent
+        model: sonnet
+        config:
+          transaction_mode: "per-batch"
+
+      - agent: audit-logger-agent
+        model: haiku
+
+    timeout: 43200  # 12 hours
+    pausable: true
+    resumable: true
+
+    outputs:
+      - migration_results_per_table
+      - error_logs
+      - checkpoints
+
+  - id: verify_integrity
+    name: "Verify Referential Integrity"
+    description: "Verify all relationships are intact"
+    dependsOn: [migrate_tables]
+
+    agents:
+      - agent: verification-agent
+        model: sonnet
+        config:
+          check_foreign_keys: true
+          check_counts: true
+          sample_verify: true
+          sample_size: 1000
+
+    timeout: 3600
+
+    outputs:
+      - integrity_report
+      - discrepancies
+
+    successCriteria:
+      - "integrity_report.foreign_keys_valid == true"
+      - "integrity_report.counts_match == true"
+
+  - id: finalize
+    name: "Finalize Migration"
+    description: "Generate reports and configure sync if needed"
+    dependsOn: [verify_integrity]
+
+    agents:
+      - agent: audit-logger-agent
+        model: haiku
+        config:
+          generate_final_report: true
+
+    parallel: false
+    timeout: 600
+
+    outputs:
+      - final_report
+      - sync_configuration
+
+# Special handling for incremental sync setup
+postMigration:
+  condition: "inputs.incremental == true"
+  actions:
+    - name: "Configure Incremental Sync"
+      agent: migration-executor-agent
+      config:
+        setup_incremental: true
+        incremental_column: "{{ inputs.incremental_column }}"
+        schedule: "{{ inputs.sync_schedule }}"
+
+errorHandling:
+  onPhaseError:
+    connect: "fail_immediately"
+    discover: "retry_then_fail"
+    plan: "pause_for_review"
+    map_all: "pause_for_review"
+    validate_all: "pause_for_review"
+    migrate_tables: "pause_and_checkpoint"
+    verify_integrity: "retry_then_fail"
+    finalize: "continue"
+
+  onTableError:
+    strategy: "skip_and_continue"
+    maxSkipped: 3
+    notification: true
+
+notifications:
+  onTableComplete:
+    message: "Table {{ table_name }} migrated - {{ record_count }} records"
+  onComplete:
+    message: |
+      Database migration completed for {{ customer_name }}
+      - Tables: {{ tables_migrated }}/{{ tables_total }}
+      - Records: {{ records_migrated }}
+      - Duration: {{ duration }}
+      - Success Rate: {{ success_rate }}%
+
+metadata:
+  author: "Migration Team"
+  tags: ["database", "legacy", "complex", "relationships"]

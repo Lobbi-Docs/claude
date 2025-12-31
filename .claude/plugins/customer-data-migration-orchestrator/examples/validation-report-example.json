@@ -1,0 +1,298 @@
+{
+  "$schema": "../types/migration.types.ts#ValidationSummary",
+  "_description": "Example validation report showing data quality issues before migration",
+
+  "validationId": "val-2024-01-15-acme-corp",
+  "projectId": "proj-acme-corp-migration",
+  "executedAt": "2024-01-15T11:45:00Z",
+  "durationMs": 45230,
+
+  "summary": {
+    "totalRecords": 150000,
+    "validRecords": 147823,
+    "invalidRecords": 2177,
+
+    "errorCount": 1543,
+    "warningCount": 634,
+    "infoCount": 89,
+
+    "byRule": [
+      {
+        "ruleId": "rule-email-required",
+        "ruleName": "Email Required",
+        "severity": "error",
+        "errorCount": 523,
+        "affectedRecords": 523
+      },
+      {
+        "ruleId": "rule-email-unique",
+        "ruleName": "Email Unique",
+        "severity": "error",
+        "errorCount": 987,
+        "affectedRecords": 1974
+      },
+      {
+        "ruleId": "rule-phone-format",
+        "ruleName": "Phone Format",
+        "severity": "warning",
+        "errorCount": 0,
+        "warningCount": 634,
+        "affectedRecords": 634
+      },
+      {
+        "ruleId": "rule-date-valid",
+        "ruleName": "Valid Date",
+        "severity": "error",
+        "errorCount": 33,
+        "affectedRecords": 33
+      },
+      {
+        "ruleId": "rule-email-format",
+        "ruleName": "Email Format",
+        "severity": "error",
+        "errorCount": 156,
+        "affectedRecords": 156
+      },
+      {
+        "ruleId": "rule-state-valid",
+        "ruleName": "Valid State Code",
+        "severity": "warning",
+        "errorCount": 0,
+        "warningCount": 89,
+        "affectedRecords": 89
+      }
+    ],
+
+    "byField": [
+      {
+        "field": "email",
+        "errorCount": 1510,
+        "warningCount": 0,
+        "topIssues": [
+          "Duplicate value (987 pairs)",
+          "Missing value (523)",
+          "Invalid format (156)"
+        ]
+      },
+      {
+        "field": "phone",
+        "errorCount": 0,
+        "warningCount": 634,
+        "topIssues": [
+          "Non-standard format (634)"
+        ]
+      },
+      {
+        "field": "signup_date",
+        "errorCount": 33,
+        "warningCount": 0,
+        "topIssues": [
+          "Future date (33)"
+        ]
+      },
+      {
+        "field": "state",
+        "errorCount": 0,
+        "warningCount": 89,
+        "topIssues": [
+          "Unrecognized state name (89)"
+        ]
+      }
+    ],
+
+    "fixableIssues": 1234,
+    "blockingIssues": 943,
+
+    "qualityScore": 85.5,
+
+    "canProceed": false,
+    "blockingReasons": [
+      "987 duplicate emails must be resolved (unique constraint)",
+      "523 missing required emails need customer decision"
+    ]
+  },
+
+  "issueDetails": {
+    "duplicates": {
+      "total": 987,
+      "samples": [
+        {
+          "value": "john.smith@example.com",
+          "occurrences": [
+            { "recordIndex": 2341, "recordId": "CUS-002341", "signupDate": "2021-03-15" },
+            { "recordIndex": 5423, "recordId": "CUS-005423", "signupDate": "2023-08-22" }
+          ],
+          "suggestedAction": "Keep CUS-005423 (more recent signup)"
+        },
+        {
+          "value": "jane.doe@company.com",
+          "occurrences": [
+            { "recordIndex": 1002, "recordId": "CUS-001002", "signupDate": "2020-01-10" },
+            { "recordIndex": 8934, "recordId": "CUS-008934", "signupDate": "2020-01-10" },
+            { "recordIndex": 12456, "recordId": "CUS-012456", "signupDate": "2022-06-30" }
+          ],
+          "suggestedAction": "Possible data entry duplicates - review for merge"
+        }
+      ]
+    },
+
+    "missingRequired": {
+      "total": 523,
+      "byReason": [
+        { "reason": "Empty string", "count": 312 },
+        { "reason": "Null value", "count": 198 },
+        { "reason": "Whitespace only", "count": 13 }
+      ],
+      "samples": [
+        {
+          "recordIndex": 1523,
+          "recordId": "CUS-001523",
+          "customerName": "Bob Wilson",
+          "suggestedActions": [
+            "Generate placeholder: bob.wilson@placeholder.local",
+            "Skip record",
+            "Request from customer"
+          ]
+        }
+      ]
+    },
+
+    "invalidFormats": {
+      "email": {
+        "total": 156,
+        "patterns": [
+          { "pattern": "Missing @ symbol", "count": 45, "example": "johnexample.com" },
+          { "pattern": "Invalid domain", "count": 38, "example": "john@example" },
+          { "pattern": "Special characters", "count": 31, "example": "john smith@example.com" },
+          { "pattern": "Multiple @", "count": 22, "example": "john@@example.com" },
+          { "pattern": "Other", "count": 20 }
+        ],
+        "autoFixable": 73
+      },
+      "phone": {
+        "total": 634,
+        "patterns": [
+          { "pattern": "Non-US format", "count": 234, "example": "+44 20 7946 0958" },
+          { "pattern": "Missing area code", "count": 189, "example": "555-1234" },
+          { "pattern": "Extension format", "count": 123, "example": "(555) 123-4567 ext. 890" },
+          { "pattern": "Letters included", "count": 88, "example": "1-800-FLOWERS" }
+        ],
+        "autoFixable": 634,
+        "normalizationApplied": "All will be normalized to E.164 format"
+      }
+    },
+
+    "futureDates": {
+      "total": 33,
+      "samples": [
+        {
+          "recordIndex": 98234,
+          "recordId": "CUS-098234",
+          "field": "signup_date",
+          "value": "06/15/2025",
+          "suggestedFix": "Cap at current date (2024-01-15)"
+        }
+      ],
+      "autoFixable": 33
+    },
+
+    "unrecognizedValues": {
+      "state": {
+        "total": 89,
+        "values": [
+          { "value": "Cali", "count": 23, "suggestion": "CA (California)" },
+          { "value": "NY State", "count": 18, "suggestion": "NY (New York)" },
+          { "value": "Tex", "count": 15, "suggestion": "TX (Texas)" },
+          { "value": "N/A", "count": 12, "suggestion": "Set to null" },
+          { "value": "Unknown", "count": 11, "suggestion": "Set to null" },
+          { "value": "Other", "count": 10, "suggestion": "Manual review" }
+        ],
+        "autoFixable": 56
+      }
+    }
+  },
+
+  "recommendations": [
+    {
+      "priority": "critical",
+      "issue": "Duplicate Emails",
+      "count": 987,
+      "recommendation": "Run duplicate resolution workflow. Options: 1) Keep most recent, 2) Merge records, 3) Manual review",
+      "estimatedEffort": "2-4 hours with automation"
+    },
+    {
+      "priority": "critical",
+      "issue": "Missing Required Emails",
+      "count": 523,
+      "recommendation": "Discuss with customer: 1) Generate placeholders, 2) Skip records, 3) Customer provides missing data",
+      "estimatedEffort": "Customer decision required"
+    },
+    {
+      "priority": "high",
+      "issue": "Invalid Email Formats",
+      "count": 156,
+      "recommendation": "73 can be auto-fixed (typos). 83 require manual review or will be skipped.",
+      "estimatedEffort": "30 minutes"
+    },
+    {
+      "priority": "medium",
+      "issue": "Non-Standard Phone Formats",
+      "count": 634,
+      "recommendation": "All can be auto-normalized. Apply phone transformation during import.",
+      "estimatedEffort": "Automatic"
+    },
+    {
+      "priority": "low",
+      "issue": "Future Dates",
+      "count": 33,
+      "recommendation": "Auto-fix by capping at current date. Likely data entry errors.",
+      "estimatedEffort": "Automatic"
+    },
+    {
+      "priority": "low",
+      "issue": "State Code Variants",
+      "count": 89,
+      "recommendation": "56 can be auto-mapped (abbreviations). 33 need manual review.",
+      "estimatedEffort": "15 minutes"
+    }
+  ],
+
+  "actionPlan": {
+    "phase1": {
+      "name": "Auto-Fixable Issues",
+      "actions": [
+        "Apply phone normalization (634 records)",
+        "Fix date caps (33 records)",
+        "Map state abbreviations (56 records)",
+        "Fix email typos (73 records)"
+      ],
+      "recordsFixed": 796,
+      "estimatedTime": "Automatic during import"
+    },
+    "phase2": {
+      "name": "Customer Decisions Required",
+      "actions": [
+        "Duplicate email resolution strategy (987 pairs)",
+        "Missing email handling (523 records)"
+      ],
+      "recordsAffected": 1510,
+      "estimatedTime": "1-2 hours discussion + automation"
+    },
+    "phase3": {
+      "name": "Manual Review",
+      "actions": [
+        "Invalid emails that can't be auto-fixed (83 records)",
+        "Unrecognized state values (33 records)"
+      ],
+      "recordsAffected": 116,
+      "estimatedTime": "30 minutes"
+    }
+  },
+
+  "postFixProjection": {
+    "qualityScore": 98.2,
+    "expectedValidRecords": 149650,
+    "expectedSkippedRecords": 350,
+    "readyForMigration": true
+  }
+}
