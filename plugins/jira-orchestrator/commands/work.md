@@ -5,8 +5,25 @@ arguments:
   - name: issue_key
     description: The Jira issue key (e.g., ABC-123)
     required: true
-version: 2.0.0
+flags:
+  global: [--verbose, --quiet, --json, --dry-run, --interactive, --yes, --timeout, --config, --profile, --preset, --debug]
+  orchestration: [--agents, --model, --model-strategy, --parallel, --sequential, --phases, --skip-phases, --checkpoint, --resume]
+  jira: [--project, --assignee, --labels, --priority, --sprint, --epic]
+  review: [--depth, --focus, --council, --council-size, --council-protocol, --min-coverage, --auto-fix]
+  git: [--branch-prefix, --from-branch, --commit-style, --draft, --reviewers, --auto-merge]
+  notification: [--notify, --slack-channel, --notify-on-complete]
+  report: [--report, --report-format, --report-to-confluence, --report-to-obsidian]
+presets: [speed-run, thorough, enterprise, hotfix, prototype, pair-programming, security-audit]
+version: 2.1.0
 ---
+
+> **📚 Flag Documentation:** See [FLAGS.md](../docs/FLAGS.md) for complete flag reference
+>
+> **⚡ Quick Presets:**
+> - `--preset speed-run` - Fast execution for simple tasks
+> - `--preset thorough` - Deep analysis with council review
+> - `--preset enterprise` - Full compliance workflow
+> - `--preset hotfix` - Emergency rapid deployment
 
 # Jira Issue Orchestration (Enhanced v2.0)
 

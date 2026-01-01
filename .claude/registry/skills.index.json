@@ -529,6 +529,166 @@
         "autoActivate": true
       }
     },
+    "harness": {
+      "harness-ci": {
+        "path": "../plugins/jira-orchestrator/skills/harness-ci/SKILL.md",
+        "triggers": [
+          "harness ci",
+          "build pipeline",
+          "ci pipeline",
+          "test intelligence",
+          "harness build",
+          "container-native"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Harness CI for container-native builds, test intelligence, and caching"
+      },
+      "harness-cd": {
+        "path": "../plugins/jira-orchestrator/skills/harness-cd/SKILL.md",
+        "triggers": [
+          "harness cd",
+          "deployment",
+          "gitops",
+          "rollback",
+          "harness deploy",
+          "continuous delivery"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Harness CD for Kubernetes, Helm, Terraform deployments with GitOps"
+      },
+      "harness-platform": {
+        "path": "../plugins/jira-orchestrator/skills/harness-platform/SKILL.md",
+        "triggers": [
+          "harness platform",
+          "delegate",
+          "rbac",
+          "connector",
+          "harness secret",
+          "harness admin"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Harness platform administration - delegates, RBAC, connectors, secrets"
+      },
+      "harness-mcp": {
+        "path": "../plugins/jira-orchestrator/skills/harness-mcp/SKILL.md",
+        "triggers": [
+          "harness code",
+          "harness repo",
+          "harness pr",
+          "harness git"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Harness Code repository and pull request management"
+      },
+      "clean-architecture": {
+        "path": "../plugins/jira-orchestrator/skills/clean-architecture/SKILL.md",
+        "triggers": [
+          "clean architecture",
+          "ddd",
+          "domain driven",
+          "hexagonal",
+          "dependency injection",
+          "solid principles",
+          "clean code"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Clean Architecture, DDD, hexagonal patterns, dependency injection"
+      },
+      "jira-orchestration": {
+        "path": "../plugins/jira-orchestrator/skills/jira-orchestration/SKILL.md",
+        "triggers": [
+          "jira orchestration",
+          "jira workflow",
+          "jira automation",
+          "issue orchestration"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Core Jira orchestration patterns and workflows"
+      },
+      "triage": {
+        "path": "../plugins/jira-orchestrator/skills/triage/SKILL.md",
+        "triggers": [
+          "triage",
+          "classify issue",
+          "prioritize",
+          "issue analysis"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Issue triage patterns, classification, and prioritization"
+      },
+      "code-review": {
+        "path": "../plugins/jira-orchestrator/skills/code-review/SKILL.md",
+        "triggers": [
+          "code review patterns",
+          "review automation",
+          "pr review patterns"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Code review patterns, best practices, and automation"
+      },
+      "pr-workflow": {
+        "path": "../plugins/jira-orchestrator/skills/pr-workflow/SKILL.md",
+        "triggers": [
+          "pr workflow",
+          "pull request workflow",
+          "merge strategy",
+          "pr automation"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Pull request workflow patterns and automation"
+      },
+      "task-details": {
+        "path": "../plugins/jira-orchestrator/skills/task-details/SKILL.md",
+        "triggers": [
+          "task details",
+          "task enrichment",
+          "acceptance criteria",
+          "subtask creation"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "jira-orchestrator",
+        "description": "Task enrichment and detail patterns"
+      }
+    },
     "security": {
       "authentication": {
         "path": "skills/authentication/SKILL.md",
@@ -617,6 +777,34 @@
       }
     },
     "frontend": {
+      "design-system": {
+        "path": "../skills/design-system/SKILL.md",
+        "triggers": [
+          "design-system",
+          "design system",
+          "theme",
+          "theming",
+          "style",
+          "styles",
+          "css",
+          "tailwind",
+          "tokens",
+          "design tokens",
+          "color palette",
+          "typography",
+          "keycloak theme",
+          "multi-tenant",
+          "accessibility",
+          "wcag",
+          "a11y"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "frontend-design-system",
+        "description": "Stylist - 263+ design styles with multi-tenant Keycloak theming"
+      },
       "react": {
         "path": "skills/react/SKILL.md",
         "triggers": [
@@ -731,7 +919,7 @@
     "allowedToolsSupport": true
   },
   "stats": {
-    "totalSkills": 34,
+    "totalSkills": 46,
     "format": "Claude Code Official SKILL.md",
     "byCategory": {
       "infrastructure": 4,
@@ -740,11 +928,12 @@
       "methodology": 2,
       "integration": 5,
       "cloud": 2,
+      "harness": 11,
       "security": 1,
       "data": 4,
-      "frontend": 2,
+      "frontend": 3,
       "reasoning": 3
     },
-    "note": "Includes ultrathink/extended-thinking skills for complex reasoning tasks, plus Anthropic API skills (prompt-caching, vision-multimodal, streaming, batch-processing, tool-use, citations-retrieval)."
+    "note": "Includes ultrathink/extended-thinking skills for complex reasoning tasks, plus Anthropic API skills (prompt-caching, vision-multimodal, streaming, batch-processing, tool-use, citations-retrieval). Harness category includes jira-orchestrator skills (harness-ci, harness-cd, harness-platform, harness-mcp, clean-architecture, jira-orchestration, triage, code-review, pr-workflow, task-details)."
   }
 }

@@ -1,7 +1,7 @@
 {
   "$schema": "./schema/plugins.schema.json",
   "version": "1.0.0",
-  "lastUpdated": "2025-12-31",
+  "lastUpdated": "2026-01-01",
   "description": "Plugin registry for Claude Code orchestration plugins",
 
   "plugins": {
@@ -10,8 +10,16 @@
         "path": "../../plugins/jira-orchestrator/.claude-plugin/plugin.json",
         "callsign": "Arbiter",
         "version": "7.1.0",
-        "provides": { "commands": 12, "agents": 66, "teams": 16, "skills": 9, "hooks": 7 },
-        "features": ["autogen-teams", "parent-child-orchestration", "domain-affinity-routing"],
+        "description": "Enterprise Jira orchestration with 69 agents, 16 teams, 43 commands, and hook-based automation",
+        "provides": { "commands": 43, "agents": 69, "teams": 16, "skills": 11, "hooks": 7 },
+        "features": [
+          "autogen-teams",
+          "parent-child-orchestration",
+          "domain-affinity-routing",
+          "harness-ci-cd-integration",
+          "agent-council-review",
+          "clean-architecture-enforcement"
+        ],
         "status": "active",
         "tier": "enterprise"
       },
@@ -117,6 +125,26 @@
       }
     },
 
+    "frontend": {
+      "frontend-design-system": {
+        "path": "../../plugins/frontend-design-system/.claude-plugin/plugin.json",
+        "callsign": "Stylist",
+        "version": "1.0.0",
+        "description": "263+ design styles with multi-tenant Keycloak theming for AI-powered frontend development",
+        "provides": { "commands": 8, "agents": 6, "skills": 4, "hooks": 4 },
+        "status": "active",
+        "tier": "standard",
+        "features": [
+          "263+ curated design styles",
+          "Multi-tenant Keycloak theming",
+          "CSS/Tailwind generation",
+          "Accessibility validation",
+          "Design token management"
+        ],
+        "integrates": ["jira-orchestrator", "documentation-orchestrator"]
+      }
+    },
+
     "ai-advanced": {
       "cognitive-code-reasoner": {
         "path": "../plugins/cognitive-code-reasoner/plugin.json",
@@ -209,6 +237,7 @@
 
   "callsignRegistry": {
     "Arbiter": "jira-orchestrator",
+    "Stylist": "frontend-design-system",
     "Curator": "code-quality-orchestrator",
     "Sentinel": "git-workflow-orchestrator",
     "Herald": "release-orchestrator",
@@ -226,17 +255,17 @@
   },
 
   "stats": {
-    "totalPlugins": 15,
+    "totalPlugins": 16,
     "byTier": {
       "enterprise": 1,
-      "standard": 8,
+      "standard": 9,
       "advanced": 6
     },
-    "totalCommands": 186,
-    "totalAgents": 197,
+    "totalCommands": 233,
+    "totalAgents": 206,
     "totalTeams": 16,
-    "totalSkills": 89,
-    "totalHooks": 63,
+    "totalSkills": 106,
+    "totalHooks": 67,
     "totalWorkflows": 3,
     "innovativePlugins": 7,
     "deliberationProtocols": 20

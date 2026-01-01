@@ -1,0 +1,400 @@
+{
+  "$schema": "../schemas/presets.schema.json",
+  "version": "1.0.0",
+  "description": "Pre-configured flag presets for common Jira orchestration workflows",
+
+  "presets": {
+    "speed-run": {
+      "name": "Speed Run",
+      "emoji": "⚡",
+      "description": "Quick execution with minimal overhead - for simple tasks",
+      "tags": ["fast", "minimal", "simple"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--depth": "quick",
+        "--parallel": true,
+        "--skip-phases": ["document"],
+        "--checkpoint": false,
+        "--timeout": 120,
+        "--notify-on-complete": false
+      },
+      "bestFor": ["small bug fixes", "typo corrections", "config changes"]
+    },
+
+    "thorough": {
+      "name": "Thorough Review",
+      "emoji": "🔍",
+      "description": "Comprehensive analysis with deep review - for important changes",
+      "tags": ["complete", "detailed", "quality"],
+      "flags": {
+        "--agents": 7,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--council": true,
+        "--council-size": 5,
+        "--focus": ["security", "performance", "architecture", "testing"],
+        "--min-coverage": 80,
+        "--checkpoint": true,
+        "--report": true
+      },
+      "bestFor": ["new features", "refactoring", "security-sensitive code"]
+    },
+
+    "enterprise": {
+      "name": "Enterprise Mode",
+      "emoji": "🏢",
+      "description": "Full enterprise workflow with compliance and notifications",
+      "tags": ["compliance", "audit", "enterprise"],
+      "flags": {
+        "--agents": 9,
+        "--model": "opus",
+        "--depth": "exhaustive",
+        "--council": true,
+        "--council-size": 7,
+        "--council-protocol": "jury",
+        "--require-consensus": true,
+        "--checkpoint": true,
+        "--checkpoint-interval": 60,
+        "--report": true,
+        "--report-to-confluence": true,
+        "--notify": ["slack", "email"],
+        "--notify-on-start": true,
+        "--notify-on-complete": true,
+        "--sign-commits": true,
+        "--include-metrics": true,
+        "--include-timeline": true
+      },
+      "bestFor": ["production deployments", "compliance-required changes", "auditable workflows"]
+    },
+
+    "security-audit": {
+      "name": "Security Audit",
+      "emoji": "🔒",
+      "description": "Security-focused review with vulnerability scanning",
+      "tags": ["security", "audit", "compliance"],
+      "flags": {
+        "--agents": 5,
+        "--model": "opus",
+        "--depth": "exhaustive",
+        "--focus": ["security"],
+        "--council": true,
+        "--council-protocol": "red-blue-team",
+        "--security-only": true,
+        "--fix-security": false,
+        "--report": true,
+        "--report-format": "html",
+        "--include-diffs": true
+      },
+      "bestFor": ["security reviews", "penetration testing prep", "compliance audits"]
+    },
+
+    "performance-focus": {
+      "name": "Performance Focus",
+      "emoji": "🚀",
+      "description": "Performance-optimized analysis",
+      "tags": ["performance", "optimization"],
+      "flags": {
+        "--agents": 5,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--focus": ["performance"],
+        "--perf-only": true,
+        "--profile-perf": true,
+        "--report": true,
+        "--include-metrics": true
+      },
+      "bestFor": ["performance optimization", "bottleneck analysis", "scaling work"]
+    },
+
+    "stealth": {
+      "name": "Stealth Mode",
+      "emoji": "🥷",
+      "description": "Silent execution with no notifications or logging",
+      "tags": ["quiet", "minimal", "private"],
+      "flags": {
+        "--quiet": true,
+        "--no-color": true,
+        "--notify": [],
+        "--notify-on-complete": false,
+        "--notify-on-error": false,
+        "--report": false,
+        "--checkpoint": false
+      },
+      "bestFor": ["experimental work", "private investigations", "exploratory coding"]
+    },
+
+    "pair-programming": {
+      "name": "Pair Programming",
+      "emoji": "👥",
+      "description": "Interactive mode for pair programming sessions",
+      "tags": ["interactive", "collaborative"],
+      "flags": {
+        "--interactive": true,
+        "--verbose": true,
+        "--agents": 3,
+        "--model": "sonnet",
+        "--checkpoint": true,
+        "--checkpoint-interval": 120,
+        "--depth": "standard"
+      },
+      "bestFor": ["pair programming", "mentoring", "collaborative development"]
+    },
+
+    "hotfix": {
+      "name": "Emergency Hotfix",
+      "emoji": "🚨",
+      "description": "Rapid hotfix deployment with minimal checks",
+      "tags": ["emergency", "fast", "production"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--depth": "quick",
+        "--branch-prefix": "hotfix",
+        "--skip-phases": ["document"],
+        "--auto-transition": true,
+        "--draft": false,
+        "--auto-merge": true,
+        "--notify": ["slack"],
+        "--notify-on-complete": true,
+        "--timeout": 60
+      },
+      "bestFor": ["production hotfixes", "critical bugs", "emergency patches"]
+    },
+
+    "documentation": {
+      "name": "Documentation Focus",
+      "emoji": "📚",
+      "description": "Focus on documentation generation and updates",
+      "tags": ["docs", "documentation"],
+      "flags": {
+        "--agents": 5,
+        "--model": "sonnet",
+        "--phases": ["explore", "document"],
+        "--focus": ["documentation"],
+        "--report": true,
+        "--report-to-confluence": true,
+        "--report-to-obsidian": true
+      },
+      "bestFor": ["documentation sprints", "README updates", "API docs"]
+    },
+
+    "refactor": {
+      "name": "Safe Refactor",
+      "emoji": "🔧",
+      "description": "Safe refactoring with comprehensive testing",
+      "tags": ["refactor", "safe", "testing"],
+      "flags": {
+        "--agents": 7,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--branch-prefix": "refactor",
+        "--focus": ["architecture", "maintainability", "testing"],
+        "--min-coverage": 90,
+        "--type-strict": true,
+        "--lint-strict": true,
+        "--council": true,
+        "--council-protocol": "socratic",
+        "--checkpoint": true
+      },
+      "bestFor": ["large refactors", "architecture changes", "code cleanup"]
+    },
+
+    "prototype": {
+      "name": "Prototype Mode",
+      "emoji": "🧪",
+      "description": "Experimental prototyping with relaxed constraints",
+      "tags": ["experimental", "prototype", "fast"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--depth": "quick",
+        "--experimental": true,
+        "--ai-suggestions": true,
+        "--auto-decompose": true,
+        "--draft": true,
+        "--skip-phases": ["test", "document"],
+        "--lint-strict": false,
+        "--type-strict": false,
+        "--min-coverage": 0
+      },
+      "bestFor": ["proof of concept", "experiments", "rapid prototyping"]
+    },
+
+    "code-review": {
+      "name": "Code Review",
+      "emoji": "👀",
+      "description": "Focused code review without implementation",
+      "tags": ["review", "analysis"],
+      "flags": {
+        "--dry-run": true,
+        "--agents": 5,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--council": true,
+        "--council-size": 5,
+        "--council-protocol": "socratic",
+        "--focus": ["security", "performance", "architecture"],
+        "--report": true,
+        "--report-format": "markdown"
+      },
+      "bestFor": ["PR reviews", "code audits", "pre-merge checks"]
+    },
+
+    "ci-integration": {
+      "name": "CI Integration",
+      "emoji": "⚙️",
+      "description": "Optimized for CI/CD pipeline execution",
+      "tags": ["ci", "automation", "pipeline"],
+      "flags": {
+        "--json": true,
+        "--no-color": true,
+        "--quiet": true,
+        "--yes": true,
+        "--fail-fast": true,
+        "--timeout": 600,
+        "--agents": 5,
+        "--checkpoint": false,
+        "--notify": ["webhook"]
+      },
+      "bestFor": ["CI pipelines", "automated workflows", "GitHub Actions"]
+    },
+
+    "learning": {
+      "name": "Learning Mode",
+      "emoji": "📖",
+      "description": "Verbose explanations for learning purposes",
+      "tags": ["learning", "verbose", "educational"],
+      "flags": {
+        "--verbose": true,
+        "--interactive": true,
+        "--agents": 5,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--report": true,
+        "--include-timeline": true,
+        "--include-diffs": true
+      },
+      "bestFor": ["onboarding", "learning new codebases", "educational sessions"]
+    },
+
+    "release": {
+      "name": "Release Preparation",
+      "emoji": "🎉",
+      "description": "Full release workflow with changelog and versioning",
+      "tags": ["release", "versioning", "deployment"],
+      "flags": {
+        "--agents": 7,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--branch-prefix": "release",
+        "--council": true,
+        "--focus": ["security", "testing", "documentation"],
+        "--min-coverage": 85,
+        "--report": true,
+        "--report-to-confluence": true,
+        "--notify": ["slack", "email"],
+        "--notify-mentions": ["@team"],
+        "--harness-project": "${HARNESS_PROJECT_ID}",
+        "--deploy-strategy": "blue-green",
+        "--wait-for-deploy": true,
+        "--rollback-on-fail": true
+      },
+      "bestFor": ["release branches", "version bumps", "production deployments"]
+    },
+
+    "cost-optimized": {
+      "name": "Cost Optimized",
+      "emoji": "💰",
+      "description": "Minimize API costs while maintaining quality",
+      "tags": ["cost", "efficient", "budget"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--model-strategy": "cost-optimized",
+        "--depth": "standard",
+        "--sequential": true,
+        "--max-concurrent": 1,
+        "--checkpoint": true,
+        "--timeout": 600
+      },
+      "bestFor": ["budget constraints", "non-critical tasks", "batch processing"]
+    },
+
+    "full-council": {
+      "name": "Full Agent Council",
+      "emoji": "👑",
+      "description": "Maximum deliberation with full council review",
+      "tags": ["council", "deliberation", "consensus"],
+      "flags": {
+        "--agents": 11,
+        "--model": "opus",
+        "--depth": "exhaustive",
+        "--council": true,
+        "--council-size": 11,
+        "--council-protocol": "jury",
+        "--council-timeout": 1200,
+        "--require-consensus": true,
+        "--majority-threshold": 0.8,
+        "--blackboard": true,
+        "--hierarchy": "mesh",
+        "--report": true
+      },
+      "bestFor": ["critical decisions", "architecture reviews", "major refactors"]
+    }
+  },
+
+  "presetGroups": {
+    "speed": ["speed-run", "hotfix", "prototype"],
+    "quality": ["thorough", "enterprise", "full-council"],
+    "security": ["security-audit"],
+    "collaboration": ["pair-programming", "learning"],
+    "automation": ["ci-integration", "cost-optimized"],
+    "release": ["release", "documentation"]
+  },
+
+  "recommendations": {
+    "byIssueType": {
+      "Bug": "speed-run",
+      "Story": "thorough",
+      "Epic": "enterprise",
+      "Task": "speed-run",
+      "Sub-task": "speed-run",
+      "Security": "security-audit",
+      "Performance": "performance-focus",
+      "Documentation": "documentation"
+    },
+    "byPriority": {
+      "Blocker": "hotfix",
+      "Critical": "hotfix",
+      "High": "thorough",
+      "Medium": "speed-run",
+      "Low": "cost-optimized"
+    },
+    "byLabels": {
+      "security": "security-audit",
+      "performance": "performance-focus",
+      "refactor": "refactor",
+      "prototype": "prototype",
+      "documentation": "documentation",
+      "release": "release"
+    }
+  },
+
+  "customization": {
+    "allowOverride": true,
+    "inheritFrom": true,
+    "validation": "strict",
+    "example": {
+      "comment": "Create custom presets by extending existing ones",
+      "customPreset": {
+        "extends": "thorough",
+        "name": "My Custom Preset",
+        "flags": {
+          "--agents": 9,
+          "--notify": ["slack"]
+        }
+      }
+    }
+  }
+}
