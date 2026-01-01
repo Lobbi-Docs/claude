@@ -20,19 +20,24 @@
   "indexes": {
     "agents": "./agents.minimal.json",
     "agentsFull": "./agents.index.json",
-    "skills": "./skills.index.json",
-    "commands": "./commands.index.json",
-    "workflows": "./workflows.index.json",
-    "mcps": "./mcps.index.json",
+    "skills": "./skills.minimal.json",
+    "skillsFull": "./skills.index.json",
+    "commands": "./commands.minimal.json",
+    "commandsFull": "./commands.index.json",
+    "workflows": "./workflows.minimal.json",
+    "workflowsFull": "./workflows.index.json",
+    "mcps": "./mcps.minimal.json",
+    "mcpsFull": "./mcps.index.json",
     "tools": "./tools.index.json",
     "plugins": "./plugins.index.json",
-    "teams": "./teams.index.json"
+    "teams": "./teams.minimal.json",
+    "teamsFull": "./teams.index.json"
   },
 
   "loadStrategy": {
     "default": "minimal",
-    "onDemand": ["agentsFull", "activation"],
-    "note": "Use minimal indexes at startup, load full metadata on-demand"
+    "onDemand": ["agentsFull", "skillsFull", "commandsFull", "workflowsFull", "mcpsFull", "teamsFull", "activation"],
+    "note": "Use minimal indexes at startup, load full metadata on-demand. Minimal files ~10KB vs Full ~120KB"
   },
 
   "activation": {

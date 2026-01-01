@@ -1,0 +1,17 @@
+{
+  "$schema":"./schema/workflows.schema.json",
+  "version":"3.0.0",
+  "note":"Full metadata in workflows.index.json",
+  "fullVersion":"workflows.index.json",
+  "workflows":{
+    "development":[],
+    "devops":[],
+    "project-management":[],
+    "integration":[],
+    "data":[],
+    "group":[],
+    "documentation":[],
+    "infrastructure":[],
+    "lobbi-platform":[]
+  }
+}

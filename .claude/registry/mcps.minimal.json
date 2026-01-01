@@ -1,0 +1,20 @@
+{
+  "$schema":"./schema/mcps.schema.json",
+  "version":"3.0.0",
+  "note":"Full metadata in mcps.index.json",
+  "fullVersion":"mcps.index.json",
+  "mcps":{
+    "core":{
+      "name":"core",
+      "tools":[]
+    },
+    "project":{
+      "name":"project",
+      "tools":[]
+    },
+    "extension":{
+      "name":"extension",
+      "tools":[]
+    }
+  }
+}
