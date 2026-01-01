@@ -733,6 +733,64 @@
         "priority": "medium"
       }
     },
+    "frontend-design-system": {
+      "design:style": {
+        "path": "../../plugins/frontend-design-system/commands/style.md",
+        "description": "Apply a design style from 263+ curated options",
+        "keywords": ["design", "style", "css", "theme", "apply"],
+        "usage": "/design:style <style-name> [target]",
+        "priority": "high"
+      },
+      "design:theme": {
+        "path": "../../plugins/frontend-design-system/commands/theme.md",
+        "description": "Create or modify themes with color palettes",
+        "keywords": ["design", "theme", "colors", "palette", "create"],
+        "usage": "/design:theme <action> [name]",
+        "priority": "high"
+      },
+      "design:tokens": {
+        "path": "../../plugins/frontend-design-system/commands/tokens.md",
+        "description": "Manage design tokens (colors, spacing, typography)",
+        "keywords": ["design", "tokens", "variables", "css-vars"],
+        "usage": "/design:tokens <action> [token-path]",
+        "priority": "high"
+      },
+      "design:component": {
+        "path": "../../plugins/frontend-design-system/commands/component.md",
+        "description": "Generate styled components with design system",
+        "keywords": ["design", "component", "generate", "styled"],
+        "usage": "/design:component <name> [--style=<style>]",
+        "priority": "high"
+      },
+      "design:palette": {
+        "path": "../../plugins/frontend-design-system/commands/palette.md",
+        "description": "Generate and manage color palettes",
+        "keywords": ["design", "palette", "colors", "generate"],
+        "usage": "/design:palette <action> [options]",
+        "priority": "medium"
+      },
+      "design:keycloak": {
+        "path": "../../plugins/frontend-design-system/commands/keycloak.md",
+        "description": "Generate Keycloak themes for multi-tenant apps",
+        "keywords": ["design", "keycloak", "theme", "tenant", "login"],
+        "usage": "/design:keycloak <action> [tenant]",
+        "priority": "high"
+      },
+      "design:audit": {
+        "path": "../../plugins/frontend-design-system/commands/audit.md",
+        "description": "Audit design system consistency and accessibility",
+        "keywords": ["design", "audit", "accessibility", "wcag", "a11y"],
+        "usage": "/design:audit [path] [--fix]",
+        "priority": "high"
+      },
+      "design:convert": {
+        "path": "../../plugins/frontend-design-system/commands/convert.md",
+        "description": "Convert between CSS, SCSS, Tailwind, and CSS-in-JS",
+        "keywords": ["design", "convert", "css", "tailwind", "scss"],
+        "usage": "/design:convert <source> <target-format>",
+        "priority": "medium"
+      }
+    },
     "jira-orchestrator": {
       "jira:work": {
         "path": "jira-orchestrator/commands/work.md",
@@ -1059,6 +1117,16 @@
       ],
       "secrets": [
         "secrets"
+      ],
+      "design": [
+        "design:style",
+        "design:theme",
+        "design:tokens",
+        "design:component",
+        "design:palette",
+        "design:keycloak",
+        "design:audit",
+        "design:convert"
       ]
     },
     "byTask": {
@@ -1113,7 +1181,7 @@
     }
   },
   "stats": {
-    "totalCommands": 95,
+    "totalCommands": 103,
     "byCategory": {
       "core": 4,
       "development": 9,
@@ -1125,11 +1193,12 @@
       "plugin-management": 7,
       "ecosystem": 6,
       "intelligence": 4,
+      "frontend-design-system": 8,
       "jira-orchestrator": 35
     },
     "byPriority": {
-      "high": 31,
-      "medium": 50,
+      "high": 37,
+      "medium": 52,
       "low": 9
     }
   }

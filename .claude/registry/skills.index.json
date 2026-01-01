@@ -617,6 +617,34 @@
       }
     },
     "frontend": {
+      "design-system": {
+        "path": "../skills/design-system/SKILL.md",
+        "triggers": [
+          "design-system",
+          "design system",
+          "theme",
+          "theming",
+          "style",
+          "styles",
+          "css",
+          "tailwind",
+          "tokens",
+          "design tokens",
+          "color palette",
+          "typography",
+          "keycloak theme",
+          "multi-tenant",
+          "accessibility",
+          "wcag",
+          "a11y"
+        ],
+        "activationScore": 0,
+        "dependencies": [],
+        "conflicts": [],
+        "autoActivate": true,
+        "plugin": "frontend-design-system",
+        "description": "Stylist - 263+ design styles with multi-tenant Keycloak theming"
+      },
       "react": {
         "path": "skills/react/SKILL.md",
         "triggers": [
@@ -731,7 +759,7 @@
     "allowedToolsSupport": true
   },
   "stats": {
-    "totalSkills": 34,
+    "totalSkills": 35,
     "format": "Claude Code Official SKILL.md",
     "byCategory": {
       "infrastructure": 4,
@@ -742,7 +770,7 @@
       "cloud": 2,
       "security": 1,
       "data": 4,
-      "frontend": 2,
+      "frontend": 3,
       "reasoning": 3
     },
     "note": "Includes ultrathink/extended-thinking skills for complex reasoning tasks, plus Anthropic API skills (prompt-caching, vision-multimodal, streaming, batch-processing, tool-use, citations-retrieval)."

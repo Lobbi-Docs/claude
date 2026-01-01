@@ -117,6 +117,26 @@
       }
     },
 
+    "frontend": {
+      "frontend-design-system": {
+        "path": "../../plugins/frontend-design-system/.claude-plugin/plugin.json",
+        "callsign": "Stylist",
+        "version": "1.0.0",
+        "description": "263+ design styles with multi-tenant Keycloak theming for AI-powered frontend development",
+        "provides": { "commands": 8, "agents": 6, "skills": 4, "hooks": 4 },
+        "status": "active",
+        "tier": "standard",
+        "features": [
+          "263+ curated design styles",
+          "Multi-tenant Keycloak theming",
+          "CSS/Tailwind generation",
+          "Accessibility validation",
+          "Design token management"
+        ],
+        "integrates": ["jira-orchestrator", "documentation-orchestrator"]
+      }
+    },
+
     "ai-advanced": {
       "cognitive-code-reasoner": {
         "path": "../plugins/cognitive-code-reasoner/plugin.json",
@@ -209,6 +229,7 @@
 
   "callsignRegistry": {
     "Arbiter": "jira-orchestrator",
+    "Stylist": "frontend-design-system",
     "Curator": "code-quality-orchestrator",
     "Sentinel": "git-workflow-orchestrator",
     "Herald": "release-orchestrator",
@@ -226,17 +247,17 @@
   },
 
   "stats": {
-    "totalPlugins": 15,
+    "totalPlugins": 16,
     "byTier": {
       "enterprise": 1,
-      "standard": 8,
+      "standard": 9,
       "advanced": 6
     },
-    "totalCommands": 217,
-    "totalAgents": 199,
+    "totalCommands": 225,
+    "totalAgents": 205,
     "totalTeams": 16,
-    "totalSkills": 91,
-    "totalHooks": 63,
+    "totalSkills": 95,
+    "totalHooks": 67,
     "totalWorkflows": 3,
     "innovativePlugins": 7,
     "deliberationProtocols": 20
