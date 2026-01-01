@@ -10,8 +10,16 @@
         "path": "../../plugins/jira-orchestrator/.claude-plugin/plugin.json",
         "callsign": "Arbiter",
         "version": "7.1.0",
-        "provides": { "commands": 43, "agents": 68, "teams": 16, "skills": 11, "hooks": 7 },
-        "features": ["autogen-teams", "parent-child-orchestration", "domain-affinity-routing"],
+        "description": "Enterprise Jira orchestration with 69 agents, 16 teams, 43 commands, and hook-based automation",
+        "provides": { "commands": 43, "agents": 69, "teams": 16, "skills": 11, "hooks": 7 },
+        "features": [
+          "autogen-teams",
+          "parent-child-orchestration",
+          "domain-affinity-routing",
+          "harness-ci-cd-integration",
+          "agent-council-review",
+          "clean-architecture-enforcement"
+        ],
         "status": "active",
         "tier": "enterprise"
       },
@@ -253,10 +261,10 @@
       "standard": 9,
       "advanced": 6
     },
-    "totalCommands": 225,
-    "totalAgents": 205,
+    "totalCommands": 233,
+    "totalAgents": 206,
     "totalTeams": 16,
-    "totalSkills": 95,
+    "totalSkills": 106,
     "totalHooks": 67,
     "totalWorkflows": 3,
     "innovativePlugins": 7,

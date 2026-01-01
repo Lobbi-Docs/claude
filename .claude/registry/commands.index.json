@@ -1036,6 +1036,62 @@
         "keywords": ["jira", "worklog", "time", "track"],
         "usage": "/jira:process-worklogs [issue-key]",
         "priority": "low"
+      },
+      "jira:ship": {
+        "path": "jira-orchestrator/commands/ship.md",
+        "description": "One command to ship - prepare, code, PR, and council review",
+        "keywords": ["jira", "ship", "complete", "deliver", "end-to-end"],
+        "usage": "/jira:ship <issue-key> [--council] [--auto-merge]",
+        "priority": "high"
+      },
+      "jira:council": {
+        "path": "jira-orchestrator/commands/council.md",
+        "description": "Agent council review using blackboard pattern for comprehensive PR analysis",
+        "keywords": ["jira", "council", "review", "collective", "agents", "blackboard"],
+        "usage": "/jira:council <target> [--preset=standard] [--depth=standard]",
+        "priority": "high"
+      },
+      "jira:iterate": {
+        "path": "jira-orchestrator/commands/iterate.md",
+        "description": "Fix review feedback, update PR, re-review until approval",
+        "keywords": ["jira", "iterate", "fix", "feedback", "update"],
+        "usage": "/jira:iterate <issue-key> [--auto]",
+        "priority": "high"
+      },
+      "jira:enterprise": {
+        "path": "jira-orchestrator/commands/enterprise.md",
+        "description": "Enterprise features - notifications, approvals, portfolio, compliance",
+        "keywords": ["jira", "enterprise", "governance", "portfolio", "compliance"],
+        "usage": "/jira:enterprise <action> [options]",
+        "priority": "medium"
+      },
+      "jira:infra": {
+        "path": "jira-orchestrator/commands/infra.md",
+        "description": "Infrastructure management - Helm, Terraform, K8s, repo creation",
+        "keywords": ["jira", "infra", "infrastructure", "helm", "terraform", "k8s"],
+        "usage": "/jira:infra <action> [options]",
+        "priority": "medium"
+      },
+      "jira:sprint": {
+        "path": "jira-orchestrator/commands/sprint.md",
+        "description": "Sprint management - planning, metrics, quality, team capacity",
+        "keywords": ["jira", "sprint", "planning", "metrics", "capacity"],
+        "usage": "/jira:sprint <action> [options]",
+        "priority": "medium"
+      },
+      "jira:create-repo": {
+        "path": "jira-orchestrator/commands/create-repo.md",
+        "description": "Create modular Harness-ready repository with Helm, Terraform, K8s",
+        "keywords": ["jira", "create-repo", "repository", "harness", "scaffold"],
+        "usage": "/jira:create-repo <name> [--template=microservice]",
+        "priority": "medium"
+      },
+      "jira:harness-review": {
+        "path": "jira-orchestrator/commands/harness-review.md",
+        "description": "Review Harness pipeline configurations and deployments",
+        "keywords": ["jira", "harness", "review", "pipeline", "deployment"],
+        "usage": "/jira:harness-review <issue-key>",
+        "priority": "medium"
       }
     }
   },
@@ -1065,6 +1121,7 @@
         "jira-transition",
         "atlassian-sync",
         "jira:work",
+        "jira:ship",
         "jira:prepare",
         "jira:status",
         "jira:sync",
@@ -1073,7 +1130,14 @@
         "jira:commit",
         "jira:pr",
         "jira:review",
-        "jira:docs"
+        "jira:council",
+        "jira:iterate",
+        "jira:docs",
+        "jira:enterprise",
+        "jira:infra",
+        "jira:sprint",
+        "jira:create-repo",
+        "jira:harness-review"
       ],
       "review": [
         "review",
@@ -1181,7 +1245,7 @@
     }
   },
   "stats": {
-    "totalCommands": 103,
+    "totalCommands": 111,
     "byCategory": {
       "core": 4,
       "development": 9,
@@ -1194,11 +1258,11 @@
       "ecosystem": 6,
       "intelligence": 4,
       "frontend-design-system": 8,
-      "jira-orchestrator": 35
+      "jira-orchestrator": 43
     },
     "byPriority": {
-      "high": 37,
-      "medium": 52,
+      "high": 40,
+      "medium": 57,
       "low": 9
     }
   }
