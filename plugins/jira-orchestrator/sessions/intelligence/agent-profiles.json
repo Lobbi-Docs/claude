@@ -1,6 +1,13 @@
 {
-  "code-reviewer": {
+  "_metadata": {
+    "description": "Agent performance profiles with registry-compatible naming",
+    "namingConvention": "Uses registry aliases (reviewer, coder) as keys with descriptive agentName for clarity",
+    "lastUpdated": "2026-01-01T00:00:00.000Z",
+    "version": "2.0.0"
+  },
+  "reviewer": {
     "agentName": "code-reviewer",
+    "registryAlias": "reviewer",
     "specialization": ["backend", "api", "security"],
     "successRate": 0.95,
     "totalTasks": 47,
@@ -70,11 +77,21 @@
     "bestDomains": ["backend", "api", "security", "database"],
     "worstDomains": ["frontend", "ui"],
     "optimalComplexityRange": [35, 75],
+    "routingRecommendations": {
+      "shouldRoute": ["backend", "api", "security", "database"],
+      "shouldAvoid": ["frontend", "ui", "react", "css"],
+      "fallbackFor": [],
+      "optimalComplexity": [35, 75],
+      "maxComplexitySolo": 80,
+      "requiresPairingAbove": null,
+      "notes": "GAP-001: Frontend success rate 62.5% vs backend 96.4%. Route frontend to ui-specialist instead."
+    },
     "createdAt": "2025-11-15T00:00:00.000Z",
     "lastUpdated": "2025-12-29T10:00:00.000Z"
   },
-  "implementation-specialist": {
+  "coder": {
     "agentName": "implementation-specialist",
+    "registryAlias": "coder",
     "specialization": ["backend", "frontend", "fullstack"],
     "successRate": 0.89,
     "totalTasks": 38,
@@ -127,7 +144,69 @@
     "bestDomains": ["backend", "fullstack", "api"],
     "worstDomains": ["devops", "infrastructure"],
     "optimalComplexityRange": [40, 80],
+    "routingRecommendations": {
+      "shouldRoute": ["backend", "fullstack", "api", "implementation"],
+      "shouldAvoid": ["devops", "infrastructure"],
+      "fallbackFor": ["backend"],
+      "optimalComplexity": [40, 80],
+      "maxComplexitySolo": 75,
+      "requiresPairingAbove": 80,
+      "pairingAgents": ["system-architect", "infrastructure-specialist", "devops-engineer"],
+      "notes": "GAP-008: Success rate drops to 60% at complexity 80+. Require pairing with architect or specialist for high-complexity tasks."
+    },
     "createdAt": "2025-11-20T00:00:00.000Z",
-    "lastUpdated": "2025-12-29T09:45:00.000Z"
+    "lastUpdated": "2025-12-29T10:00:00.000Z"
+  },
+  "theme-builder": {
+    "agentName": "ui-specialist",
+    "registryAlias": "theme-builder",
+    "specialization": ["frontend", "ui", "react", "theming"],
+    "successRate": 0.92,
+    "totalTasks": 15,
+    "successfulTasks": 14,
+    "failedTasks": 1,
+    "averageDuration": 280000,
+    "averageQuality": 0.91,
+    "strengthPatterns": [
+      {
+        "id": "ui-specialist-frontend-excellence",
+        "type": "strength",
+        "description": "High success rate in frontend/UI tasks",
+        "conditions": {
+          "domain": "frontend",
+          "minComplexity": 0,
+          "maxComplexity": 100
+        },
+        "frequency": 14,
+        "successRate": 0.929,
+        "transferability": 0.80,
+        "confidence": 0.88,
+        "examples": ["EXAMPLE-301", "EXAMPLE-315"],
+        "createdAt": "2025-12-10T10:00:00.000Z",
+        "lastSeen": "2025-12-28T15:30:00.000Z"
+      }
+    ],
+    "weaknessPatterns": [],
+    "recentPerformance": {
+      "recentTasks": 5,
+      "recentSuccesses": 5,
+      "recentFailures": 0,
+      "trend": 0.12,
+      "lastUpdated": "2025-12-29T10:00:00.000Z"
+    },
+    "bestDomains": ["frontend", "ui", "react", "theming", "css"],
+    "worstDomains": ["backend", "infrastructure"],
+    "optimalComplexityRange": [15, 85],
+    "routingRecommendations": {
+      "shouldRoute": ["frontend", "ui", "react", "css", "theming", "components"],
+      "shouldAvoid": ["backend", "infrastructure", "database"],
+      "fallbackFor": [],
+      "optimalComplexity": [15, 85],
+      "maxComplexitySolo": 85,
+      "requiresPairingAbove": null,
+      "notes": "Primary frontend specialist. Should receive all frontend/UI tasks instead of code-reviewer."
+    },
+    "createdAt": "2025-12-10T00:00:00.000Z",
+    "lastUpdated": "2025-12-29T10:00:00.000Z"
   }
 }

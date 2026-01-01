@@ -1,6 +1,6 @@
 # Jira Orchestrator Plugin
 
-**Version:** 7.1.0 | **Agents:** 66 | **Teams:** 16 | **Skills:** 9 | **Commands:** 12 | **Hooks:** Auto-triggered
+**Version:** 7.1.0 | **Agents:** 68 | **Teams:** 16 | **Skills:** 11 | **Commands:** 43 | **Hooks:** Auto-triggered
 
 **NEW in v7.1:** AutoGen-style agent teams for orchestrated collaboration, parent-child issue orchestration, and domain affinity routing.
 

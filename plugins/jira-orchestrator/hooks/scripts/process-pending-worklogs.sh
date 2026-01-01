@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Process Pending Worklogs
 # Processes queued worklog entries that failed to post immediately
 #
 # Usage:
 #   process-pending-worklogs.sh [--once]
+
+set -e  # Exit on error
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"

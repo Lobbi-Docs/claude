@@ -210,6 +210,145 @@ integration:
     include_recommendations: true
 
 # ============================================================================
+# ROUTING CONFIGURATION
+# ============================================================================
+
+routing:
+  # Domain-based routing rules
+  domain_routing:
+    frontend:
+      primary_agents:
+        - "theme-system-architect"
+        - "theme-builder"
+        - "white-label-specialist"
+      fallback: null  # No fallback - must use frontend specialist
+      avoid_agents:
+        - "reviewer"  # code-reviewer has 62.5% success on frontend
+      min_complexity_for_specialist: 20
+      notes: "Frontend tasks MUST route to frontend specialists, not general reviewers"
+
+    backend:
+      primary_agents:
+        - "reviewer"  # code-reviewer excels at backend (96.4% success)
+      fallback_agents:
+        - "coder"  # implementation-specialist
+      avoid_agents: []
+      min_complexity_for_specialist: 30
+      notes: "Backend tasks should prefer code-reviewer for complexity 30-80"
+
+    infrastructure:
+      primary_agents:
+        - "sre-engineer"
+        - "k8s-deployer"
+      fallback: null  # No fallback - infrastructure is specialized
+      avoid_agents: []
+      min_complexity_for_specialist: 40
+      notes: "Infrastructure requires specialized agents"
+
+    ui:
+      primary_agents:
+        - "theme-builder"
+        - "white-label-specialist"
+      fallback: null
+      avoid_agents:
+        - "reviewer"
+      min_complexity_for_specialist: 15
+      notes: "UI work requires frontend specialists"
+
+    fullstack:
+      primary_agents:
+        - "coder"  # implementation-specialist handles fullstack
+      fallback_agents:
+        - "reviewer"
+      avoid_agents: []
+      min_complexity_for_specialist: 35
+      notes: "Fullstack can use generalist agents"
+
+  # Complexity-based routing rules
+  complexity_routing:
+    high_complexity:  # 80+
+      threshold: 80
+      require_pairing: true
+      pairing_strategy: "specialist_plus_architect"
+      primary_agents:
+        - "sre-engineer"  # infrastructure-specialist
+        - "theme-system-architect"  # for frontend
+        - "planner"  # system-architect
+      pair_with:
+        - "planner"  # system-architect
+        - "sre-engineer"  # devops-engineer
+        - "reviewer"  # senior-reviewer
+      avoid_solo_agents:
+        - "coder"  # implementation-specialist struggles at 80+ (60% success)
+      decomposition_required: true
+      notes: "Complexity 80+ requires expert pairing, not solo implementation-specialist"
+
+    standard:  # 30-80
+      threshold_min: 30
+      threshold_max: 80
+      require_pairing: false
+      primary_agents:
+        - "coder"  # implementation-specialist (optimal range)
+        - "reviewer"  # code-reviewer (optimal range 40-60)
+      fallback_agents:
+        - "debugger"
+      notes: "Sweet spot for most specialists"
+
+    simple:  # 0-30
+      threshold_max: 30
+      require_pairing: false
+      skip_decomposition: true
+      primary_agents:
+        - "coder"  # Any capable agent
+        - "theme-builder"  # For frontend
+      fast_track: true
+      notes: "Simple tasks don't need decomposition or specialist routing"
+
+  # Agent-specific routing constraints
+  agent_constraints:
+    reviewer:  # code-reviewer
+      optimal_complexity: [35, 75]
+      avoid_domains: ["frontend", "ui"]
+      prefer_domains: ["backend", "api", "security", "database"]
+      max_complexity_solo: 80
+      notes: "Based on GAP-001 analysis - avoid frontend, excel at backend"
+
+    coder:  # implementation-specialist
+      optimal_complexity: [40, 80]
+      avoid_domains: ["devops", "infrastructure"]
+      prefer_domains: ["backend", "fullstack", "api"]
+      max_complexity_solo: 75
+      require_support_above: 80
+      notes: "Based on GAP-008 analysis - struggles above 80 complexity"
+
+    theme-builder:
+      optimal_complexity: [15, 85]
+      avoid_domains: ["backend", "infrastructure"]
+      prefer_domains: ["frontend", "ui", "react", "css"]
+      notes: "Primary frontend UI specialist. Range updated from [15, 70] to [15, 85] per agent-profiles.json v2.0.0"
+
+    theme-system-architect:
+      optimal_complexity: [40, 100]
+      avoid_domains: ["backend"]
+      prefer_domains: ["frontend", "ui", "architecture", "theming"]
+      notes: "High-complexity frontend architecture specialist"
+
+  # Routing decision weights
+  decision_weights:
+    domain_match: 40
+    complexity_match: 25
+    historical_performance: 20
+    agent_availability: 10
+    workload_balance: 5
+
+  # Fallback behavior
+  fallback:
+    allow_fallback: true
+    fallback_scoring_penalty: 15  # Reduce score by 15 points for fallback
+    require_justification: true
+    max_fallback_attempts: 2
+
+# ============================================================================
 # REPORTING
 # ============================================================================
 
