@@ -1,0 +1,699 @@
+{
+  "name": "jira-orchestrator",
+  "version": "7.2.0",
+  "description": "Comprehensive Jira orchestration plugin with 69 agents, 43 commands, 11 skills, and automated hook-based workflows. Features Harness platform integration, SOLID/clean architecture enforcement, and multi-agent collaboration patterns.",
+  "author": "Ahling Tech",
+  "license": "MIT",
+  "keywords": [
+    "jira",
+    "orchestration",
+    "atlassian",
+    "harness",
+    "ci-cd",
+    "workflow",
+    "automation",
+    "agents",
+    "clean-architecture",
+    "solid"
+  ],
+  "categories": [
+    "orchestration",
+    "project-management",
+    "devops",
+    "integration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markus41/claude/tree/main/plugins/jira-orchestrator"
+  },
+  "commands": {
+    "work": {
+      "description": "Start orchestrated work on issue (THE main command)",
+      "handler": "commands/work.md"
+    },
+    "ship": {
+      "description": "One command: prepare → code → PR → review → merge",
+      "handler": "commands/ship.md"
+    },
+    "status": {
+      "description": "Check progress, show dashboard, metrics",
+      "handler": "commands/status.md"
+    },
+    "pr": {
+      "description": "Create/manage PRs with automatic review",
+      "handler": "commands/pr.md"
+    },
+    "iterate": {
+      "description": "Fix review feedback, update PR, re-review",
+      "handler": "commands/iterate.md"
+    },
+    "cancel": {
+      "description": "Cancel with checkpoint for resume",
+      "handler": "commands/cancel.md"
+    },
+    "sprint": {
+      "description": "Sprint planning, metrics, quality, team capacity",
+      "handler": "commands/sprint.md"
+    },
+    "enterprise": {
+      "description": "Enterprise features (notifications, approvals, compliance)",
+      "handler": "commands/enterprise.md"
+    },
+    "infra": {
+      "description": "Infrastructure and repository management",
+      "handler": "commands/infra.md"
+    },
+    "setup": {
+      "description": "Installation, configuration, hooks",
+      "handler": "commands/setup.md"
+    },
+    "sync": {
+      "description": "Manual sync (usually auto via hooks)",
+      "handler": "commands/sync.md"
+    },
+    "help": {
+      "description": "Show commands and documentation",
+      "handler": "commands/work.md"
+    },
+    "triage": {
+      "description": "Triage and analyze Jira issue (deprecated - use work --triage)",
+      "handler": "commands/triage.md",
+      "aliases": ["triage"]
+    },
+    "review": {
+      "description": "Code review (deprecated - use pr --review)",
+      "handler": "commands/review.md",
+      "aliases": ["review"]
+    },
+    "deploy": {
+      "description": "Deploy infrastructure (deprecated - use infra deploy)",
+      "handler": "commands/deploy.md",
+      "aliases": ["deploy"]
+    },
+    "sprint-plan": {
+      "description": "Sprint planning (deprecated - use sprint plan)",
+      "handler": "commands/sprint-plan.md",
+      "aliases": ["sprint-plan"]
+    },
+    "metrics": {
+      "description": "Show metrics (deprecated - use sprint metrics)",
+      "handler": "commands/metrics.md",
+      "aliases": ["metrics"]
+    },
+    "quality": {
+      "description": "Quality checks (deprecated - use sprint quality)",
+      "handler": "commands/quality.md",
+      "aliases": ["quality"]
+    },
+    "team": {
+      "description": "Team operations (deprecated - use sprint team)",
+      "handler": "commands/team.md",
+      "aliases": ["team"]
+    },
+    "notify": {
+      "description": "Send notifications (deprecated - use enterprise notify)",
+      "handler": "commands/notify.md",
+      "aliases": ["notify"]
+    },
+    "approve": {
+      "description": "Approval workflow (deprecated - use enterprise approve)",
+      "handler": "commands/approve.md",
+      "aliases": ["approve"]
+    },
+    "portfolio": {
+      "description": "Portfolio management (deprecated - use enterprise portfolio)",
+      "handler": "commands/portfolio.md",
+      "aliases": ["portfolio"]
+    },
+    "release": {
+      "description": "Release management (deprecated - use enterprise release)",
+      "handler": "commands/release.md",
+      "aliases": ["release"]
+    },
+    "batch": {
+      "description": "Batch operations (deprecated - use enterprise batch)",
+      "handler": "commands/batch.md",
+      "aliases": ["batch"]
+    },
+    "export": {
+      "description": "Export data (deprecated - use enterprise export)",
+      "handler": "commands/export.md",
+      "aliases": ["export"]
+    },
+    "sla": {
+      "description": "SLA monitoring (deprecated - use enterprise sla)",
+      "handler": "commands/sla.md",
+      "aliases": ["sla"]
+    },
+    "compliance": {
+      "description": "Compliance reporting (deprecated - use enterprise compliance)",
+      "handler": "commands/compliance.md",
+      "aliases": ["compliance"]
+    },
+    "create-repo": {
+      "description": "Create repository (deprecated - use infra create-repo)",
+      "handler": "commands/create-repo.md",
+      "aliases": ["create-repo"]
+    },
+    "confluence": {
+      "description": "Confluence operations (auto via hooks)",
+      "handler": "commands/confluence.md",
+      "aliases": ["confluence"]
+    },
+    "docs": {
+      "description": "Documentation (auto via hooks)",
+      "handler": "commands/docs.md",
+      "aliases": ["docs"]
+    },
+    "branch": {
+      "description": "Branch operations (auto via hooks)",
+      "handler": "commands/branch.md",
+      "aliases": ["branch"]
+    },
+    "commit": {
+      "description": "Commit operations (auto via hooks)",
+      "handler": "commands/commit.md",
+      "aliases": ["commit"]
+    },
+    "commit-template": {
+      "description": "Commit template (auto via hooks)",
+      "handler": "commands/commit-template.md",
+      "aliases": ["commit-template"]
+    },
+    "bulk-commit": {
+      "description": "Bulk commit (deprecated - use enterprise batch)",
+      "handler": "commands/bulk-commit.md",
+      "aliases": ["bulk-commit"]
+    },
+    "council": {
+      "description": "Council review (deprecated - use pr --council)",
+      "handler": "commands/council.md",
+      "aliases": ["council"]
+    },
+    "harness-review": {
+      "description": "Harness review (deprecated - use pr --harness)",
+      "handler": "commands/harness-review.md",
+      "aliases": ["harness-review"]
+    },
+    "plan-prs": {
+      "description": "Plan PRs (deprecated - use work --prepare)",
+      "handler": "commands/plan-prs.md",
+      "aliases": ["plan-prs"]
+    },
+    "qa-review": {
+      "description": "QA review (deprecated - use pr --review)",
+      "handler": "commands/qa-review.md",
+      "aliases": ["qa-review"]
+    },
+    "orchestrate-advanced": {
+      "description": "Advanced orchestration (deprecated - use work)",
+      "handler": "commands/orchestrate-advanced.md",
+      "aliases": ["orchestrate-advanced"]
+    },
+    "intelligence": {
+      "description": "Intelligence analytics",
+      "handler": "commands/intelligence.md",
+      "aliases": ["intelligence"]
+    },
+    "events": {
+      "description": "Event logging (auto via hooks)",
+      "handler": "commands/events.md",
+      "aliases": ["events"]
+    },
+    "process-worklogs": {
+      "description": "Process worklogs (auto via scheduled hook)",
+      "handler": "commands/process-worklogs.md",
+      "aliases": ["process-worklogs"]
+    },
+    "install-hooks": {
+      "description": "Install hooks (deprecated - use setup --hooks)",
+      "handler": "commands/install-hooks.md",
+      "aliases": ["install-hooks"]
+    },
+    "prepare": {
+      "description": "Prepare issue (deprecated - use work --prepare)",
+      "handler": "commands/prepare.md",
+      "aliases": ["prepare"]
+    }
+  },
+  "agents": {
+    "advanced-orchestration-patterns": {
+      "description": "Implements sophisticated orchestration patterns including Blackboard, Circuit Breaker, Dynamic Replanning, Hierarchical Decomposition, and Saga patterns for resilient multi-agent coordination",
+      "model": "opus",
+      "handler": "agents/advanced-orchestration-patterns.md"
+    },
+    "agent-router": {
+      "description": "Dynamic agent discovery and routing - queries main registry to select specialized code agents based on Jira context, file patterns, and task keywords",
+      "model": "haiku",
+      "handler": "agents/agent-router.md"
+    },
+    "approval-orchestrator": {
+      "description": "Multi-level approval workflow orchestrator with gates, escalation rules, delegation, and comprehensive audit trails for PR, deployment, and release approvals",
+      "model": "sonnet",
+      "handler": "agents/approval-orchestrator.md"
+    },
+    "batch-commit-processor": {
+      "description": "Process multiple commits in batch with time aggregation and comment deduplication",
+      "model": "sonnet",
+      "handler": "agents/batch-commit-processor.md"
+    },
+    "batch-processor": {
+      "description": "Processes bulk Jira operations with intelligent batching, rate limiting, rollback support, and comprehensive progress tracking",
+      "model": "sonnet",
+      "handler": "agents/batch-processor.md"
+    },
+    "bulk-importer": {
+      "description": "Imports issues from CSV, Excel, and JSON files with field mapping, validation, duplicate detection, and comprehensive error handling",
+      "model": "sonnet",
+      "handler": "agents/bulk-importer.md"
+    },
+    "checkpoint-pr-manager": {
+      "description": "Manage incremental draft PRs during CODE phase when splitting strategy requires multiple PRs",
+      "model": "haiku",
+      "handler": "agents/checkpoint-pr-manager.md"
+    },
+    "code-quality-enforcer": {
+      "description": "Expert agent for enforcing SOLID principles, clean code standards, and architectural patterns across the codebase with automated analysis and refactoring suggestions",
+      "model": "opus",
+      "handler": "agents/code-quality-enforcer.md"
+    },
+    "code-reviewer": {
+      "description": "Comprehensive code reviewer for orchestration workflow - deep analysis of logic, security, performance, accessibility, test coverage, and documentation quality before PR creation",
+      "model": "sonnet",
+      "handler": "agents/code-reviewer.md"
+    },
+    "commit-message-generator": {
+      "description": "Generates high-quality conventional commit messages from Jira issue context and git diff analysis",
+      "model": "sonnet",
+      "handler": "agents/commit-message-generator.md"
+    },
+    "commit-tracker": {
+      "description": "Track commits, map them to Jira issues, and post detailed commit summaries with Confluence references",
+      "model": "haiku",
+      "handler": "agents/commit-tracker.md"
+    },
+    "completion-flow-orchestrator": {
+      "description": "Orchestrates the complete task completion flow including sub-issue monitoring, gap analysis, Confluence documentation, commit creation, and issue commenting with full traceability",
+      "model": "sonnet",
+      "handler": "agents/completion-flow-orchestrator.md"
+    },
+    "completion-orchestrator": {
+      "description": "Orchestrate the full completion workflow - PR creation, sub-item documentation, and QA transitions",
+      "model": "sonnet",
+      "handler": "agents/completion-orchestrator.md"
+    },
+    "compliance-reporter": {
+      "description": "Compliance reporting for SOC2, GDPR, ISO27001 with audit trails and evidence collection",
+      "model": "sonnet",
+      "handler": "agents/compliance-reporter.md"
+    },
+    "confluence-documentation-creator": {
+      "description": "Create extensive Confluence documentation at each orchestration phase with full linking to Jira and PR",
+      "model": "sonnet",
+      "handler": "agents/confluence-documentation-creator.md"
+    },
+    "confluence-manager": {
+      "description": "Manages Confluence documentation based on Jira issues - reads requirements, writes technical docs, creates runbooks, syncs with Jira, maintains documentation lifecycle",
+      "model": "sonnet",
+      "handler": "agents/confluence-manager.md"
+    },
+    "council-coordinator": {
+      "description": "Coordinates agent council reviews using the blackboard pattern for collaborative multi-agent analysis",
+      "model": "sonnet",
+      "handler": "agents/council-coordinator.md"
+    },
+    "dependency-mapper": {
+      "description": "Cross-project dependency detection, visualization, impact analysis, circular dependency detection, critical path calculation, and blocking issue identification",
+      "model": "sonnet",
+      "handler": "agents/dependency-mapper.md"
+    },
+    "documentation-sync-agent": {
+      "description": "Ensures Confluence documentation is created, updated, and linked for all Jira issues and sub-issues. Automatically syncs READMEs with Confluence pages and maintains bidirectional links between Jira, Confluence, and code repositories.",
+      "model": "sonnet",
+      "handler": "agents/documentation-sync-agent.md"
+    },
+    "documentation-writer": {
+      "description": "Comprehensive documentation writer for DOCUMENT phase - creates README, API docs, ADRs, code comments, changelogs, Confluence pages, user guides, and runbooks",
+      "model": "haiku",
+      "handler": "agents/documentation-writer.md"
+    },
+    "draft-pr-manager": {
+      "description": "Create draft PR immediately after PLAN phase and update it throughout development for early visibility and feedback",
+      "model": "haiku",
+      "handler": "agents/draft-pr-manager.md"
+    },
+    "epic-decomposer": {
+      "description": "Breaks down epics into manageable user stories and tasks using INVEST principles, user journey analysis, dependency mapping, and adaptive learning from past decompositions",
+      "model": "sonnet",
+      "handler": "agents/epic-decomposer.md"
+    },
+    "escalation-manager": {
+      "description": "Manages issue escalation workflows with automated priority adjustments and stakeholder notifications",
+      "model": "sonnet",
+      "handler": "agents/escalation-manager.md"
+    },
+    "event-sourcing-orchestrator": {
+      "description": "Event sourcing system for complete orchestration audit trail, state reconstruction, time-travel debugging, and event replay capabilities",
+      "model": "sonnet",
+      "handler": "agents/event-sourcing-orchestrator.md"
+    },
+    "expert-agent-matcher": {
+      "description": "Advanced expertise matching system - Deep multi-dimensional analysis to select optimal experts with confidence scoring, team composition optimization, and load balancing",
+      "model": "haiku",
+      "handler": "agents/expert-agent-matcher.md"
+    },
+    "export-generator": {
+      "description": "Generates PDF reports, Excel/CSV exports, and JSON exports with custom templates, scheduling, and distribution capabilities",
+      "model": "sonnet",
+      "handler": "agents/export-generator.md"
+    },
+    "governance-auditor": {
+      "description": "Complete audit trail management for all decisions, compliance reporting, change log generation, access pattern analysis, risk assessment, and SOC2/ISO27001 evidence collection",
+      "model": "sonnet",
+      "handler": "agents/governance-auditor.md"
+    },
+    "harness-api-expert": {
+      "description": "Expert agent for Harness REST API operations including authentication, organizations, projects, pipelines, triggers, services, environments, connectors, secrets, executions, and module-specific APIs (GitOps, Feature Flags, IaCM, Chaos, STO, CCM)",
+      "model": "sonnet",
+      "handler": "agents/harness-api-expert.md"
+    },
+    "harness-jira-sync": {
+      "description": "Automate bidirectional synchronization between Harness CD and Jira for pipelines, deployments, Git repositories, pull requests, and code review comments using Harness MCP",
+      "model": "sonnet",
+      "handler": "agents/harness-jira-sync.md"
+    },
+    "infrastructure-orchestrator": {
+      "description": "Expert infrastructure agent for creating modular Harness repositories, managing Kubernetes deployments, Helm charts, and Terraform infrastructure with deep GitOps knowledge",
+      "model": "sonnet",
+      "handler": "agents/infrastructure-orchestrator.md"
+    },
+    "intelligence-analyzer": {
+      "description": "Intelligence and analytics module for the jira-orchestrator - provides predictive analytics, learning from history, smart prioritization, velocity tracking, and pattern recognition to optimize agent selection and task execution",
+      "model": "sonnet",
+      "handler": "agents/intelligence-analyzer.md"
+    },
+    "learning-coordinator": {
+      "description": "Coordinates real-time learning across all agents, manages knowledge consolidation, and optimizes agent selection based on historical performance",
+      "model": "sonnet",
+      "handler": "agents/learning-coordinator.md"
+    },
+    "metrics-dashboard": {
+      "description": "Real-time orchestration metrics dashboard with SLA tracking, quality metrics, throughput analysis, and agent performance monitoring",
+      "model": "haiku",
+      "handler": "agents/metrics-dashboard.md"
+    },
+    "notification-router": {
+      "description": "Routes Jira orchestration events to appropriate notification channels (Slack, Teams, Email, Webhooks) with intelligent filtering, batching, and priority management",
+      "model": "haiku",
+      "handler": "agents/notification-router.md"
+    },
+    "parallel-sub-issue-worker": {
+      "description": "Discovers, analyzes dependencies, and coordinates parallel execution of Jira sub-issues using DAG-based scheduling with intelligent agent routing per sub-issue",
+      "model": "sonnet",
+      "handler": "agents/parallel-sub-issue-worker.md"
+    },
+    "pattern-analyzer": {
+      "description": "Extracts learnable patterns from task outcomes using extended thinking (8000 token budget) to identify success factors, failure modes, and transferable knowledge",
+      "model": "sonnet",
+      "handler": "agents/pattern-analyzer.md"
+    },
+    "performance-tracker": {
+      "description": "Tracks and analyzes agent performance metrics in real-time, generates performance reports, identifies trends, and provides data-driven recommendations",
+      "model": "haiku",
+      "handler": "agents/performance-tracker.md"
+    },
+    "policy-enforcer": {
+      "description": "Policy definition and evaluation engine for code quality gates, security requirements, review policies, branch protection, and compliance checks",
+      "model": "sonnet",
+      "handler": "agents/policy-enforcer.md"
+    },
+    "portfolio-manager": {
+      "description": "Multi-project portfolio management with aggregated metrics, cross-project dependencies, resource allocation, strategic alignment, and executive-level reporting",
+      "model": "opus",
+      "handler": "agents/portfolio-manager.md"
+    },
+    "pr-creator": {
+      "description": "Create high-quality pull requests with comprehensive documentation and Jira integration",
+      "model": "haiku",
+      "handler": "agents/pr-creator.md"
+    },
+    "pr-documentation-logger": {
+      "description": "Log all documentation and interactions to PR comments for complete audit trail",
+      "model": "haiku",
+      "handler": "agents/pr-documentation-logger.md"
+    },
+    "pr-size-estimator": {
+      "description": "Analyze planned work and estimate final PR size to recommend splitting strategy before CODE phase begins",
+      "model": "sonnet",
+      "handler": "agents/pr-size-estimator.md"
+    },
+    "qa-comment-responder": {
+      "description": "Monitors and responds to comments on QA tickets, providing clarifications and updates",
+      "model": "haiku",
+      "handler": "agents/qa-comment-responder.md"
+    },
+    "qa-confluence-documenter": {
+      "description": "Creates visually impressive Confluence documentation with main hub pages and linked sub-pages for each task",
+      "model": "sonnet",
+      "handler": "agents/qa-confluence-documenter.md"
+    },
+    "qa-ticket-reviewer": {
+      "description": "Reviews JIRA tickets in QA status, improves content quality, condenses descriptions, and ensures completeness",
+      "model": "sonnet",
+      "handler": "agents/qa-ticket-reviewer.md"
+    },
+    "qa-transition": {
+      "description": "Transition Jira issues and all sub-items to QA status after work completion",
+      "model": "haiku",
+      "handler": "agents/qa-transition.md"
+    },
+    "quality-enhancer": {
+      "description": "Enhanced code quality reviewer for orchestration workflow - validates best practices, security, performance, accessibility, and documentation",
+      "model": "sonnet",
+      "handler": "agents/quality-enhancer.md"
+    },
+    "quality-intelligence": {
+      "description": "Advanced quality analytics and intelligence system - tracks technical debt, quality trends, health scores, hotspots, security intelligence, and predictive quality metrics",
+      "model": "sonnet",
+      "handler": "agents/quality-intelligence.md"
+    },
+    "release-coordinator": {
+      "description": "Multi-project release planning, release train management, automated release notes, rollback coordination, feature flag management, and go/no-go decision support",
+      "model": "sonnet",
+      "handler": "agents/release-coordinator.md"
+    },
+    "requirements-analyzer": {
+      "description": "Deep analysis of Jira issue requirements to ensure clarity, completeness, and testability before implementation begins",
+      "model": "sonnet",
+      "handler": "agents/requirements-analyzer.md"
+    },
+    "review-facilitator": {
+      "description": "Break down PR reviews into small, manageable tasks that can be reviewed independently in 5-15 minute chunks",
+      "model": "sonnet",
+      "handler": "agents/review-facilitator.md"
+    },
+    "review-progress-tracker": {
+      "description": "Track review status across all sub-item chunks with progress dashboards in Jira",
+      "model": "haiku",
+      "handler": "agents/review-progress-tracker.md"
+    },
+    "roadmap-planner": {
+      "description": "Visual roadmap generation with timeline planning, dependency-aware scheduling, release train coordination, milestone tracking, and capacity-based forecasting",
+      "model": "sonnet",
+      "handler": "agents/roadmap-planner.md"
+    },
+    "skill-mapper": {
+      "description": "Team skills inventory management with expertise tracking, skill gap analysis, training recommendations, optimal task assignment, knowledge transfer tracking, and skill coverage reporting",
+      "model": "sonnet",
+      "handler": "agents/skill-mapper.md"
+    },
+    "slack-notifier": {
+      "description": "Delivers Jira orchestration notifications to Slack using Block Kit, managing threads, interactive buttons, and rich formatting for optimal user experience",
+      "model": "haiku",
+      "handler": "agents/slack-notifier.md"
+    },
+    "sla-monitor": {
+      "description": "Real-time SLA monitoring with breach prediction, escalation triggers, and compliance dashboards",
+      "model": "sonnet",
+      "handler": "agents/sla-monitor.md"
+    },
+    "smart-commit-validator": {
+      "description": "Pre-flight validation of smart commit parameters to prevent failed commits and ensure data integrity",
+      "model": "haiku",
+      "handler": "agents/smart-commit-validator.md"
+    },
+    "sprint-planner": {
+      "description": "Automated sprint planning with capacity calculation, velocity tracking, backlog prioritization, commitment suggestions, sprint health monitoring, and adaptive learning from past sprint outcomes",
+      "model": "sonnet",
+      "handler": "agents/sprint-planner.md"
+    },
+    "sub-item-documenter": {
+      "description": "Document implementation details on all Jira sub-items after work completion",
+      "model": "haiku",
+      "handler": "agents/sub-item-documenter.md"
+    },
+    "tag-manager": {
+      "description": "Intelligent tag/label management for Jira issues with auto-detection, categorization, and parent-child synchronization",
+      "model": "haiku",
+      "handler": "agents/tag-manager.md"
+    },
+    "task-enricher": {
+      "description": "Enriches Jira tasks with technical context, requirements analysis, codebase references, and adaptive learning from past enrichment effectiveness. Uses historical data to improve estimation accuracy and gap detection.",
+      "model": "haiku",
+      "handler": "agents/task-enricher.md"
+    },
+    "team-capacity-planner": {
+      "description": "Advanced team capacity planning with workload tracking, availability management, sprint forecasting, over-allocation detection, resource leveling, and velocity analysis",
+      "model": "sonnet",
+      "handler": "agents/team-capacity-planner.md"
+    },
+    "test-strategist": {
+      "description": "Test strategy planning with coverage analysis, test pyramid recommendations, and quality gates",
+      "model": "sonnet",
+      "handler": "agents/test-strategist.md"
+    },
+    "transition-manager": {
+      "description": "Intelligent Jira workflow state management with fuzzy matching and validation",
+      "model": "haiku",
+      "handler": "agents/transition-manager.md"
+    },
+    "triage-agent": {
+      "description": "First agent called when any Jira issue is detected - analyzes and routes to appropriate workflow based on issue type, complexity, and context",
+      "model": "haiku",
+      "handler": "agents/triage-agent.md"
+    },
+    "webhook-publisher": {
+      "description": "Publishes Jira orchestration events to external webhook endpoints with retry logic, signature verification, and event filtering",
+      "model": "haiku",
+      "handler": "agents/webhook-publisher.md"
+    },
+    "workload-balancer": {
+      "description": "Workload distribution analysis and balancing with rebalancing recommendations, bottleneck identification, cross-team collaboration tracking, context switching analysis, meeting load impact assessment, and burnout risk detection",
+      "model": "sonnet",
+      "handler": "agents/workload-balancer.md"
+    },
+    "worklog-manager": {
+      "description": "Manages Jira time tracking and worklog entries with smart time parsing, validation, and remaining estimate tracking",
+      "model": "haiku",
+      "handler": "agents/worklog-manager.md"
+    },
+    "worktree-orchestrator": {
+      "description": "Manages git worktrees for parallel development of multiple Jira issues",
+      "model": "sonnet",
+      "handler": "agents/worktree-orchestrator.md"
+    }
+  },
+  "skills": {
+    "triage": {
+      "description": "Jira Issue Triage and Routing - Intelligent classification, prioritization, and routing",
+      "handler": "skills/triage/SKILL.md"
+    },
+    "jira-orchestration": {
+      "description": "Jira orchestration workflows and patterns",
+      "handler": "skills/jira-orchestration/SKILL.md"
+    },
+    "harness-ci": {
+      "description": "Harness CI skill for container-native builds, test intelligence, caching",
+      "handler": "skills/harness-ci/SKILL.md"
+    },
+    "harness-cd": {
+      "description": "Harness CD skill for Kubernetes, Helm, Terraform deployments with GitOps",
+      "handler": "skills/harness-cd/SKILL.md"
+    },
+    "harness-platform": {
+      "description": "Harness platform administration skill for delegates, RBAC, connectors, secrets",
+      "handler": "skills/harness-platform/SKILL.md"
+    },
+    "harness-mcp": {
+      "description": "Harness Code (Git repository and pull requests)",
+      "handler": "skills/harness-mcp/SKILL.md"
+    },
+    "clean-architecture": {
+      "description": "Clean Architecture skill including dependency injection, DDD, hexagonal architecture",
+      "handler": "skills/clean-architecture/SKILL.md"
+    },
+    "code-review": {
+      "description": "Code review patterns and best practices",
+      "handler": "skills/code-review/SKILL.md"
+    },
+    "confluence": {
+      "description": "Confluence documentation and management",
+      "handler": "skills/confluence/SKILL.md"
+    },
+    "pr-workflow": {
+      "description": "Pull request workflow patterns",
+      "handler": "skills/pr-workflow/SKILL.md"
+    },
+    "task-details": {
+      "description": "Task detail extraction and analysis",
+      "handler": "skills/task-details/SKILL.md"
+    }
+  },
+  "hooks": {
+    "detect-jira-issue": {
+      "event": "UserPromptSubmit",
+      "description": "Detects Jira issue keys in user messages and provides context",
+      "type": "prompt",
+      "config": "hooks/hooks.json"
+    },
+    "triage-completion-trigger": {
+      "event": "PostToolUse",
+      "description": "Auto-suggests triage analysis after fetching Jira issue details",
+      "type": "prompt",
+      "config": "hooks/hooks.json"
+    },
+    "code-review-gate": {
+      "event": "PreToolUse",
+      "description": "Ensures code review passed before creating pull request",
+      "type": "prompt",
+      "config": "hooks/hooks.json"
+    },
+    "documentation-reminder": {
+      "event": "Stop",
+      "description": "Reminds to document work if orchestration completed successfully",
+      "type": "prompt",
+      "config": "hooks/hooks.json"
+    },
+    "active-issue-check": {
+      "event": "SessionStart",
+      "description": "Checks for active Jira orchestrations on session start",
+      "type": "prompt",
+      "config": "hooks/hooks.json"
+    },
+    "pr-size-guard": {
+      "event": "PreToolUse",
+      "description": "Checks PR size before creation and blocks or warns if too large",
+      "type": "command",
+      "config": "hooks/hooks.json"
+    }
+  },
+  "configuration": {
+    "localConfig": "config/presets.json",
+    "requiredEnvVars": [
+      "ATLASSIAN_INSTANCE_URL",
+      "ATLASSIAN_EMAIL",
+      "ATLASSIAN_API_TOKEN"
+    ],
+    "optionalEnvVars": [
+      "JIRA_PROJECT_KEY",
+      "OBSIDIAN_VAULT_PATH",
+      "HARNESS_API_KEY",
+      "HARNESS_ACCOUNT_ID"
+    ]
+  },
+  "resources": {
+    "registry": {
+      "agents": "registry/agents.index.json",
+      "commands": "registry/commands.index.json",
+      "workflows": "registry/workflows.index.json"
+    },
+    "config": {
+      "presets": "config/presets.json",
+      "flags": "config/flags.json",
+      "agent-teams": "config/agent-teams.yaml"
+    },
+    "docs": {
+      "harness": "docs/harness/INDEX.md"
+    }
+  }
+}

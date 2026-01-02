@@ -1,7 +1,7 @@
 {
-  "version": "7.0.4",
-  "description": "Jira Orchestrator agent registry with modular Harness platform knowledge, comprehensive API expertise, CD deployment skills, and SOLID/clean architecture enforcement",
-  "total_agents": 68,
+  "version": "7.2.0",
+  "description": "Jira Orchestrator agent registry with modular Harness platform knowledge, comprehensive API expertise, CD deployment skills, SOLID/clean architecture enforcement, and AutoGen-style agent teams",
+  "total_agents": 69,
   "total_skills": 11,
   "categories": {
     "council": {
@@ -184,6 +184,11 @@
   "new_in_v7_0_4": {
     "code-quality-enforcer": "Expert agent for enforcing SOLID principles, clean code standards, and architectural patterns with automated analysis and refactoring suggestions",
     "clean-architecture-skill": "Comprehensive Clean Architecture skill including dependency injection, layer separation, domain-driven design, hexagonal architecture, and code quality patterns"
+  },
+  "new_in_v7_2_0": {
+    "complete-agent-registration": "All 69 agents now properly registered in plugin.json manifest",
+    "hooks-registration": "6 workflow hooks now registered for automated triggers",
+    "plugin-location-fix": "Plugin moved to correct .claude/plugins/ directory"
   },
   "harness_modules": {
     "ci": {"skill": "harness-ci", "description": "Continuous Integration - builds, tests, caching"},

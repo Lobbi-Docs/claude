@@ -1,8 +1,10 @@
 # Jira Orchestrator Plugin
 
-**Version:** 7.1.0 | **Agents:** 68 | **Teams:** 16 | **Skills:** 11 | **Commands:** 43 | **Hooks:** Auto-triggered
+**Version:** 7.2.0 | **Agents:** 69 | **Teams:** 16 | **Skills:** 11 | **Commands:** 43 | **Hooks:** 6
 
-**NEW in v7.1:** AutoGen-style agent teams for orchestrated collaboration, parent-child issue orchestration, and domain affinity routing.
+**NEW in v7.2:** Complete plugin manifest with all 69 agents registered, 6 workflow hooks, fixed plugin location for proper loading.
+
+**v7.1 Features:** AutoGen-style agent teams for orchestrated collaboration, parent-child issue orchestration, and domain affinity routing.
 
 **v7.0 Features:** Comprehensive Harness platform knowledge - CI, CD, Code, Feature Flags, STO, CCM, SRM, Chaos Engineering, IaCM, Delegates, RBAC, OPA, Templates, and Secrets Management.
 
@@ -60,7 +62,7 @@ EXPLORE (2+) → PLAN (1-2) → CODE (2-4) → TEST (2-3) → FIX (1-2) → DOCU
 
 ---
 
-## Agent Categories (64 Total)
+## Agent Categories (69 Total)
 
 | Category | Count | Key Agents |
 |----------|-------|------------|
@@ -71,6 +73,11 @@ EXPLORE (2+) → PLAN (1-2) → CODE (2-4) → TEST (2-3) → FIX (1-2) → DOCU
 | **sprint** | 5 | sprint-planner, team-capacity-planner |
 | **git** | 7 | commit-tracker, smart-commit-validator |
 | **confluence** | 3 | confluence-manager |
+| **teams** | 16 | autogen-style orchestration teams |
+| **harness** | 3 | harness-jira-sync, harness-api-expert |
+| **quality** | 1 | code-quality-enforcer |
+| **workflows** | 5 | completion-orchestrator, approval-orchestrator |
+| **+ more** | 6 | qa, batch, testing, documentation, management |
 
 **Full agent list:** `registry/agents.index.json`
 
@@ -128,8 +135,8 @@ The `agent-router` selects specialists based on:
 
 ```
 registry/
-├── agents.index.json     # 64 agents with categories
-├── commands.index.json   # 36 commands with quick reference
+├── agents.index.json     # 69 agents with categories
+├── commands.index.json   # 43 commands with quick reference
 └── workflows.index.json  # Workflow definitions
 ```
 
