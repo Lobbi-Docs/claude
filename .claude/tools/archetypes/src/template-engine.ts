@@ -114,7 +114,7 @@ export class TemplateEngine {
 
   /**
    * Process a template string with context
-   * Ensures output always ends with exactly one newline
+   * Ensures output always ends with exactly one newline (for file content)
    */
   processString(templateString: string, context: TemplateContext): string {
     try {
@@ -126,6 +126,18 @@ export class TemplateEngine {
       result = result.replace(/[\r\n]*$/, '') + '\n';
       
       return result;
+    } catch (error) {
+      throw new Error(`Template processing failed: ${error}`);
+    }
+  }
+
+  /**
+   * Process a template string without appending newline (for filenames and paths)
+   */
+  private processTemplate(templateString: string, context: TemplateContext): string {
+    try {
+      const template = this.handlebars.compile(templateString);
+      return template(this.buildContext(context));
     } catch (error) {
       throw new Error(`Template processing failed: ${error}`);
     }
@@ -145,6 +157,7 @@ export class TemplateEngine {
 
   /**
    * Process filename template (removes .hbs extension and processes variables)
+   * Note: Filenames should never contain newline characters
    */
   processFilename(templateFilename: string, context: TemplateContext): string {
     // Remove .hbs extension if present
@@ -153,8 +166,13 @@ export class TemplateEngine {
       filename = filename.slice(0, -4);
     }
 
-    // Process any template variables in filename
-    return this.processString(filename, context);
+    // Process any template variables in filename (without appending newline)
+    let result = this.processTemplate(filename, context);
+    
+    // Remove any trailing newlines/whitespace that might have been in the template
+    result = result.trimEnd();
+    
+    return result;
   }
 
   /**

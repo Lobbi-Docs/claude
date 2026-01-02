@@ -2,7 +2,17 @@
 name: Jira Issue Triage and Routing
 description: This skill should be used when the user asks to "triage issue", "classify ticket", "route jira", "analyze priority", "categorize issue", "determine complexity", "route to agents", or needs guidance on classifying, prioritizing, and routing Jira issues to appropriate agents and workflows.
 version: 1.0.0
-trigger_phrases: "triage issue", "classify ticket", "route jira", "analyze priority", "categorize issue", "determine complexity", "assess severity", "route to agents", "triage workflow", "issue classification"
+trigger_phrases:
+  - "triage issue"
+  - "classify ticket"
+  - "route jira"
+  - "analyze priority"
+  - "categorize issue"
+  - "determine complexity"
+  - "assess severity"
+  - "route to agents"
+  - "triage workflow"
+  - "issue classification"
 categories: ["jira", "triage", "routing", "classification", "prioritization"]
 ---
 

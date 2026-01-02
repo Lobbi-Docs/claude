@@ -2,7 +2,17 @@
 name: task-details
 description: Enriches Jira tasks with comprehensive context, requirements analysis, and technical details through intelligent extraction, dependency mapping, and historical analysis
 version: 1.0.0
-trigger_phrases: "enrich task", "task details", "analyze requirements", "add context to issue", "expand ticket", "detail enhancement", "analyze jira issue", "gather context", "extract requirements", "estimate complexity"
+trigger_phrases:
+  - "enrich task"
+  - "task details"
+  - "analyze requirements"
+  - "add context to issue"
+  - "expand ticket"
+  - "detail enhancement"
+  - "analyze jira issue"
+  - "gather context"
+  - "extract requirements"
+  - "estimate complexity"
 categories: ["jira", "requirements", "analysis", "enrichment"]
 ---
 

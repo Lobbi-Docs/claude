@@ -1,374 +1,372 @@
 {
-  "$schema": "../../../.claude/core/schemas/plugin.schema.json",
   "name": "jira-orchestrator",
-  "displayName": "Jira Orchestrator",
   "version": "7.1.0",
-  "description": "Arbiter - Enterprise Jira orchestration with 68 agents, 16 teams, 43 commands, and hook-based automation. Features AutoGen-style team coordination, domain affinity routing, and comprehensive Harness platform integration.",
-  "author": {
-    "name": "The Lobbi",
-    "email": "developers@thelobbi.io"
-  },
+  "description": "Comprehensive Jira orchestration plugin with 68 agents, 43 commands, 11 skills, and automated hook-based workflows. Features Harness platform integration, SOLID/clean architecture enforcement, and multi-agent collaboration patterns.",
+  "author": "Ahling Tech",
   "license": "MIT",
-  "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["orchestration", "project-management", "devops", "agents"],
   "keywords": [
-    "jira", "confluence", "orchestration", "automation", "agile", "sprint",
-    "enterprise", "compliance", "harness", "helm", "terraform", "kubernetes",
-    "infrastructure", "gitops", "hooks", "autogen", "teams", "multi-agent"
+    "jira",
+    "orchestration",
+    "atlassian",
+    "harness",
+    "ci-cd",
+    "workflow",
+    "automation",
+    "agents",
+    "clean-architecture",
+    "solid"
   ],
-
-  "provides": {
-    "commands": 43,
-    "agents": 68,
-    "skills": 11,
-    "hooks": 7,
-    "workflows": "dynamic"
+  "categories": [
+    "orchestration",
+    "project-management",
+    "devops",
+    "integration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markus41/claude/tree/main/plugins/jira-orchestrator"
   },
-
-  "discovery": {
-    "agents": {
-      "enabled": true,
-      "directory": "../agents",
-      "pattern": "*.md",
-      "indexFile": "../registry/agents.index.json"
-    },
-    "skills": {
-      "enabled": true,
-      "directory": "../skills",
-      "pattern": "*/SKILL.md",
-      "indexFile": "../registry/skills.index.json",
-      "descriptionBased": true
-    },
-    "commands": {
-      "enabled": true,
-      "directory": "../commands",
-      "pattern": "*.md",
-      "indexFile": "../registry/commands.index.json"
-    },
-    "workflows": {
-      "enabled": true,
-      "directory": "../workflows",
-      "pattern": "*.json",
-      "indexFile": "../registry/workflows.index.json"
-    },
-    "hooks": {
-      "enabled": true,
-      "directory": "../hooks",
-      "pattern": "scripts/*.sh",
-      "indexFile": "../hooks/orchestration-hooks.json"
-    }
-  },
-
   "commands": {
-    "jira-work": "../commands/work.md",
-    "jira-ship": "../commands/ship.md",
-    "jira-status": "../commands/status.md",
-    "jira-pr": "../commands/pr.md",
-    "jira-iterate": "../commands/iterate.md",
-    "jira-cancel": "../commands/cancel.md",
-    "jira-sprint": "../commands/sprint.md",
-    "jira-enterprise": "../commands/enterprise.md",
-    "jira-infra": "../commands/infra.md",
-    "jira-setup": "../commands/setup.md",
-    "jira-sync": "../commands/sync.md",
-    "jira-triage": "../commands/triage.md",
-    "jira-prepare": "../commands/prepare.md",
-    "jira-branch": "../commands/branch.md",
-    "jira-commit": "../commands/commit.md",
-    "jira-review": "../commands/review.md",
-    "jira-council": "../commands/council.md",
-    "jira-docs": "../commands/docs.md",
-    "jira-confluence": "../commands/confluence.md",
-    "jira-deploy": "../commands/deploy.md",
-    "jira-notify": "../commands/notify.md",
-    "jira-approve": "../commands/approve.md",
-    "jira-batch": "../commands/batch.md",
-    "jira-export": "../commands/export.md",
-    "jira-sla": "../commands/sla.md",
-    "jira-compliance": "../commands/compliance.md",
-    "jira-metrics": "../commands/metrics.md",
-    "jira-quality": "../commands/quality.md",
-    "jira-team": "../commands/team.md",
-    "jira-portfolio": "../commands/portfolio.md",
-    "jira-release": "../commands/release.md",
-    "jira-sprint-plan": "../commands/sprint-plan.md",
-    "jira-create-repo": "../commands/create-repo.md",
-    "jira-qa-review": "../commands/qa-review.md",
-    "jira-harness-review": "../commands/harness-review.md",
-    "jira-plan-prs": "../commands/plan-prs.md",
-    "jira-orchestrate-advanced": "../commands/orchestrate-advanced.md",
-    "jira-bulk-commit": "../commands/bulk-commit.md",
-    "jira-commit-template": "../commands/commit-template.md",
-    "jira-events": "../commands/events.md",
-    "jira-install-hooks": "../commands/install-hooks.md",
-    "jira-process-worklogs": "../commands/process-worklogs.md",
-    "jira-intelligence": "../commands/intelligence.md"
-  },
-
-  "agents": {
-    "council-coordinator": {
-      "path": "../agents/council-coordinator.md",
-      "model": "sonnet",
-      "description": "Orchestrates multi-agent reviews using blackboard pattern for collaborative decision-making",
-      "triggers": ["council", "review council", "agent council", "collaborative review"]
+    "work": {
+      "description": "Start orchestrated work on issue (THE main command)",
+      "handler": "commands/work.md"
     },
-    "triage-agent": {
-      "path": "../agents/triage-agent.md",
-      "model": "sonnet",
-      "description": "Analyzes and classifies Jira issues, assigns priority, labels, and story points",
-      "triggers": ["triage", "classify issue", "analyze ticket", "prioritize"]
+    "ship": {
+      "description": "One command: prepare → code → PR → review → merge",
+      "handler": "commands/ship.md"
     },
-    "task-enricher": {
-      "path": "../agents/task-enricher.md",
-      "model": "sonnet",
-      "description": "Enriches Jira tasks with technical details, acceptance criteria, and subtasks",
-      "triggers": ["enrich", "prepare task", "add details", "decompose"]
+    "status": {
+      "description": "Check progress, show dashboard, metrics",
+      "handler": "commands/status.md"
     },
-    "code-reviewer": {
-      "path": "../agents/code-reviewer.md",
-      "model": "opus",
-      "description": "Performs comprehensive code reviews with security, performance, and best practice analysis",
-      "triggers": ["code review", "review code", "pr review", "analyze code"]
+    "pr": {
+      "description": "Create/manage PRs with automatic review",
+      "handler": "commands/pr.md"
     },
-    "pr-creator": {
-      "path": "../agents/pr-creator.md",
-      "model": "haiku",
-      "description": "Creates well-formatted pull requests with descriptions, labels, and reviewer assignments",
-      "triggers": ["create pr", "open pr", "pull request", "submit pr"]
+    "iterate": {
+      "description": "Fix review feedback, update PR, re-review",
+      "handler": "commands/iterate.md"
     },
-    "infrastructure-orchestrator": {
-      "path": "../agents/infrastructure-orchestrator.md",
-      "model": "opus",
-      "description": "Expert in Helm, Terraform, Kubernetes, and Harness infrastructure with modular repo creation",
-      "triggers": ["infrastructure", "helm", "terraform", "k8s", "kubernetes", "create repo"]
+    "cancel": {
+      "description": "Cancel with checkpoint for resume",
+      "handler": "commands/cancel.md"
     },
-    "sprint-planner": {
-      "path": "../agents/sprint-planner.md",
-      "model": "sonnet",
-      "description": "Plans sprints with capacity analysis, workload balancing, and velocity tracking",
-      "triggers": ["sprint planning", "plan sprint", "capacity", "velocity"]
+    "sprint": {
+      "description": "Sprint planning, metrics, quality, team capacity",
+      "handler": "commands/sprint.md"
     },
-    "harness-api-expert": {
-      "path": "../agents/harness-api-expert.md",
-      "model": "sonnet",
-      "description": "Expert in Harness REST API operations including pipelines, triggers, and executions",
-      "triggers": ["harness api", "harness rest", "pipeline api", "harness automation"]
+    "enterprise": {
+      "description": "Enterprise features (notifications, approvals, compliance)",
+      "handler": "commands/enterprise.md"
     },
-    "code-quality-enforcer": {
-      "path": "../agents/code-quality-enforcer.md",
-      "model": "opus",
-      "description": "Enforces SOLID principles, clean code standards, and architectural patterns",
-      "triggers": ["solid", "clean code", "code quality", "refactoring", "architecture"]
+    "infra": {
+      "description": "Infrastructure and repository management",
+      "handler": "commands/infra.md"
     },
-    "confluence-manager": {
-      "path": "../agents/confluence-manager.md",
-      "model": "sonnet",
-      "description": "Manages Confluence documentation, creates pages, and syncs with Jira",
-      "triggers": ["confluence", "documentation", "wiki", "create page"]
+    "setup": {
+      "description": "Installation, configuration, hooks",
+      "handler": "commands/setup.md"
     },
-    "notification-router": {
-      "path": "../agents/notification-router.md",
-      "model": "haiku",
-      "description": "Routes notifications to appropriate channels (Slack, email, webhooks)",
-      "triggers": ["notify", "notification", "alert", "message"]
+    "sync": {
+      "description": "Manual sync (usually auto via hooks)",
+      "handler": "commands/sync.md"
     },
-    "compliance-reporter": {
-      "path": "../agents/compliance-reporter.md",
-      "model": "sonnet",
-      "description": "Generates compliance reports and audit trails for enterprise governance",
-      "triggers": ["compliance", "audit", "governance", "report"]
-    }
-  },
-
-  "skills": {
-    "jira-orchestration": {
-      "path": "../skills/jira-orchestration/SKILL.md",
-      "description": "Core Jira orchestration patterns and workflows",
-      "triggers": ["jira", "orchestration", "workflow", "issue management"]
-    },
-    "harness-ci": {
-      "path": "../skills/harness-ci/SKILL.md",
-      "description": "Harness CI for container-native builds, test intelligence, and caching",
-      "triggers": ["harness ci", "build pipeline", "ci pipeline", "test intelligence"]
-    },
-    "harness-cd": {
-      "path": "../skills/harness-cd/SKILL.md",
-      "description": "Harness CD for Kubernetes, Helm, Terraform deployments with GitOps",
-      "triggers": ["harness cd", "deployment", "gitops", "rollback"]
-    },
-    "harness-platform": {
-      "path": "../skills/harness-platform/SKILL.md",
-      "description": "Harness platform administration - delegates, RBAC, connectors, secrets",
-      "triggers": ["harness platform", "delegate", "rbac", "connector", "secret"]
-    },
-    "harness-mcp": {
-      "path": "../skills/harness-mcp/SKILL.md",
-      "description": "Harness Code repository and pull request management",
-      "triggers": ["harness code", "harness repo", "harness pr"]
-    },
-    "clean-architecture": {
-      "path": "../skills/clean-architecture/SKILL.md",
-      "description": "Clean Architecture, DDD, hexagonal patterns, dependency injection",
-      "triggers": ["clean architecture", "ddd", "hexagonal", "dependency injection", "solid"]
-    },
-    "confluence": {
-      "path": "../skills/confluence/SKILL.md",
-      "description": "Confluence documentation patterns and automation",
-      "triggers": ["confluence", "wiki", "documentation"]
+    "help": {
+      "description": "Show commands and documentation",
+      "handler": "commands/work.md"
     },
     "triage": {
-      "path": "../skills/triage/SKILL.md",
-      "description": "Issue triage patterns, classification, and prioritization",
-      "triggers": ["triage", "classify", "prioritize"]
+      "description": "Triage and analyze Jira issue (deprecated - use work --triage)",
+      "handler": "commands/triage.md",
+      "aliases": ["triage"]
+    },
+    "review": {
+      "description": "Code review (deprecated - use pr --review)",
+      "handler": "commands/review.md",
+      "aliases": ["review"]
+    },
+    "deploy": {
+      "description": "Deploy infrastructure (deprecated - use infra deploy)",
+      "handler": "commands/deploy.md",
+      "aliases": ["deploy"]
+    },
+    "sprint-plan": {
+      "description": "Sprint planning (deprecated - use sprint plan)",
+      "handler": "commands/sprint-plan.md",
+      "aliases": ["sprint-plan"]
+    },
+    "metrics": {
+      "description": "Show metrics (deprecated - use sprint metrics)",
+      "handler": "commands/metrics.md",
+      "aliases": ["metrics"]
+    },
+    "quality": {
+      "description": "Quality checks (deprecated - use sprint quality)",
+      "handler": "commands/quality.md",
+      "aliases": ["quality"]
+    },
+    "team": {
+      "description": "Team operations (deprecated - use sprint team)",
+      "handler": "commands/team.md",
+      "aliases": ["team"]
+    },
+    "notify": {
+      "description": "Send notifications (deprecated - use enterprise notify)",
+      "handler": "commands/notify.md",
+      "aliases": ["notify"]
+    },
+    "approve": {
+      "description": "Approval workflow (deprecated - use enterprise approve)",
+      "handler": "commands/approve.md",
+      "aliases": ["approve"]
+    },
+    "portfolio": {
+      "description": "Portfolio management (deprecated - use enterprise portfolio)",
+      "handler": "commands/portfolio.md",
+      "aliases": ["portfolio"]
+    },
+    "release": {
+      "description": "Release management (deprecated - use enterprise release)",
+      "handler": "commands/release.md",
+      "aliases": ["release"]
+    },
+    "batch": {
+      "description": "Batch operations (deprecated - use enterprise batch)",
+      "handler": "commands/batch.md",
+      "aliases": ["batch"]
+    },
+    "export": {
+      "description": "Export data (deprecated - use enterprise export)",
+      "handler": "commands/export.md",
+      "aliases": ["export"]
+    },
+    "sla": {
+      "description": "SLA monitoring (deprecated - use enterprise sla)",
+      "handler": "commands/sla.md",
+      "aliases": ["sla"]
+    },
+    "compliance": {
+      "description": "Compliance reporting (deprecated - use enterprise compliance)",
+      "handler": "commands/compliance.md",
+      "aliases": ["compliance"]
+    },
+    "create-repo": {
+      "description": "Create repository (deprecated - use infra create-repo)",
+      "handler": "commands/create-repo.md",
+      "aliases": ["create-repo"]
+    },
+    "confluence": {
+      "description": "Confluence operations (auto via hooks)",
+      "handler": "commands/confluence.md",
+      "aliases": ["confluence"]
+    },
+    "docs": {
+      "description": "Documentation (auto via hooks)",
+      "handler": "commands/docs.md",
+      "aliases": ["docs"]
+    },
+    "branch": {
+      "description": "Branch operations (auto via hooks)",
+      "handler": "commands/branch.md",
+      "aliases": ["branch"]
+    },
+    "commit": {
+      "description": "Commit operations (auto via hooks)",
+      "handler": "commands/commit.md",
+      "aliases": ["commit"]
+    },
+    "commit-template": {
+      "description": "Commit template (auto via hooks)",
+      "handler": "commands/commit-template.md",
+      "aliases": ["commit-template"]
+    },
+    "bulk-commit": {
+      "description": "Bulk commit (deprecated - use enterprise batch)",
+      "handler": "commands/bulk-commit.md",
+      "aliases": ["bulk-commit"]
+    },
+    "council": {
+      "description": "Council review (deprecated - use pr --council)",
+      "handler": "commands/council.md",
+      "aliases": ["council"]
+    },
+    "harness-review": {
+      "description": "Harness review (deprecated - use pr --harness)",
+      "handler": "commands/harness-review.md",
+      "aliases": ["harness-review"]
+    },
+    "plan-prs": {
+      "description": "Plan PRs (deprecated - use work --prepare)",
+      "handler": "commands/plan-prs.md",
+      "aliases": ["plan-prs"]
+    },
+    "qa-review": {
+      "description": "QA review (deprecated - use pr --review)",
+      "handler": "commands/qa-review.md",
+      "aliases": ["qa-review"]
+    },
+    "orchestrate-advanced": {
+      "description": "Advanced orchestration (deprecated - use work)",
+      "handler": "commands/orchestrate-advanced.md",
+      "aliases": ["orchestrate-advanced"]
+    },
+    "intelligence": {
+      "description": "Intelligence analytics",
+      "handler": "commands/intelligence.md",
+      "aliases": ["intelligence"]
+    },
+    "events": {
+      "description": "Event logging (auto via hooks)",
+      "handler": "commands/events.md",
+      "aliases": ["events"]
+    },
+    "process-worklogs": {
+      "description": "Process worklogs (auto via scheduled hook)",
+      "handler": "commands/process-worklogs.md",
+      "aliases": ["process-worklogs"]
+    },
+    "install-hooks": {
+      "description": "Install hooks (deprecated - use setup --hooks)",
+      "handler": "commands/install-hooks.md",
+      "aliases": ["install-hooks"]
+    },
+    "prepare": {
+      "description": "Prepare issue (deprecated - use work --prepare)",
+      "handler": "commands/prepare.md",
+      "aliases": ["prepare"]
+    }
+  },
+  "agents": {
+    "triage-agent": {
+      "description": "First agent called when any Jira issue is detected - analyzes and routes to appropriate workflow",
+      "model": "haiku",
+      "handler": "agents/triage-agent.md"
+    },
+    "task-enricher": {
+      "description": "Enriches Jira issues with technical details and context",
+      "model": "sonnet",
+      "handler": "agents/task-enricher.md"
+    },
+    "requirements-analyzer": {
+      "description": "Analyzes requirements and creates implementation plans",
+      "model": "sonnet",
+      "handler": "agents/requirements-analyzer.md"
+    },
+    "code-reviewer": {
+      "description": "Comprehensive code review with SOLID principles and clean architecture",
+      "model": "opus",
+      "handler": "agents/code-reviewer.md"
+    },
+    "pr-creator": {
+      "description": "Creates and manages pull requests",
+      "model": "haiku",
+      "handler": "agents/pr-creator.md"
+    },
+    "documentation-writer": {
+      "description": "Writes comprehensive documentation",
+      "model": "haiku",
+      "handler": "agents/documentation-writer.md"
+    },
+    "council-coordinator": {
+      "description": "Orchestrates multi-agent reviews using blackboard pattern",
+      "model": "sonnet",
+      "handler": "agents/council-coordinator.md"
+    },
+    "infrastructure-orchestrator": {
+      "description": "Expert in creating modular Harness repos, Helm, Terraform, K8s",
+      "model": "opus",
+      "handler": "agents/infrastructure-orchestrator.md"
+    },
+    "code-quality-enforcer": {
+      "description": "Expert agent for enforcing SOLID principles, clean code standards, and architectural patterns",
+      "model": "opus",
+      "handler": "agents/code-quality-enforcer.md"
+    },
+    "harness-api-expert": {
+      "description": "Expert agent for Harness REST API operations",
+      "model": "sonnet",
+      "handler": "agents/harness-api-expert.md"
+    },
+    "harness-jira-sync": {
+      "description": "Synchronizes Harness and Jira data",
+      "model": "sonnet",
+      "handler": "agents/harness-jira-sync.md"
+    }
+  },
+  "skills": {
+    "triage": {
+      "description": "Jira Issue Triage and Routing - Intelligent classification, prioritization, and routing",
+      "handler": "skills/triage/SKILL.md"
+    },
+    "jira-orchestration": {
+      "description": "Jira orchestration workflows and patterns",
+      "handler": "skills/jira-orchestration/SKILL.md"
+    },
+    "harness-ci": {
+      "description": "Harness CI skill for container-native builds, test intelligence, caching",
+      "handler": "skills/harness-ci/SKILL.md"
+    },
+    "harness-cd": {
+      "description": "Harness CD skill for Kubernetes, Helm, Terraform deployments with GitOps",
+      "handler": "skills/harness-cd/SKILL.md"
+    },
+    "harness-platform": {
+      "description": "Harness platform administration skill for delegates, RBAC, connectors, secrets",
+      "handler": "skills/harness-platform/SKILL.md"
+    },
+    "harness-mcp": {
+      "description": "Harness Code (Git repository and pull requests)",
+      "handler": "skills/harness-mcp/SKILL.md"
+    },
+    "clean-architecture": {
+      "description": "Clean Architecture skill including dependency injection, DDD, hexagonal architecture",
+      "handler": "skills/clean-architecture/SKILL.md"
     },
     "code-review": {
-      "path": "../skills/code-review/SKILL.md",
-      "description": "Code review patterns, best practices, and automation",
-      "triggers": ["code review", "review patterns", "pr review"]
+      "description": "Code review patterns and best practices",
+      "handler": "skills/code-review/SKILL.md"
+    },
+    "confluence": {
+      "description": "Confluence documentation and management",
+      "handler": "skills/confluence/SKILL.md"
     },
     "pr-workflow": {
-      "path": "../skills/pr-workflow/SKILL.md",
-      "description": "Pull request workflow patterns and automation",
-      "triggers": ["pr workflow", "pull request", "merge strategy"]
+      "description": "Pull request workflow patterns",
+      "handler": "skills/pr-workflow/SKILL.md"
     },
     "task-details": {
-      "path": "../skills/task-details/SKILL.md",
-      "description": "Task enrichment and detail patterns",
-      "triggers": ["task details", "enrichment", "acceptance criteria"]
+      "description": "Task detail extraction and analysis",
+      "handler": "skills/task-details/SKILL.md"
     }
   },
-
-  "hooks": {
-    "preCommit": "../hooks/scripts/detect-jira-key.sh",
-    "postCommit": "../hooks/scripts/review-gate.sh",
-    "preTask": "../hooks/scripts/triage-check.sh",
-    "postTask": "../hooks/scripts/post-task-learning.sh",
-    "sessionStart": "../hooks/scripts/session-resume.sh"
-  },
-
-  "orchestration": {
-    "enabled": true,
-    "mandatory": true,
-    "protocol": {
-      "version": "2.0.0",
-      "minSubAgents": 3,
-      "maxSubAgents": 13,
-      "defaultSubAgents": 5,
-      "mandatoryPhases": ["explore", "plan", "code", "test", "document"]
-    },
-    "features": {
-      "tracking": true,
-      "logging": true,
-      "checkpointing": true,
-      "coordination": true,
-      "messaging": true,
-      "contextPreservation": true
-    },
-    "database": {
-      "type": "sqlite",
-      "path": "../sessions/orchestration.db"
-    }
-  },
-
-  "permissions": {
-    "filesystem": [
-      { "path": "**/*.md", "access": "readwrite" },
-      { "path": "**/*.json", "access": "readwrite" },
-      { "path": "**/*.yaml", "access": "readwrite" },
-      { "path": "**/*.yml", "access": "readwrite" },
-      { "path": "**/*.sh", "access": "read" }
-    ],
-    "tools": ["Bash", "Read", "Write", "Edit", "Grep", "Glob", "Task", "WebFetch"],
-    "mcpServers": ["atlassian", "github", "obsidian"]
-  },
-
-  "mcpServers": {
-    "required": ["atlassian"],
-    "recommended": ["github", "obsidian"],
-    "optional": ["slack", "vercel"]
-  },
-
-  "activation": {
-    "auto": true,
-    "priority": 950,
-    "conditions": {
-      "filePatterns": ["**/.jira/**", "**/jira*.md", "**/*jira*/**"],
-      "keywords": [
-        "jira", "confluence", "sprint", "epic", "story", "ticket",
-        "issue", "backlog", "kanban", "scrum", "agile"
-      ],
-      "environment": {
-        "ATLASSIAN_INSTANCE_URL": "*",
-        "JIRA_API_TOKEN": "*"
-      }
-    }
-  },
-
+  "hooks": {},
   "configuration": {
-    "schema": {
-      "type": "object",
-      "properties": {
-        "autogenTeams": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable AutoGen-style team coordination"
-        },
-        "parentChildOrchestration": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable parent-child orchestration patterns"
-        },
-        "domainAffinityRouting": {
-          "type": "boolean",
-          "default": true,
-          "description": "Route agents based on domain expertise"
-        },
-        "phaseTeamMapping": {
-          "type": "boolean",
-          "default": true,
-          "description": "Map teams to orchestration phases"
-        },
-        "loadStrategy": {
-          "type": "string",
-          "enum": ["eager", "lazy", "on-demand"],
-          "default": "on-demand",
-          "description": "Resource loading strategy"
-        },
-        "hookAutomation": {
-          "type": "object",
-          "properties": {
-            "enabled": { "type": "boolean", "default": true },
-            "gitHooks": {
-              "type": "array",
-              "items": { "type": "string" },
-              "default": ["pre-commit", "post-commit", "pre-push", "post-merge"]
-            },
-            "orchestrationHooks": {
-              "type": "array",
-              "items": { "type": "string" },
-              "default": ["on-work-start", "on-phase-complete", "on-pr-create", "on-pr-merge"]
-            }
-          }
-        },
-        "commandLinking": {
-          "type": "object",
-          "properties": {
-            "enabled": { "type": "boolean", "default": true },
-            "prefix": { "type": "string", "default": "jira-" },
-            "target": { "type": "string", "default": ".claude/commands" }
-          }
-        }
-      }
-    }
+    "localConfig": "config/presets.json",
+    "requiredEnvVars": [
+      "ATLASSIAN_INSTANCE_URL",
+      "ATLASSIAN_EMAIL",
+      "ATLASSIAN_API_TOKEN"
+    ],
+    "optionalEnvVars": [
+      "JIRA_PROJECT_KEY",
+      "OBSIDIAN_VAULT_PATH",
+      "HARNESS_API_KEY",
+      "HARNESS_ACCOUNT_ID"
+    ]
   },
-
-  "documentation": {
-    "readme": "../README.md",
-    "installation": "../INSTALLATION.md",
-    "installationSystem": "../INSTALLATION-SYSTEM.md",
-    "installChecklist": "../INSTALL-CHECKLIST.md",
-    "flagsGuide": "../docs/FLAGS.md",
-    "hooksGuide": "../hooks/README.md",
-    "harnessIndex": "../docs/harness/INDEX.md"
+  "resources": {
+    "registry": {
+      "agents": "registry/agents.index.json",
+      "commands": "registry/commands.index.json",
+      "workflows": "registry/workflows.index.json"
+    },
+    "config": {
+      "presets": "config/presets.json",
+      "flags": "config/flags.json",
+      "agent-teams": "config/agent-teams.yaml"
+    },
+    "docs": {
+      "harness": "docs/harness/INDEX.md"
+    }
   }
 }
