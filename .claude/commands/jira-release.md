@@ -1,1 +1,0 @@
-../../plugins/jira-orchestrator/commands/release.md

@@ -123,18 +123,6 @@
       "category": "orchestration"
     },
     {
-      "name": "jira-orchestrator",
-      "description": "Arbiter - Enterprise Jira orchestration with 68 agents, 16 teams, 43 commands, 11 skills, and 7 hooks. Features AutoGen-style team coordination, domain affinity routing, intelligence system, and Harness platform integration. Validated and operational.",
-      "version": "7.1.0",
-      "author": {
-        "name": "The Lobbi",
-        "email": "developers@thelobbi.io"
-      },
-      "source": "./plugins/jira-orchestrator",
-      "category": "integration",
-      "tags": ["jira", "confluence", "atlassian", "orchestration", "agile", "sprint", "enterprise", "harness", "ci-cd", "automation", "multi-agent"]
-    },
-    {
       "name": "exec-automator",
       "description": "Genesis (Forerunner) - AI-Powered Executive Director Automation Platform - Analyze organizational responsibilities, score automation potential with 6-factor algorithm, generate LangGraph workflows, and deploy 11 specialized agents for trade associations and nonprofits",
       "version": "1.0.0",

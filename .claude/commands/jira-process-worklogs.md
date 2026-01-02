@@ -1,1 +1,0 @@
-../../plugins/jira-orchestrator/commands/process-worklogs.md
