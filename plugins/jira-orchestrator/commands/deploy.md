@@ -84,7 +84,7 @@ jira:
     last_deployment: customfield_10204
 ```
 
-Environment vars: `JIRA_API_TOKEN`, `JIRA_EMAIL`, `GITHUB_TOKEN` (optional)
+Environment vars: `JIRA_API_TOKEN`, `JIRA_EMAIL`, `HARNESS_API_KEY` (for Harness Pipeline integration)
 
 ## Issue Detection Priority
 
@@ -123,19 +123,31 @@ From: {PREV_VERSION} | To: {ROLLBACK_VERSION}
 | staging | In QA | In Development |
 | production | Released | In QA |
 
-## GitHub Actions
+## Harness Pipeline Integration
 
 ```yaml
-- name: Track Deployment
-  run: |
-    STATUS=${{ steps.deploy.outcome == 'success' && 'success' || 'failure' }}
-    claude-code /jira:deploy production \
-      --version ${{ github.ref_name }} \
-      --url ${{ steps.deploy.outputs.url }} \
-      --status $STATUS
-  env:
-    JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-    JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+# Harness Pipeline Step - Track Deployment
+- step:
+    type: ShellScript
+    name: Track Jira Deployment
+    identifier: track_jira_deployment
+    spec:
+      shell: Bash
+      onDelegate: true
+      source:
+        type: Inline
+        spec:
+          script: |
+            STATUS=$([[ "<+execution.status>" == "SUCCEEDED" ]] && echo "success" || echo "failure")
+            claude-code /jira:deploy production \
+              --version <+pipeline.variables.version> \
+              --url <+stage.variables.deployment_url> \
+              --status $STATUS
+      environmentVariables:
+        - name: JIRA_API_TOKEN
+          value: <+secrets.getValue("jira_api_token")>
+        - name: JIRA_EMAIL
+          value: <+secrets.getValue("jira_email")>
 ```
 
 ## Auto Time Tracking

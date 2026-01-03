@@ -1,6 +1,6 @@
 ---
 name: jira:prepare
-description: Analyze task, decompose into subtasks, enrich with details
+description: Analyze task, decompose into subtasks, enrich with details, create TDD draft
 arguments:
   - name: issue_key
     description: Jira issue key
@@ -13,12 +13,14 @@ arguments:
     description: Include time/point estimates
     required: false
     default: true
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Prepare Task for Work
 
-Analyze issue, break into subtasks, enrich with descriptions/criteria/estimates.
+Analyze issue, break into subtasks, enrich with descriptions/criteria/estimates, create TDD draft in Confluence.
+
+**Auto time logging:** Command duration >= 60s auto-posts worklog (via `jira-orchestrator/config/time-logging.yml`)
 
 ## Params
 
@@ -26,14 +28,50 @@ Analyze issue, break into subtasks, enrich with descriptions/criteria/estimates.
 - **Depth:** ${depth:-standard} | basic (2-4) | standard (4-8) | comprehensive (8-15)
 - **Estimates:** ${include_estimates:-true}
 
-## 4-Phase Workflow
+## 5-Phase Workflow
 
-| Phase | Agent | Output |
-|-------|-------|--------|
-| 1. Analyze | `requirements-analyzer` | Scope, complexity, components, AC |
-| 2. Decompose | `epic-decomposer` | Subtask tree + dependency graph |
-| 3. Enrich | `task-enricher` | Desc, AC, tech notes, testing, estimates |
-| 4. Update Jira | `tag-manager` | Create subtasks, apply labels |
+| Phase | Agent | Output | Confluence |
+|-------|-------|--------|------------|
+| 1. Analyze | `requirements-analyzer` | Scope, complexity, components, AC | - |
+| 2. Decompose | `epic-decomposer` | Subtask tree + dependency graph | - |
+| 3. Enrich | `task-enricher` | Desc, AC, tech notes, testing, estimates | - |
+| 4. TDD Draft | `confluence-documentation-creator` | Technical Design Document draft | ✅ TDD Created |
+| 5. Update Jira | `tag-manager` | Create subtasks, apply labels, link TDD | - |
+
+## Confluence Documentation (MANDATORY)
+
+During preparation, create a Technical Design Document (TDD) draft:
+
+```yaml
+confluence_integration:
+  create_tdd_draft:
+    space: ${project_space}
+    parent: "Features/${issue_key} - ${summary}"
+    title: "Technical Design - ${issue_key}"
+    content:
+      - Requirements Summary
+      - Scope & Constraints
+      - Acceptance Criteria
+      - Technical Approach (placeholder)
+      - Dependencies
+      - Risks & Mitigations
+    status: Draft
+
+  link_to_jira:
+    - Add remote link to Confluence page
+    - Post comment with TDD link
+    - Add "tdd-created" label
+```
+
+### MCP Tools Used
+
+```yaml
+tools:
+  - mcp__atlassian__createConfluencePage  # Create TDD draft
+  - mcp__atlassian__getConfluenceSpaces   # Get project space
+  - mcp__atlassian__addCommentToJiraIssue # Link TDD to issue
+  - mcp__atlassian__editJiraIssue         # Add labels
+```
 
 ## Depth Guide
 

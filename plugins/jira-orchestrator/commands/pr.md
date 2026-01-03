@@ -25,9 +25,10 @@ arguments:
     default: 3
 tags:
   - jira
-  - git
+  - harness
   - pull-request
   - automation
+version: 2.0.0
 examples:
   - command: /jira:pr ABC-123
   - command: /jira:pr ABC-123 --fix
@@ -46,16 +47,19 @@ aliases:
 
 # Jira PR Creation Command
 
-Create comprehensive pull requests for completed Jira issues with automated validation, generation, and Jira updates.
+Create comprehensive pull requests via Harness Code for completed Jira issues with automated validation, Confluence documentation, and Jira updates.
+
+**Auto time logging:** Command duration >= 60s auto-posts worklog (via `jira-orchestrator/config/time-logging.yml`)
 
 ## Prerequisites
 
-- Git repository initialized
-- All work committed and pushed
+- Git repository initialized in Harness Code
+- All work committed and pushed to Harness repository
 - No uncommitted changes
 - Tests passing
 - No merge conflicts with base branch
-- GitHub CLI (gh) installed and authenticated
+- Harness API key configured (`HARNESS_API_KEY`)
+- Harness account/org/project configured
 
 ## Flag Validation
 
@@ -90,7 +94,7 @@ mode:
 
 ## Core Workflow
 
-**Validate → Fetch Issue → Branch → Analyze Changes → Generate PR → Push → Create PR → Update Jira**
+**Validate → Fetch Issue → Branch → Analyze Changes → Discover Confluence Docs → Generate PR (with Doc Links) → Push → Create PR → Update Jira**
 
 ## Quick Start
 
@@ -115,12 +119,64 @@ mode:
 **Description Includes:**
 - Summary overview
 - Feature list with categorized changes
+- **Documentation section with Confluence links (REQUIRED)**
 - Acceptance criteria from Jira
 - Test coverage report
 - Manual testing instructions
 - Deployment notes (breaking changes, migrations, env vars, dependencies)
 - Related issues
 - Code review checklist
+
+## Confluence Documentation Section (REQUIRED)
+
+**Every PR MUST include a Documentation section linking to Confluence pages.**
+
+### PR Documentation Template
+
+```markdown
+## Documentation
+
+### Confluence Pages
+| Document | Link | Status |
+|----------|------|--------|
+| Technical Design | [View](confluence-url) | ✅ Complete |
+| Implementation Notes | [View](confluence-url) | ✅ Complete |
+| Test Plan & Results | [View](confluence-url) | ✅ Complete |
+| Runbook | [View](confluence-url) | ✅ Complete |
+
+### Hub Page
+[{ISSUE-KEY} - {Feature Name}](confluence-hub-url)
+
+### Related Documentation
+- [Architecture Decision Record](confluence-url) (if applicable)
+- [API Documentation](confluence-url) (if applicable)
+```
+
+### Confluence Discovery Steps
+
+Before PR creation, discover all Confluence documentation:
+
+1. **Query Jira Remote Links:** `mcp__atlassian__getJiraIssueRemoteIssueLinks`
+2. **Search by Issue Key:** `mcp__atlassian__searchConfluenceUsingCql` with `label = "{ISSUE-KEY}"`
+3. **Search by Title:** `mcp__atlassian__searchConfluenceUsingCql` with `title ~ "{ISSUE-KEY}"`
+4. **Validate Required Pages:** Check for TDD, Implementation Notes, Test Plan, Runbook
+5. **Build Documentation Section:** Construct markdown table with all discovered links
+
+### Documentation Validation
+
+```yaml
+validation:
+  required_pages:
+    - Technical Design
+    - Implementation Notes
+    - Test Plan & Results
+    - Runbook
+
+  on_missing:
+    - Log warning
+    - Add "documentation-incomplete" label to PR
+    - Post warning in Jira comment
+```
 
 **Example Generated Title:**
 ```
@@ -152,18 +208,26 @@ ABC-123: Implement user authentication with OAuth2
 - Count insertions/deletions
 - Identify breaking changes
 
-### 5. Generate PR Metadata
+### 5. Discover Confluence Documentation
+- Query Jira issue for remote links to Confluence
+- Search Confluence by issue key label and title
+- Validate required pages exist (TDD, Implementation Notes, Test Plan, Runbook)
+- Build Documentation section with all discovered links
+- Warn if required pages are missing
+
+### 6. Generate PR Metadata
 - Build title with issue key and summary
 - Categorize commits into sections
+- **Include Documentation section with Confluence links**
 - Extract test results
 - Generate manual testing steps
 
-### 6. Push to Remote
+### 7. Push to Remote
 - Push feature branch with upstream tracking
 - Handle push conflicts (rebase and retry)
 - Re-run tests after rebase
 
-### 7. Dynamic Reviewer Selection
+### 8. Dynamic Reviewer Selection
 Agent-router automatically selects domain-specific reviewers:
 
 | File Domain | Recommended Reviewers |
@@ -176,19 +240,38 @@ Agent-router automatically selects domain-specific reviewers:
 
 Manual override via `--reviewers` argument merges with auto-selected reviewers.
 
-### 8. Create PR via GitHub CLI
+### 9. Create PR via Harness Code API
 - Build labels from Jira issue type and labels
 - Add milestone from Jira fixVersion
-- Create PR with all metadata
+- Create PR via `harness_create_pull_request` with Documentation section
 - Capture PR URL and number
 
-### 9. Update Jira Issue
+```yaml
+harness_pr_creation:
+  tool: harness_create_pull_request
+  params:
+    title: "${issue_key}: ${summary}"
+    source_branch: "feature/${issue_key}-${slug}"
+    target_branch: "${base_branch}"
+    description: |
+      ## Summary
+      Resolves: [${issue_key}](jira-url)
+
+      ## Documentation
+      [Include Confluence links table]
+
+      ## Changes
+      [Categorized changes]
+    draft: ${draft}
+```
+
+### 10. Update Jira Issue
 - Add comment with PR link and summary
 - Transition issue to "In Review" (unless draft)
 - Log dynamic reviewer selection details
 - Add "has-pr" label
 
-### 10. Request Reviews
+### 11. Request Reviews
 - Request reviews from dynamically selected agents
 - Document which reviewers were auto-selected vs. manual
 - Mention reviewers in Jira comment
@@ -202,10 +285,11 @@ Manual override via `--reviewers` argument merges with auto-selected reviewers.
 | Uncommitted changes | Commit all changes first |
 | Tests failing | Fix failing tests before PR |
 | Merge conflicts | Rebase on base branch |
-| Push failed | Check permissions and network |
-| gh CLI not installed | Install from https://cli.github.com/ |
-| gh not authenticated | Run `gh auth login` |
-| Reviewer not found | Verify GitHub username and repo access |
+| Push failed | Check Harness permissions and network |
+| Harness API error | Verify HARNESS_API_KEY is set |
+| Harness not configured | Set HARNESS_ACCOUNT_ID, HARNESS_ORG_ID, HARNESS_PROJECT_ID |
+| Reviewer not found | Verify Harness username and repo access |
+| Confluence page missing | Create required pages before PR |
 
 ## Output
 
@@ -220,15 +304,35 @@ Success message shows:
 ## Configuration
 
 ```bash
-# Environment variables
+# Harness Environment Variables (REQUIRED)
+HARNESS_API_KEY=your-api-key
+HARNESS_ACCOUNT_ID=your-account-id
+HARNESS_ORG_ID=your-org-id
+HARNESS_PROJECT_ID=your-project-id
+HARNESS_BASE_URL=https://app.harness.io
+HARNESS_CODE_API=${HARNESS_BASE_URL}/code/api/v1
+
+# Jira Environment Variables
 JIRA_URL=https://your-instance.atlassian.net
-GITHUB_REPO=org/repo
 DEFAULT_BASE_BRANCH=main
 
 # Customizable
 JIRA_CUSTOM_FIELD_STORY_POINTS=customfield_10016
 TEST_COMMAND="npm test"  # or pytest, mvn test
 COVERAGE_COMMAND="npm run coverage"
+```
+
+## Harness MCP Tools
+
+```yaml
+harness_tools:
+  - harness_create_pull_request    # Create PR in Harness Code
+  - harness_get_pull_request       # Get PR details
+  - harness_list_pull_requests     # List PRs
+  - harness_get_pull_request_checks # Get PR status checks
+  - harness_get_pull_request_activities # Get PR comments/activities
+  - harness_list_repositories      # List repos in project
+  - harness_get_repository         # Get repo details
 ```
 
 ## Dynamic Reviewer Selection Notes
@@ -298,13 +402,23 @@ All Jira/Confluence queries use optimized patterns:
 - Manually add PR link to Jira comment
 
 **Reviewers not requested:**
-- Verify GitHub usernames are correct
-- Check repository access permissions
-- Confirm account exists
+- Verify Harness usernames are correct
+- Check Harness Code repository access permissions
+- Confirm account exists in Harness
 
 **Tests not detected:**
 - Configure TEST_COMMAND for your project type
 - Ensure test runner is installed
+
+**Harness API connection failed:**
+- Verify HARNESS_API_KEY is valid
+- Check HARNESS_ACCOUNT_ID, HARNESS_ORG_ID, HARNESS_PROJECT_ID
+- Ensure network connectivity to app.harness.io
+
+**Documentation section missing from PR:**
+- Run Confluence discovery before PR creation
+- Ensure required pages exist (TDD, Implementation Notes, Test Plan, Runbook)
+- Use `/jira:docs` to generate missing documentation
 
 ## Integration
 
@@ -318,7 +432,6 @@ Complete development workflow:
 - `/jira:commit` - Create smart commit with Jira updates
 - `/jira:sync` - Manually sync PR to Jira
 - `/jira:work` - Start work on issue
+- `/jira:docs` - Generate Confluence documentation
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

@@ -1,6 +1,6 @@
 ---
 name: jira:work
-description: Orchestrate Jira issue work - parallelize sub-issues, assign experts, execute 6-phase protocol, document
+description: Orchestrate Jira issue work - parallelize sub-issues, assign experts, execute 6-phase protocol, document via Harness
 arguments:
   - name: issue_key
     description: Jira issue key (e.g., ABC-123)
@@ -10,12 +10,14 @@ flags:
   orchestration: [--agents, --model, --parallel, --phases, --checkpoint, --resume]
   documentation: [--report, --report-to-confluence, --report-to-obsidian]
 presets: [speed-run, thorough, enterprise, hotfix]
-version: 2.1.0
+version: 2.2.0
 ---
 
 # Jira Issue Orchestration
 
-Orchestrate work on Jira issues: detect sub-issues, parallelize, assign experts, execute 6-phase protocol, document.
+Orchestrate work on Jira issues: detect sub-issues, parallelize, assign experts, execute 6-phase protocol, document via Confluence, create PRs via Harness Code.
+
+**Auto time logging:** All phases auto-log time to Jira worklog (via `jira-orchestrator/config/time-logging.yml`)
 
 ## Core Workflow
 

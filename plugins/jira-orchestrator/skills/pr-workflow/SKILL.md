@@ -131,7 +131,7 @@ git checkout -b feature/PROJ-123-new-dashboard
 # Make changes
 git add . && git commit -m "feat: add dashboard"
 git push -u origin feature/PROJ-123-new-dashboard
-# Create PR via GitHub CLI with template and labels
+# Create PR via Harness Code API
 ```
 
 **Address Feedback:**
@@ -142,12 +142,14 @@ git push --force-with-lease
 # Re-request review
 ```
 
-**Merge PR:**
+**Merge PR (via Harness Code):**
 ```bash
-gh pr checks 123  # Verify all checks pass
-gh pr merge 123 --squash --delete-branch
+# Verify all pipeline checks pass via Harness Code API
+harness_get_pull_request_checks --pr-number 123
+# Merge via Harness Code API
+harness_merge_pull_request --pr-number 123 --strategy squash
 git checkout main && git pull origin main
-# Verify deployment
+# Verify deployment via Harness Pipeline
 ```
 
 ## Troubleshooting
@@ -159,7 +161,7 @@ git checkout main && git pull origin main
 - Force push: `git push --force-with-lease`
 
 **Failed CI checks:**
-- View logs: `gh run view [run-id]`
+- View logs via Harness Pipeline execution logs
 - Run locally: `npm test && npm run lint && npm run type-check`
 - Fix and push again
 
@@ -198,6 +200,6 @@ git checkout main && git pull origin main
 ## Resources
 
 - [Conventional Commits](https://www.conventionalcommits.org/)
-- [GitHub Flow](https://guides.github.com/introduction/flow/)
+- [Harness Code Repository](https://developer.harness.io/docs/code-repository)
 - [Git Best Practices](https://git-scm.com/book/en/v2)
 - [Code Review Best Practices](https://google.github.io/eng-practices/review/)

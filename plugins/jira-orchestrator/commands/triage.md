@@ -79,10 +79,42 @@ Markdown with: Classification → Complexity → Priority → Expertise → Work
 - **Deep** (5m): Standard + codebase analysis + similar issues + historical patterns + risk details
 
 ## MCP Tools
-- `mcp__jira__get_issue`: Fetch details
-- `mcp__jira__search_issues`: Similar issues (deep)
-- `mcp__context7__search`: Code analysis (deep)
-- `mcp__obsidian__vault-add`: Save report
+
+```yaml
+jira_tools:
+  - mcp__atlassian__getJiraIssue           # Fetch details
+  - mcp__atlassian__searchJiraIssuesUsingJql # Similar issues (deep)
+
+confluence_tools:
+  - mcp__atlassian__searchConfluenceUsingCql # Find existing docs
+  - mcp__atlassian__getConfluencePage       # Get doc content
+  - mcp__atlassian__createConfluencePage    # Create triage report
+
+other_tools:
+  - mcp__context7__search                   # Code analysis (deep)
+  - mcp__obsidian__vault-add                # Save report
+```
+
+## Confluence Documentation
+
+For deep triage, save report to Confluence:
+
+```yaml
+confluence_integration:
+  deep_triage_report:
+    space: ${project_space}
+    parent: "Triage Reports"
+    title: "Triage - ${issue_key}"
+    content:
+      - Classification & Type
+      - Complexity Score Breakdown
+      - Priority Analysis
+      - Required Expertise
+      - Recommended Workflow
+      - Risk Assessment
+      - Dependencies
+    link_to_jira: true
+```
 
 ## Examples
 ```

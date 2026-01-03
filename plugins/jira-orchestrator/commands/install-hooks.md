@@ -136,11 +136,19 @@ chmod +x .git/hooks/install-jira-hooks.sh
 .git/hooks/install-jira-hooks.sh
 ```
 
-### CI/CD Integration
-```bash
-# .github/workflows/ci.yml
-- name: Process Jira Smart Commits
-  run: claude /jira-orchestrator:sync --process-queue --ci-mode true
+### CI/CD Integration (Harness Pipeline)
+```yaml
+# Harness Pipeline Step
+- step:
+    type: ShellScript
+    name: Process Jira Smart Commits
+    identifier: process_jira_sync
+    spec:
+      shell: Bash
+      source:
+        type: Inline
+        spec:
+          script: claude /jira-orchestrator:sync --process-queue --ci-mode true
 ```
 
 ### Pre-Push Sync

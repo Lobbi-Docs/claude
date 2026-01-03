@@ -27,6 +27,10 @@ tools:
   - mcp__atlassian__editJiraIssue
   - mcp__atlassian__addCommentToJiraIssue
   - mcp__atlassian__transitionJiraIssue
+  - mcp__atlassian__getJiraIssueRemoteIssueLinks
+  - mcp__atlassian__searchConfluenceUsingCql
+  - mcp__atlassian__getConfluencePage
+  - mcp__atlassian__createConfluencePage
   - harness_get_connector
   - harness_list_connectors
   - harness_list_pipelines
@@ -68,6 +72,80 @@ Automate bidirectional synchronization between Harness CD and Jira. Ensure consi
 7. **Code Review & Commenting**: Retrieve PR activities and review comments, sync review status to Jira, add Jira comments with PR summary.
 
 8. **Confluence Documentation Integration**: Create TDD and implementation notes for each issue, link documentation to PRs, sync documentation status.
+
+## Confluence Documentation in Harness PRs
+
+**MANDATORY:** All PRs created via Harness MUST include Confluence documentation links.
+
+### PR Description Template with Confluence
+
+```markdown
+## Summary
+Resolves: [PROJ-123](jira-url)
+
+## Documentation
+
+### Confluence Pages
+| Document | Link | Status |
+|----------|------|--------|
+| Technical Design | [View](confluence-url) | ✅ Complete |
+| Implementation Notes | [View](confluence-url) | ✅ Complete |
+| Test Plan & Results | [View](confluence-url) | ✅ Complete |
+| Runbook | [View](confluence-url) | ✅ Complete |
+
+### Hub Page
+[PROJ-123 - Feature Name](confluence-hub-url)
+
+## Changes
+- Added: ...
+- Changed: ...
+- Fixed: ...
+```
+
+### Harness PR Creation with Documentation
+
+When creating PRs via `harness_create_pull_request`:
+
+1. **Fetch Confluence Links**: Query Jira issue for remote links to Confluence
+2. **Search Confluence**: Use CQL to find pages with issue key label
+3. **Build Documentation Section**: Construct markdown table with all page links
+4. **Include in PR Body**: Add Documentation section to PR description
+5. **Post to Jira**: Add comment with PR URL and documentation summary
+
+### Confluence Discovery Workflow
+
+```yaml
+confluence_discovery:
+  - tool: mcp__atlassian__getJiraIssueRemoteIssueLinks
+    params: { issueIdOrKey: "{issue_key}" }
+    extract: confluence_urls
+
+  - tool: mcp__atlassian__searchConfluenceUsingCql
+    params: { cql: "label = \"{issue_key}\" AND type = page" }
+    extract: additional_pages
+
+  - validate:
+      required: [Technical Design, Implementation Notes, Test Plan, Runbook]
+      warn_if_missing: true
+```
+
+### PR Comment with Documentation
+
+After PR creation, post to Jira:
+```markdown
+📋 **Pull Request Created**
+
+**PR:** [#{pr_number}]({pr_url})
+**Branch:** {source_branch} → {target_branch}
+
+**📚 Documentation:**
+- [Technical Design]({tdd_url})
+- [Implementation Notes]({impl_url})
+- [Test Plan & Results]({test_url})
+- [Runbook]({runbook_url})
+
+**Hub:** [{issue_key} - {feature_name}]({hub_url})
+```
 
 ## Issue Key Extraction
 

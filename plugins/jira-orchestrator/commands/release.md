@@ -50,7 +50,7 @@ Execute Jira Release Management actions: **${action}** | **Version:** ${version}
 1. Aggregate all issues in version
 2. Categorize: features, bugs, improvements
 3. Generate formatted release notes
-4. Publish to Confluence + GitHub
+4. Publish to Confluence + Harness Code
 
 ### Readiness
 1. Score against criteria: completion, blockers, quality, tests, security

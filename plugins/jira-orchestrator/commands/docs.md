@@ -1,6 +1,6 @@
 ---
 name: jira:docs
-description: Generate documentation for completed Jira issue work
+description: Generate documentation for completed Jira issue work with Confluence sync
 arguments:
   - name: issue_key
     description: Jira issue key
@@ -13,20 +13,24 @@ arguments:
     description: Sync to Confluence/Obsidian
     required: false
     default: true
+version: 1.1.0
 ---
 
 # Jira Documentation Generator
 
-Validate issue → Analyze changes → Generate docs → Sync external → Update Jira → Commit
+Validate issue → Analyze changes → Generate docs → Sync to Confluence → Update Jira → Create Harness PR
+
+**Auto time logging:** Command duration >= 60s auto-posts worklog (via `jira-orchestrator/config/time-logging.yml`)
 
 ## Workflow
 
 1. Validate (fetch Jira, expect Done/Resolved)
-2. Analyze (git history, PR, file categorization)
+2. Analyze (git history, Harness PR, file categorization)
 3. Generate (by type: readme/api/adr/changelog/code/all)
-4. Sync (Obsidian + Confluence if --sync)
-5. Update (Jira comment + "documented" label)
-6. Commit (git with conventional format)
+4. **Sync Confluence** (create/update pages, build hub)
+5. Sync Obsidian (if --sync)
+6. Update Jira (comment + "documented" label + Confluence links)
+7. Create Harness PR (with Documentation section)
 
 ## Issue Detection
 
@@ -60,10 +64,62 @@ Docs: *.md, docs/
 /jira:docs ABC-123 --type all --sync false
 ```
 
+## Confluence Sync (MANDATORY)
+
+**All documentation MUST be synced to Confluence with proper linking.**
+
+### Confluence Page Structure
+
+```
+{Project Space}/Features/
+└── {ISSUE-KEY} - {Feature Name}/     [Hub Page]
+    ├── Technical Design               [From PLAN phase]
+    ├── Implementation Notes           [From CODE phase]
+    ├── Test Plan & Results            [From TEST phase]
+    └── Runbook                         [From DOCUMENT phase]
+```
+
+### Confluence Sync Workflow
+
+```yaml
+confluence_sync:
+  1_discover_existing:
+    - Search by issue key label
+    - Check Jira remote links
+    - Validate page hierarchy
+
+  2_create_update_pages:
+    - Create missing pages (TDD, Impl Notes, Test Plan, Runbook)
+    - Update existing pages with latest content
+    - Ensure proper parent-child relationships
+
+  3_build_hub_page:
+    - Create hub page if missing
+    - Link all child documents
+    - Add summary and status table
+
+  4_link_to_jira:
+    - Add remote links for all pages
+    - Post comment with documentation summary
+    - Add "documented" label
+```
+
+### MCP Tools for Confluence
+
+```yaml
+tools:
+  - mcp__atlassian__searchConfluenceUsingCql  # Find existing pages
+  - mcp__atlassian__getConfluencePage         # Get page content
+  - mcp__atlassian__createConfluencePage      # Create new pages
+  - mcp__atlassian__updateConfluencePage      # Update existing
+  - mcp__atlassian__getJiraIssueRemoteIssueLinks # Get linked docs
+  - mcp__atlassian__addCommentToJiraIssue     # Post summary
+```
+
 ## External Sync
 
 **Obsidian:** `C:\Users\MarkusAhling\obsidian\Repositories\${org}\${repo}\Issues\${issue_key}.md`
-**Confluence:** Space ${project_space}, parent "Development Log"
+**Confluence:** Space ${project_space}, parent "Features/${issue_key}"
 
 ## ADR Generation
 
