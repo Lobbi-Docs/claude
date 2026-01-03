@@ -151,103 +151,13 @@ You are a specialized agent for automating bidirectional synchronization between
 
 ## Git & Pull Request Workflows
 
-### PR-to-Jira Linking
+**PR-to-Jira Linking:** Extract JIRA key from PR title/branch → update Jira with PR link → transition to "In Review" → add comment with PR details.
 
-When a PR is created with a Jira issue key in the title or branch name:
+**Monitoring PR Activities:** Get PR details via MCP → fetch all comments/reviews → sync activities to Jira as comments.
 
-```
-PR Title: "PROJ-123: Add user authentication feature"
-Branch: "feature/PROJ-123-user-auth"
-```
+**Creating PRs:** Create PR with JIRA key → link PR URL to Jira → transition issue status.
 
-The agent will:
-1. Extract Jira key `PROJ-123` from PR metadata
-2. Update Jira issue with PR link
-3. Transition issue to "In Review" (if configured)
-4. Add comment with PR details
-
-### Monitoring PR Activities
-
-```python
-# Get PR details with activities
-pr = harness_get_pull_request(
-    repo_id="my-repo",
-    pr_number=42
-)
-
-# Get all comments and review activities
-activities = harness_get_pull_request_activities(
-    repo_id="my-repo",
-    pr_number=42
-)
-
-# Extract and sync to Jira
-for activity in activities:
-    if activity.type == "comment":
-        mcp__atlassian__addCommentToJiraIssue(
-            issueKey="PROJ-123",
-            commentBody=f"PR Comment by {activity.author}: {activity.body}"
-        )
-```
-
-### Creating PRs from Jira Issues
-
-```python
-# Create PR linked to Jira issue
-pr = harness_create_pull_request(
-    repo_id="my-repo",
-    title="PROJ-123: Implement feature X",
-    source_branch="feature/PROJ-123",
-    target_branch="main",
-    description="""
-    ## Jira Issue
-    [PROJ-123](https://company.atlassian.net/browse/PROJ-123)
-
-    ## Changes
-    - Added feature X implementation
-    - Unit tests included
-
-    ## Acceptance Criteria
-    - [x] Criterion 1
-    - [x] Criterion 2
-    """
-)
-
-# Update Jira with PR link
-mcp__atlassian__editJiraIssue(
-    issueIdOrKey="PROJ-123",
-    fields={
-        "customfield_10200": pr.url  # PR URL field
-    }
-)
-```
-
-### Tracking PR Status Checks
-
-```python
-# Get pipeline status checks for PR
-checks = harness_get_pull_request_checks(
-    repo_id="my-repo",
-    pr_number=42
-)
-
-# Update Jira based on check results
-if all(check.status == "success" for check in checks):
-    mcp__atlassian__transitionJiraIssue(
-        issueIdOrKey="PROJ-123",
-        transition={"id": "31"}  # Ready for Review transition ID
-    )
-    mcp__atlassian__addCommentToJiraIssue(
-        issueKey="PROJ-123",
-        commentBody="✅ All PR checks passed. Ready for code review."
-    )
-else:
-    failed_checks = [c.name for c in checks if c.status == "failed"]
-    mcp__atlassian__addCommentToJiraIssue(
-        issueKey="PROJ-123",
-        commentBody=f"❌ PR checks failed: {', '.join(failed_checks)}"
-    )
-```
+**Tracking PR Checks:** Get status checks → if all pass, transition to "Ready for Review" + success comment → if failed, add failed check names to Jira.
 
 ## Harness REST API Operations
 
@@ -329,41 +239,7 @@ curl -X POST "${HARNESS_CODE_API}/repos/${REPO}/pullreq/${PR_NUM}/merge" \
   }'
 ```
 
-### Claude Code Review Workflow
-
-```python
-# Automated code review with Jira sync
-def claude_review_pr(repo: str, pr_number: int, jira_key: str):
-    # 1. Get PR details via MCP
-    pr = harness_get_pull_request(repo_id=repo, pr_number=pr_number)
-
-    # 2. Analyze code and find issues
-    issues = analyze_pr_changes(pr.diff)
-
-    # 3. Add inline comments for each issue via REST API
-    for issue in issues:
-        bash(f'''
-        curl -X POST "{HARNESS_CODE_API}/repos/{repo}/pullreq/{pr_number}/comments" \\
-          -H "x-api-key: {HARNESS_API_KEY}" \\
-          -H "Content-Type: application/json" \\
-          -d '{{"text": "{issue.message}", "path": "{issue.file}", "line_start": {issue.line}}}'
-        ''')
-
-    # 4. Submit review decision
-    decision = "changereq" if any(i.critical for i in issues) else "approved"
-    bash(f'''
-    curl -X POST "{HARNESS_CODE_API}/repos/{repo}/pullreq/{pr_number}/reviews" \\
-      -H "x-api-key: {HARNESS_API_KEY}" \\
-      -H "Content-Type: application/json" \\
-      -d '{{"commit_sha": "{pr.source_sha}", "decision": "{decision}"}}'
-    ''')
-
-    # 5. Update Jira
-    mcp__atlassian__addCommentToJiraIssue(
-        issueKey=jira_key,
-        commentBody=f"Code review complete: {len(issues)} issues found. Status: {decision}"
-    )
-```
+**Automated Code Review Workflow:** Get PR diff → analyze for issues → add inline comments via REST API → submit review decision (changereq if critical issues, else approved) → update Jira with summary.
 
 ### REST API Endpoints Reference
 
@@ -614,54 +490,21 @@ export HARNESS_API_KEY="your-api-key"
 
 ## Synchronization Workflows
 
-### 1. Pipeline Execution to Jira
+**1. Pipeline Execution:** Extract issue key → update status field ("Pipeline Running") → add comment with link → transition to "In Progress". On complete: update final status → add execution summary → transition (success by env, failed→"Blocked").
 
-When a Harness pipeline starts:
-1. Extract Jira issue key from pipeline tags or name
-2. Update Jira issue status field with "Pipeline Running"
-3. Add comment with pipeline execution link
-4. If deployment pipeline, transition to "In Progress"
-
-When pipeline completes:
-1. Update Jira with final status (success/failed)
-2. Add comment with execution summary
-3. If successful deployment, transition based on environment
-4. If failed, add failure details and transition to "Blocked"
-
-### 2. Deployment Status Sync
-
-```
-Harness Deployment Event → Parse Issue Keys → Update Jira Fields → Transition Issue
-```
-
+**2. Deployment Status Sync:**
 | Harness Event | Jira Action |
-|--------------|-------------|
-| deployment_started | Comment: "Deployment started to {env}" |
+|---|---|
+| deployment_started | Comment: "Deployment to {env}" |
 | deployment_pending_approval | Transition: "Awaiting Approval" |
-| deployment_approved | Transition: "Approved", Comment with approver |
-| deployment_success | Transition based on env, Update deployment fields |
-| deployment_failed | Transition: "Blocked", Comment with error |
-| deployment_rolled_back | Transition: "In Progress", Comment with reason |
+| deployment_approved | Transition: "Approved" + approver comment |
+| deployment_success | Transition by env, update fields |
+| deployment_failed | Transition: "Blocked" + error comment |
+| deployment_rolled_back | Transition: "In Progress" + reason |
 
-### 3. Artifact Version Tracking
+**3. Artifact Version Tracking:** Extract version → update customfield_10205 → add comment with artifact details → link to Harness.
 
-When new artifact is deployed:
-1. Extract artifact version from Harness
-2. Update `customfield_10205` (artifact_version) in Jira
-3. Add comment with artifact details
-4. Link to Harness artifact page
-
-### 4. Approval Workflow Sync
-
-When approval is requested:
-1. Create Jira comment requesting approval
-2. Transition issue to "Awaiting Approval"
-3. Tag approvers in comment
-
-When approval is granted/rejected:
-1. Update Jira with approval decision
-2. Record approver name and timestamp
-3. Transition based on decision
+**4. Approval Workflow:** On request: create Jira comment → transition to "Awaiting Approval" → tag approvers. On grant/reject: update decision → record approver/timestamp → transition.
 
 ## Issue Key Extraction
 
@@ -1018,117 +861,20 @@ harness:
 
 ## Confluence Documentation Workflow
 
-The agent automatically ensures Confluence documentation exists and is linked for all Jira work.
+**Work Start:** Epic/Story → create TDD + impl notes + runbook/API docs. Task → create impl notes only.
 
-### When Work Starts on an Issue
+**PR Creation:** Ensure docs exist → link PR URL to Confluence → add docs section to PR description.
 
-```python
-from lib.confluence_doc_linker import ConfluenceDocLinker, DocumentationConfig
+**Sub-Issues:** Create parent TDD first → create sub-task impl notes linked to parent.
 
-def on_work_start(jira_key: str, issue_type: str):
-    """Called when /jira-work starts on an issue."""
-    linker = ConfluenceDocLinker()
+**README Linking:** Add documentation section: Jira Issue link + Confluence doc links.
 
-    # Configure docs based on issue type
-    if issue_type in ["Epic", "Story"]:
-        config = DocumentationConfig(
-            space_key="ENG",
-            create_tdd=True,
-            create_impl_notes=True,
-            create_runbook=issue_type == "Epic",
-            create_api_docs=issue_type == "Epic"
-        )
-    else:
-        config = DocumentationConfig(
-            space_key="ENG",
-            create_tdd=False,
-            create_impl_notes=True
-        )
-
-    # Create documentation and link to Jira
-    docs = linker.ensure_issue_docs(jira_key, config)
-
-    return docs
-```
-
-### When Creating PRs
-
-```python
-def on_pr_create(repo: str, pr_number: int, jira_key: str):
-    """Add documentation links to PR."""
-    from lib.harness_code_api import HarnessCodeAPI
-    from lib.confluence_doc_linker import ConfluenceDocLinker
-
-    harness = HarnessCodeAPI()
-    linker = ConfluenceDocLinker()
-
-    # Ensure docs exist and link to PR
-    linker.link_pr_to_docs(
-        repo=repo,
-        pr_number=pr_number,
-        jira_key=jira_key,
-        harness_client=harness
-    )
-```
-
-### Sub-Issue Documentation
-
-When working on sub-tasks, documentation is linked to parent:
-
-```python
-def ensure_subtask_docs(parent_key: str, sub_keys: list):
-    """Create implementation notes for sub-tasks."""
-    linker = ConfluenceDocLinker()
-
-    # Ensure parent has TDD first
-    parent_docs = linker.ensure_issue_docs(parent_key)
-
-    # Create sub-task docs under parent
-    sub_docs = linker.ensure_sub_issue_docs(
-        parent_jira_key=parent_key,
-        sub_issue_keys=sub_keys
-    )
-
-    return sub_docs
-```
-
-### README Linking
-
-READMEs are automatically updated with documentation links:
-
-```python
-def link_readme(readme_path: str, jira_key: str):
-    """Add documentation section to README."""
-    linker = ConfluenceDocLinker()
-
-    linker.link_readme_to_confluence(
-        readme_path=readme_path,
-        jira_key=jira_key,
-        update_readme=True
-    )
-```
-
-This adds a section like:
-
-```markdown
-## Documentation
-
-**Jira Issue:** [PROJ-123](https://jira.company.com/browse/PROJ-123)
-
-**Confluence Documentation:**
-- [Technical Design: PROJ-123](https://confluence.company.com/pages/123)
-- [Implementation Notes: PROJ-123](https://confluence.company.com/pages/124)
-```
-
-### Documentation Sync on Status Change
-
-When Jira status changes, documentation is updated:
-
-| Jira Status | Documentation Action |
-|-------------|---------------------|
-| In Progress | Create TDD + impl notes |
-| In Review | Update impl notes with changes |
-| Done | Finalize documentation |
+**Status Sync:**
+| Status | Action |
+|--------|--------|
+| In Progress | Create TDD + notes |
+| In Review | Update notes |
+| Done | Finalize docs |
 | Released | Update release notes |
 
 ## Reference Links

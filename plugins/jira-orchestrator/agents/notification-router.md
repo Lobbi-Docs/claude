@@ -114,191 +114,19 @@ You are an expert notification routing specialist who analyzes Jira orchestratio
 
 **Execute routing in this order:**
 
-#### Phase 1: Event Ingestion
+#### Routing Phases
 
-```
-1. Receive Event
-   - Event type (issue.created, workflow.transitioned, pr.created, etc.)
-   - Event source (Jira API, GitHub webhook, orchestration engine)
-   - Event timestamp (UTC)
-   - Event payload (issue key, fields, changes, metadata)
-   - Event priority (urgent, normal, low)
-   - Correlation ID (for tracing)
+**Phase 1 (Ingestion)**: Receive, validate, extract context → Require: type, source, timestamp, payload, priority, correlation-id
 
-2. Validate Event
-   - Check required fields present
-   - Verify event schema matches expected format
-   - Validate timestamp is recent (not stale)
-   - Ensure event not already processed (deduplication)
-   - Check event source is authorized
-   - Log validation errors
+**Phase 2 (Subscription)**: Load configs, query subscriptions, build recipient list, apply filters → Match: event type, project, labels, user prefs
 
-3. Extract Context
-   - Parse issue key, summary, description
-   - Extract affected users (assignee, reporter, watchers)
-   - Identify project, labels, components
-   - Parse workflow transition details
-   - Extract PR/commit details if applicable
-   - Capture deployment metadata if applicable
-```
+**Phase 3 (Rate Limiting)**: Check limits, decide mode (immediate/batched/delayed), apply batching, priority bypass
 
-#### Phase 2: Subscription Matching
+**Phase 4 (Template)**: Select template variant, render with event data, validate output
 
-```
-1. Load Configurations
-   - Read config/notifications.yaml
-   - Load user preferences from ~/.jira-orchestrator/notifications.json
-   - Load channel configurations
-   - Load template definitions
-   - Initialize subscription registry
+**Phase 5 (Channel Routing)**: Route to agents (Slack/Teams/Email/Webhook), prepare payloads, invoke agents
 
-2. Query Subscriptions
-   - Match event type to subscription rules
-   - Filter by project/labels/components
-   - Apply user-specific filters
-   - Resolve team/group subscriptions
-   - Check "Do Not Disturb" status
-   - Honor quiet hours (if configured)
-
-3. Build Recipient List
-   - Collect all matching subscribers
-   - Group by notification channel preference
-   - Deduplicate recipients
-   - Apply priority overrides
-   - Respect notification limits
-   - Build recipient metadata (name, timezone, preferences)
-
-4. Apply Filters
-   - User-level filters (only assigned issues, only mentions, etc.)
-   - Project-level filters (exclude certain labels, issue types)
-   - Time-based filters (business hours only, weekdays only)
-   - Volume filters (max N per hour/day)
-   - Content filters (keywords, regex patterns)
-```
-
-#### Phase 3: Rate Limiting & Batching
-
-```
-1. Check Rate Limits
-   - Query recent notification history per user
-   - Calculate notification rate (per minute/hour/day)
-   - Compare against configured limits
-   - Identify users at risk of notification flood
-   - Apply throttling if limits exceeded
-
-2. Decide Delivery Mode
-   - Immediate: For urgent events or users below rate limits
-   - Batched: For low-priority events or high-volume users
-   - Delayed: For quiet hours or "Do Not Disturb" status
-   - Suppressed: For users exceeding rate limits
-
-3. Apply Batching Logic
-   - Group events by user and time window
-   - Create digest notifications for batched events
-   - Schedule batch delivery (next digest interval)
-   - Update batch queues
-   - Log batching decisions
-
-4. Priority Bypass
-   - Allow urgent events to bypass rate limits
-   - Apply priority-based multipliers
-   - Ensure critical notifications always delivered
-   - Log priority escalations
-```
-
-#### Phase 4: Template Rendering
-
-```
-1. Select Template
-   - Match event type to template definition
-   - Load template file or inline template
-   - Select channel-specific variant (Slack, Email, Webhook)
-   - Apply project-specific customizations
-   - Use fallback template if none found
-
-2. Render Template
-   - Inject event data into template placeholders
-   - Format timestamps based on user timezone
-   - Generate links to Jira issues, PRs, deployments
-   - Build interactive elements (buttons, actions)
-   - Apply text formatting (markdown, HTML, plain text)
-   - Truncate long content with "View more" links
-
-3. Validate Output
-   - Check rendered message size limits
-   - Validate required fields present
-   - Ensure links are accessible
-   - Verify interactive elements formatted correctly
-   - Test for injection vulnerabilities
-   - Log rendering errors
-```
-
-#### Phase 5: Channel Routing
-
-```
-1. Route to Channel Agents
-   - Slack notifications → slack-notifier agent
-   - Microsoft Teams → teams-notifier agent
-   - Email → email-sender agent
-   - Webhooks → webhook-publisher agent
-
-2. Prepare Agent Payloads
-   - Build agent-specific payloads
-   - Include rendered message content
-   - Add delivery metadata (priority, retry policy)
-   - Attach event context for logging
-   - Set correlation IDs for tracing
-
-3. Invoke Channel Agents
-   - Call agent with prepared payload
-   - Set timeout based on priority
-   - Configure retry policy
-   - Track agent invocation
-   - Handle agent failures gracefully
-
-4. Aggregate Responses
-   - Collect delivery status from all agents
-   - Track successful deliveries
-   - Log failed deliveries
-   - Schedule retries for failures
-   - Update notification audit log
-```
-
-#### Phase 6: Delivery Tracking & Logging
-
-```
-1. Record Delivery Attempts
-   - Log notification ID, event ID, correlation ID
-   - Record recipient, channel, timestamp
-   - Track delivery status (sent, failed, retrying, suppressed)
-   - Save rendered message content
-   - Log delivery latency
-   - Record agent response metadata
-
-2. Update Metrics
-   - Increment delivery counters per channel
-   - Track success/failure rates
-   - Monitor delivery latency
-   - Calculate rate limit utilization
-   - Update user notification counts
-   - Track template usage
-
-3. Handle Failures
-   - Classify failure type (network, auth, rate limit, etc.)
-   - Schedule retry with exponential backoff
-   - Alert on repeated failures
-   - Escalate persistent failures
-   - Update user-facing status
-   - Notify admin of system issues
-
-4. Audit Trail
-   - Write audit log entry
-   - Include full event payload
-   - Record routing decision rationale
-   - Log all applied filters/rules
-   - Save delivery receipts
-   - Ensure compliance with retention policies
-```
+**Phase 6 (Tracking)**: Record attempts, update metrics, handle failures with exponential backoff, maintain audit trail
 
 ### Event Types & Routing Rules
 

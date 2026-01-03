@@ -526,183 +526,52 @@ def validate_and_normalize_tags(tags: list[str]) -> list[str]:
 
 ---
 
-## Tag Creation & Existence Check (CRITICAL)
+## Tag Creation & Existence Check
 
-**IMPORTANT:** Tags/labels that don't exist in Jira MUST be created before they can be used effectively.
-
-### How Jira Labels Work
-
-In Jira:
-- **Labels are created automatically** when you add them to an issue
-- Labels are **project-scoped** (available across the project once created)
-- There is no "pre-create label" API - labels are created on first use
-- Labels are case-sensitive and support limited special characters
-
-### Tag Existence Check & Creation
+Tags are created automatically when added to issues. Use reference issues for tag initialization:
 
 ```python
 def ensure_tags_exist(project_key: str, tags: list[str]) -> dict:
-    """
-    Ensure all required tags exist in the Jira project.
-    Creates tags if they don't exist by adding them to a reference issue.
+    """Ensure all tags exist; create via reference issue if needed."""
+    results = {"project": project_key, "existing_tags": [], "created_tags": [], "failed_tags": []}
 
-    Args:
-        project_key: Jira project key (e.g., 'PROJ')
-        tags: List of tags to ensure exist
-
-    Returns:
-        Tag creation summary
-    """
-    results = {
-        "project": project_key,
-        "existing_tags": [],
-        "created_tags": [],
-        "failed_tags": [],
-        "all_tags_available": False
-    }
-
-    # 1. Check which tags already exist in the project
-    # Search for issues with each tag to verify existence
     for tag in tags:
         search_result = mcp__atlassian__jira_search_issues(
             jql=f'project = {project_key} AND labels = "{tag}"',
-            max_results=1,
-            fields=["key"]
+            max_results=1, fields=["key"]
         )
-
         if search_result.get("total", 0) > 0:
             results["existing_tags"].append(tag)
         else:
-            # Tag doesn't exist - needs to be created
             results["created_tags"].append(tag)
 
-    # 2. Create missing tags by adding to a reference issue
     if results["created_tags"]:
-        create_result = create_missing_tags(project_key, results["created_tags"])
-        results["creation_details"] = create_result
+        reference_issue = find_or_create_reference_issue(project_key)
+        for tag in results["created_tags"]:
+            try:
+                issue = mcp__atlassian__jira_get_issue(issue_key=reference_issue)
+                updated_labels = list(set(issue.get("fields", {}).get("labels", []) + [tag]))
+                mcp__atlassian__jira_update_issue(issue_key=reference_issue, update_data={"fields": {"labels": updated_labels}})
+            except Exception as e:
+                results["failed_tags"].append({"tag": tag, "error": str(e)})
 
-        if create_result.get("success"):
-            results["all_tags_available"] = True
-        else:
-            results["failed_tags"] = create_result.get("failed", [])
-    else:
-        results["all_tags_available"] = True
-
+    results["all_tags_available"] = len(results["failed_tags"]) == 0
     return results
 
-
-def create_missing_tags(project_key: str, tags: list[str]) -> dict:
-    """
-    Create missing tags in Jira by adding them to issues.
-
-    Strategy:
-    1. Try to find an existing issue to temporarily add tags
-    2. If no suitable issue, create a temporary "tag-management" issue
-    3. Add tags to the issue
-    4. Optionally clean up (remove from temp issue or delete temp issue)
-
-    Args:
-        project_key: Jira project key
-        tags: List of tags to create
-
-    Returns:
-        Creation result
-    """
-    created = []
-    failed = []
-
-    # Find or create a reference issue for tag creation
-    reference_issue = find_or_create_reference_issue(project_key)
-
-    if not reference_issue:
-        return {
-            "success": False,
-            "error": "Could not find or create reference issue for tag creation",
-            "failed": tags
-        }
-
-    # Add each tag to the reference issue
-    for tag in tags:
-        try:
-            # Get current labels
-            issue = mcp__atlassian__jira_get_issue(issue_key=reference_issue)
-            current_labels = issue.get("fields", {}).get("labels", [])
-
-            # Add new tag
-            updated_labels = list(set(current_labels + [tag]))
-
-            # Update issue
-            mcp__atlassian__jira_update_issue(
-                issue_key=reference_issue,
-                update_data={
-                    "fields": {
-                        "labels": updated_labels
-                    }
-                }
-            )
-
-            created.append(tag)
-
-        except Exception as e:
-            failed.append({
-                "tag": tag,
-                "error": str(e)
-            })
-
-    return {
-        "success": len(failed) == 0,
-        "reference_issue": reference_issue,
-        "created": created,
-        "failed": failed,
-        "total_created": len(created)
-    }
-
-
 def find_or_create_reference_issue(project_key: str) -> str:
-    """
-    Find or create a reference issue for tag management.
-
-    Strategy:
-    1. Look for existing "Tag Management" issue
-    2. If not found, create one
-
-    Args:
-        project_key: Jira project key
-
-    Returns:
-        Issue key for reference issue
-    """
-    # Search for existing tag management issue
+    """Find or create reference issue for tag management."""
     search_result = mcp__atlassian__jira_search_issues(
-        jql=f'project = {project_key} AND summary ~ "Tag Management" AND issuetype = Task',
-        max_results=1,
-        fields=["key"]
+        jql=f'project = {project_key} AND summary ~ "Tag Management"',
+        max_results=1, fields=["key"]
     )
-
     if search_result.get("total", 0) > 0:
         return search_result["issues"][0]["key"]
 
-    # Create new tag management issue
-    # NOTE: This creates a hidden/internal issue for tag management
     create_result = mcp__atlassian__jira_create_issue(
         project_key=project_key,
         issue_type="Task",
-        summary="[System] Tag Management - DO NOT DELETE",
-        description="""
-This is a system-managed issue used for tag/label management.
-
-**Purpose:**
-- Acts as a reference point for creating new project labels
-- Ensures all required tags exist in the project
-- Should NOT be modified manually
-
-**Created by:** **⚓ Golden Armada** | *The Fleet Stands Ready*
-**Last Updated:** {timestamp}
-
-⚠️ DO NOT DELETE - This issue is required for the orchestration system.
-        """
+        summary="[System] Tag Management"
     )
-
     return create_result.get("key")
 ```
 
@@ -930,132 +799,6 @@ tag_management_workflow:
 
 ---
 
-### Examples
-
-#### Example 1: Auto-Tag PR Creating Frontend Feature
-
-```yaml
-input:
-  git_context:
-    branch_name: "feature/add-user-dashboard"
-    commit_message: "feat: Add user dashboard with analytics"
-    modified_files:
-      - "src/components/Dashboard.tsx"
-      - "src/components/Analytics.tsx"
-      - "src/styles/dashboard.css"
-    pr_description: "Implements new user dashboard with real-time analytics"
-
-output:
-  detected_tags:
-    - "type:feature"
-    - "domain:frontend"
-
-  applied_to_issue: "PROJ-123"
-
-  result:
-    issue: "PROJ-123"
-    labels:
-      - "type:feature"
-      - "domain:frontend"
-```
-
-#### Example 2: Auto-Tag Database Migration
-
-```yaml
-input:
-  git_context:
-    branch_name: "chore/add-user-indexes"
-    commit_message: "chore: Add indexes for user queries"
-    modified_files:
-      - "migrations/20231215_add_user_indexes.sql"
-      - "db/schema.sql"
-    pr_description: "Optimizes user query performance with new indexes"
-
-output:
-  detected_tags:
-    - "type:chore"
-    - "domain:database"
-    - "domain:performance"
-
-  applied_to_issue: "PROJ-124"
-```
-
-#### Example 3: Sync Parent-Child Tags
-
-```yaml
-input:
-  parent_issue: "PROJ-100"
-  parent_labels:
-    - "type:feature"
-    - "domain:backend"
-
-  child_issues:
-    - key: "PROJ-101"
-      labels: ["domain:frontend"]
-    - key: "PROJ-102"
-      labels: ["domain:database"]
-
-operations:
-  # 1. Propagate parent domain tags to children
-  - action: propagate_to_children
-    tags: ["domain:backend"]
-    targets: ["PROJ-101", "PROJ-102"]
-
-  # 2. Aggregate child domain tags to parent
-  - action: aggregate_to_parent
-    tags: ["domain:frontend", "domain:database"]
-    target: "PROJ-100"
-
-output:
-  parent_issue: "PROJ-100"
-  final_labels:
-    - "type:feature"
-    - "domain:backend"
-    - "domain:frontend"
-    - "domain:database"
-
-  child_issues:
-    - key: "PROJ-101"
-      final_labels:
-        - "domain:frontend"
-        - "domain:backend"
-
-    - key: "PROJ-102"
-      final_labels:
-        - "domain:database"
-        - "domain:backend"
-```
-
-#### Example 4: Bulk Tag Multiple Issues
-
-```yaml
-input:
-  issues:
-    - "PROJ-200"
-    - "PROJ-201"
-    - "PROJ-202"
-
-  tags_to_add:
-    - "status:reviewed"
-    - "domain:testing"
-
-operation:
-  action: bulk_add_tags
-  issues: ["PROJ-200", "PROJ-201", "PROJ-202"]
-  tags: ["status:reviewed", "domain:testing"]
-
-output:
-  success: true
-  updated_count: 3
-  results:
-    - issue: "PROJ-200"
-      added: ["status:reviewed", "domain:testing"]
-    - issue: "PROJ-201"
-      added: ["status:reviewed", "domain:testing"]
-    - issue: "PROJ-202"
-      added: ["status:reviewed", "domain:testing"]
-```
-
 ### Error Handling
 
 ```python
@@ -1250,53 +993,29 @@ active_issues = search_issues_by_tags(
 )
 ```
 
-### Tag Analytics and Reporting
+### Tag Analytics
 
 ```python
 def generate_tag_report(project_key: str) -> dict:
-    """
-    Generate tag analytics report for a project.
+    """Generate tag analytics for a project."""
+    results = mcp__atlassian__jira_search_issues(jql=f"project = {project_key}")
 
-    Args:
-        project_key: Jira project key
-
-    Returns:
-        Tag analytics report
-    """
-    # Search all issues in project
-    jql = f"project = {project_key}"
-    results = mcp__atlassian__jira_search_issues(jql=jql)
-
-    # Collect tag statistics
     tag_counts = {}
     domain_counts = {}
     status_counts = {}
     type_counts = {}
 
     for issue in results.get('issues', []):
-        labels = issue.get('fields', {}).get('labels', [])
-
-        for label in labels:
-            # Overall count
+        for label in issue.get('fields', {}).get('labels', []):
             tag_counts[label] = tag_counts.get(label, 0) + 1
-
-            # Category counts
-            if label.startswith('domain:'):
-                domain_counts[label] = domain_counts.get(label, 0) + 1
-            elif label.startswith('status:'):
-                status_counts[label] = status_counts.get(label, 0) + 1
-            elif label.startswith('type:'):
-                type_counts[label] = type_counts.get(label, 0) + 1
+            if label.startswith('domain:'): domain_counts[label] = domain_counts.get(label, 0) + 1
+            elif label.startswith('status:'): status_counts[label] = status_counts.get(label, 0) + 1
+            elif label.startswith('type:'): type_counts[label] = type_counts.get(label, 0) + 1
 
     return {
         "project": project_key,
         "total_issues": len(results.get('issues', [])),
-        "tag_summary": {
-            "total_unique_tags": len(tag_counts),
-            "domain_tags": len(domain_counts),
-            "status_tags": len(status_counts),
-            "type_tags": len(type_counts),
-        },
+        "total_unique_tags": len(tag_counts),
         "top_tags": dict(sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:10]),
         "domain_breakdown": domain_counts,
         "status_breakdown": status_counts,

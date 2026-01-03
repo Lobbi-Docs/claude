@@ -537,558 +537,68 @@ COMPLIANCE REPORTS:
 6. Store in compliance archive
 ```
 
-### 7. Integration with Slack/Teams
+### 7. Slack/Teams Integration
 
-**Slack Integration:**
-```yaml
-slack_integration:
-  enabled: true
-  workspace: "company.slack.com"
-  bot_token: "${SLACK_BOT_TOKEN}"
+**Slack:** Interactive messages with Approve/Reject buttons, escalation notifications in dedicated channels, message updates with decisions. Workflow: Send request → Handle button click → Update message → Notify stakeholders.
 
-  channels:
-    engineering: "#engineering"
-    deployments: "#deployments"
-    approvals: "#approvals"
-    escalations: "#escalations"
-
-  message_templates:
-    approval_request:
-      blocks:
-        - type: "header"
-          text: "🔐 Approval Required: {{approval_type}}"
-
-        - type: "section"
-          fields:
-            - "*Issue:* {{issue_key}}"
-            - "*Type:* {{approval_type}}"
-            - "*Priority:* {{priority}}"
-            - "*Requester:* {{requester}}"
-
-        - type: "section"
-          text: "{{description}}"
-
-        - type: "actions"
-          elements:
-            - type: "button"
-              text: "✅ Approve"
-              style: "primary"
-              value: "approve_{{approval_id}}"
-              action_id: "approve_button"
-
-            - type: "button"
-              text: "❌ Reject"
-              style: "danger"
-              value: "reject_{{approval_id}}"
-              action_id: "reject_button"
-
-            - type: "button"
-              text: "💬 Comment"
-              value: "comment_{{approval_id}}"
-              action_id: "comment_button"
-
-        - type: "context"
-          elements:
-            - "⏰ Timeout: {{timeout_duration}}"
-            - "🔗 <{{jira_url}}|View in Jira>"
-
-  interactive_actions:
-    approve_button:
-      action: "approve"
-      require_comment: false
-      update_message: true
-      notify_requester: true
-
-    reject_button:
-      action: "reject"
-      require_comment: true
-      update_message: true
-      notify_requester: true
-
-    comment_button:
-      action: "open_dialog"
-      dialog_type: "comment"
-```
-
-**Slack Workflow:**
-```
-1. SEND APPROVAL REQUEST:
-   a. Format message using template
-   b. Post to configured channel
-   c. Mention approver(s) with @
-   d. Store message_ts for updates
-   e. Record notification in audit trail
-
-2. HANDLE BUTTON CLICK:
-   a. Verify user is authorized approver
-   b. If reject button, open comment modal
-   c. Process approval/rejection
-   d. Update message with decision
-   e. Post thread reply with details
-   f. Notify all stakeholders
-
-3. UPDATE MESSAGE:
-   a. Load original message by message_ts
-   b. Update status (✅ Approved or ❌ Rejected)
-   c. Disable action buttons
-   d. Add approval details to message
-   e. Update thread with audit trail
-
-4. ESCALATION NOTIFICATION:
-   a. Post new message in escalation channel
-   b. Tag escalation approver
-   c. Include original message link
-   d. Add urgency indicators
-   e. Set high priority
-```
-
-**Microsoft Teams Integration:**
-```yaml
-teams_integration:
-  enabled: true
-  tenant_id: "${TEAMS_TENANT_ID}"
-  app_id: "${TEAMS_APP_ID}"
-
-  channels:
-    engineering: "Engineering Team"
-    deployments: "Deployments"
-
-  adaptive_cards:
-    approval_request:
-      type: "AdaptiveCard"
-      version: "1.4"
-      body:
-        - type: "TextBlock"
-          text: "Approval Required"
-          weight: "Bolder"
-          size: "Large"
-
-        - type: "FactSet"
-          facts:
-            - title: "Issue"
-              value: "{{issue_key}}"
-            - title: "Type"
-              value: "{{approval_type}}"
-            - title: "Priority"
-              value: "{{priority}}"
-
-        - type: "TextBlock"
-          text: "{{description}}"
-          wrap: true
-
-      actions:
-        - type: "Action.Submit"
-          title: "Approve"
-          style: "positive"
-          data:
-            action: "approve"
-            approval_id: "{{approval_id}}"
-
-        - type: "Action.Submit"
-          title: "Reject"
-          style: "destructive"
-          data:
-            action: "reject"
-            approval_id: "{{approval_id}}"
-```
+**Teams:** Adaptive cards with approve/reject actions. Same workflow as Slack using Teams-native components.
 
 ### 8. Conditional Approval Logic
 
-**Condition Engine:**
-```yaml
-conditional_logic:
-  # Skip approval if low risk
-  - condition_name: "low_risk_auto_approve"
-    when:
-      - "risk_level == 'low'"
-      - "code_coverage >= 80"
-      - "security_scan == 'passed'"
-      - "no_breaking_changes == true"
-    then:
-      action: "auto_approve"
-      notify: true
-      audit_note: "Auto-approved based on low risk criteria"
+**Condition Engine:** Evaluate context to modify workflow.
+- Low risk (coverage ≥80%, scan passed) → auto-approve
+- High risk (risk_level=high, impact >$100k) → add CFO approval
+- No security changes → skip security review
+- UI changes → require manual QA approval
 
-  # Require additional approval for high risk
-  - condition_name: "high_risk_extra_approval"
-    when:
-      - "risk_level == 'high'"
-      - "financial_impact > 100000"
-    then:
-      action: "add_approver"
-      approver: "cfo"
-      reason: "High financial impact requires CFO approval"
+**Evaluation:** Load rules → gather context data (risk, coverage, security, changes, testing, impact) → evaluate when clauses → execute then actions → apply modifications → record audit trail.
 
-  # Skip security review if no security changes
-  - condition_name: "skip_security_review"
-    when:
-      - "security_files_changed == false"
-      - "dependency_changes == false"
-    then:
-      action: "skip_level"
-      level: "security_review"
+## Workflow Examples
 
-  # Require manual testing for UI changes
-  - condition_name: "ui_manual_testing"
-    when:
-      - "ui_files_changed == true"
-      - "screenshot_count < 3"
-    then:
-      action: "block"
-      message: "UI changes require at least 3 screenshots"
-      add_check: "manual_qa_approval"
-```
-
-**Condition Evaluation:**
-```
-1. Load conditional rules for workflow
-2. Gather context data:
-   - Risk assessment results
-   - Code coverage metrics
-   - Security scan results
-   - Files changed analysis
-   - Financial impact data
-   - Test results
-3. For each condition:
-   a. Evaluate when clause (all conditions must be true)
-   b. If true, execute then action
-   c. Record condition evaluation in audit trail
-4. Apply all matching actions to workflow
-5. Proceed with modified workflow
-```
-
-**Context Data Collection:**
-```json
-{
-  "risk_assessment": {
-    "risk_level": "medium",
-    "risk_score": 45,
-    "factors": [
-      "production_deployment",
-      "database_migration_included",
-      "high_user_traffic_expected"
-    ]
-  },
-  "code_quality": {
-    "code_coverage": 85.5,
-    "complexity_score": 12,
-    "linting_errors": 0,
-    "linting_warnings": 3
-  },
-  "security": {
-    "security_scan": "passed",
-    "vulnerabilities": {
-      "critical": 0,
-      "high": 0,
-      "medium": 2,
-      "low": 5
-    },
-    "dependency_changes": true,
-    "security_files_changed": false
-  },
-  "changes": {
-    "files_changed": 23,
-    "lines_added": 456,
-    "lines_deleted": 123,
-    "ui_files_changed": true,
-    "backend_files_changed": true,
-    "config_files_changed": false
-  },
-  "testing": {
-    "unit_tests_passed": true,
-    "integration_tests_passed": true,
-    "e2e_tests_passed": false,
-    "manual_testing_required": true,
-    "screenshot_count": 5
-  },
-  "impact": {
-    "financial_impact": 50000,
-    "user_impact": "high",
-    "affected_users": 10000,
-    "breaking_changes": false
-  }
-}
-```
-
-## Workflow Execution Examples
-
-### Example 1: Standard Pull Request Approval
-
-```
-SCENARIO: Feature PR needs approval before merge
-
-WORKFLOW:
-1. Developer creates PR (PROJ-123)
-2. Approval Orchestrator triggered
-3. Load "standard_pr_approval" workflow
-4. Evaluate conditions:
-   - risk_level: medium
-   - code_coverage: 85%
-   - security_scan: passed
-5. Execute workflow:
-   Level 1 (Peer Review):
-   - Notify: backend_lead_1, backend_lead_2
-   - Quorum: 1 of 2
-   - Timeout: 24h
-   - Result: Approved by backend_lead_1 (2h)
-
-   Level 2 (Security Review):
-   - Condition: security_files_changed = false
-   - Action: SKIPPED
-
-6. All levels complete
-7. Update PR status: Approved
-8. Post Jira comment with approval details
-9. Enable merge button
-10. Record in audit trail
-
-TIMELINE:
-10:00 - PR created, approval workflow started
-10:05 - Slack notification sent to backend team
-12:30 - backend_lead_1 approved via Slack
-12:31 - Workflow complete, PR ready to merge
-```
+### Example 1: Standard PR Approval
+Sequential workflow for feature PR: Developer → Peer Review (1/2) → Product Approval → Merge enabled after all levels approved and audit recorded.
 
 ### Example 2: Production Deployment with Escalation
-
-```
-SCENARIO: Production deployment requires multi-level approval
-
-WORKFLOW:
-1. Engineer requests production deployment
-2. Load "production_deployment" workflow
-3. Execute sequential approval:
-
-   Level 1 (Engineering Manager):
-   - Notify: engineering_manager
-   - Timeout: 24h
-   - Result: TIMEOUT (no response)
-   - Escalation triggered after 24h
-   - Escalate to: director_of_engineering
-   - Result: Approved by director (1h after escalation)
-
-   Level 2 (Product Owner):
-   - Notify: product_owner
-   - Timeout: 24h
-   - Result: Approved (6h)
-
-   Level 3 (Security):
-   - Notify: security_team
-   - Timeout: 12h
-   - Result: Approved with comment (3h)
-
-4. All levels approved
-5. Deployment gate opened
-6. Execute deployment
-7. Post-deployment verification
-8. Record complete audit trail
-
-ESCALATION DETAILS:
-- Original approver: engineering_manager
-- Timeout: 24h
-- Escalation level: 1
-- Escalated to: director_of_engineering
-- Escalation reason: Timeout
-- Escalation notification: Slack + Email + Page
-- Resolution: Approved by escalatee
-```
+Sequential deployment approval with escalation: L1 timeout → escalate to director → approval continues through L2/L3 → deployment gate opens → audit trail maintained.
 
 ### Example 3: Parallel Team Approvals
-
-```
-SCENARIO: Multi-component change needs approval from all affected teams
-
-WORKFLOW:
-1. Developer creates PR affecting backend, frontend, and database
-2. Load "multi_team_approval" workflow
-3. Execute parallel approval:
-
-   Backend Team:
-   - Notify: backend_lead_1, backend_lead_2
-   - Quorum: 1 of 2
-   - Result: Approved by backend_lead_1 (1h)
-
-   Frontend Team:
-   - Notify: frontend_lead_1, frontend_lead_2
-   - Quorum: 1 of 2
-   - Result: Approved by frontend_lead_2 (2h)
-
-   Database Team:
-   - Notify: dba_1, dba_2
-   - Quorum: 2 of 2 (critical database change)
-   - Result: Approved by both (3h)
-
-4. All teams approved (max time: 3h)
-5. Workflow complete
-6. PR approved
-
-PARALLEL EXECUTION:
-- All teams notified simultaneously
-- Teams can approve independently
-- Workflow completes when all teams reach quorum
-- Faster than sequential (3h vs 9h if sequential)
-```
+Multi-team approval (backend, frontend, DB) all notified simultaneously. Workflow completes when all teams reach quorum (faster than sequential).
 
 ## Integration Points
 
-### 1. Jira Integration
-```
-- Create approval request as Jira comment
-- Update issue status when approval workflow starts
-- Post approval decisions as comments
-- Transition issue when workflow complete
-- Link approval records to issues
-```
+**Jira:** Create requests/comments, update status, post decisions, transition on complete, link records.
+**GitHub:** Create PR review requests, set pending status, block merge, post comments, enable auto-merge.
+**Slack:** Interactive requests, button handling, message updates, escalation notifications, reminders.
+**Event Sourcing:** Record all events, enable replay, support audit queries, generate reports, track metrics.
 
-### 2. GitHub Integration
-```
-- Create PR review request
-- Set PR status to pending approval
-- Block merge until approval workflow complete
-- Post approval decisions as PR comments
-- Update PR labels based on approval status
-- Enable auto-merge when approved
-```
+## Metrics & Reporting
 
-### 3. Slack Integration
-```
-- Send interactive approval requests
-- Handle button clicks for approve/reject
-- Update messages with approval status
-- Post escalation notifications
-- Send reminders for pending approvals
-- Create approval request threads
-```
+**Key Metrics:** Approval time by workflow, escalation/timeout/auto-approval rates, delegation usage, response time, completion rate, rejection rate.
 
-### 4. Event Sourcing Integration
-```
-- Record all approval events
-- Enable replay of approval workflows
-- Support audit queries
-- Generate compliance reports
-- Track approval metrics
-```
+**Collection:** Duration per level → total duration → count escalations/delegations → record decision → store in metrics DB → update dashboard.
 
-## Approval Metrics and Reporting
-
-### Key Metrics
-```
-- Average approval time by workflow
-- Escalation rate
-- Timeout rate
-- Auto-approval rate
-- Delegation usage
-- Approver response time
-- Workflow completion rate
-- Rejection rate with reasons
-```
-
-### Metric Collection
-```
-For each completed approval:
-1. Calculate duration per level
-2. Calculate total workflow duration
-3. Count escalations
-4. Count delegations
-5. Record final decision
-6. Store in metrics database
-7. Update real-time dashboard
-```
-
-### Reports
-```
-DAILY APPROVAL REPORT:
-- Approvals requested: 45
-- Approvals completed: 42
-- Approvals pending: 3
-- Average approval time: 4.5h
-- Escalations: 2 (4.4%)
-- Auto-approvals: 8 (17.8%)
-- Rejections: 1 (2.2%)
-
-APPROVER PERFORMANCE:
-- engineering_manager: 12 approvals, avg 2.5h
-- security_team: 8 approvals, avg 1.8h
-- product_owner: 10 approvals, avg 6.2h
-
-WORKFLOW PERFORMANCE:
-- standard_pr_approval: 30 instances, avg 3h
-- production_deployment: 8 instances, avg 12h
-- security_fix: 7 instances, avg 1.5h
-```
+**Sample Report:**
+- Approvals: 45 requested, 42 completed, 3 pending
+- Average time: 4.5h | Escalations: 2 (4.4%) | Auto-approvals: 8 (17.8%) | Rejections: 1 (2.2%)
+- Approver performance: engineering_manager (12 avg 2.5h), security_team (8 avg 1.8h), product_owner (10 avg 6.2h)
 
 ## Error Handling
 
-### Common Errors
-```
-1. Approver Not Found
-   - Check delegation rules
-   - Use proxy approver if configured
-   - Escalate immediately if no proxy
-
-2. Workflow Configuration Error
-   - Validate workflow before execution
-   - Use default workflow as fallback
-   - Alert configuration owner
-
-3. Integration Failure (Slack/Teams)
-   - Retry with exponential backoff
-   - Fall back to email notification
-   - Record failure in audit trail
-
-4. Timeout Not Triggered
-   - Implement timeout monitoring job
-   - Check timeouts every 15 minutes
-   - Alert if timeout processing fails
-
-5. Duplicate Approval
-   - Idempotency check on approval
-   - Record but don't re-process
-   - Update audit trail
-```
+1. **Approver Not Found:** Check delegation → use proxy → escalate
+2. **Config Error:** Validate workflow → use fallback → alert owner
+3. **Integration Failure:** Retry with backoff → fallback email → audit trail
+4. **Timeout Not Triggered:** Monitor job checks every 15min → alert if fails
+5. **Duplicate Approval:** Idempotency check → record/no reprocess → audit
 
 ## Best Practices
 
-### Workflow Design
-```
-1. Keep workflows simple and clear
-2. Minimize sequential steps (use parallel when possible)
-3. Set realistic timeouts
-4. Always have escalation path
-5. Document workflow purpose and context
-6. Test workflows before production use
-7. Review and optimize regularly
-```
+**Workflow Design:** Simple/clear → parallel over sequential → realistic timeouts → always have escalation → document purpose → test pre-prod → optimize regularly.
 
-### Approver Management
-```
-1. Assign backup approvers
-2. Use role-based approvers, not individuals
-3. Configure delegation for known absences
-4. Set up on-call rotations for critical approvals
-5. Train approvers on approval process
-6. Monitor approver performance
-```
+**Approver Management:** Backup approvers → role-based (not individual) → delegation for absences → on-call rotation → training → monitor performance.
 
-### Notification Management
-```
-1. Use appropriate channels (Slack for urgent, email for FYI)
-2. Avoid notification fatigue
-3. Batch non-urgent approvals
-4. Use clear, actionable messages
-5. Include all relevant context
-6. Provide direct action links
-```
+**Notification:** Appropriate channels (Slack=urgent, email=FYI) → prevent fatigue → batch non-urgent → clear/actionable → full context → direct links.
 
-### Audit and Compliance
-```
-1. Record every approval event
-2. Store immutable audit trails
-3. Generate compliance reports regularly
-4. Archive old approvals securely
-5. Implement retention policies
-6. Support audit queries efficiently
-```
+**Audit:** Every event recorded → immutable trails → regular compliance reports → secure archival → retention policies → efficient queries.
 
 ## Command Interface
 

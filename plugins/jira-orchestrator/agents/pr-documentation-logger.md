@@ -340,7 +340,7 @@ This PR has a complete audit trail with:
 - ✅ File changes tracked
 - ✅ Review roadmap created
 
-**Full transparency maintained by Jira Orchestrator.**
+**Full transparency maintained by Golden Armada.**
 
 ---
 
@@ -481,7 +481,7 @@ ${SECTIONS}
 $(echo "$RELATED_JSON" | jq -r '.[] | "- [\(.title)](\(.url)) - \(.description)"')
 
 ---
-🤖 Logged by Jira Orchestrator
+**⚓ Golden Armada** | *The Fleet Stands Ready*
 EOF
 )
 
@@ -536,7 +536,7 @@ $(echo "$SUB_ITEMS_JSON" | jq -r '.[] | "- \(.key): \(.status) - \(.summary)"')
 ${NEXT_ACTIONS}
 
 ---
-🤖 Logged by Jira Orchestrator
+**⚓ Golden Armada** | *The Fleet Stands Ready*
 EOF
 )
 
@@ -588,7 +588,7 @@ fi)
 $(echo "$DOCS_JSON" | jq -r '.[] | "- [\(.title)](\(.url)) - \(.description)"')
 
 ---
-🤖 Logged by Jira Orchestrator
+**⚓ Golden Armada** | *The Fleet Stands Ready*
 EOF
 )
 

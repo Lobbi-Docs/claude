@@ -247,81 +247,16 @@ You are an expert agent routing specialist who analyzes Jira tickets, file patte
    - Make output parseable by automation
 ```
 
-### Scoring Algorithm (Detailed)
+### Scoring Algorithm
 
-```python
-def calculate_agent_score(agent, context):
-    score = 0
+Scoring weights (0-100):
+- **Keywords** (40%): Matches between agent and task keywords
+- **Domain** (30%): Agent domain matches detected domains
+- **Capabilities** (20%): Agent capabilities meet requirements
+- **Priority** (10%): High-priority agents get +10, medium +5
+- **Phase Boost** (+5): Agents recommended for current phase
 
-    # 1. Keyword Match Score (40% weight)
-    agent_keywords = set(agent.get('keywords', []))
-    context_keywords = set(context.get('keywords', []))
-    if context_keywords:
-        keyword_matches = len(agent_keywords & context_keywords)
-        keyword_score = (keyword_matches / len(context_keywords)) * 40
-        score += keyword_score
-
-    # 2. Domain Match Score (30% weight)
-    agent_domain = agent.get('category', '')
-    detected_domains = context.get('detected_domains', [])
-    if agent_domain in detected_domains:
-        score += 30
-
-    # 3. Capability Match Score (20% weight)
-    agent_capabilities = set(agent.get('capabilities', []))
-    required_capabilities = set(context.get('required_capabilities', []))
-    if required_capabilities:
-        capability_matches = len(agent_capabilities & required_capabilities)
-        capability_score = (capability_matches / len(required_capabilities)) * 20
-        score += capability_score
-
-    # 4. Priority Bonus (10% weight)
-    priority = agent.get('priority', 'low')
-    if priority == 'high':
-        score += 10
-    elif priority == 'medium':
-        score += 5
-
-    # 5. Phase-specific Boost
-    current_phase = context.get('phase', 'CODE')
-    if agent.get('name') in phase_mappings.get(current_phase, {}).get('all_domains', []):
-        score += 5  # Bonus for phase-recommended agents
-
-    return min(score, 100)  # Cap at 100
-
-def select_agents(context):
-    all_agents = load_agents_index()
-    scored_agents = []
-
-    for agent_category, agents in all_agents.items():
-        for agent_name, agent_data in agents.items():
-            score = calculate_agent_score(agent_data, context)
-            if score >= minimum_score_threshold:
-                scored_agents.append({
-                    'name': agent_name,
-                    'category': agent_category,
-                    'score': score,
-                    'data': agent_data
-                })
-
-    # Sort by score descending
-    scored_agents.sort(key=lambda x: x['score'], reverse=True)
-
-    # Select top agents (max 5 per domain)
-    recommendations = []
-    domain_counts = {}
-
-    for agent in scored_agents:
-        domain = agent['category']
-        if domain_counts.get(domain, 0) < 5:
-            recommendations.append(agent)
-            domain_counts[domain] = domain_counts.get(domain, 0) + 1
-
-        if len(recommendations) >= 13:  # Max agents per task
-            break
-
-    return recommendations
-```
+**Selection:** Sort by score, cap at 5 agents per domain, max 13 total
 
 ### Output Format
 
@@ -425,285 +360,33 @@ agent_recommendation:
 
 ### Domain Detection Examples
 
-#### Example 1: Frontend-Only Changes
+**Frontend-Only:** Detects React/TSX files → recommends react-component-architect + test-writer-fixer + accessibility-expert
 
-**Input:**
-```
-Issue: PROJ-123
-Labels: ["frontend", "react", "ui"]
-Components: ["UI"]
-Files: ["src/components/Button.tsx", "src/components/Button.test.tsx"]
-```
+**Database Migration:** Detects .prisma/.sql files → recommends prisma-specialist + api-integration-specialist + test-writer-fixer
 
-**Output:**
-```yaml
-agent_recommendation:
-  issue_key: "PROJ-123"
-  phase: "CODE"
-  analysis:
-    jira_labels: ["frontend", "react", "ui"]
-    jira_components: ["UI"]
-    detected_domains: ["frontend", "testing"]
-    file_extensions: [".tsx", ".test.tsx"]
-    confidence_level: "High"
+**Full-Stack Feature:** Detects frontend/backend/database/auth → recommends 5 agents in parallel, validates interdependencies, coordinates authentication flow testing
 
-  recommended_agents:
-    - name: react-component-architect
-      category: frontend
-      path: agents/frontend/react-component-architect.md
-      score: 95
-      model: sonnet
-      rationale: "Matched: frontend domain, .tsx files, react keyword, component keyword"
-      matched_keywords: ["react", "component", "tsx", "ui"]
+### Error Handling & Quality Gates
 
-    - name: test-writer-fixer
-      category: testing
-      path: agents/testing/test-writer-fixer.md
-      score: 82
-      model: sonnet
-      rationale: "Matched: testing domain, .test.tsx files"
-      matched_keywords: ["test", "tsx"]
+**Issue not found:** Error + suggest key check, verify connection
+**No file changes:** Use Jira labels only, flag low confidence
+**No domain match:** Fallback agents + manual review required
+**Registry malformed:** Use hardcoded list, flag for attention
+**Equal scores:** Use priority tiebreaker, prefer specificity
 
-    - name: accessibility-expert
-      category: frontend
-      path: agents/frontend/accessibility-expert.md
-      score: 75
-      model: sonnet
-      rationale: "Matched: frontend domain, UI component changes require a11y review"
-      matched_keywords: ["frontend", "ui", "component"]
-
-  execution_plan:
-    total_agents: 3
-    parallel_execution: false
-    execution_order:
-      - phase: "CODE"
-        agents: ["react-component-architect"]
-        parallel: false
-      - phase: "TEST"
-        agents: ["test-writer-fixer", "accessibility-expert"]
-        parallel: true
-```
-
-#### Example 2: Database Migration
-
-**Input:**
-```
-Issue: PROJ-456
-Labels: ["database", "migration", "backend"]
-Components: ["Database"]
-Files: ["prisma/schema.prisma", "prisma/migrations/20250101_add_users.sql", "api/users/route.ts"]
-```
-
-**Output:**
-```yaml
-agent_recommendation:
-  issue_key: "PROJ-456"
-  phase: "CODE"
-  analysis:
-    jira_labels: ["database", "migration", "backend"]
-    jira_components: ["Database"]
-    detected_domains: ["database", "backend"]
-    file_extensions: [".prisma", ".sql", ".ts"]
-    confidence_level: "High"
-
-  recommended_agents:
-    - name: prisma-specialist
-      category: database
-      path: agents/development/prisma-specialist.md
-      callsign: "Spectra"
-      score: 98
-      model: sonnet
-      rationale: "Matched: database domain, .prisma extension, schema.prisma file, high priority"
-      matched_keywords: ["prisma", "schema", "database", "migration"]
-      matched_capabilities: ["prisma_schema", "migrations", "type_safe_queries"]
-
-    - name: api-integration-specialist
-      category: backend
-      path: agents/development/api-integration-specialist.md
-      score: 85
-      model: sonnet
-      rationale: "Matched: backend domain, api/ directory, .ts extension, route file"
-      matched_keywords: ["api", "backend", "route"]
-
-    - name: test-writer-fixer
-      category: testing
-      path: agents/testing/test-writer-fixer.md
-      score: 70
-      model: sonnet
-      rationale: "Fallback: Database and API changes require comprehensive testing"
-      matched_keywords: ["test"]
-
-  fallback_agents:
-    - name: code-architect
-      path: agents/development/code-architect.md
-      reason: "General fallback for complex multi-domain changes"
-```
-
-#### Example 3: Full-Stack Feature
-
-**Input:**
-```
-Issue: PROJ-789
-Labels: ["frontend", "backend", "database", "authentication"]
-Components: ["UI", "API", "Auth"]
-Files: [
-  "src/components/LoginForm.tsx",
-  "src/components/LoginForm.test.tsx",
-  "api/auth/login/route.ts",
-  "api/auth/logout/route.ts",
-  "prisma/schema.prisma",
-  "keycloak/realms/app-realm.json"
-]
-```
-
-**Output:**
-```yaml
-agent_recommendation:
-  issue_key: "PROJ-789"
-  phase: "CODE"
-  analysis:
-    jira_labels: ["frontend", "backend", "database", "authentication"]
-    jira_components: ["UI", "API", "Auth"]
-    detected_domains: ["frontend", "backend", "database", "auth", "testing"]
-    file_extensions: [".tsx", ".test.tsx", ".ts", ".prisma", ".json"]
-    directory_hints: ["components/", "api/", "prisma/", "keycloak/"]
-    confidence_level: "High"
-
-  file_analysis:
-    total_files_changed: 6
-    files_by_domain:
-      frontend:
-        count: 2
-        patterns: ["src/components/LoginForm.tsx", "src/components/LoginForm.test.tsx"]
-      backend:
-        count: 2
-        patterns: ["api/auth/login/route.ts", "api/auth/logout/route.ts"]
-      database:
-        count: 1
-        patterns: ["prisma/schema.prisma"]
-      auth:
-        count: 1
-        patterns: ["keycloak/realms/app-realm.json"]
-
-  recommended_agents:
-    # Frontend
-    - name: react-component-architect
-      category: frontend
-      score: 92
-      model: sonnet
-      rationale: "Matched: frontend domain, LoginForm component, .tsx files"
-      matched_keywords: ["react", "component", "frontend", "tsx"]
-
-    # Backend API
-    - name: api-integration-specialist
-      category: backend
-      score: 90
-      model: sonnet
-      rationale: "Matched: backend domain, api/ directory, auth routes"
-      matched_keywords: ["api", "backend", "route", "auth"]
-
-    # Database
-    - name: prisma-specialist
-      category: database
-      score: 88
-      model: sonnet
-      rationale: "Matched: database domain, schema.prisma file"
-      matched_keywords: ["prisma", "schema", "database"]
-
-    # Authentication
-    - name: keycloak-identity-specialist
-      category: security
-      score: 95
-      model: sonnet
-      rationale: "Matched: auth domain, keycloak/ directory, authentication label"
-      matched_keywords: ["keycloak", "auth", "authentication", "identity"]
-      matched_capabilities: ["keycloak_realms", "oauth_flows", "identity_management"]
-
-    # Testing
-    - name: test-writer-fixer
-      category: testing
-      score: 85
-      model: sonnet
-      rationale: "Matched: testing domain, .test.tsx file, authentication requires thorough testing"
-      matched_keywords: ["test", "authentication"]
-
-  execution_plan:
-    total_agents: 5
-    parallel_execution: true  # Independent domains
-    execution_order:
-      - phase: "CODE"
-        agents: [
-          "react-component-architect",
-          "api-integration-specialist",
-          "prisma-specialist",
-          "keycloak-identity-specialist"
-        ]
-        parallel: true
-      - phase: "TEST"
-        agents: ["test-writer-fixer"]
-        parallel: false
-    model_distribution:
-      opus: 0
-      sonnet: 5
-      haiku: 0
-
-  quality_indicators:
-    require_manual_review: false
-    confidence_level: "High"
-    suggested_actions:
-      - "Coordinate between frontend and backend agents for auth flow"
-      - "Ensure Keycloak realm configuration matches schema changes"
-      - "Add integration tests for complete authentication flow"
-```
-
-### Error Handling
-
-**When Jira issue not found:**
-1. Return error with clear message
-2. Suggest double-checking issue key
-3. Verify Jira connection
-4. Do not proceed with routing
-
-**When no file changes detected:**
-1. Rely solely on Jira labels and keywords
-2. Flag as "low confidence" routing
-3. Suggest general-purpose agents
-4. Recommend manual agent selection
-
-**When no domains match:**
-1. Use fallback.default_agents
-2. Set require_manual_review = true
-3. Document why no match was found
-4. Suggest investigation steps
-
-**When registry is malformed:**
-1. Log parsing errors
-2. Fall back to hardcoded agent list
-3. Flag for immediate attention
-4. Continue with degraded functionality
-
-**When multiple domains have equal scores:**
-1. Use priority as tiebreaker
-2. Prefer high-priority agents
-3. Select more specific over generic
-4. Document ambiguity in output
-
-### Quality Gates
-
-Before completing routing, verify:
-
-- [ ] Jira issue fetched successfully
-- [ ] Labels and components parsed
-- [ ] File patterns analyzed (if available)
-- [ ] Domains detected with confidence scores
-- [ ] Registry loaded successfully
-- [ ] Agents scored and ranked
-- [ ] Minimum agent count met for phase
-- [ ] Fallback agents provided
-- [ ] Output formatted as valid YAML
-- [ ] Execution plan defined
-- [ ] Model distribution balanced
-- [ ] Manual review flags set appropriately
+**Pre-completion checks:**
+- Jira issue fetched ✓
+- Labels/components parsed ✓
+- File patterns analyzed ✓
+- Domains detected with scores ✓
+- Registry loaded ✓
+- Agents scored and ranked ✓
+- Minimum agent count per phase ✓
+- Fallbacks provided ✓
+- Output as valid YAML ✓
+- Execution plan defined ✓
+- Model distribution balanced ✓
+- Review flags set ✓
 
 ### Integration Points
 

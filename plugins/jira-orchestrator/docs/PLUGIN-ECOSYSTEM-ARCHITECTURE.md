@@ -1,70 +1,27 @@
 # Plugin Ecosystem Architecture v1.0.0
 
-**Central Brain: Jira Orchestrator (Arbiter)**
-**Plugin Count:** 5 specialized plugins
-**Total Agents:** 78 across ecosystem
-**Total Commands:** 103 across ecosystem
-**Design Date:** 2025-12-26
+**Central Brain:** Jira Orchestrator | **Plugins:** 5 | **Agents:** 78 | **Commands:** 103
 
----
+## System Overview
 
-## Table of Contents
+**Vision:** Jira Orchestrator acts as central intelligence routing to specialized plugins via event-driven messaging.
 
-1. [Executive Summary](#executive-summary)
-2. [System Architecture](#system-architecture)
-3. [Plugin Structure](#plugin-structure)
-4. [Inter-Plugin Communication Protocol](#inter-plugin-communication-protocol)
-5. [Meta-Controller (Routing Engine)](#meta-controller-routing-engine)
-6. [Agent Registry System](#agent-registry-system)
-7. [State Management](#state-management)
-8. [Error Handling Patterns](#error-handling-patterns)
-9. [Command Chaining Patterns](#command-chaining-patterns)
-10. [Implementation Roadmap](#implementation-roadmap)
+**Key Principles:**
+1. Centralized Intelligence - Jira Orchestrator owns routing
+2. Plugin Autonomy - Each manages domain expertise
+3. Loose Coupling - Standard protocols for communication
+4. Fault Tolerance - Circuit breakers and graceful degradation
+5. Observable - Full telemetry and tracing
 
----
-
-## Executive Summary
-
-### Vision
-
-Create a unified plugin ecosystem where **Jira Orchestrator** acts as the central intelligence layer, routing requests to 5 specialized plugins based on context, capabilities, and current state.
-
-### Key Principles
-
-1. **Centralized Intelligence** - Jira Orchestrator owns routing decisions
-2. **Plugin Autonomy** - Each plugin manages its own domain expertise
-3. **Loose Coupling** - Plugins communicate via standard protocols
-4. **Fault Tolerance** - Circuit breakers and graceful degradation
-5. **Observable** - Full telemetry and tracing across plugin boundaries
-
-### Plugin Roles
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    JIRA ORCHESTRATOR (Arbiter)                       │
-│                     Central Routing Brain                            │
-│  ┌────────────┐  ┌──────────────┐  ┌─────────────┐                │
-│  │  Routing   │  │ Agent        │  │  Command    │                │
-│  │  Engine    │  │ Registry     │  │  Chaining   │                │
-│  └────────────┘  └──────────────┘  └─────────────┘                │
-└───────────────────┬───────────────────────────────────────────────┘
-                    │ Message Bus / Event Backbone
-        ┌───────────┼───────────┬──────────┬──────────┐
-        │           │           │          │          │
-    ┌───▼───┐   ┌──▼───┐   ┌──▼───┐  ┌──▼────┐  ┌──▼────┐
-    │ Exec  │   │ Home │   │Front │  │ Ahling│  │Lobbi  │
-    │Automat│   │Assist│   │Power │  │Command│  │Platform│
-    │  or   │   │  or  │   │ house│  │Center │  │Manager│
-    └───────┘   └──────┘   └──────┘  └───────┘  └───────┘
-     11 agents   15 agents  13 agents 10 agents  4 agents
-     13 cmds     9 cmds     12 cmds   15 cmds    8 cmds
-```
-
----
+**Plugin Topology:**
+- **jira-orchestrator** (61 agents, 35 cmds) - Central routing, Jira workflows, portfolio
+- **exec-automator** (11 agents, 13 cmds) - Document analysis, LangGraph workflows
+- **home-assistant** (15 agents, 9 cmds) - Home automation, Ollama, IoT
+- **frontend-powerhouse** (13 agents, 12 cmds) - React/Next.js, Chakra UI, accessibility
+- **ahling-command-center** (10 agents, 15 cmds) - Docker, Vault, multi-cloud, smart home
+- **lobbi-platform-manager** (4 agents, 8 cmds) - Keycloak, multi-tenant, MERN
 
 ## System Architecture
-
-### 1. Architectural Layers
 
 ```
 ┌───────────────────────────────────────────────────────────────────┐

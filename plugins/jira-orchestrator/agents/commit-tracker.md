@@ -730,56 +730,6 @@ def handle_validated_commit(commit_data):
 
 ---
 
-## Usage Examples
-
-### Example 1: Track Single Commit
-
-```bash
-# Track a specific commit
-./commit-tracker.sh track --commit a1b2c3d --auto-map
-
-# Output:
-# ✅ Commit a1b2c3d mapped to PROJ-123 (confidence: 1.0)
-# ✅ Posted comment to PROJ-123
-# ✅ Linked to 2 Confluence pages
-```
-
-### Example 2: Track Commit Range
-
-```bash
-# Track all commits in a range
-./commit-tracker.sh track --range main..feature/auth --batch
-
-# Output:
-# 📊 Processing 15 commits...
-# ✅ Mapped 15 commits to 3 issues
-# ✅ Posted 3 batch comments
-# 📋 Summary:
-#    - PROJ-123: 8 commits
-#    - PROJ-124: 5 commits
-#    - PROJ-125: 2 commits
-```
-
-### Example 3: Manual Issue Assignment
-
-```bash
-# Manually assign commit to issue
-./commit-tracker.sh track --commit a1b2c3d --issue PROJ-123
-
-# Output:
-# ✅ Commit a1b2c3d manually assigned to PROJ-123
-# ✅ Posted comment to PROJ-123
-```
-
-### Example 4: Generate Report
-
-```bash
-# Generate commit report for issue
-./commit-tracker.sh report --issue PROJ-123 --format markdown
-
-# Output saved to: reports/PROJ-123-commits.md
-```
-
 ---
 
 ## API Reference
@@ -994,47 +944,6 @@ def batch_get_issues(issue_keys):
 
 ---
 
-## Testing
-
-### Unit Tests
-
-```python
-def test_direct_key_matching():
-    """Test direct issue key matching."""
-    commit = MockCommit(message="feat(PROJ-123): Add feature")
-    result = match_by_direct_key(commit)
-    assert result == {'PROJ-123': 1.0}
-
-def test_file_path_matching():
-    """Test file path-based matching."""
-    commit = MockCommit(files=['src/auth/oauth.ts'])
-    issue = MockIssue(
-        key='PROJ-123',
-        description='Files: src/auth/*.ts'
-    )
-    result = match_by_file_path(commit, [issue])
-    assert result['PROJ-123'] > 0.6
-
-def test_temporal_matching():
-    """Test temporal proximity matching."""
-    now = datetime.now()
-    commit = MockCommit(timestamp=now)
-    issue = MockIssue(
-        key='PROJ-123',
-        updated=now - timedelta(hours=2)
-    )
-    result = match_by_temporal_proximity(commit, [issue])
-    assert result['PROJ-123'] >= 0.3
-
-def test_batch_processing():
-    """Test batch commit processing."""
-    commits = [MockCommit() for _ in range(10)]
-    issues = [MockIssue() for _ in range(3)]
-    result = batch_process_commits(commits, issues)
-    assert result['processed'] == 10
-    assert result['posted'] > 0
-```
-
 ---
 
 ## Monitoring and Metrics
@@ -1063,31 +972,6 @@ logger.info("commit_tracked", extra={
 ```
 
 ---
-
-## Troubleshooting Guide
-
-### Debug Mode
-
-```bash
-# Enable debug logging
-export COMMIT_TRACKER_DEBUG=true
-./commit-tracker.sh track --commit a1b2c3d
-
-# Debug output includes:
-# - Mapping strategy scores
-# - API request/response details
-# - Cache hit/miss rates
-# - Processing timelines
-```
-
-### Dry Run Mode
-
-```bash
-# Test without posting to Jira
-./commit-tracker.sh track --commit a1b2c3d --dry-run
-
-# Shows what would be posted without actually posting
-```
 
 ---
 

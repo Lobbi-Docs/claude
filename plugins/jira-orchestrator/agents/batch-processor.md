@@ -299,183 +299,27 @@ If rollback requested:
 
 ## Implementation Examples
 
-### Example 1: Bulk Status Transition
+### Operation Examples
 
-```yaml
-batch_operation:
-  name: "Move To In Progress"
-  operation_type: TRANSITION
-  target:
-    jql: "project = MYPROJ AND status = 'To Do' AND assignee = currentUser()"
-  action:
-    transition: "In Progress"
-    comment: "Starting work on this issue"
-  options:
-    dry_run: true
-    batch_size: 20
-    rate_limit: 30/minute
-```
+**TRANSITION:** Bulk status transitions with JQL target
+- Supports dry-run validation before execution
+- Handles workflow rule validation
+- Returns comprehensive success/failure breakdown
 
-**Execution Flow:**
-```markdown
-1. Parse operation configuration
-2. Execute JQL query → 150 issues found
-3. Validate transition availability for each issue
-4. DRY RUN: Preview changes
-   - 150 issues will transition to "In Progress"
-   - Estimated time: 5 minutes
-   - No errors detected
-5. Request user confirmation
-6. Execute in batches of 20
-   - Batch 1: 20/20 successful
-   - Batch 2: 20/20 successful
-   - Batch 3: 20/20 successful
-   - ... (progress continues)
-7. Final report:
-   - Total: 150
-   - Successful: 150
-   - Failed: 0
-   - Time: 4m 32s
-```
+**UPDATE:** Mass field updates across multiple issues
+- Supports custom and standard fields
+- Enables rollback with change tracking
+- Validates field values before batch execution
 
-### Example 2: Mass Field Update
+**ASSIGN:** Round-robin or workload-based assignment
+- Supports multiple strategies and team distribution
+- Tracks workload balancing
+- Adds automated comments
 
-```yaml
-batch_operation:
-  name: "Update Sprint Field"
-  operation_type: UPDATE
-  target:
-    keys: ["PROJ-1", "PROJ-2", "PROJ-3", ..., "PROJ-100"]
-  action:
-    fields:
-      customfield_10020: 42  # Sprint field
-      labels:
-        add: ["sprint-42", "q1-2025"]
-      priority:
-        name: "High"
-  options:
-    dry_run: false
-    batch_size: 25
-    rollback_enabled: true
-```
-
-**Execution Flow:**
-```markdown
-1. Load 100 target issue keys
-2. Fetch current state for rollback
-3. Validate sprint field exists
-4. Validate priority value
-5. Execute in batches of 25:
-
-   Batch 1 (PROJ-1 to PROJ-25):
-   - Rate limit: Wait 0ms
-   - Update 25 issues concurrently
-   - Success: 25/25
-   - Rollback data saved
-
-   Batch 2 (PROJ-26 to PROJ-50):
-   - Rate limit: Wait 200ms
-   - Update 25 issues concurrently
-   - Success: 24/25
-   - Failed: PROJ-38 (field validation error)
-   - Rollback data saved
-
-   Batch 3 (PROJ-51 to PROJ-75):
-   - Rate limit: Wait 150ms
-   - Update 25 issues concurrently
-   - Success: 25/25
-   - Rollback data saved
-
-   Batch 4 (PROJ-76 to PROJ-100):
-   - Rate limit: Wait 100ms
-   - Update 25 issues concurrently
-   - Success: 25/25
-   - Rollback data saved
-
-6. Final Report:
-   - Total: 100
-   - Successful: 99
-   - Failed: 1 (PROJ-38)
-   - Rollback available: Yes
-   - Rollback file: /tmp/batch_rollback_<job_id>.json
-```
-
-### Example 3: Round-Robin Assignment
-
-```yaml
-batch_operation:
-  name: "Distribute Triage Queue"
-  operation_type: ASSIGN
-  target:
-    jql: "project = SUPPORT AND status = 'Open' AND assignee is EMPTY"
-  action:
-    strategy: round_robin
-    assignees:
-      - john.doe@company.com
-      - jane.smith@company.com
-      - bob.wilson@company.com
-    comment: "Auto-assigned for triage"
-  options:
-    batch_size: 30
-    balance_workload: true
-```
-
-**Execution Flow:**
-```markdown
-1. Query open support tickets → 90 issues
-2. Get current workload for each assignee:
-   - john.doe: 15 open issues
-   - jane.smith: 12 open issues
-   - bob.wilson: 18 open issues
-3. Calculate balanced distribution:
-   - Assign 28 to jane.smith (→ 40 total)
-   - Assign 30 to john.doe (→ 45 total)
-   - Assign 32 to bob.wilson (→ 50 total)
-4. Execute assignments:
-   - Batch 1: Assign 30 issues
-   - Batch 2: Assign 30 issues
-   - Batch 3: Assign 30 issues
-5. Add comment to each issue
-6. Report:
-   - Total assigned: 90
-   - john.doe: 30 issues
-   - jane.smith: 28 issues
-   - bob.wilson: 32 issues
-```
-
-### Example 4: Bulk Issue Linking
-
-```yaml
-batch_operation:
-  name: "Link Related Features"
-  operation_type: LINK
-  target:
-    parent_issues: ["EPIC-100"]
-    link_to:
-      jql: "project = MYPROJ AND labels = 'feature-set-alpha'"
-  action:
-    link_type: "relates to"
-    comment: "Linked related features"
-  options:
-    prevent_duplicates: true
-    batch_size: 50
-```
-
-**Execution Flow:**
-```markdown
-1. Resolve parent issues: EPIC-100
-2. Execute JQL → 75 related features found
-3. Check existing links for duplicates
-4. Filter out 5 already-linked issues
-5. Create 70 new links:
-   - Batch 1: 50 links created
-   - Batch 2: 20 links created
-6. Report:
-   - Total candidates: 75
-   - Already linked: 5
-   - New links created: 70
-   - Failed: 0
-```
+**LINK:** Create links between issue sets
+- Prevents duplicate links
+- Supports all Jira link types
+- Tracks link creation failures
 
 ## Rate Limiting Strategy
 
@@ -544,244 +388,35 @@ def execute_with_retry(operation, max_retries=3):
 
 ## Progress Tracking
 
-### Real-time Progress Display
-
-```markdown
-╔══════════════════════════════════════════════════════════════════╗
-║                    BATCH OPERATION PROGRESS                      ║
-╠══════════════════════════════════════════════════════════════════╣
-║                                                                  ║
-║  Job ID: batch_20250115_143052_a8f3                            ║
-║  Operation: Bulk Status Transition                              ║
-║  Started: 2025-01-15 14:30:52                                   ║
-║                                                                  ║
-║  Progress: [████████████████░░░░░░░░] 65% (130/200)            ║
-║                                                                  ║
-║  ✓ Successful:  125                                             ║
-║  ✗ Failed:       5                                              ║
-║  ⊘ Skipped:      0                                              ║
-║  ⟳ In Progress:  10                                             ║
-║                                                                  ║
-║  Current Batch: 6/8 (Batch size: 25)                           ║
-║  Elapsed Time: 3m 24s                                           ║
-║  Est. Remaining: 1m 48s                                         ║
-║  Avg. Speed: 38 issues/min                                      ║
-║                                                                  ║
-║  Rate Limit: 87/100 requests/min                                ║
-║  Concurrent: 8/10 requests                                      ║
-║                                                                  ║
-╚══════════════════════════════════════════════════════════════════╝
-
-Recent Activity:
-  14:34:15 - PROJ-125: Transitioned to In Progress ✓
-  14:34:15 - PROJ-126: Transitioned to In Progress ✓
-  14:34:16 - PROJ-127: FAILED (Invalid transition) ✗
-  14:34:16 - PROJ-128: Transitioned to In Progress ✓
-  14:34:16 - PROJ-129: Transitioned to In Progress ✓
-```
-
-### Progress Data Structure
-
-```json
-{
-  "job_id": "batch_20250115_143052_a8f3",
-  "operation_type": "TRANSITION",
-  "status": "IN_PROGRESS",
-  "started_at": "2025-01-15T14:30:52Z",
-  "updated_at": "2025-01-15T14:34:16Z",
-  "total_items": 200,
-  "processed": 130,
-  "successful": 125,
-  "failed": 5,
-  "skipped": 0,
-  "in_progress": 10,
-  "completion_pct": 65.0,
-  "elapsed_seconds": 204,
-  "estimated_remaining_seconds": 108,
-  "avg_speed": 38.2,
-  "current_batch": 6,
-  "total_batches": 8,
-  "rate_limit_status": {
-    "current": 87,
-    "limit": 100,
-    "window": "1m"
-  },
-  "errors": [
-    {
-      "issue_key": "PROJ-127",
-      "error": "Invalid transition",
-      "timestamp": "2025-01-15T14:34:16Z"
-    }
-  ]
-}
-```
+Track in real-time with:
+- Job ID, operation type, and status
+- Completion percentage and elapsed time
+- Success/failure/skipped counts
+- Rate limit status
+- Estimated time remaining
+- Error log with issue keys and reasons
 
 ## Rollback System
 
-### Rollback Data Collection
-
-```json
-{
-  "rollback_id": "rollback_batch_20250115_143052_a8f3",
-  "original_job_id": "batch_20250115_143052_a8f3",
-  "created_at": "2025-01-15T14:30:52Z",
-  "operation_type": "UPDATE",
-  "changes": [
-    {
-      "issue_key": "PROJ-1",
-      "success": true,
-      "original_state": {
-        "priority": "Medium",
-        "labels": ["old-label"],
-        "customfield_10020": null
-      },
-      "new_state": {
-        "priority": "High",
-        "labels": ["old-label", "sprint-42"],
-        "customfield_10020": 42
-      },
-      "timestamp": "2025-01-15T14:31:05Z"
-    },
-    {
-      "issue_key": "PROJ-2",
-      "success": true,
-      "original_state": {
-        "priority": "Low",
-        "labels": [],
-        "customfield_10020": null
-      },
-      "new_state": {
-        "priority": "High",
-        "labels": ["sprint-42"],
-        "customfield_10020": 42
-      },
-      "timestamp": "2025-01-15T14:31:05Z"
-    }
-  ],
-  "rollback_available": true,
-  "rollback_expiry": "2025-01-22T14:30:52Z"
-}
-```
-
-### Rollback Execution
-
-```markdown
-## Rollback Process
-
-1. Load rollback data file
-2. Verify rollback is valid
-3. Check rollback expiry
-4. Preview rollback changes
-5. Request user confirmation
-6. Execute rollback in batches:
-   - Restore original field values
-   - Reverse transitions
-   - Remove added links
-   - Restore assignments
-7. Track rollback success/failure
-8. Generate rollback report
-```
-
-### Rollback Example
-
-```yaml
-rollback_operation:
-  rollback_id: "rollback_batch_20250115_143052_a8f3"
-  options:
-    dry_run: true
-    verify_state: true
-```
-
-**Execution:**
-```markdown
-1. Load rollback data: 99 changes
-2. Verify current state matches expected:
-   - PROJ-1: State matches ✓
-   - PROJ-2: State matches ✓
-   - PROJ-3: State modified externally ⚠
-   - ... (continue verification)
-3. Preview rollback:
-   - 99 issues will be reverted
-   - 1 issue has conflicts (PROJ-3)
-4. Request confirmation
-5. Execute rollback:
-   - Batch 1: 25/25 reverted
-   - Batch 2: 25/25 reverted
-   - Batch 3: 25/25 reverted
-   - Batch 4: 24/25 reverted (PROJ-3 skipped)
-6. Report:
-   - Total: 99
-   - Reverted: 98
-   - Skipped: 1 (state conflict)
-```
+Stores original issue state before each batch operation:
+- Original field values, transitions, and assignments
+- Enables full revert of operations within 7-day window
+- Validates state before rollback (detects external changes)
+- Supports dry-run preview before reverting
+- Tracks rollback success/failure per issue
+- Exposes conflicts when issue state changed externally
 
 ## Error Handling & Recovery
 
-### Error Categories
+**Validation Errors:** Field validation, workflow rules, permissions
+**Execution Errors:** Rate limits, timeouts, API failures, missing issues
+**System Errors:** Out of memory, disk full, process killed
 
-#### 1. **Validation Errors**
-```yaml
-errors:
-  field_validation:
-    - Invalid field value
-    - Required field missing
-    - Field type mismatch
-  workflow_validation:
-    - Invalid transition
-    - Workflow rule violation
-    - Missing required resolution
-  permission_validation:
-    - Insufficient permissions
-    - User not found
-    - Project access denied
-```
-
-#### 2. **Execution Errors**
-```yaml
-errors:
-  api_errors:
-    - Rate limit exceeded
-    - Network timeout
-    - Server error (500)
-  data_errors:
-    - Issue not found
-    - Field not found
-    - Invalid issue type
-```
-
-#### 3. **System Errors**
-```yaml
-errors:
-  system_errors:
-    - Out of memory
-    - Disk space full
-    - Process killed
-```
-
-### Recovery Strategies
-
-```markdown
-## Strategy 1: Retry with Backoff
-- Applicable: API errors, network timeouts
-- Max retries: 3
-- Backoff: Exponential (2^n seconds)
-- Success rate: ~95%
-
-## Strategy 2: Skip and Continue
-- Applicable: Validation errors, permission errors
-- Action: Log error, continue with next item
-- Success rate: 100% (for remaining items)
-
-## Strategy 3: Rollback and Abort
-- Applicable: Critical system errors
-- Action: Rollback all changes, abort operation
-- Success rate: 100% (safety guaranteed)
-
-## Strategy 4: Partial Commit
-- Applicable: Large batch operations
-- Action: Commit successful operations, report failures
-- Success rate: Variable
-```
+**Recovery Strategies:**
+1. **Retry with Backoff** - API/timeout errors: 3 retries, exponential backoff
+2. **Skip and Continue** - Validation errors: log and proceed to next item
+3. **Rollback and Abort** - Critical errors: revert all changes and stop
+4. **Partial Commit** - Large ops: keep successful changes, report failures
 
 ## Best Practices
 
@@ -822,67 +457,14 @@ Large batches (50-100): Simple operations, low risk
 
 ## Output & Reporting
 
-### Final Report Format
-
-```markdown
-# Batch Operation Report
-
-**Job ID:** batch_20250115_143052_a8f3
-**Operation:** Bulk Status Transition
-**Started:** 2025-01-15 14:30:52
-**Completed:** 2025-01-15 14:36:24
-**Duration:** 5m 32s
-
-## Summary
-
-- **Total Issues:** 200
-- **Successful:** 195 (97.5%)
-- **Failed:** 5 (2.5%)
-- **Skipped:** 0
-- **Avg Speed:** 36.2 issues/min
-
-## Success Breakdown
-
-| Batch | Issues | Success | Failed | Time |
-|-------|--------|---------|--------|------|
-| 1     | 25     | 25      | 0      | 38s  |
-| 2     | 25     | 25      | 0      | 42s  |
-| 3     | 25     | 23      | 2      | 45s  |
-| 4     | 25     | 25      | 0      | 40s  |
-| 5     | 25     | 25      | 0      | 38s  |
-| 6     | 25     | 22      | 3      | 47s  |
-| 7     | 25     | 25      | 0      | 39s  |
-| 8     | 25     | 25      | 0      | 41s  |
-
-## Failed Operations
-
-1. **PROJ-67** - Invalid transition (workflow rule violation)
-2. **PROJ-89** - Invalid transition (missing required field)
-3. **PROJ-134** - Permission denied
-4. **PROJ-156** - Invalid transition (workflow rule violation)
-5. **PROJ-178** - Issue not found
-
-## Rollback Information
-
-- **Rollback Available:** Yes
-- **Rollback File:** `/tmp/rollback_batch_20250115_143052_a8f3.json`
-- **Rollback Command:** `jira:batch --rollback batch_20250115_143052_a8f3`
-- **Expiry:** 2025-01-22 14:30:52 (7 days)
-
-## Rate Limiting
-
-- **Average Rate:** 87 requests/min
-- **Peak Rate:** 95 requests/min
-- **Limit:** 100 requests/min
-- **Throttle Events:** 3
-
-## Next Steps
-
-1. Review failed operations
-2. Manually fix issues: PROJ-67, PROJ-89, PROJ-134, PROJ-156
-3. Investigate missing issue: PROJ-178
-4. Consider rollback if results are unsatisfactory
-```
+Final report includes:
+- Job ID, operation type, start/complete timestamps, duration
+- Total issues processed with success/failure/skipped counts
+- Batch-by-batch breakdown with timing
+- Failed operation details with error messages
+- Rollback availability and expiry time
+- Rate limit statistics and throttle events
+- Suggested next steps for failed items
 
 ---
 

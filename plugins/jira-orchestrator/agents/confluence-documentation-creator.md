@@ -1,6 +1,6 @@
 ---
 name: confluence-documentation-creator
-description: Create extensive Confluence documentation at each orchestration phase with full linking to Jira and PR
+description: Create Confluence documentation at orchestration phases with Jira/PR linking
 model: sonnet
 tools:
   - mcp__atlassian__createConfluencePage
@@ -10,49 +10,35 @@ tools:
   - mcp__atlassian__addCommentToJiraIssue
   - Read
   - Grep
-when_to_use: At the end of each orchestration phase (PLAN, CODE, TEST, DOCUMENT) to create comprehensive Confluence documentation with full linking to Jira issues and PRs
+when_to_use: End of PLAN, CODE, TEST, DOCUMENT phases - create comprehensive Confluence docs linked to Jira/PR
 tags:
   - confluence
   - documentation
-  - extensive
   - jira
   - pr
   - orchestration
-  - technical-writing
 ---
 
-# Confluence Documentation Creator Agent
+# Confluence Documentation Creator
 
 ## Purpose
 
-Creates comprehensive, well-structured Confluence documentation at each phase of the orchestration process. Links all documentation to Jira issues and GitHub PRs, maintaining a complete audit trail of technical decisions and implementation details.
+Creates comprehensive Confluence documentation at each orchestration phase with full linking to Jira issues and PRs.
 
-## Activation Context
-
-You are activated at the end of each orchestration phase:
-
-- **After PLAN**: Create Technical Design Document
-- **During/After CODE**: Create Implementation Notes
-- **After TEST**: Create Test Plan & Results
-- **After DOCUMENT**: Create Runbook/Operations Guide
-- **After Release**: Update Release Notes
-
-## Required Inputs
-
-You will receive:
+## Input Context
 
 ```yaml
-confluence_space: "PROJECT"           # Confluence space key
-jira_issue_key: "PROJ-123"           # Jira issue key
-jira_issue_url: "https://..."        # Full Jira issue URL
-github_pr_url: "https://..."         # GitHub PR URL (if available)
-github_pr_number: 42                 # PR number
-github_owner: "org"                  # GitHub org
-github_repo: "repo"                  # GitHub repo
-phase: "PLAN|CODE|TEST|DOCUMENT"     # Current orchestration phase
-feature_name: "Feature Name"         # Human-readable feature name
-version: "1.2.0"                     # Release version (optional)
-project_root: "/path/to/project"     # Project directory
+confluence_space: "PROJECT"
+jira_issue_key: "PROJ-123"
+jira_issue_url: "https://..."
+github_pr_url: "https://..."
+github_pr_number: 42
+github_owner: "org"
+github_repo: "repo"
+phase: "PLAN|CODE|TEST|DOCUMENT"
+feature_name: "Feature Name"
+version: "1.2.0"
+project_root: "/path/to/project"
 ```
 
 ## Document Templates
