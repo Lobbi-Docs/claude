@@ -1,0 +1,136 @@
+# Skaffold configuration for hot-reload development
+# Run: skaffold dev
+#
+# Features:
+# - Hot-reload source files without rebuild
+# - Auto-deploy Helm charts on change
+# - Port forwarding configured
+# - Local registry integration
+
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: eks-local-dev
+
+build:
+  local:
+    push: false
+    useBuildkit: true
+    concurrency: 2
+
+  # Build artifacts for each service
+  artifacts:
+    - image: localhost:5000/{{ SERVICE_NAME }}
+      context: .
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          NODE_ENV: development
+      sync:
+        # Sync source files without rebuilding
+        manual:
+          - src: "src/**/*.ts"
+            dest: /app/src
+          - src: "src/**/*.js"
+            dest: /app/src
+          - src: "src/**/*.json"
+            dest: /app/src
+          - src: "public/**/*"
+            dest: /app/public
+        # Trigger rebuild for these changes
+        infer: []
+
+# Deploy with Helm
+deploy:
+  helm:
+    releases:
+      - name: {{ SERVICE_NAME }}
+        chartPath: charts/{{ SERVICE_NAME }}
+        valuesFiles:
+          - charts/{{ SERVICE_NAME }}/values-local.yaml
+        setValues:
+          image.repository: localhost:5000/{{ SERVICE_NAME }}
+          image.tag: "{{.IMAGE_TAG}}"
+          image.pullPolicy: Never
+          # Local Keycloak config
+          keycloak.url: "http://keycloak-local:8080"
+          keycloak.realm: "local"
+          keycloak.clientId: "{{ SERVICE_NAME }}-client"
+          # LocalStack AWS config
+          aws.endpoint: "http://localstack:4566"
+          aws.region: "us-west-2"
+        namespace: {{ SERVICE_NAME }}-local
+        createNamespace: true
+        wait: true
+        upgradeOnChange: true
+
+# Port forwarding for local access
+portForward:
+  - resourceType: service
+    resourceName: {{ SERVICE_NAME }}
+    namespace: {{ SERVICE_NAME }}-local
+    port: 3000
+    localPort: 3000
+  - resourceType: service
+    resourceName: {{ SERVICE_NAME }}
+    namespace: {{ SERVICE_NAME }}-local
+    port: 9090  # Metrics
+    localPort: 9090
+
+# Profiles for different scenarios
+profiles:
+  # Debug profile - enables remote debugging
+  - name: debug
+    activation:
+      - command: debug
+    patches:
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs/DEBUG
+        value: "true"
+      - op: add
+        path: /deploy/helm/releases/0/setValues/env[0]
+        value:
+          name: NODE_OPTIONS
+          value: "--inspect=0.0.0.0:9229"
+    portForward:
+      - resourceType: pod
+        resourceName: {{ SERVICE_NAME }}
+        namespace: {{ SERVICE_NAME }}-local
+        port: 9229
+        localPort: 9229
+
+  # Minimal profile - faster startup
+  - name: minimal
+    patches:
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/replicaCount
+        value: 1
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/resources.limits.cpu
+        value: "250m"
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/resources.limits.memory
+        value: "256Mi"
+
+  # CI profile - for testing in CI environment
+  - name: ci
+    build:
+      local:
+        push: true
+    deploy:
+      helm:
+        releases:
+          - name: {{ SERVICE_NAME }}
+            chartPath: charts/{{ SERVICE_NAME }}
+            valuesFiles:
+              - charts/{{ SERVICE_NAME }}/values-ci.yaml
+            wait: true
+            upgradeOnChange: true
+
+# Verification after deploy
+verify:
+  - name: health-check
+    container:
+      name: curl
+      image: curlimages/curl:latest
+      command: ["curl", "-f", "http://{{ SERVICE_NAME }}.{{ SERVICE_NAME }}-local.svc.cluster.local:3000/health"]

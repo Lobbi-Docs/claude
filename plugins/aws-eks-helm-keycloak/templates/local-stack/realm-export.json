@@ -1,0 +1,221 @@
+{
+  "realm": "local",
+  "enabled": true,
+  "displayName": "Local Development",
+  "displayNameHtml": "<b>Local Development</b>",
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": false,
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "offlineSessionMaxLifespanEnabled": false,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanLogin": 1800,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator role with full access"
+      },
+      {
+        "name": "user",
+        "description": "Standard user role"
+      },
+      {
+        "name": "developer",
+        "description": "Developer role for testing"
+      }
+    ],
+    "client": {}
+  },
+  "users": [
+    {
+      "username": "testuser",
+      "email": "testuser@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Test",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testpass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "admin",
+      "email": "admin@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "adminpass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin", "user"]
+    },
+    {
+      "username": "developer",
+      "email": "developer@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Developer",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "devpass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["developer", "user"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "local-service-client",
+      "name": "Local Service Client",
+      "description": "Generic client for local services",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "local-dev-secret",
+      "redirectUris": [
+        "http://localhost:*/*",
+        "http://*.localhost/*",
+        "http://127.0.0.1:*/*"
+      ],
+      "webOrigins": ["*"],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "300",
+        "client.session.idle.timeout": "1800",
+        "backchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "http://localhost:*/*"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "profile",
+        "roles",
+        "email",
+        "acr"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "api-gateway-client",
+      "name": "API Gateway",
+      "description": "Client for API Gateway service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-gateway-secret",
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://api-gateway.localhost/*"
+      ],
+      "webOrigins": ["http://localhost:3000", "http://api-gateway.localhost"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect"
+    },
+    {
+      "clientId": "frontend-app",
+      "name": "Frontend Application",
+      "description": "Public client for frontend SPA",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "http://localhost:3001/*",
+        "http://localhost:4200/*",
+        "http://localhost:5173/*"
+      ],
+      "webOrigins": ["*"],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "microservice-scope",
+      "description": "Scope for microservice communication",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "service-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "realm_roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "browserSecurityHeaders": {
+    "contentSecurityPolicyReportOnly": "",
+    "xContentTypeOptions": "nosniff",
+    "xRobotsTag": "none",
+    "xFrameOptions": "SAMEORIGIN",
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "xXSSProtection": "1; mode=block",
+    "strictTransportSecurity": "max-age=31536000; includeSubDomains"
+  },
+  "smtpServer": {
+    "host": "mailhog",
+    "port": "1025",
+    "from": "keycloak@localhost",
+    "fromDisplayName": "Keycloak Local"
+  },
+  "eventsEnabled": true,
+  "eventsListeners": ["jboss-logging"],
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true
+}

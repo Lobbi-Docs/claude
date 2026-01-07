@@ -1,0 +1,134 @@
+# Environment Configuration for AWS EKS + Helm + Keycloak Plugin
+# This file defines environment-specific settings
+
+environments:
+  # Development Environment
+  development:
+    name: Development
+    identifier: development
+    type: PreProduction
+    shortName: dev
+
+    # AWS Configuration
+    aws:
+      region: us-west-2
+      accountId: "${AWS_ACCOUNT_ID}"
+      eksCluster: "${PROJECT_NAME}-dev"
+
+    # Harness Configuration
+    harness:
+      environmentRef: development
+      infrastructureRef: eks_dev
+      connectorRef: eks_dev_connector
+
+    # Keycloak Configuration
+    keycloak:
+      url: "https://keycloak.dev.${DOMAIN}"
+      realm: development
+      clientIdPattern: "{service}-client"
+
+    # Deployment Configuration
+    deployment:
+      strategy: rolling
+      replicas: 1
+      approvalRequired: false
+      autoPromote: true
+
+    # Resource Limits
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+  # Staging Environment
+  staging:
+    name: Staging
+    identifier: staging
+    type: PreProduction
+    shortName: staging
+
+    aws:
+      region: us-west-2
+      accountId: "${AWS_ACCOUNT_ID}"
+      eksCluster: "${PROJECT_NAME}-staging"
+
+    harness:
+      environmentRef: staging
+      infrastructureRef: eks_staging
+      connectorRef: eks_staging_connector
+
+    keycloak:
+      url: "https://keycloak.staging.${DOMAIN}"
+      realm: staging
+      clientIdPattern: "{service}-client"
+
+    deployment:
+      strategy: rolling
+      replicas: 2
+      approvalRequired: false
+      autoPromote: false
+      runSmokeTests: true
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  # Production Environment
+  production:
+    name: Production
+    identifier: production
+    type: Production
+    shortName: prod
+
+    aws:
+      region: us-west-2
+      accountId: "${AWS_ACCOUNT_ID}"
+      eksCluster: "${PROJECT_NAME}-prod"
+
+    harness:
+      environmentRef: production
+      infrastructureRef: eks_production
+      connectorRef: eks_production_connector
+
+    keycloak:
+      url: "https://keycloak.${DOMAIN}"
+      realm: production
+      clientIdPattern: "{service}-client"
+
+    deployment:
+      strategy: canary
+      canarySteps: [10, 50, 100]
+      replicas: 3
+      approvalRequired: true
+      approvers:
+        - account.ProductionApprovers
+      runSmokeTests: true
+      runVerification: true
+
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+
+# Environment Promotion Order
+promotionOrder:
+  - development
+  - staging
+  - production
+
+# Skip Rules (for hotfixes)
+skipRules:
+  hotfix:
+    allowSkip: [staging]
+    requireApproval: true
+    auditLog: true
