@@ -576,6 +576,33 @@
       "skills": ["tool-use", "llm-integration"],
       "workflows": [],
       "mcps": []
+    },
+    "eks": {
+      "agents": ["setup-orchestrator", "deployment-strategist", "pipeline-architect", "dev-assistant"],
+      "skills": ["kubernetes", "helm", "aws"],
+      "commands": ["eks:setup", "eks:dev-up", "eks:ship", "eks:preview", "eks:debug", "eks:service-onboard", "eks:pipeline-scaffold"],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": [],
+      "tools": ["Bash", "Task"],
+      "plugin": "aws-eks-helm-keycloak"
+    },
+    "keycloak auth": {
+      "agents": ["setup-orchestrator", "dev-assistant"],
+      "skills": ["keycloak", "authentication"],
+      "commands": ["eks:setup", "keycloak-admin"],
+      "workflows": [],
+      "mcps": [],
+      "tools": ["Bash"],
+      "plugin": "aws-eks-helm-keycloak"
+    },
+    "harness deploy": {
+      "agents": ["pipeline-architect", "deployment-strategist"],
+      "skills": [],
+      "commands": ["eks:ship", "eks:pipeline-scaffold"],
+      "workflows": ["ci-cd-workflow"],
+      "mcps": [],
+      "tools": ["Bash"],
+      "plugin": "aws-eks-helm-keycloak"
     }
   },
 

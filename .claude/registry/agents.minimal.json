@@ -174,11 +174,37 @@
       "context-cleanup-agent": { "path": "agents/utility/context-cleanup-agent.md", "model": "haiku" },
       "documentation-sync-agent": { "path": "agents/utility/documentation-sync-agent.md", "model": "haiku" },
       "registry-manager-agent": { "path": "agents/utility/registry-manager-agent.md", "model": "haiku" }
+    },
+    "aws-eks-helm-keycloak": {
+      "eks:setup-orchestrator": {
+        "path": "../../plugins/aws-eks-helm-keycloak/agents/setup-orchestrator.md",
+        "model": "sonnet",
+        "domains": ["eks", "aws", "keycloak", "harness", "setup"],
+        "routing": { "priority": "high", "complexityRange": [30, 100] }
+      },
+      "eks:deployment-strategist": {
+        "path": "../../plugins/aws-eks-helm-keycloak/agents/deployment-strategist.md",
+        "model": "sonnet",
+        "domains": ["eks", "deployment", "kubernetes", "helm"],
+        "routing": { "priority": "high", "complexityRange": [40, 100] }
+      },
+      "eks:dev-assistant": {
+        "path": "../../plugins/aws-eks-helm-keycloak/agents/dev-assistant.md",
+        "model": "sonnet",
+        "domains": ["eks", "development", "local", "debugging"],
+        "routing": { "priority": "medium", "complexityRange": [20, 80] }
+      },
+      "eks:pipeline-architect": {
+        "path": "../../plugins/aws-eks-helm-keycloak/agents/pipeline-architect.md",
+        "model": "sonnet",
+        "domains": ["harness", "cicd", "pipelines", "deployment"],
+        "routing": { "priority": "high", "complexityRange": [40, 100] }
+      }
     }
   },
 
   "counts": {
-    "total": 42,
+    "total": 46,
     "byCategory": {
       "core": 6,
       "devops": 6,
@@ -191,7 +217,8 @@
       "frontend-theming": 3,
       "selenium-testing": 3,
       "membership-domain": 4,
-      "utility": 3
+      "utility": 3,
+      "aws-eks-helm-keycloak": 4
     }
   }
 }
