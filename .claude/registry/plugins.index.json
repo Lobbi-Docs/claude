@@ -145,6 +145,28 @@
       }
     },
 
+    "infrastructure": {
+      "aws-eks-helm-keycloak": {
+        "path": "../../plugins/aws-eks-helm-keycloak/.claude-plugin/plugin.json",
+        "callsign": "Conduit",
+        "version": "1.0.0",
+        "description": "AWS EKS deployments with Helm, Keycloak authentication, and Harness CI/CD",
+        "provides": { "commands": 7, "agents": 4, "skills": 6, "hooks": 2 },
+        "status": "active",
+        "tier": "standard",
+        "commandPrefix": "eks",
+        "features": [
+          "AWS EKS cluster management",
+          "Helm chart deployments",
+          "Keycloak OIDC authentication",
+          "Harness CI/CD integration",
+          "Local development with Kind",
+          "Interactive setup wizard"
+        ],
+        "integrates": ["jira-orchestrator", "release-orchestrator"]
+      }
+    },
+
     "ai-advanced": {
       "cognitive-code-reasoner": {
         "path": "../plugins/cognitive-code-reasoner/plugin.json",
@@ -237,6 +259,7 @@
 
   "callsignRegistry": {
     "Arbiter": "jira-orchestrator",
+    "Conduit": "aws-eks-helm-keycloak",
     "Stylist": "frontend-design-system",
     "Curator": "code-quality-orchestrator",
     "Sentinel": "git-workflow-orchestrator",
@@ -255,17 +278,17 @@
   },
 
   "stats": {
-    "totalPlugins": 16,
+    "totalPlugins": 17,
     "byTier": {
       "enterprise": 1,
-      "standard": 9,
+      "standard": 10,
       "advanced": 6
     },
-    "totalCommands": 233,
-    "totalAgents": 206,
+    "totalCommands": 240,
+    "totalAgents": 210,
     "totalTeams": 16,
-    "totalSkills": 106,
-    "totalHooks": 67,
+    "totalSkills": 112,
+    "totalHooks": 69,
     "totalWorkflows": 3,
     "innovativePlugins": 7,
     "deliberationProtocols": 20

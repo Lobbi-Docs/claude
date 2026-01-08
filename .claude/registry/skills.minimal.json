@@ -47,6 +47,12 @@
     "nextjs":"skills/nextjs/SKILL.md",
     "extended-thinking":"skills/extended-thinking/SKILL.md",
     "complex-reasoning":"skills/complex-reasoning/SKILL.md",
-    "deep-analysis":"skills/deep-analysis/SKILL.md"
+    "deep-analysis":"skills/deep-analysis/SKILL.md",
+    "eks:setup-wizard":"../../plugins/aws-eks-helm-keycloak/skills/setup-wizard/SKILL.md",
+    "eks:helm-development":"../../plugins/aws-eks-helm-keycloak/skills/helm-development/SKILL.md",
+    "eks:local-development":"../../plugins/aws-eks-helm-keycloak/skills/local-eks-development/SKILL.md",
+    "eks:harness-deployments":"../../plugins/aws-eks-helm-keycloak/skills/harness-eks-deployments/SKILL.md",
+    "eks:harness-code":"../../plugins/aws-eks-helm-keycloak/skills/harness-code-integration/SKILL.md",
+    "eks:keycloak-auth":"../../plugins/aws-eks-helm-keycloak/skills/harness-keycloak-auth/SKILL.md"
   }
 }
