@@ -1,0 +1,41 @@
+{
+  "hooks": [
+    {
+      "name": "pre-deploy-validation",
+      "description": "Validates Helm charts, security, and Keycloak configuration before deployment",
+      "event": "pre-tool-use",
+      "trigger": {
+        "tool": "Bash",
+        "command_pattern": "helm (install|upgrade)|kubectl apply"
+      },
+      "script": "scripts/pre-deploy-validation.sh",
+      "timeout": 60000,
+      "failOnError": true,
+      "env": {
+        "VALIDATION_MODE": "strict",
+        "SECURITY_SCAN": "true",
+        "KEYCLOAK_CHECK": "true"
+      }
+    },
+    {
+      "name": "keycloak-sync",
+      "description": "Syncs Keycloak realm and client configuration after successful deployment",
+      "event": "post-tool-use",
+      "trigger": {
+        "tool": "Bash",
+        "command_pattern": "helm (install|upgrade).*--set.*keycloak"
+      },
+      "script": "scripts/keycloak-sync.sh",
+      "timeout": 30000,
+      "failOnError": false,
+      "env": {
+        "SYNC_MODE": "update"
+      }
+    }
+  ],
+  "settings": {
+    "parallel_execution": false,
+    "continue_on_failure": false,
+    "log_level": "info"
+  }
+}

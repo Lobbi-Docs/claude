@@ -1,0 +1,78 @@
+{
+  "name": "aws-eks-helm-keycloak",
+  "version": "1.0.0",
+  "description": "The Conduit-Artisan Hybrid - AWS EKS deployments with Helm, Keycloak authentication, and Harness CI/CD. Combines pipeline excellence with developer velocity.",
+  "author": {
+    "name": "Golden Armada",
+    "email": "architect@goldenarmada.io"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/the-Lobbi/aws-eks-helm-keycloak",
+  "keywords": [
+    "aws",
+    "eks",
+    "kubernetes",
+    "helm",
+    "keycloak",
+    "harness",
+    "harness-code",
+    "oidc",
+    "authentication",
+    "ci-cd",
+    "gitops",
+    "developer-experience"
+  ],
+  "categories": ["devops", "cloud", "authentication", "kubernetes"],
+  "provides": {
+    "commands": 7,
+    "agents": 4,
+    "skills": 6,
+    "hooks": 2
+  },
+  "discovery": {
+    "commands": {
+      "enabled": true,
+      "directory": "../commands",
+      "pattern": "*.md"
+    },
+    "agents": {
+      "enabled": true,
+      "directory": "../agents",
+      "pattern": "*.md"
+    },
+    "skills": {
+      "enabled": true,
+      "directory": "../skills",
+      "pattern": "**/SKILL.md"
+    },
+    "hooks": {
+      "enabled": true,
+      "directory": "../hooks",
+      "pattern": "hooks.json"
+    }
+  },
+  "dependencies": {
+    "required": [
+      "helm >= 3.0.0",
+      "kubectl >= 1.25.0",
+      "aws-cli >= 2.0.0"
+    ],
+    "optional": [
+      "kind >= 0.20.0",
+      "skaffold >= 2.0.0",
+      "telepresence >= 2.0.0"
+    ]
+  },
+  "integrations": {
+    "harness": {
+      "required": true,
+      "features": ["code", "cd", "connectors"]
+    },
+    "aws": {
+      "services": ["eks", "ecr", "secrets-manager", "iam"]
+    },
+    "keycloak": {
+      "minVersion": "22.0.0"
+    }
+  }
+}

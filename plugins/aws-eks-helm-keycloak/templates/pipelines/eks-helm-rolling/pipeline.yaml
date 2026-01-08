@@ -1,0 +1,268 @@
+pipeline:
+  name: {{ SERVICE_NAME }}-deploy
+  identifier: {{ SERVICE_NAME }}_deploy
+  projectIdentifier: {{ PROJECT_ID }}
+  orgIdentifier: {{ ORG_ID }}
+  description: Deploy {{ SERVICE_NAME }} to EKS with Helm (Rolling Strategy)
+  tags:
+    service: {{ SERVICE_NAME }}
+    type: deployment
+    strategy: rolling
+
+  properties:
+    ci:
+      codebase:
+        connectorRef: {{ HARNESS_CODE_CONNECTOR }}
+        repoName: {{ REPO_NAME }}
+        build:
+          type: branch
+          spec:
+            branch: <+input>
+
+  variables:
+    - name: service_name
+      type: String
+      default: "{{ SERVICE_NAME }}"
+    - name: image_tag
+      type: String
+      default: "<+codebase.shortCommitSha>"
+    - name: keycloak_realm
+      type: String
+      default: "{{ KEYCLOAK_REALM }}"
+
+  stages:
+    # Stage 1: Validate
+    - stage:
+        name: Validate
+        identifier: validate
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: {{ EKS_CONNECTOR }}
+              namespace: ci-runners
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Helm Lint
+                  identifier: helm_lint
+                  spec:
+                    shell: Bash
+                    command: |
+                      helm lint charts/{{ SERVICE_NAME }} --strict
+                      helm template {{ SERVICE_NAME }} charts/{{ SERVICE_NAME }} --debug > /dev/null
+
+              - step:
+                  type: Run
+                  name: Security Scan
+                  identifier: security_scan
+                  spec:
+                    shell: Bash
+                    command: |
+                      # Trivy scan
+                      trivy config charts/{{ SERVICE_NAME }} --severity HIGH,CRITICAL --exit-code 1
+
+                      # Checkov scan
+                      checkov -d charts/{{ SERVICE_NAME }} --framework helm --soft-fail
+
+              - step:
+                  type: Run
+                  name: Validate Values
+                  identifier: validate_values
+                  spec:
+                    shell: Bash
+                    command: |
+                      # Validate values for target environment
+                      helm template {{ SERVICE_NAME }} charts/{{ SERVICE_NAME }} \
+                        -f charts/{{ SERVICE_NAME }}/values-<+env.name>.yaml \
+                        | kubectl apply --dry-run=server -f -
+
+    # Stage 2: Deploy to Dev
+    - stage:
+        name: Deploy Dev
+        identifier: deploy_dev
+        type: Deployment
+        spec:
+          deploymentType: NativeHelm
+          service:
+            serviceRef: {{ SERVICE_NAME }}
+          environment:
+            environmentRef: development
+            infrastructureDefinitions:
+              - identifier: eks_dev
+          execution:
+            steps:
+              - step:
+                  type: HelmDeploy
+                  name: Helm Deploy
+                  identifier: helm_deploy
+                  spec:
+                    skipDryRun: false
+                  timeout: 10m
+
+              - step:
+                  type: Http
+                  name: Health Check
+                  identifier: health_check
+                  spec:
+                    url: http://{{ SERVICE_NAME }}.{{ SERVICE_NAME }}-development.svc.cluster.local/health
+                    method: GET
+                    assertion: <+httpResponseCode> == 200
+                  timeout: 2m
+
+            rollbackSteps:
+              - step:
+                  type: HelmRollback
+                  name: Rollback
+                  identifier: rollback
+                  spec: {}
+
+    # Stage 3: Deploy to Staging
+    - stage:
+        name: Deploy Staging
+        identifier: deploy_staging
+        type: Deployment
+        spec:
+          deploymentType: NativeHelm
+          service:
+            serviceRef: {{ SERVICE_NAME }}
+          environment:
+            environmentRef: staging
+            infrastructureDefinitions:
+              - identifier: eks_staging
+          execution:
+            steps:
+              - step:
+                  type: HelmDeploy
+                  name: Helm Deploy
+                  identifier: helm_deploy
+                  spec:
+                    skipDryRun: false
+                  timeout: 10m
+
+              - step:
+                  type: Http
+                  name: Health Check
+                  identifier: health_check
+                  spec:
+                    url: http://{{ SERVICE_NAME }}.{{ SERVICE_NAME }}-staging.svc.cluster.local/health
+                    method: GET
+                    assertion: <+httpResponseCode> == 200
+                  timeout: 2m
+
+              - step:
+                  type: Run
+                  name: Smoke Tests
+                  identifier: smoke_tests
+                  spec:
+                    shell: Bash
+                    command: |
+                      # Run smoke tests against staging
+                      curl -f http://{{ SERVICE_NAME }}.{{ SERVICE_NAME }}-staging.svc.cluster.local/ready
+
+                      # Test Keycloak auth if enabled
+                      if [ -n "$KEYCLOAK_URL" ]; then
+                        TOKEN=$(curl -s -X POST \
+                          "$KEYCLOAK_URL/realms/$KEYCLOAK_REALM/protocol/openid-connect/token" \
+                          -d "client_id={{ SERVICE_NAME }}-client" \
+                          -d "client_secret=$KEYCLOAK_CLIENT_SECRET" \
+                          -d "grant_type=client_credentials" | jq -r '.access_token')
+
+                        curl -f -H "Authorization: Bearer $TOKEN" \
+                          http://{{ SERVICE_NAME }}.{{ SERVICE_NAME }}-staging.svc.cluster.local/api/health
+                      fi
+
+            rollbackSteps:
+              - step:
+                  type: HelmRollback
+                  name: Rollback
+                  identifier: rollback
+                  spec: {}
+        when:
+          pipelineStatus: Success
+
+    # Stage 4: Deploy to Production
+    - stage:
+        name: Deploy Production
+        identifier: deploy_production
+        type: Deployment
+        spec:
+          deploymentType: NativeHelm
+          service:
+            serviceRef: {{ SERVICE_NAME }}
+          environment:
+            environmentRef: production
+            infrastructureDefinitions:
+              - identifier: eks_production
+          execution:
+            steps:
+              - step:
+                  type: HarnessApproval
+                  name: Production Approval
+                  identifier: production_approval
+                  spec:
+                    approvalMessage: |
+                      Approve deployment of {{ SERVICE_NAME }} to production?
+
+                      Version: <+pipeline.variables.image_tag>
+                      Previous: <+serviceConfig.artifacts.primary.tag>
+                    approvers:
+                      userGroups:
+                        - account.ProductionApprovers
+                    approverInputs: []
+                  timeout: 24h
+
+              - step:
+                  type: HelmDeploy
+                  name: Helm Deploy
+                  identifier: helm_deploy
+                  spec:
+                    skipDryRun: false
+                  timeout: 15m
+
+              - step:
+                  type: Http
+                  name: Health Check
+                  identifier: health_check
+                  spec:
+                    url: http://{{ SERVICE_NAME }}.{{ SERVICE_NAME }}-production.svc.cluster.local/health
+                    method: GET
+                    assertion: <+httpResponseCode> == 200
+                  timeout: 5m
+
+              - step:
+                  type: Verify
+                  name: Deployment Verification
+                  identifier: verify
+                  spec:
+                    type: Rolling
+                    monitoredService:
+                      type: Default
+                    spec:
+                      sensitivity: HIGH
+                      duration: 10m
+                  timeout: 15m
+
+            rollbackSteps:
+              - step:
+                  type: HelmRollback
+                  name: Rollback
+                  identifier: rollback
+                  spec: {}
+        when:
+          pipelineStatus: Success
+          condition: <+pipeline.stages.deploy_staging.status> == "SUCCEEDED"
+
+  notificationRules:
+    - name: Deployment Notifications
+      identifier: deployment_notifications
+      pipelineEvents:
+        - type: PipelineSuccess
+        - type: PipelineFailed
+      notificationMethod:
+        type: Slack
+        spec:
+          webhookUrl: <+secrets.getValue("slack_webhook")>

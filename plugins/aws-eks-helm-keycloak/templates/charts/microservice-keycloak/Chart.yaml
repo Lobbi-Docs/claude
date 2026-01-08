@@ -1,0 +1,26 @@
+apiVersion: v2
+name: {{ SERVICE_NAME }}
+description: Microservice Helm chart with Keycloak authentication for AWS EKS
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+kubeVersion: ">=1.25.0"
+
+keywords:
+  - microservice
+  - keycloak
+  - eks
+  - authentication
+
+home: https://github.com/{{ ORG }}/{{ SERVICE_NAME }}
+sources:
+  - https://github.com/{{ ORG }}/{{ SERVICE_NAME }}
+
+maintainers:
+  - name: Platform Team
+    email: platform@example.com
+
+annotations:
+  artifacthub.io/category: integration
+  artifacthub.io/license: MIT
+  artifacthub.io/prerelease: "false"

@@ -1,0 +1,229 @@
+pipeline:
+  name: {{ SERVICE_NAME }}-canary-deploy
+  identifier: {{ SERVICE_NAME }}_canary_deploy
+  projectIdentifier: {{ PROJECT_ID }}
+  orgIdentifier: {{ ORG_ID }}
+  description: Deploy {{ SERVICE_NAME }} to EKS with Helm (Canary Strategy)
+  tags:
+    service: {{ SERVICE_NAME }}
+    type: deployment
+    strategy: canary
+
+  properties:
+    ci:
+      codebase:
+        connectorRef: {{ HARNESS_CODE_CONNECTOR }}
+        repoName: {{ REPO_NAME }}
+        build:
+          type: branch
+          spec:
+            branch: <+input>
+
+  variables:
+    - name: service_name
+      type: String
+      default: "{{ SERVICE_NAME }}"
+    - name: image_tag
+      type: String
+      default: "<+codebase.shortCommitSha>"
+    - name: canary_percentage_1
+      type: Number
+      default: 10
+    - name: canary_percentage_2
+      type: Number
+      default: 50
+    - name: soak_time_minutes
+      type: Number
+      default: 5
+
+  stages:
+    # Stage 1: Validate (same as rolling)
+    - stage:
+        name: Validate
+        identifier: validate
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: {{ EKS_CONNECTOR }}
+              namespace: ci-runners
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Helm Lint & Security
+                  identifier: helm_lint_security
+                  spec:
+                    shell: Bash
+                    command: |
+                      helm lint charts/{{ SERVICE_NAME }} --strict
+                      trivy config charts/{{ SERVICE_NAME }} --severity HIGH,CRITICAL --exit-code 1
+
+    # Stage 2: Canary Deploy to Production
+    - stage:
+        name: Canary Production
+        identifier: canary_production
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: {{ SERVICE_NAME }}
+          environment:
+            environmentRef: production
+            infrastructureDefinitions:
+              - identifier: eks_production
+          execution:
+            steps:
+              # Phase 1: 10% traffic
+              - step:
+                  type: K8sCanaryDeploy
+                  name: Canary 10%
+                  identifier: canary_10
+                  spec:
+                    instanceSelection:
+                      type: Percentage
+                      spec:
+                        percentage: <+pipeline.variables.canary_percentage_1>
+                    skipDryRun: false
+                  timeout: 10m
+
+              - step:
+                  type: Http
+                  name: Canary Health Check
+                  identifier: canary_health_check
+                  spec:
+                    url: http://{{ SERVICE_NAME }}-canary.{{ SERVICE_NAME }}-production.svc.cluster.local/health
+                    method: GET
+                    assertion: <+httpResponseCode> == 200
+                  timeout: 2m
+
+              - step:
+                  type: Wait
+                  name: Soak Time
+                  identifier: soak_time_1
+                  spec:
+                    duration: <+pipeline.variables.soak_time_minutes>m
+
+              - step:
+                  type: Verify
+                  name: Verify Canary
+                  identifier: verify_canary_10
+                  spec:
+                    type: Canary
+                    monitoredService:
+                      type: Default
+                    spec:
+                      sensitivity: MEDIUM
+                      duration: 5m
+                  timeout: 10m
+
+              # Phase 2: 50% traffic (with approval)
+              - step:
+                  type: HarnessApproval
+                  name: Approve 50% Rollout
+                  identifier: approve_50
+                  spec:
+                    approvalMessage: |
+                      Canary at 10% looks healthy. Approve expansion to 50%?
+
+                      Metrics:
+                      - Error rate: <+pipeline.stages.canary_production.spec.execution.steps.verify_canary_10.output.errorRate>%
+                      - Latency P99: <+pipeline.stages.canary_production.spec.execution.steps.verify_canary_10.output.latencyP99>ms
+                    approvers:
+                      userGroups:
+                        - account.ProductionApprovers
+                    approverInputs: []
+                  timeout: 4h
+
+              - step:
+                  type: K8sCanaryDeploy
+                  name: Canary 50%
+                  identifier: canary_50
+                  spec:
+                    instanceSelection:
+                      type: Percentage
+                      spec:
+                        percentage: <+pipeline.variables.canary_percentage_2>
+                    skipDryRun: false
+                  timeout: 10m
+
+              - step:
+                  type: Wait
+                  name: Soak Time 50%
+                  identifier: soak_time_2
+                  spec:
+                    duration: <+pipeline.variables.soak_time_minutes>m
+
+              - step:
+                  type: Verify
+                  name: Verify Canary 50%
+                  identifier: verify_canary_50
+                  spec:
+                    type: Canary
+                    monitoredService:
+                      type: Default
+                    spec:
+                      sensitivity: HIGH
+                      duration: 5m
+                  timeout: 10m
+
+              # Phase 3: Full rollout
+              - step:
+                  type: HarnessApproval
+                  name: Approve Full Rollout
+                  identifier: approve_100
+                  spec:
+                    approvalMessage: |
+                      Canary at 50% is healthy. Approve full rollout?
+
+                      This will complete the deployment to all pods.
+                    approvers:
+                      userGroups:
+                        - account.ProductionApprovers
+                  timeout: 4h
+
+              - step:
+                  type: K8sCanaryDeploy
+                  name: Full Rollout
+                  identifier: full_rollout
+                  spec:
+                    instanceSelection:
+                      type: Percentage
+                      spec:
+                        percentage: 100
+                    skipDryRun: false
+                  timeout: 15m
+
+              - step:
+                  type: K8sCanaryDelete
+                  name: Cleanup Canary
+                  identifier: cleanup_canary
+                  spec: {}
+
+            rollbackSteps:
+              - step:
+                  type: K8sCanaryDelete
+                  name: Delete Canary
+                  identifier: rollback_delete_canary
+                  spec: {}
+
+          failureStrategies:
+            - onFailure:
+                errors:
+                  - AllErrors
+                action:
+                  type: StageRollback
+
+  notificationRules:
+    - name: Canary Notifications
+      identifier: canary_notifications
+      pipelineEvents:
+        - type: StageStart
+        - type: StageSuccess
+        - type: StageFailed
+      notificationMethod:
+        type: Slack
+        spec:
+          webhookUrl: <+secrets.getValue("slack_webhook")>

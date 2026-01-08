@@ -1,0 +1,160 @@
+# Default Configuration for AWS EKS + Helm + Keycloak Plugin
+# These defaults can be overridden in project-specific .claude/ config
+
+# Plugin Settings
+plugin:
+  name: aws-eks-helm-keycloak
+  version: "1.0.0"
+  commandPrefix: "eks"
+
+# AWS Defaults
+aws:
+  region: us-west-2
+  ecrRegistry: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+  secretsManagerPrefix: "${PROJECT_NAME}/"
+
+# Harness Defaults
+harness:
+  # API Configuration
+  baseUrl: "https://app.harness.io"
+  accountId: "${HARNESS_ACCOUNT_ID}"
+  orgId: "${HARNESS_ORG_ID}"
+  projectId: "${HARNESS_PROJECT_ID}"
+
+  # Code Repository
+  codeConnector: "harness_code"
+  defaultBranch: "main"
+
+  # Pipeline Defaults
+  pipeline:
+    defaultStrategy: rolling
+    defaultTriggers:
+      - push
+      - tag
+    timeouts:
+      validation: 5m
+      deployment: 15m
+      verification: 10m
+
+# Keycloak Defaults
+keycloak:
+  # Client Configuration
+  client:
+    protocol: openid-connect
+    accessType: confidential
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: true
+    serviceAccountsEnabled: true
+    publicClient: false
+
+  # PKCE Configuration
+  pkce:
+    enabled: true
+    method: S256
+
+  # Token Settings
+  tokens:
+    accessTokenLifespan: 300
+    refreshTokenLifespan: 1800
+    sessionIdleTimeout: 1800
+
+# Helm Defaults
+helm:
+  version: "3"
+  chartPath: "charts/${SERVICE_NAME}"
+  valuesFiles:
+    - "values.yaml"
+    - "values-${ENV}.yaml"
+
+  # Default Values
+  defaultValues:
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# Local Development Defaults
+localDev:
+  # Kind Cluster
+  kind:
+    clusterName: eks-local
+    kubernetesVersion: "1.28"
+    nodes: 3  # 1 control-plane + 2 workers
+
+  # LocalStack
+  localstack:
+    services:
+      - secretsmanager
+      - ecr
+      - iam
+      - sts
+      - ssm
+
+  # Ports
+  ports:
+    app: 3000
+    keycloak: 8080
+    localstack: 4566
+    registry: 5000
+
+  # Test Users
+  testUsers:
+    - username: testuser
+      password: testpass
+      roles: [user]
+    - username: admin
+      password: adminpass
+      roles: [admin, user]
+
+# Deployment Strategies
+strategies:
+  rolling:
+    maxSurge: "25%"
+    maxUnavailable: 0
+
+  canary:
+    steps: [10, 50, 100]
+    soakTime: 5m
+    verificationSensitivity: MEDIUM
+
+  blueGreen:
+    previewReplicas: 1
+    swapAfterApproval: true
+
+# Security Scanning
+security:
+  enabled: true
+  scanners:
+    - trivy
+    - checkov
+  severityThreshold: HIGH
+  failOnVulnerabilities: true
+
+# Notifications
+notifications:
+  slack:
+    enabled: false
+    webhookSecretRef: "slack_webhook"
+    events:
+      - PipelineSuccess
+      - PipelineFailed
+      - ApprovalRequired
+
+# Preview Environments
+preview:
+  enabled: true
+  defaultTTL: 24h
+  maxTTL: 72h
+  namespace_prefix: "preview-"
+  autoCleanupOnMerge: true
+  resourceQuota:
+    pods: 20
+    cpu: "4"
+    memory: "8Gi"
