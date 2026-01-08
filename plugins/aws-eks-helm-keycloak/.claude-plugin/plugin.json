@@ -24,9 +24,9 @@
   ],
   "categories": ["devops", "cloud", "authentication", "kubernetes"],
   "provides": {
-    "commands": 6,
-    "agents": 3,
-    "skills": 5,
+    "commands": 7,
+    "agents": 4,
+    "skills": 6,
     "hooks": 2
   },
   "discovery": {

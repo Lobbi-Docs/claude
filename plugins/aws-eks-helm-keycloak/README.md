@@ -24,14 +24,16 @@ This plugin combines two approaches:
 
 ## Features
 
-### Skills (5)
+### Skills (6)
 - **harness-eks-deployments** - EKS deployment patterns via Harness CD
 - **harness-code-integration** - Harness Code repository workflows and triggers
 - **harness-keycloak-auth** - Keycloak OIDC integration with Harness
 - **local-eks-development** - Local K8s with EKS parity (Kind + LocalStack)
 - **helm-development** - Helm chart development and testing workflow
+- **setup-wizard** - Interactive setup validation and configuration
 
-### Commands (6)
+### Commands (7)
+- `/eks:setup` - **Interactive setup wizard** for the entire ecosystem
 - `/eks:pipeline-scaffold` - Generate Harness pipeline from templates
 - `/eks:service-onboard` - Onboard new service to Harness + EKS
 - `/eks:dev-up` - Start local development environment
@@ -39,7 +41,8 @@ This plugin combines two approaches:
 - `/eks:preview` - Create preview environment for feature branch
 - `/eks:debug` - Smart debugging for deployment issues
 
-### Agents (3)
+### Agents (4)
+- **setup-orchestrator** - Guides interactive setup of AWS, Harness, Keycloak, local dev
 - **pipeline-architect** - Designs optimal Harness pipeline structures
 - **deployment-strategist** - Recommends deployment strategies (rolling/canary/blue-green)
 - **dev-assistant** - Helps with local development and troubleshooting
@@ -49,6 +52,12 @@ This plugin combines two approaches:
 - **keycloak-sync** - Syncs Keycloak realm on deployment
 
 ## Quick Start
+
+### 0. Run Setup Wizard (First Time)
+```bash
+/eks:setup
+```
+Interactive wizard configures AWS, Harness, Keycloak, and local development. Takes ~10-15 minutes.
 
 ### 1. Start Local Development
 ```bash
@@ -151,8 +160,10 @@ aws-eks-helm-keycloak/
 │   ├── harness-code-integration/
 │   ├── harness-keycloak-auth/
 │   ├── local-eks-development/
-│   └── helm-development/
+│   ├── helm-development/
+│   └── setup-wizard/
 ├── commands/
+│   ├── setup.md
 │   ├── pipeline-scaffold.md
 │   ├── service-onboard.md
 │   ├── dev-up.md
@@ -160,6 +171,7 @@ aws-eks-helm-keycloak/
 │   ├── preview.md
 │   └── debug.md
 ├── agents/
+│   ├── setup-orchestrator.md
 │   ├── pipeline-architect.md
 │   ├── deployment-strategist.md
 │   └── dev-assistant.md
@@ -169,7 +181,8 @@ aws-eks-helm-keycloak/
 ├── templates/
 │   ├── pipelines/
 │   ├── local-stack/
-│   └── charts/
+│   ├── charts/
+│   └── setup/
 ├── config/
 │   ├── environments.yaml
 │   └── defaults.yaml
