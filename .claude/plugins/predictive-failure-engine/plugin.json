@@ -12,44 +12,12 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["ai", "prediction", "quality", "prevention"],
   "keywords": [
     "prediction", "failure-prediction", "bug-prediction", "preventive",
     "machine-learning", "pattern-recognition", "code-smell", "risk-assessment",
     "probabilistic", "early-warning", "defect-prediction", "hotspot-detection",
     "change-risk", "historical-analysis", "trend-detection"
   ],
-
-  "provides": {
-    "commands": 14,
-    "agents": 11,
-    "skills": 7,
-    "hooks": 5,
-    "predictionModels": 8
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Links predictions to issues, creates preventive tickets",
-      "capabilities": ["create-prevention-tickets", "risk-labeling"],
-      "bidirectional": true
-    },
-    "code-knowledge-graph": {
-      "description": "Uses graph for impact and relationship analysis",
-      "capabilities": ["dependency-risk", "impact-scoring"],
-      "required": true
-    },
-    "testing-orchestrator": {
-      "description": "Recommends targeted tests for high-risk code",
-      "capabilities": ["test-recommendations", "risk-based-testing"],
-      "enhances": true
-    },
-    "cognitive-code-reasoner": {
-      "description": "Deep analysis of predicted issues",
-      "capabilities": ["root-cause-hypothesis"],
-      "onHighRisk": true
-    }
-  },
 
   "predictionModels": {
     "change-risk": {

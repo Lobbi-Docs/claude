@@ -87,20 +87,6 @@
     "prevention-audit",
     "recurring-error-investigation"
   ],
-  "dependencies": {
-    "mcps": [
-      "github",
-      "obsidian"
-    ],
-    "skills": [
-      "debugging",
-      "testing"
-    ],
-    "external_apis": [
-      "stackoverflow",
-      "github_search"
-    ]
-  },
   "configuration": {
     "search_stackoverflow": true,
     "search_github_issues": true,

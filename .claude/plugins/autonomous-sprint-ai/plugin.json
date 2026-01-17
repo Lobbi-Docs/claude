@@ -12,44 +12,12 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["ai", "project-management", "automation", "autonomous"],
   "keywords": [
     "autonomous", "self-governing", "sprint", "agile", "planning",
     "workload-balancing", "blocker-prediction", "scope-negotiation",
     "capacity-optimization", "velocity-prediction", "risk-assessment",
     "decision-making", "adaptive", "learning", "autopilot"
   ],
-
-  "provides": {
-    "commands": 14,
-    "agents": 12,
-    "skills": 7,
-    "hooks": 6,
-    "decisionEngines": 5
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Core integration - manages Jira issues autonomously",
-      "capabilities": ["issue-assignment", "priority-adjustment", "scope-management"],
-      "autonomyRequired": true
-    },
-    "notification-hub": {
-      "description": "Communicates decisions and requests approvals",
-      "capabilities": ["decision-notification", "approval-request", "escalation"],
-      "required": true
-    },
-    "analytics-dashboard": {
-      "description": "Feeds decisions with real-time metrics",
-      "capabilities": ["velocity-data", "capacity-data", "trend-analysis"],
-      "realtime": true
-    },
-    "testing-orchestrator": {
-      "description": "Factors test status into sprint decisions",
-      "capabilities": ["test-status", "blocker-detection"],
-      "optional": true
-    }
-  },
 
   "autonomyLevels": {
     "advisor": {

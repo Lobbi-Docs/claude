@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["devops", "development", "git", "automation"],
   "keywords": [
     "git", "branch", "merge", "rebase", "conflict-resolution",
     "gitflow", "trunk-based", "feature-flags", "pull-request",
@@ -20,26 +19,6 @@
     "commit-linting", "conventional-commits", "squash", "cherry-pick",
     "stash", "worktree", "bisect", "reflog", "hooks"
   ],
-
-  "provides": {
-    "commands": 15,
-    "agents": 10,
-    "skills": 6,
-    "hooks": 5
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Links branches to Jira issues, enforces smart commit messages",
-      "commands": ["git:branch", "git:commit", "git:pr"],
-      "bidirectional": true
-    },
-    "code-quality-orchestrator": {
-      "description": "Enforces quality gates before merge/commit",
-      "commands": ["git:commit", "git:merge", "git:pr"],
-      "blocking": true
-    }
-  },
 
   "workflows": {
     "trunk-based": {

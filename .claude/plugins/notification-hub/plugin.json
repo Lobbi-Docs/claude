@@ -12,43 +12,12 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["communication", "notifications", "automation", "workflow"],
   "keywords": [
     "notifications", "slack", "teams", "discord", "email",
     "webhooks", "alerts", "approvals", "escalation", "routing",
     "digest", "priority", "mute", "channels", "mentions",
     "on-call", "pagerduty", "opsgenie", "incident"
   ],
-
-  "provides": {
-    "commands": 14,
-    "agents": 9,
-    "skills": 5,
-    "hooks": 5
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Notifies on Jira issue updates, status changes, assignments",
-      "events": ["issue-created", "status-changed", "assigned", "commented"],
-      "bidirectional": true
-    },
-    "git-workflow-orchestrator": {
-      "description": "Notifies on PR events, merge, conflicts",
-      "events": ["pr-created", "pr-merged", "conflict-detected", "review-requested"],
-      "bidirectional": false
-    },
-    "release-orchestrator": {
-      "description": "Sends release announcements and deployment notifications",
-      "events": ["release-created", "deployed", "rollback"],
-      "priority": "high"
-    },
-    "testing-orchestrator": {
-      "description": "Alerts on test failures, coverage drops",
-      "events": ["tests-failed", "coverage-dropped", "regression-detected"],
-      "escalation": true
-    }
-  },
 
   "channels": {
     "slack": {

@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["documentation", "knowledge", "api", "automation"],
   "keywords": [
     "documentation", "docs", "readme", "api-docs", "openapi",
     "swagger", "typedoc", "jsdoc", "sphinx", "mkdocs",
@@ -20,31 +19,6 @@
     "confluence", "wiki", "knowledge-base", "obsidian",
     "adr", "decision-records", "runbooks", "onboarding"
   ],
-
-  "provides": {
-    "commands": 16,
-    "agents": 11,
-    "skills": 7,
-    "hooks": 4
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Links documentation to Jira issues, auto-generates technical specs",
-      "commands": ["docs:jira", "docs:spec"],
-      "bidirectional": true
-    },
-    "code-quality-orchestrator": {
-      "description": "Enforces documentation coverage thresholds",
-      "commands": ["docs:coverage"],
-      "blocking": false
-    },
-    "release-orchestrator": {
-      "description": "Updates docs on release, generates release documentation",
-      "commands": ["docs:release"],
-      "optional": true
-    }
-  },
 
   "documentationTypes": {
     "api": {

@@ -12,19 +12,11 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["devops", "testing", "security", "code-generation"],
   "keywords": [
     "code-quality", "linting", "eslint", "prettier", "static-analysis",
     "test-coverage", "security-scanning", "complexity", "dependencies",
     "pre-commit", "ci-cd", "quality-gates", "orchestration", "clean-code"
   ],
-
-  "provides": {
-    "commands": 12,
-    "agents": 8,
-    "skills": 5,
-    "hooks": 6
-  },
 
   "qualityGates": {
     "description": "5 integrated quality gates that enforce clean code production",

@@ -12,8 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["data", "migration", "etl", "integration", "onboarding"],
-
   "architecture": {
     "pattern": "adapter-based",
     "description": "Like Terraformer/Terraform - source adapters (providers) extract data, universal IR transforms, target mapper outputs to YOUR schema",

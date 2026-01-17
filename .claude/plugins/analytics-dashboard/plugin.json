@@ -12,43 +12,12 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["analytics", "metrics", "reporting", "forecasting"],
   "keywords": [
     "analytics", "metrics", "dashboard", "velocity", "burndown",
     "forecasting", "trends", "kpi", "performance", "productivity",
     "cost-analysis", "time-tracking", "sprint-metrics", "cycle-time",
     "lead-time", "throughput", "dora-metrics", "four-keys"
   ],
-
-  "provides": {
-    "commands": 16,
-    "agents": 10,
-    "skills": 6,
-    "hooks": 3
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Pulls sprint data, velocity, story points for analytics",
-      "data": ["sprints", "issues", "worklogs", "estimates"],
-      "bidirectional": false
-    },
-    "git-workflow-orchestrator": {
-      "description": "Analyzes commit patterns, PR metrics, code churn",
-      "data": ["commits", "prs", "reviews", "contributors"],
-      "bidirectional": false
-    },
-    "testing-orchestrator": {
-      "description": "Tracks test metrics, coverage trends, flaky test rates",
-      "data": ["coverage", "test-results", "failure-rates"],
-      "bidirectional": false
-    },
-    "release-orchestrator": {
-      "description": "Tracks deployment frequency, lead time, MTTR",
-      "data": ["deployments", "rollbacks", "release-frequency"],
-      "bidirectional": false
-    }
-  },
 
   "metricCategories": {
     "velocity": {

@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["devops", "development", "tooling", "automation"],
   "keywords": [
     "setup", "environment", "dependencies", "docker", "docker-compose",
     "dotenv", "env-vars", "pre-commit", "hooks", "ide", "vscode", "cursor",
@@ -22,31 +21,6 @@
     "node", "python", "ruby", "go", "rust", "java", "gradle", "maven",
     "works-on-my-machine", "dev-container", "codespaces"
   ],
-
-  "provides": {
-    "commands": 12,
-    "agents": 10,
-    "skills": 7,
-    "hooks": 4
-  },
-
-  "integrations": {
-    "docker": {
-      "description": "Generates and manages Docker/docker-compose configurations",
-      "commands": ["bootstrap:dockerize", "bootstrap:setup"],
-      "bidirectional": false
-    },
-    "git-workflow-orchestrator": {
-      "description": "Sets up pre-commit hooks and git configuration",
-      "commands": ["bootstrap:hooks", "bootstrap:setup"],
-      "bidirectional": true
-    },
-    "code-quality-orchestrator": {
-      "description": "Integrates linters, formatters, and quality checks",
-      "commands": ["bootstrap:setup", "bootstrap:hooks"],
-      "blocking": false
-    }
-  },
 
   "workflows": {
     "quick-setup": {

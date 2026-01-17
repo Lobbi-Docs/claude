@@ -16,12 +16,6 @@
     "clean-architecture",
     "solid"
   ],
-  "categories": [
-    "orchestration",
-    "project-management",
-    "devops",
-    "integration"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/markus41/claude/tree/main/plugins/jira-orchestrator"
