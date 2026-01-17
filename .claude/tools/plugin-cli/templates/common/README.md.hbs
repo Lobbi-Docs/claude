@@ -1,0 +1,61 @@
+# {{name}}
+
+{{description}}
+
+## Installation
+
+```bash
+claude-code plugin install {{name}}
+```
+
+## Features
+
+{{#if hasAgents}}
+### Agents
+{{#each agents}}
+- **{{this.name}}**: {{this.description}}
+{{/each}}
+{{/if}}
+
+{{#if hasSkills}}
+### Skills
+{{#each skills}}
+- **{{this.name}}**: {{this.description}}
+{{/each}}
+{{/if}}
+
+{{#if hasCommands}}
+### Commands
+{{#each commands}}
+- `/{{this.name}}`: {{this.description}}
+{{/each}}
+{{/if}}
+
+{{#if hasHooks}}
+### Hooks
+This plugin includes automation hooks for:
+{{#each hooks}}
+- {{this.name}}: {{this.trigger}}
+{{/each}}
+{{/if}}
+
+## Configuration
+
+Add to your `.claude/settings.json`:
+```json
+{
+  "plugins": {
+    "{{name}}": {
+      "enabled": true
+    }
+  }
+}
+```
+
+## Author
+
+{{author}}
+
+## License
+
+{{license}}

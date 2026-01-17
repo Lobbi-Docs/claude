@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../core/schemas/plugin.schema.json",
+  "name": "{{name}}",
+  "displayName": "{{pascalCase name}}",
+  "version": "{{version}}",
+  "description": "{{description}}",
+  "apiVersion": "v1",
+  "author": {
+    "name": "{{author}}"
+  },
+  "license": "{{license}}",
+  "keywords": [{{#each keywords}}"{{this}}"{{#unless @last}}, {{/unless}}{{/each}}],
+  "provides": {
+    {{#if hasAgents}}"agents": {{agentCount}}{{#if hasSkills}},{{/if}}{{#if hasCommands}},{{/if}}{{#if hasHooks}},{{/if}}{{/if}}
+    {{#if hasSkills}}"skills": {{skillCount}}{{#if hasCommands}},{{/if}}{{#if hasHooks}},{{/if}}{{/if}}
+    {{#if hasCommands}}"commands": {{commandCount}}{{#if hasHooks}},{{/if}}{{/if}}
+    {{#if hasHooks}}"hooks": {{hookCount}}{{/if}}
+  },
+  "agents": {
+    {{#each agents}}
+    "{{this.id}}": {
+      "file": "{{this.file}}",
+      "description": "{{this.description}}"
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  },
+  "skills": {
+    {{#each skills}}
+    "{{this.id}}": {
+      "file": "{{this.file}}",
+      "description": "{{this.description}}"
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  },
+  "commands": {
+    {{#each commands}}
+    "{{this.id}}": {
+      "file": "{{this.file}}",
+      "description": "{{this.description}}"
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  },
+  "hooks": {
+    {{#each hooks}}
+    "{{this.id}}": {
+      "trigger": "{{this.trigger}}",
+      "script": "{{this.script}}"
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  }
+}

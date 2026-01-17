@@ -1,6 +1,6 @@
 /**
  * Plugin Scaffolder
- * Handles interactive plugin creation from templates
+ * Handles interactive plugin creation from templates using Handlebars
  */
 
 import inquirer from 'inquirer';
@@ -9,13 +9,85 @@ import ora from 'ora';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { execSync } from 'child_process';
-import { ScaffoldOptions, PluginType, PluginManifest } from './types';
+import { ScaffoldOptions, PluginType, PluginManifest, TemplateContext } from './types.js';
+import { TemplateEngine } from './template-engine.js';
 
 export class PluginScaffolder {
   private templateDir: string;
+  private templateEngine: TemplateEngine;
 
   constructor() {
     this.templateDir = path.join(__dirname, '..', 'templates');
+    this.templateEngine = new TemplateEngine();
+  }
+
+  /**
+   * Build template context from scaffold options
+   */
+  private buildContext(options: ScaffoldOptions): TemplateContext {
+    const type = options.type;
+    const hasAgents = type === 'full' || type === 'agent-pack';
+    const hasSkills = type === 'full' || type === 'skill-pack';
+    const hasCommands = type === 'full' || type === 'workflow-pack';
+    const hasHooks = type === 'full';
+
+    const now = new Date();
+
+    return {
+      // Plugin metadata
+      name: options.name,
+      displayName: this.pascalCase(options.name),
+      version: '0.1.0',
+      description: options.description || `A Claude Code ${type} plugin`,
+      author: options.author || 'Your Name',
+      license: options.license || 'MIT',
+      keywords: this.getDefaultKeywords(type),
+
+      // Type flags
+      pluginType: type,
+      hasAgents,
+      hasSkills,
+      hasCommands,
+      hasHooks,
+
+      // Counts (will be updated when samples are created)
+      agentCount: hasAgents && options.samples ? 1 : 0,
+      skillCount: hasSkills && options.samples ? 1 : 0,
+      commandCount: hasCommands && options.samples ? 1 : 0,
+      hookCount: hasHooks && options.samples ? 1 : 0,
+
+      // Items (will be populated when samples are created)
+      agents: [],
+      skills: [],
+      commands: [],
+      hooks: [],
+
+      // Sample content
+      agentName: 'example-agent',
+      agentDescription: `Example agent for ${options.name}`,
+      skillName: 'example-skill',
+      skillDescription: `Example skill for ${options.name}`,
+      commandName: 'example',
+      commandDescription: `Example command for ${options.name}`,
+      hookName: 'example-hook',
+      hookDescription: 'Example hook that processes file operations',
+      hookTrigger: 'PostToolUse',
+
+      // Computed values
+      year: now.getFullYear(),
+      date: now.toISOString().split('T')[0],
+      pluginName: options.name
+    };
+  }
+
+  /**
+   * Convert string to PascalCase
+   */
+  private pascalCase(str: string): string {
+    return str
+      .split(/[-_\s]+/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join('');
   }
 
   /**
@@ -92,6 +164,9 @@ export class PluginScaffolder {
       await fs.ensureDir(pluginPath);
       spinner.text = 'Plugin directory created';
 
+      // Build template context
+      const context = this.buildContext(options);
+
       // Generate structure based on type
       await this.generateStructure(options.type, pluginPath);
       spinner.text = 'Directory structure generated';
@@ -107,12 +182,12 @@ export class PluginScaffolder {
 
       // Create sample resources if requested
       if (options.samples) {
-        await this.createSamples(options.type, pluginPath, options.name);
+        await this.createSamples(options.type, pluginPath, context);
         spinner.text = 'Sample resources created';
       }
 
-      // Create supporting files
-      await this.createSupportingFiles(pluginPath, options);
+      // Create supporting files using templates
+      await this.createSupportingFiles(pluginPath, context);
       spinner.text = 'Supporting files created';
 
       // Initialize git if requested
@@ -236,42 +311,88 @@ export class PluginScaffolder {
   }
 
   /**
-   * Create sample resources
+   * Create sample resources using templates
    */
-  async createSamples(type: PluginType, pluginPath: string, pluginName: string): Promise<void> {
+  async createSamples(type: PluginType, pluginPath: string, context: TemplateContext): Promise<void> {
     if (type === 'full' || type === 'agent-pack') {
-      await this.createSampleAgent(pluginPath, pluginName);
+      await this.createSampleAgent(pluginPath, context);
     }
 
     if (type === 'full' || type === 'skill-pack') {
-      await this.createSampleSkill(pluginPath, pluginName);
+      await this.createSampleSkill(pluginPath, context);
     }
 
     if (type === 'full' || type === 'workflow-pack') {
-      await this.createSampleCommand(pluginPath, pluginName);
+      await this.createSampleCommand(pluginPath, context);
     }
 
     if (type === 'full') {
-      await this.createSampleHook(pluginPath);
+      await this.createSampleHook(pluginPath, context);
     }
   }
 
   /**
-   * Create sample agent
+   * Load and process a template file
    */
-  async createSampleAgent(pluginPath: string, pluginName: string): Promise<void> {
-    const agentContent = `---
-name: example-agent
-description: Example agent for ${pluginName}
+  private async loadTemplate(templatePath: string, context: TemplateContext): Promise<string> {
+    const fullPath = path.join(this.templateDir, templatePath);
+
+    // Check if template exists
+    if (await fs.pathExists(fullPath)) {
+      return this.templateEngine.processFile(fullPath, context);
+    }
+
+    // Fallback to inline generation if template doesn't exist
+    console.warn(chalk.yellow(`Warning: Template not found: ${templatePath}, using fallback`));
+    return '';
+  }
+
+  /**
+   * Create sample agent from template
+   */
+  async createSampleAgent(pluginPath: string, context: TemplateContext): Promise<void> {
+    const templatePath = `${context.pluginType}/agents/example-agent.md.hbs`;
+    let agentContent = await this.loadTemplate(templatePath, context);
+
+    // Fallback if template doesn't exist
+    if (!agentContent) {
+      agentContent = this.generateAgentFallback(context);
+    }
+
+    await fs.writeFile(
+      path.join(pluginPath, 'agents', 'example-agent.md'),
+      agentContent
+    );
+
+    // Update manifest
+    const manifestPath = path.join(pluginPath, '.claude-plugin', 'plugin.json');
+    const manifest = await fs.readJSON(manifestPath);
+    manifest.agents = manifest.agents || {};
+    manifest.agents['example-agent'] = {
+      description: context.agentDescription,
+      model: 'sonnet',
+      handler: 'agents/example-agent.md',
+      triggers: ['example', 'demo']
+    };
+    await fs.writeJSON(manifestPath, manifest, { spaces: 2 });
+  }
+
+  /**
+   * Generate agent content fallback (used if template doesn't exist)
+   */
+  private generateAgentFallback(context: TemplateContext): string {
+    return `---
+name: ${context.agentName}
+description: ${context.agentDescription}
 model: sonnet
 triggers:
   - example
   - demo
 ---
 
-# Example Agent
+# ${context.agentName}
 
-You are an example agent for the ${pluginName} plugin.
+${context.agentDescription}
 
 ## Role
 
@@ -303,35 +424,48 @@ When activated:
 - Provide helpful examples
 - Follow the plugin's conventions
 `;
+  }
+
+  /**
+   * Create sample skill from template
+   */
+  async createSampleSkill(pluginPath: string, context: TemplateContext): Promise<void> {
+    const skillDir = path.join(pluginPath, 'skills', 'example-skill');
+    await fs.ensureDir(skillDir);
+
+    const templatePath = `${context.pluginType}/skills/example-skill/SKILL.md.hbs`;
+    let skillContent = await this.loadTemplate(templatePath, context);
+
+    // Fallback if template doesn't exist
+    if (!skillContent) {
+      skillContent = this.generateSkillFallback(context);
+    }
 
     await fs.writeFile(
-      path.join(pluginPath, 'agents', 'example-agent.md'),
-      agentContent
+      path.join(skillDir, 'SKILL.md'),
+      skillContent
     );
 
     // Update manifest
     const manifestPath = path.join(pluginPath, '.claude-plugin', 'plugin.json');
     const manifest = await fs.readJSON(manifestPath);
-    manifest.agents = manifest.agents || {};
-    manifest.agents['example-agent'] = {
-      description: `Example agent for ${pluginName}`,
-      model: 'sonnet',
-      handler: 'agents/example-agent.md',
-      triggers: ['example', 'demo']
+    manifest.skills = manifest.skills || {};
+    manifest.skills['example-skill'] = {
+      description: context.skillDescription,
+      handler: 'skills/example-skill/SKILL.md',
+      triggers: ['example'],
+      filePatterns: ['*.example', 'example.config.json']
     };
     await fs.writeJSON(manifestPath, manifest, { spaces: 2 });
   }
 
   /**
-   * Create sample skill
+   * Generate skill content fallback (used if template doesn't exist)
    */
-  async createSampleSkill(pluginPath: string, pluginName: string): Promise<void> {
-    const skillDir = path.join(pluginPath, 'skills', 'example-skill');
-    await fs.ensureDir(skillDir);
+  private generateSkillFallback(context: TemplateContext): string {
+    return `# ${context.skillName}
 
-    const skillContent = `# Example Skill
-
-This is an example skill for the ${pluginName} plugin.
+${context.skillDescription}
 
 ## Activation Triggers
 
@@ -374,37 +508,49 @@ touch example.txt
 - Related skills
 - External resources
 `;
+  }
+
+  /**
+   * Create sample command from template
+   */
+  async createSampleCommand(pluginPath: string, context: TemplateContext): Promise<void> {
+    const templatePath = `${context.pluginType}/commands/example.md.hbs`;
+    let commandContent = await this.loadTemplate(templatePath, context);
+
+    // Fallback if template doesn't exist
+    if (!commandContent) {
+      commandContent = this.generateCommandFallback(context);
+    }
 
     await fs.writeFile(
-      path.join(skillDir, 'SKILL.md'),
-      skillContent
+      path.join(pluginPath, 'commands', 'example.md'),
+      commandContent
     );
 
     // Update manifest
     const manifestPath = path.join(pluginPath, '.claude-plugin', 'plugin.json');
     const manifest = await fs.readJSON(manifestPath);
-    manifest.skills = manifest.skills || {};
-    manifest.skills['example-skill'] = {
-      description: `Example skill for ${pluginName}`,
-      handler: 'skills/example-skill/SKILL.md',
-      triggers: ['example'],
-      filePatterns: ['*.example', 'example.config.json']
+    manifest.commands = manifest.commands || {};
+    manifest.commands['/example'] = {
+      description: context.commandDescription,
+      handler: 'commands/example.md',
+      examples: ['/example init', '/example run']
     };
     await fs.writeJSON(manifestPath, manifest, { spaces: 2 });
   }
 
   /**
-   * Create sample command
+   * Generate command content fallback (used if template doesn't exist)
    */
-  async createSampleCommand(pluginPath: string, pluginName: string): Promise<void> {
-    const commandContent = `# Example Command
+  private generateCommandFallback(context: TemplateContext): string {
+    return `# /${context.commandName}
 
-This command demonstrates how to create commands in the ${pluginName} plugin.
+${context.commandDescription}
 
 ## Usage
 
 \`\`\`
-/example [action]
+/${context.commandName} [action]
 \`\`\`
 
 ## Actions
@@ -425,13 +571,13 @@ When this command is invoked:
 
 \`\`\`bash
 # Initialize
-/example init
+/${context.commandName} init
 
 # Run
-/example run
+/${context.commandName} run
 
 # Clean
-/example clean
+/${context.commandName} clean
 \`\`\`
 
 ## Output
@@ -441,55 +587,19 @@ The command will:
 - Execute the requested action
 - Report success or failure
 `;
-
-    await fs.writeFile(
-      path.join(pluginPath, 'commands', 'example.md'),
-      commandContent
-    );
-
-    // Update manifest
-    const manifestPath = path.join(pluginPath, '.claude-plugin', 'plugin.json');
-    const manifest = await fs.readJSON(manifestPath);
-    manifest.commands = manifest.commands || {};
-    manifest.commands['/example'] = {
-      description: 'Example command demonstrating plugin commands',
-      handler: 'commands/example.md',
-      examples: ['/example init', '/example run']
-    };
-    await fs.writeJSON(manifestPath, manifest, { spaces: 2 });
   }
 
   /**
-   * Create sample hook
+   * Create sample hook from template
    */
-  async createSampleHook(pluginPath: string): Promise<void> {
-    const hookContent = `#!/bin/bash
-# Example Hook
-# This hook runs on file write operations
+  async createSampleHook(pluginPath: string, context: TemplateContext): Promise<void> {
+    const templatePath = 'full/hooks/scripts/example-hook.sh.hbs';
+    let hookContent = await this.loadTemplate(templatePath, context);
 
-set -e
-
-# Colors for output
-RED='\\033[0;31m'
-GREEN='\\033[0;32m'
-YELLOW='\\033[1;33m'
-NC='\\033[0m' # No Color
-
-echo -e "\${GREEN}[Hook]\${NC} Example hook triggered"
-
-# Example: Check file size
-FILE_PATH="\$1"
-
-if [ -f "\$FILE_PATH" ]; then
-  FILE_SIZE=\$(stat -f%z "\$FILE_PATH" 2>/dev/null || stat -c%s "\$FILE_PATH" 2>/dev/null || echo "0")
-
-  if [ "\$FILE_SIZE" -gt 1000000 ]; then
-    echo -e "\${YELLOW}[Warning]\${NC} File is larger than 1MB: \$FILE_PATH"
-  fi
-fi
-
-exit 0
-`;
+    // Fallback if template doesn't exist
+    if (!hookContent) {
+      hookContent = this.generateHookFallback(context);
+    }
 
     const hookPath = path.join(pluginPath, 'hooks', 'scripts', 'example-hook.sh');
     await fs.writeFile(hookPath, hookContent);
@@ -500,8 +610,8 @@ exit 0
     const manifest = await fs.readJSON(manifestPath);
     manifest.hooks = manifest.hooks || {};
     manifest.hooks['example-hook'] = {
-      description: 'Example hook that checks file sizes',
-      event: 'PostToolUse',
+      description: context.hookDescription,
+      event: context.hookTrigger,
       toolPattern: '(Write|Edit)',
       filePattern: '.*',
       handler: 'hooks/scripts/example-hook.sh'
@@ -510,15 +620,54 @@ exit 0
   }
 
   /**
-   * Create supporting files
+   * Generate hook content fallback (used if template doesn't exist)
    */
-  async createSupportingFiles(pluginPath: string, options: ScaffoldOptions): Promise<void> {
-    // Create README.md
-    const readmeContent = this.createReadme(options);
+  private generateHookFallback(context: TemplateContext): string {
+    return `#!/bin/bash
+# ${context.hookName} - ${context.hookDescription}
+# Trigger: ${context.hookTrigger}
+# Plugin: ${context.pluginName}
+
+set -e
+
+# Colors for output
+RED='\\033[0;31m'
+GREEN='\\033[0;32m'
+YELLOW='\\033[1;33m'
+NC='\\033[0m' # No Color
+
+echo -e "\${GREEN}[Hook]\${NC} ${context.hookName} triggered"
+
+# Example: Check file size
+FILE_PATH="$1"
+
+if [ -f "$FILE_PATH" ]; then
+  FILE_SIZE=$(stat -f%z "$FILE_PATH" 2>/dev/null || stat -c%s "$FILE_PATH" 2>/dev/null || echo "0")
+
+  if [ "$FILE_SIZE" -gt 1000000 ]; then
+    echo -e "\${YELLOW}[Warning]\${NC} File is larger than 1MB: $FILE_PATH"
+  fi
+fi
+
+exit 0
+`;
+  }
+
+  /**
+   * Create supporting files using templates
+   */
+  async createSupportingFiles(pluginPath: string, context: TemplateContext): Promise<void> {
+    // Create README.md using template
+    let readmeContent = await this.loadTemplate('common/README.md.hbs', context);
+    if (!readmeContent) {
+      readmeContent = this.generateReadmeFallback(context);
+    }
     await fs.writeFile(path.join(pluginPath, 'README.md'), readmeContent);
 
-    // Create .gitignore
-    const gitignoreContent = `node_modules/
+    // Create .gitignore using template
+    let gitignoreContent = await this.loadTemplate('common/gitignore.hbs', context);
+    if (!gitignoreContent) {
+      gitignoreContent = `node_modules/
 .DS_Store
 *.log
 .env
@@ -526,28 +675,32 @@ exit 0
 dist/
 *.cpkg
 `;
+    }
     await fs.writeFile(path.join(pluginPath, '.gitignore'), gitignoreContent);
 
-    // Create LICENSE
-    if (options.license === 'MIT') {
-      const licenseContent = this.createMITLicense(options.author || 'Your Name');
+    // Create LICENSE using template
+    if (context.license === 'MIT') {
+      let licenseContent = await this.loadTemplate('common/LICENSE.md.hbs', context);
+      if (!licenseContent) {
+        licenseContent = this.generateLicenseFallback(context);
+      }
       await fs.writeFile(path.join(pluginPath, 'LICENSE'), licenseContent);
     }
   }
 
   /**
-   * Create README content
+   * Generate README content fallback (used if template doesn't exist)
    */
-  private createReadme(options: ScaffoldOptions): string {
-    return `# ${options.name}
+  private generateReadmeFallback(context: TemplateContext): string {
+    return `# ${context.name}
 
-${options.description || `A Claude Code ${options.type} plugin`}
+${context.description}
 
 ## Installation
 
 \`\`\`bash
 # Install the plugin
-claude-plugin install ${options.name}
+claude-plugin install ${context.name}
 \`\`\`
 
 ## Features
@@ -575,22 +728,21 @@ claude-plugin build .
 
 ## License
 
-${options.license || 'MIT'}
+${context.license}
 
 ## Author
 
-${options.author || 'Your Name'}
+${context.author}
 `;
   }
 
   /**
-   * Create MIT License
+   * Generate MIT License fallback (used if template doesn't exist)
    */
-  private createMITLicense(author: string): string {
-    const year = new Date().getFullYear();
+  private generateLicenseFallback(context: TemplateContext): string {
     return `MIT License
 
-Copyright (c) ${year} ${author}
+Copyright (c) ${context.year} ${context.author}
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

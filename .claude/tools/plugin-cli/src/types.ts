@@ -174,3 +174,49 @@ export interface PublishOptions {
   tag?: string;
   access?: 'public' | 'private';
 }
+
+export interface TemplateContext {
+  // Plugin metadata
+  name: string;
+  displayName: string;
+  version: string;
+  description: string;
+  author: string;
+  license: string;
+  keywords: string[];
+
+  // Type flags
+  pluginType: 'agent-pack' | 'skill-pack' | 'workflow-pack' | 'full';
+  hasAgents: boolean;
+  hasSkills: boolean;
+  hasCommands: boolean;
+  hasHooks: boolean;
+
+  // Counts
+  agentCount: number;
+  skillCount: number;
+  commandCount: number;
+  hookCount: number;
+
+  // Items
+  agents: Array<{ id: string; name: string; file: string; description: string }>;
+  skills: Array<{ id: string; name: string; file: string; description: string }>;
+  commands: Array<{ id: string; name: string; file: string; description: string }>;
+  hooks: Array<{ id: string; name: string; trigger: string; script: string }>;
+
+  // Sample content
+  agentName?: string;
+  agentDescription?: string;
+  skillName?: string;
+  skillDescription?: string;
+  commandName?: string;
+  commandDescription?: string;
+  hookName?: string;
+  hookDescription?: string;
+  hookTrigger?: string;
+
+  // Computed values
+  year: number;
+  date: string;
+  pluginName: string;
+}
