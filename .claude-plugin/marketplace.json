@@ -125,7 +125,7 @@
     {
       "name": "jira-orchestrator",
       "description": "Arbiter - Enterprise Jira orchestration with 68 agents, 16 teams, 43 commands, 11 skills, and 7 hooks. Features AutoGen-style team coordination, domain affinity routing, intelligence system, and Harness platform integration. Validated and operational.",
-      "version": "7.1.0",
+      "version": "7.2.0",
       "author": {
         "name": "The Lobbi",
         "email": "developers@thelobbi.io"
@@ -196,12 +196,224 @@
       "description": "Architect (Standard) - Universal templating and Harness expert plugin with multi-format support (Handlebars, Cookiecutter, Copier, Maven, Harness), 5 specialized agents, MCP integration, and automated CI/CD pipeline generation. 4 commands, 5 agents, 3 skills, 58 tests.",
       "version": "1.0.0",
       "author": {
-        "name": "Brookside BI",
-        "email": "dev@brooksidebi.com"
+        "name": "thelobbi.io",
+        "email": "developers@thelobbi.io"
       },
       "source": "./plugins/claude-code-templating-plugin",
       "category": "templating",
       "tags": ["templating", "scaffolding", "harness", "cookiecutter", "copier", "maven", "handlebars", "mcp", "ci-cd", "pipelines", "code-generation"]
+    },
+    {
+      "name": "langgraph-architect",
+      "description": "Architect (Standard) - Expert LangGraph/LangChain agent builder with comprehensive workflow orchestration, MCP integration, and CLI accessibility. 12 specialized agents, 8 commands, 6 skills covering StateGraph design, multi-agent patterns (supervisor, swarm, hierarchical), memory systems, tool integration, context engineering, and production deployment. Makes every LangGraph agent reachable via Claude Code CLI.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Brookside BI",
+        "email": "dev@brooksidebi.com"
+      },
+      "source": "./.claude/plugins/langgraph-architect",
+      "category": "agents",
+      "tags": ["langgraph", "langchain", "agent-builder", "workflow-orchestration", "state-machine", "multi-agent", "mcp", "model-context-protocol", "supervisor", "swarm", "checkpointing", "memory", "cli", "tool-integration"]
+    },
+    {
+      "name": "analytics-dashboard",
+      "description": "Oracle - Seer of patterns and foresight. Provides comprehensive analytics including velocity tracking, burndown charts, cost analysis, forecasting, and team performance metrics. Integrates with Jira for sprint analytics and GitHub for development metrics.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/analytics-dashboard",
+      "category": "orchestration"
+    },
+    {
+      "name": "autonomous-sprint-ai",
+      "description": "Strategos - The Supreme Commander. Revolutionary self-governing sprint management AI that autonomously plans sprints, rebalances workloads, predicts blockers, negotiates scope, and makes real-time decisions. Operates with configurable autonomy levels from advisor to full autopilot.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/autonomous-sprint-ai",
+      "category": "orchestration"
+    },
+    {
+      "name": "code-knowledge-graph",
+      "description": "Librarian - The Keeper of Infinite Archives. Builds a semantic knowledge graph of your entire codebase, understanding relationships between code entities, architectural patterns, data flows, and domain concepts. Enables impact analysis, architectural queries, and semantic code search.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/code-knowledge-graph",
+      "category": "orchestration"
+    },
+    {
+      "name": "code-quality-orchestrator",
+      "description": "Curator - Ancient guardian of code excellence. Orchestrates 5 quality gates (Static Analysis, Test Coverage, Security Scanning, Complexity Analysis, Dependency Health) in a unified flow. Ensures pristine code through Forerunner precision and automated enforcement.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Brookside BI"
+      },
+      "source": "./.claude/plugins/code-quality-orchestrator",
+      "category": "devops"
+    },
+    {
+      "name": "cognitive-code-reasoner",
+      "description": "Didact - The Teacher of deep understanding. Revolutionary debugging and code analysis using extended thinking and multi-step cognitive reasoning. Employs hypothesis-driven debugging, causal chain analysis, temporal state reconstruction, and emergent bug pattern detection.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/cognitive-code-reasoner",
+      "category": "debugging"
+    },
+    {
+      "name": "documentation-orchestrator",
+      "description": "Scribe - Keeper of knowledge and wisdom. Orchestrates documentation generation including API docs, README files, architecture diagrams, code documentation, and knowledge base management. Integrates with Confluence for wiki sync and Obsidian for personal knowledge management.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/documentation-orchestrator",
+      "category": "documentation"
+    },
+    {
+      "name": "git-workflow-orchestrator",
+      "description": "Sentinel - Guardian of the codebase timeline. Orchestrates advanced Git workflows including trunk-based development, GitFlow, ship/show/ask patterns, branch protection, rebasing strategies, conflict resolution, and merge automation.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/git-workflow-orchestrator",
+      "category": "devops"
+    },
+    {
+      "name": "multi-model-orchestration",
+      "description": "Conductor - The Orchestrator of Intelligences. Revolutionary multi-LLM orchestration that dynamically routes tasks to the optimal AI model (Claude, GPT, Gemini, Llama, Mistral) based on task characteristics, cost, latency, and capability matching.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/multi-model-orchestration",
+      "category": "orchestration"
+    },
+    {
+      "name": "notification-hub",
+      "description": "Messenger - Voice across dimensions. Unified notification orchestration for Slack, Microsoft Teams, Discord, Email, and Webhooks. Manages approval workflows, escalation chains, and intelligent notification routing with digest and priority management.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/notification-hub",
+      "category": "integration"
+    },
+    {
+      "name": "predictive-failure-engine",
+      "description": "Cassandra - The Oracle of Inevitable Fates. Revolutionary AI that predicts bugs and failures BEFORE they happen using pattern recognition, code smell analysis, historical failure correlation, and probabilistic modeling.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/predictive-failure-engine",
+      "category": "orchestration"
+    },
+    {
+      "name": "release-orchestrator",
+      "description": "Herald - Announcer of new horizons. Orchestrates the complete release lifecycle including semantic versioning, changelog generation, release notes, deployment coordination, rollback management, and feature flag integration.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/release-orchestrator",
+      "category": "devops"
+    },
+    {
+      "name": "testing-orchestrator",
+      "description": "Validator - Arbiter of truth and correctness. Orchestrates comprehensive testing including unit tests, integration tests, E2E tests, performance tests, and regression detection. Integrates with Jira for test case linking and CI/CD for automated test execution.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/testing-orchestrator",
+      "category": "testing"
+    },
+    {
+      "name": "api-integration-helper",
+      "description": "Connector - Production-ready API integration specialist. Orchestrates 10 agents to generate typed clients, auth flows, error handling, rate limiting, and mock servers from OpenAPI/GraphQL specs. Delivers enterprise-grade API integrations.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Brookside BI"
+      },
+      "source": "./.claude/plugins/api-integration-helper",
+      "category": "integration"
+    },
+    {
+      "name": "customer-data-migration-orchestrator",
+      "description": "Terraformer - Universal data migration platform with source adapters. Like Terraform for infrastructure, but for customer data. Connect ANY source (Salesforce, HubSpot, Stripe, legacy DBs, CSVs) and automatically transform to YOUR target schema.",
+      "version": "2.0.0",
+      "author": {
+        "name": "Lobbi Engineering"
+      },
+      "source": "./.claude/plugins/customer-data-migration-orchestrator",
+      "category": "migration"
+    },
+    {
+      "name": "database-schema-designer",
+      "description": "Architect - Master builder of data structures. Orchestrates production-grade database schema design, optimization, and evolution. Detects N+1 queries, suggests optimal indexes, plans zero-downtime migrations, and ensures schemas perform at scale.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/database-schema-designer",
+      "category": "database"
+    },
+    {
+      "name": "debug-detective",
+      "description": "Sherlock - Master investigator of code mysteries. Systematically debugs issues through hypothesis formation, evidence gathering, stack trace analysis, data flow tracing, git bisect automation, and state comparison.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/debug-detective",
+      "category": "debugging"
+    },
+    {
+      "name": "dev-environment-bootstrap",
+      "description": "Bootstrap - Developer onboarding accelerator. Analyzes project requirements, detects missing dependencies, generates Docker/docker-compose configs, creates .env templates, sets up pre-commit hooks, configures IDE settings (VSCode/Cursor).",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/dev-environment-bootstrap",
+      "category": "development"
+    },
+    {
+      "name": "fixer",
+      "description": "Fixer - Error Resolution Engine. Diagnoses, fixes, and prevents common programming errors across TypeScript, Python, Rust, and Go. Features error-parsing, stack-trace-analysis, pattern-matching, and solution-search capabilities.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Brookside BI"
+      },
+      "source": "./.claude/plugins/fixer",
+      "category": "debugging"
+    },
+    {
+      "name": "migration-wizard",
+      "description": "Migrator - The architect of transformation. Orchestrates complex code migrations between frameworks, libraries, and API versions with precision codemods, incremental strangler fig patterns, and automated transformation.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Brookside BI"
+      },
+      "source": "./.claude/plugins/migration-wizard",
+      "category": "migration"
+    },
+    {
+      "name": "testforge",
+      "description": "TestForge - Master of quality assurance through intelligent test generation. Analyzes code behavior to auto-generate comprehensive tests that catch real bugs, not just boost coverage numbers. Supports Jest, Pytest, Vitest, and more.",
+      "version": "1.0.0",
+      "author": {
+        "name": "The Lobbi"
+      },
+      "source": "./.claude/plugins/testforge",
+      "category": "testing"
     }
   ]
 }

@@ -1,0 +1,260 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp-config.schema.json",
+  "name": "langgraph-agents-mcp-config",
+  "version": "1.0.0",
+  "description": "Sample MCP configuration for LangGraph agents integration",
+
+  "mcpServers": {
+    "langgraph-agents": {
+      "description": "MCP server exposing LangGraph agents as callable tools",
+      "command": "python",
+      "args": [
+        "-m",
+        "langgraph_mcp_server"
+      ],
+      "env": {
+        "AGENT_REGISTRY_PATH": "${HOME}/.langgraph/agents",
+        "LOG_LEVEL": "INFO",
+        "PYTHONPATH": "${PLUGIN_PATH}/lib/mcp"
+      },
+      "autoStart": true,
+      "restartOnFailure": true,
+      "healthCheck": {
+        "enabled": true,
+        "intervalSeconds": 30
+      }
+    }
+  },
+
+  "installation": {
+    "instructions": [
+      "Step 1: Install required Python packages",
+      "  pip install mcp langgraph langchain-core langchain-anthropic",
+      "",
+      "Step 2: Set up agent registry directory",
+      "  mkdir -p ~/.langgraph/agents",
+      "",
+      "Step 3: Create sample agent (optional)",
+      "  mkdir -p ~/.langgraph/agents/hello_world",
+      "  # Copy hello_world example from plugin examples",
+      "",
+      "Step 4: Configure Claude Desktop",
+      "  # Add the langgraph-agents server to your claude_desktop_config.json",
+      "  # See claude_desktop_config.json template for details",
+      "",
+      "Step 5: Restart Claude Desktop",
+      "  # The LangGraph agents will now be available as MCP tools"
+    ],
+    "dependencies": {
+      "python": ">=3.10",
+      "packages": {
+        "mcp": ">=1.0.0",
+        "langgraph": ">=0.2.0",
+        "langchain-core": ">=0.3.0",
+        "langchain-anthropic": ">=0.2.0"
+      }
+    }
+  },
+
+  "configuration": {
+    "agentRegistryPath": {
+      "type": "string",
+      "description": "Path to the agent registry directory",
+      "default": "~/.langgraph/agents",
+      "required": false
+    },
+    "logLevel": {
+      "type": "string",
+      "description": "Logging level for the MCP server",
+      "enum": ["DEBUG", "INFO", "WARNING", "ERROR"],
+      "default": "INFO",
+      "required": false
+    },
+    "enableStreaming": {
+      "type": "boolean",
+      "description": "Enable streaming responses for agents",
+      "default": true,
+      "required": false
+    },
+    "maxThreads": {
+      "type": "integer",
+      "description": "Maximum number of concurrent agent threads",
+      "default": 10,
+      "required": false
+    },
+    "threadTimeout": {
+      "type": "integer",
+      "description": "Thread timeout in seconds",
+      "default": 300,
+      "required": false
+    }
+  },
+
+  "capabilities": {
+    "tools": {
+      "enabled": true,
+      "description": "Exposes LangGraph agents as callable tools"
+    },
+    "resources": {
+      "enabled": true,
+      "description": "Provides agent metadata and configuration as resources"
+    },
+    "prompts": {
+      "enabled": true,
+      "description": "Provides prompt templates for invoking agents"
+    }
+  },
+
+  "examples": {
+    "invoke_agent": {
+      "description": "Invoke a LangGraph agent by name",
+      "tool": "agent_hello_world",
+      "input": {
+        "input": "Hello, what can you do?",
+        "thread_id": "optional-thread-id",
+        "config": {
+          "model": "claude-3-5-sonnet-20241022",
+          "temperature": 0.7
+        }
+      }
+    },
+    "list_agents": {
+      "description": "List all available agents",
+      "resource": "agent://list"
+    },
+    "get_agent_metadata": {
+      "description": "Get metadata for a specific agent",
+      "resource": "agent://hello_world"
+    }
+  },
+
+  "troubleshooting": {
+    "common_issues": [
+      {
+        "issue": "Server fails to start",
+        "solutions": [
+          "Check that Python 3.10+ is installed",
+          "Verify all dependencies are installed: pip install mcp langgraph langchain-core",
+          "Check that PYTHONPATH includes the MCP server directory",
+          "Review logs at ~/.langgraph/logs/mcp_server.log"
+        ]
+      },
+      {
+        "issue": "Agent not found",
+        "solutions": [
+          "Verify agent is registered in ~/.langgraph/agents/registry.json",
+          "Check that agent module exists and is accessible",
+          "Run agent discovery: python -m langgraph_mcp_server --discover",
+          "Validate agent configuration with --validate flag"
+        ]
+      },
+      {
+        "issue": "Agent invocation fails",
+        "solutions": [
+          "Check agent health status in registry",
+          "Verify agent dependencies are installed",
+          "Review agent logs for errors",
+          "Test agent directly: python -m agent_module"
+        ]
+      }
+    ]
+  },
+
+  "usage": {
+    "claude_code": {
+      "description": "Using LangGraph agents from Claude Code",
+      "examples": [
+        {
+          "description": "List available agents",
+          "command": "/tools list --server langgraph-agents"
+        },
+        {
+          "description": "Invoke an agent",
+          "command": "Call the agent_research_assistant tool with input: 'Find information about LangGraph'"
+        },
+        {
+          "description": "Continue conversation with thread",
+          "command": "Call agent_research_assistant with thread_id from previous invocation"
+        }
+      ]
+    },
+    "claude_desktop": {
+      "description": "Using LangGraph agents from Claude Desktop",
+      "examples": [
+        "Simply ask Claude to use an agent by name",
+        "Example: 'Use the research_assistant agent to find information about X'",
+        "Claude will automatically discover and invoke the appropriate agent"
+      ]
+    },
+    "programmatic": {
+      "description": "Using the MCP client programmatically",
+      "example_code": {
+        "language": "python",
+        "code": [
+          "from mcp import ClientSession, StdioServerParameters",
+          "from mcp.client.stdio import stdio_client",
+          "",
+          "server_params = StdioServerParameters(",
+          "    command='python',",
+          "    args=['-m', 'langgraph_mcp_server'],",
+          "    env={'AGENT_REGISTRY_PATH': '~/.langgraph/agents'}",
+          ")",
+          "",
+          "async with stdio_client(server_params) as (read, write):",
+          "    async with ClientSession(read, write) as session:",
+          "        await session.initialize()",
+          "        ",
+          "        # List tools",
+          "        tools = await session.list_tools()",
+          "        ",
+          "        # Call agent",
+          "        result = await session.call_tool(",
+          "            'agent_hello_world',",
+          "            {'input': 'Hello!'",
+          "        )",
+          "        ",
+          "        print(result)"
+        ]
+      }
+    }
+  },
+
+  "advanced": {
+    "custom_registry_path": {
+      "description": "Use a custom agent registry location",
+      "env": {
+        "AGENT_REGISTRY_PATH": "/path/to/custom/registry"
+      }
+    },
+    "multiple_registries": {
+      "description": "Support multiple agent registries",
+      "note": "Currently not supported, but can be implemented by running multiple MCP server instances",
+      "workaround": [
+        "Run multiple MCP servers with different registry paths",
+        "Configure each with a unique server name",
+        "Example: langgraph-agents-prod, langgraph-agents-dev"
+      ]
+    },
+    "agent_deployment": {
+      "description": "Deploy agents to production",
+      "steps": [
+        "1. Test agent locally with --validate flag",
+        "2. Export registry: python -m langgraph_mcp_server --export registry.json",
+        "3. Deploy agent files to production environment",
+        "4. Import registry on production: --import registry.json",
+        "5. Configure production MCP server",
+        "6. Validate deployment: --health-check"
+      ]
+    }
+  },
+
+  "metadata": {
+    "author": "Brookside BI",
+    "license": "MIT",
+    "repository": "https://github.com/Lobbi-Docs/claude",
+    "documentation": "https://github.com/Lobbi-Docs/claude/tree/main/.claude/plugins/langgraph-architect",
+    "version": "1.0.0",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  }
+}

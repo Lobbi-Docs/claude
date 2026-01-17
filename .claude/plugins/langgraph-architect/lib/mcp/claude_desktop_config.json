@@ -1,0 +1,363 @@
+{
+  "//": "Claude Desktop Configuration for LangGraph Agents MCP Server",
+  "//": "Add this configuration to your Claude Desktop config file",
+  "//": "",
+  "//": "Configuration file locations:",
+  "//": "  macOS: ~/Library/Application Support/Claude/claude_desktop_config.json",
+  "//": "  Windows: %APPDATA%\\Claude\\claude_desktop_config.json",
+  "//": "  Linux: ~/.config/Claude/claude_desktop_config.json",
+  "//": "",
+  "//": "After adding this configuration, restart Claude Desktop",
+
+  "mcpServers": {
+    "langgraph-agents": {
+      "command": "python",
+      "args": [
+        "-m",
+        "langgraph_mcp_server"
+      ],
+      "env": {
+        "AGENT_REGISTRY_PATH": "C:\\Users\\YourUsername\\.langgraph\\agents",
+        "LOG_LEVEL": "INFO",
+        "PYTHONPATH": "C:\\Users\\MarkusAhling\\pro\\alpha-0.1\\claude\\.claude\\plugins\\langgraph-architect\\lib\\mcp"
+      }
+    }
+  },
+
+  "//": "===== PLATFORM-SPECIFIC CONFIGURATIONS =====",
+
+  "examples": {
+    "windows": {
+      "mcpServers": {
+        "langgraph-agents": {
+          "command": "python",
+          "args": ["-m", "langgraph_mcp_server"],
+          "env": {
+            "AGENT_REGISTRY_PATH": "C:\\Users\\YourUsername\\.langgraph\\agents",
+            "LOG_LEVEL": "INFO",
+            "PYTHONPATH": "C:\\path\\to\\claude\\.claude\\plugins\\langgraph-architect\\lib\\mcp"
+          }
+        }
+      }
+    },
+    "macos_linux": {
+      "mcpServers": {
+        "langgraph-agents": {
+          "command": "python3",
+          "args": ["-m", "langgraph_mcp_server"],
+          "env": {
+            "AGENT_REGISTRY_PATH": "${HOME}/.langgraph/agents",
+            "LOG_LEVEL": "INFO",
+            "PYTHONPATH": "${HOME}/pro/alpha-0.1/claude/.claude/plugins/langgraph-architect/lib/mcp"
+          }
+        }
+      }
+    },
+    "docker": {
+      "mcpServers": {
+        "langgraph-agents": {
+          "command": "docker",
+          "args": [
+            "run",
+            "--rm",
+            "-i",
+            "--network=host",
+            "-v",
+            "${HOME}/.langgraph/agents:/agents",
+            "langgraph-mcp-server:latest"
+          ],
+          "env": {
+            "AGENT_REGISTRY_PATH": "/agents"
+          }
+        }
+      }
+    },
+    "virtual_environment": {
+      "mcpServers": {
+        "langgraph-agents": {
+          "command": "/path/to/venv/bin/python",
+          "args": ["-m", "langgraph_mcp_server"],
+          "env": {
+            "AGENT_REGISTRY_PATH": "${HOME}/.langgraph/agents",
+            "LOG_LEVEL": "INFO"
+          }
+        }
+      }
+    }
+  },
+
+  "//": "===== ADVANCED CONFIGURATIONS =====",
+
+  "advanced": {
+    "multiple_environments": {
+      "//": "Run separate MCP servers for different environments",
+      "mcpServers": {
+        "langgraph-agents-prod": {
+          "command": "python",
+          "args": ["-m", "langgraph_mcp_server"],
+          "env": {
+            "AGENT_REGISTRY_PATH": "${HOME}/.langgraph/agents/prod",
+            "LOG_LEVEL": "WARNING"
+          }
+        },
+        "langgraph-agents-dev": {
+          "command": "python",
+          "args": ["-m", "langgraph_mcp_server"],
+          "env": {
+            "AGENT_REGISTRY_PATH": "${HOME}/.langgraph/agents/dev",
+            "LOG_LEVEL": "DEBUG"
+          }
+        }
+      }
+    },
+    "with_api_keys": {
+      "//": "Include API keys for agent tools",
+      "mcpServers": {
+        "langgraph-agents": {
+          "command": "python",
+          "args": ["-m", "langgraph_mcp_server"],
+          "env": {
+            "AGENT_REGISTRY_PATH": "${HOME}/.langgraph/agents",
+            "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+            "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+            "TAVILY_API_KEY": "${TAVILY_API_KEY}",
+            "LOG_LEVEL": "INFO"
+          }
+        }
+      }
+    },
+    "with_custom_config": {
+      "//": "Use a custom configuration file",
+      "mcpServers": {
+        "langgraph-agents": {
+          "command": "python",
+          "args": [
+            "-m",
+            "langgraph_mcp_server",
+            "--config",
+            "/path/to/custom_config.json"
+          ],
+          "env": {
+            "AGENT_REGISTRY_PATH": "${HOME}/.langgraph/agents"
+          }
+        }
+      }
+    }
+  },
+
+  "//": "===== SETUP INSTRUCTIONS =====",
+
+  "setup_instructions": {
+    "step_1_install_dependencies": {
+      "description": "Install required Python packages",
+      "commands": [
+        "pip install mcp",
+        "pip install langgraph langchain-core langchain-anthropic",
+        "pip install langchain-openai tavily-python"
+      ]
+    },
+    "step_2_create_registry": {
+      "description": "Create agent registry directory",
+      "commands": {
+        "windows": "mkdir %USERPROFILE%\\.langgraph\\agents",
+        "macos_linux": "mkdir -p ~/.langgraph/agents"
+      }
+    },
+    "step_3_configure_pythonpath": {
+      "description": "Ensure PYTHONPATH includes MCP server directory",
+      "notes": [
+        "Update the PYTHONPATH in the env section above",
+        "Replace with your actual path to the langgraph-architect plugin",
+        "Example: C:\\Users\\YourName\\pro\\alpha-0.1\\claude\\.claude\\plugins\\langgraph-architect\\lib\\mcp"
+      ]
+    },
+    "step_4_add_config": {
+      "description": "Add configuration to Claude Desktop",
+      "steps": [
+        "1. Locate your Claude Desktop config file (see paths at top)",
+        "2. Open the file in a text editor",
+        "3. Add the mcpServers section from this file",
+        "4. Update paths to match your system",
+        "5. Save the file"
+      ]
+    },
+    "step_5_restart_claude": {
+      "description": "Restart Claude Desktop",
+      "notes": [
+        "Completely quit Claude Desktop (not just close window)",
+        "Restart the application",
+        "The LangGraph agents will be loaded on startup"
+      ]
+    },
+    "step_6_verify": {
+      "description": "Verify MCP server is working",
+      "test_commands": [
+        "Ask Claude: 'What MCP tools are available?'",
+        "Ask Claude: 'List the LangGraph agents'",
+        "Try invoking an agent: 'Use the hello_world agent to say hello'"
+      ]
+    }
+  },
+
+  "//": "===== TROUBLESHOOTING =====",
+
+  "troubleshooting": {
+    "server_not_starting": {
+      "issue": "MCP server doesn't start or times out",
+      "checks": [
+        "Verify Python version is 3.10 or higher: python --version",
+        "Check that all dependencies are installed: pip list | grep -E 'mcp|langgraph|langchain'",
+        "Verify PYTHONPATH is correct and directory exists",
+        "Check Claude Desktop logs for errors",
+        "Try running the server manually: python -m langgraph_mcp_server"
+      ]
+    },
+    "agents_not_visible": {
+      "issue": "No agents appear in Claude Desktop",
+      "checks": [
+        "Verify agent registry exists: ls ~/.langgraph/agents/registry.json",
+        "Check that agents are registered: cat ~/.langgraph/agents/registry.json",
+        "Run agent discovery: python -m langgraph_mcp_server --discover",
+        "Check agent health: python -m langgraph_mcp_server --health"
+      ]
+    },
+    "invocation_errors": {
+      "issue": "Agent invocations fail or error out",
+      "checks": [
+        "Check agent module exists and is valid Python",
+        "Verify agent dependencies are installed",
+        "Test agent directly: python path/to/agent.py",
+        "Check logs at ~/.langgraph/logs/",
+        "Verify API keys are set if agent uses external services"
+      ]
+    },
+    "permission_errors": {
+      "issue": "Permission denied errors",
+      "checks": [
+        "Ensure registry directory has write permissions",
+        "Check that Python can access the PYTHONPATH directory",
+        "On Windows, run Claude Desktop as administrator (not recommended long-term)",
+        "On macOS/Linux, check file ownership: ls -la ~/.langgraph/"
+      ]
+    }
+  },
+
+  "//": "===== ENVIRONMENT VARIABLES =====",
+
+  "environment_variables": {
+    "AGENT_REGISTRY_PATH": {
+      "description": "Path to the agent registry directory",
+      "required": false,
+      "default": "~/.langgraph/agents",
+      "example": "/path/to/agents"
+    },
+    "LOG_LEVEL": {
+      "description": "Logging level for the MCP server",
+      "required": false,
+      "default": "INFO",
+      "values": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    },
+    "PYTHONPATH": {
+      "description": "Path to the MCP server Python module",
+      "required": true,
+      "example": "C:\\path\\to\\plugins\\langgraph-architect\\lib\\mcp"
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "API key for Anthropic Claude models",
+      "required": false,
+      "note": "Required if agents use Claude models"
+    },
+    "OPENAI_API_KEY": {
+      "description": "API key for OpenAI models",
+      "required": false,
+      "note": "Required if agents use OpenAI models"
+    },
+    "TAVILY_API_KEY": {
+      "description": "API key for Tavily search",
+      "required": false,
+      "note": "Required if agents use Tavily search tool"
+    }
+  },
+
+  "//": "===== USAGE EXAMPLES =====",
+
+  "usage_examples": {
+    "list_agents": {
+      "prompt": "What LangGraph agents are available?",
+      "expected": "Claude will list all registered agents with descriptions"
+    },
+    "invoke_simple": {
+      "prompt": "Use the hello_world agent to greet me",
+      "expected": "Claude will invoke the agent and return its response"
+    },
+    "invoke_with_context": {
+      "prompt": "Ask the research_assistant agent to find information about LangGraph, then continue the conversation about its features",
+      "expected": "Claude will maintain conversation context using thread_id"
+    },
+    "get_agent_info": {
+      "prompt": "What can the data_analyst agent do?",
+      "expected": "Claude will read the agent resource and describe its capabilities"
+    }
+  },
+
+  "//": "===== INTEGRATION WITH CLAUDE CODE =====",
+
+  "claude_code_integration": {
+    "description": "Using LangGraph agents from Claude Code CLI",
+    "notes": [
+      "Claude Code will automatically discover MCP servers configured in Claude Desktop",
+      "Agents can be invoked via natural language commands",
+      "Thread IDs are managed automatically for conversation continuity"
+    ],
+    "example_workflow": [
+      "1. User: 'Create a research plan for quantum computing'",
+      "2. Claude Code: Invokes planner_agent",
+      "3. Claude Code: Uses returned thread_id for follow-up questions",
+      "4. User: 'Execute the first step of the plan'",
+      "5. Claude Code: Continues conversation with same thread_id"
+    ]
+  },
+
+  "//": "===== BEST PRACTICES =====",
+
+  "best_practices": {
+    "agent_development": [
+      "Test agents locally before registering",
+      "Provide clear descriptions and metadata",
+      "Include error handling in agent code",
+      "Use type hints for agent functions",
+      "Document agent capabilities and limitations"
+    ],
+    "registry_management": [
+      "Keep registry.json under version control",
+      "Use descriptive agent IDs (lowercase, underscore-separated)",
+      "Regular backup of agent registry",
+      "Validate agents after updates: --validate",
+      "Monitor agent health status"
+    ],
+    "security": [
+      "Never commit API keys to version control",
+      "Use environment variables for secrets",
+      "Restrict agent registry directory permissions",
+      "Validate agent inputs",
+      "Implement rate limiting for production"
+    ],
+    "performance": [
+      "Use streaming for long-running agents",
+      "Implement checkpointing for stateful agents",
+      "Set appropriate timeouts",
+      "Monitor agent resource usage",
+      "Cache frequently accessed data"
+    ]
+  },
+
+  "//": "===== LINKS AND RESOURCES =====",
+
+  "resources": {
+    "documentation": "https://github.com/Lobbi-Docs/claude/tree/main/.claude/plugins/langgraph-architect",
+    "mcp_specification": "https://modelcontextprotocol.io",
+    "langgraph_docs": "https://langchain-ai.github.io/langgraph/",
+    "langchain_docs": "https://python.langchain.com/",
+    "claude_desktop": "https://claude.ai/download"
+  }
+}

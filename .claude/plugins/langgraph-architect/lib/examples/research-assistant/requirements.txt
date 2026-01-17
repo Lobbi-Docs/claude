@@ -1,0 +1,37 @@
+# Core LangGraph/LangChain
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-anthropic>=0.2.0
+langchain-openai>=0.2.0
+langchain-community>=0.3.0
+
+# Vector store for semantic memory
+chromadb>=0.4.0
+
+# Checkpointing
+langgraph-checkpoint-sqlite>=1.0.0
+
+# MCP server
+mcp>=1.0.0
+
+# CLI
+typer>=0.12.0
+rich>=13.0.0
+
+# Async support
+aiohttp>=3.9.0
+
+# Optional: Web search tools
+# tavily-python>=0.3.0
+# serpapi>=0.1.0
+
+# Optional: Paper search
+# semanticscholar>=0.4.0
+# arxiv>=1.4.0
+
+# Development
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+ruff>=0.1.0
