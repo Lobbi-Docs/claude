@@ -304,14 +304,18 @@ export class MemoryQueryOptimizer {
 
   /**
    * Invalidate specific cache entries by pattern
+   * @param pattern - Search pattern (will be sanitized and wrapped with % wildcards)
    */
   invalidateCachePattern(pattern: string): void {
     if (!this.options.enabled || !this.db) {
       return;
     }
 
+    // Sanitize pattern: escape SQL LIKE special characters
+    const sanitizedPattern = this.sanitizeLikePattern(pattern);
+
     const stmt = this.db.prepare('DELETE FROM query_cache WHERE cache_key LIKE ?');
-    const result = stmt.run(`%${pattern}%`);
+    const result = stmt.run(`%${sanitizedPattern}%`);
 
     this.updateCacheStats();
 
@@ -425,12 +429,40 @@ export class MemoryQueryOptimizer {
   }
 
   /**
+   * Sanitize LIKE pattern by escaping special characters
+   * Prevents LIKE injection attacks
+   */
+  private sanitizeLikePattern(pattern: string): string {
+    // Escape LIKE special characters: % _ [ ]
+    return pattern
+      .replace(/\\/g, '\\\\')  // Escape backslash first
+      .replace(/%/g, '\\%')    // Escape %
+      .replace(/_/g, '\\_')    // Escape _
+      .replace(/\[/g, '\\[')   // Escape [
+      .replace(/\]/g, '\\]');  // Escape ]
+  }
+
+  /**
+   * Validate cache key to prevent injection
+   */
+  private validateCacheKey(cacheKey: string): void {
+    // Cache keys should only contain alphanumeric, colons, hyphens, underscores
+    const validPattern = /^[a-zA-Z0-9:_\-\.]+$/;
+    if (!validPattern.test(cacheKey)) {
+      throw new Error(`Invalid cache key format: ${cacheKey}`);
+    }
+  }
+
+  /**
    * Get cached result if valid
    */
   private getCachedResult(cacheKey: string, ttlOverride?: number): CachedQueryResult | null {
     if (!this.db) {
       return null;
     }
+
+    // Validate cache key before using in query
+    this.validateCacheKey(cacheKey);
 
     const ttl = ttlOverride ?? this.options.cacheTtlMs;
     const cutoff = Date.now() - ttl;
@@ -464,6 +496,9 @@ export class MemoryQueryOptimizer {
     if (!this.db) {
       return;
     }
+
+    // Validate cache key before using
+    this.validateCacheKey(cacheKey);
 
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO query_cache (cache_key, query, results, total_count, cached_at)

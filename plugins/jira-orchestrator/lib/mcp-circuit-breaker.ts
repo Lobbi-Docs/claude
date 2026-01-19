@@ -59,6 +59,8 @@ export class MCPCircuitBreaker extends EventEmitter {
   private options: Required<Omit<CircuitBreakerOptions, 'onStateChange'>> & Pick<CircuitBreakerOptions, 'onStateChange'>;
   private circuits: Map<string, CircuitStatus>;
   private cooldownTimers: Map<string, NodeJS.Timeout>;
+  private stateChangeListener: ((event: CircuitBreakerEvent & { oldState: CircuitState }) => void) | null = null;
+  private isDisposed: boolean = false;
 
   constructor(options?: Partial<CircuitBreakerOptions>) {
     super();
@@ -77,9 +79,10 @@ export class MCPCircuitBreaker extends EventEmitter {
 
     // Set up event listener for state changes
     if (this.options.onStateChange) {
-      this.on('state-change', (event: CircuitBreakerEvent & { oldState: CircuitState }) => {
+      this.stateChangeListener = (event: CircuitBreakerEvent & { oldState: CircuitState }) => {
         this.options.onStateChange!(event.server, event.oldState, event.state);
-      });
+      };
+      this.on('state-change', this.stateChangeListener);
     }
   }
 
@@ -102,6 +105,10 @@ export class MCPCircuitBreaker extends EventEmitter {
    * Check if a request should be allowed for the given server
    */
   canRequest(server: string): boolean {
+    if (this.isDisposed) {
+      throw new Error('Circuit breaker has been disposed');
+    }
+
     this.initCircuit(server);
     const circuit = this.circuits.get(server)!;
 
@@ -350,14 +357,37 @@ export class MCPCircuitBreaker extends EventEmitter {
    * Clean up resources
    */
   dispose(): void {
+    if (this.isDisposed) {
+      return;
+    }
+
+    // Mark as disposed to prevent further operations
+    this.isDisposed = true;
+
     // Clear all cooldown timers
     for (const timer of this.cooldownTimers.values()) {
       clearTimeout(timer);
     }
     this.cooldownTimers.clear();
 
-    // Clear all event listeners
+    // Remove the state change listener explicitly if it exists
+    if (this.stateChangeListener) {
+      this.off('state-change', this.stateChangeListener);
+      this.stateChangeListener = null;
+    }
+
+    // Clear all remaining event listeners
     this.removeAllListeners();
+
+    // Clear circuit state
+    this.circuits.clear();
+  }
+
+  /**
+   * Alias for dispose() for consistency with other patterns
+   */
+  destroy(): void {
+    this.dispose();
   }
 }
 

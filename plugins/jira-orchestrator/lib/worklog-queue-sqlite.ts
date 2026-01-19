@@ -145,6 +145,9 @@ export class WorklogQueueSQLite {
    * Enqueue a worklog (atomic operation)
    */
   enqueue(worklog: Worklog): number {
+    // Validate worklog data
+    this.validateWorklog(worklog);
+
     const stmt = this.db.prepare(`
       INSERT INTO worklogs (
         issue_key, time_spent_seconds, started, comment, metadata, status
@@ -167,6 +170,9 @@ export class WorklogQueueSQLite {
    */
   enqueueBatch(worklogs: Worklog[]): number[] {
     const ids: number[] = [];
+
+    // Validate all worklogs before transaction
+    worklogs.forEach(log => this.validateWorklog(log));
 
     const transaction = this.db.transaction((logs: Worklog[]) => {
       const stmt = this.db.prepare(`
@@ -212,6 +218,9 @@ export class WorklogQueueSQLite {
   markAsProcessing(ids: number[]): void {
     if (ids.length === 0) return;
 
+    // Validate that all IDs are positive integers
+    this.validateIds(ids);
+
     const placeholders = ids.map(() => '?').join(',');
     const stmt = this.db.prepare(`
       UPDATE worklogs
@@ -226,6 +235,12 @@ export class WorklogQueueSQLite {
    * Mark worklog as completed
    */
   markAsCompleted(id: number, processingTimeMs: number): void {
+    // Validate inputs
+    this.validateIds([id]);
+    if (!Number.isFinite(processingTimeMs) || processingTimeMs < 0) {
+      throw new Error(`Invalid processing time: ${processingTimeMs}`);
+    }
+
     const transaction = this.db.transaction(() => {
       // Update worklog status
       const updateStmt = this.db.prepare(`
@@ -254,6 +269,12 @@ export class WorklogQueueSQLite {
    * Mark worklog as failed
    */
   markAsFailed(id: number, error: string, processingTimeMs: number): void {
+    // Validate inputs
+    this.validateIds([id]);
+    if (!Number.isFinite(processingTimeMs) || processingTimeMs < 0) {
+      throw new Error(`Invalid processing time: ${processingTimeMs}`);
+    }
+
     const transaction = this.db.transaction(() => {
       // Update worklog
       const updateStmt = this.db.prepare(`
@@ -350,6 +371,11 @@ export class WorklogQueueSQLite {
    * Get worklog by ID
    */
   getById(id: number): WorklogQueueEntry | null {
+    // Validate ID
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new Error(`Invalid worklog ID: ${id} (must be positive integer)`);
+    }
+
     const stmt = this.db.prepare('SELECT * FROM worklogs WHERE id = ?');
     const row = stmt.get(id) as any;
 
@@ -445,6 +471,56 @@ export class WorklogQueueSQLite {
       retries: row.retries,
       error: row.error || undefined
     };
+  }
+
+  /**
+   * Validate worklog data before insertion
+   * Prevents SQL injection and invalid data
+   */
+  private validateWorklog(worklog: Worklog): void {
+    // Validate issue key format (standard Jira format: PROJECT-123)
+    if (!worklog.issueKey || typeof worklog.issueKey !== 'string') {
+      throw new Error('Invalid issue key: must be a non-empty string');
+    }
+    if (!/^[A-Z][A-Z0-9]+-\d+$/i.test(worklog.issueKey)) {
+      throw new Error(`Invalid issue key format: ${worklog.issueKey} (expected format: PROJECT-123)`);
+    }
+
+    // Validate time spent
+    if (!Number.isInteger(worklog.timeSpentSeconds) || worklog.timeSpentSeconds <= 0) {
+      throw new Error(`Invalid time spent: ${worklog.timeSpentSeconds} (must be positive integer)`);
+    }
+
+    // Validate date
+    if (!(worklog.started instanceof Date) || isNaN(worklog.started.getTime())) {
+      throw new Error('Invalid started date');
+    }
+
+    // Validate comment (sanitize for SQL)
+    if (typeof worklog.comment !== 'string') {
+      throw new Error('Invalid comment: must be a string');
+    }
+
+    // Validate metadata if present
+    if (worklog.metadata !== undefined && typeof worklog.metadata !== 'object') {
+      throw new Error('Invalid metadata: must be an object');
+    }
+  }
+
+  /**
+   * Validate array of IDs
+   * Prevents SQL injection via ID parameters
+   */
+  private validateIds(ids: number[]): void {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new Error('IDs must be a non-empty array');
+    }
+
+    for (const id of ids) {
+      if (!Number.isInteger(id) || id <= 0) {
+        throw new Error(`Invalid ID: ${id} (must be positive integer)`);
+      }
+    }
   }
 
   /**

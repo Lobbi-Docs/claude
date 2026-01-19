@@ -11,6 +11,7 @@ import {
   validateHookConfig,
   validateMatcherPatterns,
   validateScripts,
+  resolveScriptPath,
   getHooksForEvent,
   shouldTriggerHook,
   HookValidationError,
@@ -199,6 +200,68 @@ describe('Hook Loader', () => {
       };
 
       assert.strictEqual(shouldTriggerHook(hook, 'No issue here'), false);
+    });
+  });
+
+  describe('resolveScriptPath - Path Traversal Protection', () => {
+    it('should reject paths with .. traversal', () => {
+      const basePath = '/plugins/jira-orchestrator';
+
+      assert.throws(() => {
+        resolveScriptPath('../../etc/passwd', basePath);
+      }, HookValidationError);
+    });
+
+    it('should reject absolute Unix paths', () => {
+      const basePath = '/plugins/jira-orchestrator';
+
+      assert.throws(() => {
+        resolveScriptPath('/etc/passwd', basePath);
+      }, HookValidationError);
+    });
+
+    it('should reject absolute Windows paths', () => {
+      if (process.platform === 'win32') {
+        const basePath = 'C:\\plugins\\jira-orchestrator';
+
+        assert.throws(() => {
+          resolveScriptPath('C:\\Windows\\System32\\cmd.exe', basePath);
+        }, HookValidationError);
+      }
+    });
+
+    it('should allow valid relative paths within plugin root', () => {
+      const basePath = '/plugins/jira-orchestrator';
+      const scriptPath = 'scripts/test-hook.sh';
+
+      assert.doesNotThrow(() => {
+        const resolved = resolveScriptPath(scriptPath, basePath);
+        assert.ok(resolved.includes('scripts/test-hook.sh'));
+      });
+    });
+
+    it('should reject paths that escape plugin root via environment variables', () => {
+      process.env.TEST_ESCAPE = '../../../etc';
+      const basePath = '/plugins/jira-orchestrator';
+
+      // Even with env var expansion, traversal should be rejected
+      assert.throws(() => {
+        resolveScriptPath('${TEST_ESCAPE}/passwd', basePath);
+      }, HookValidationError);
+
+      delete process.env.TEST_ESCAPE;
+    });
+
+    it('should allow safe environment variable expansion', () => {
+      const basePath = '/plugins/jira-orchestrator';
+      process.env.PLUGIN_SCRIPTS = 'scripts';
+
+      assert.doesNotThrow(() => {
+        const resolved = resolveScriptPath('${PLUGIN_SCRIPTS}/test.sh', basePath);
+        assert.ok(resolved.includes('scripts/test.sh'));
+      });
+
+      delete process.env.PLUGIN_SCRIPTS;
     });
   });
 });

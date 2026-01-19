@@ -186,6 +186,14 @@ export class Context7Client {
    * Resolve library ID with caching and retry
    */
   async resolveLibraryId(libraryName: string, query: string): Promise<Context7QueryResult> {
+    // Validate inputs
+    if (!libraryName || typeof libraryName !== 'string') {
+      throw new Error('Library name must be a non-empty string');
+    }
+    if (!query || typeof query !== 'string') {
+      throw new Error('Query must be a non-empty string');
+    }
+
     this.metrics.totalQueries++;
     const startTime = Date.now();
 
@@ -266,6 +274,14 @@ export class Context7Client {
    * Query documentation with caching and retry
    */
   async queryDocs(libraryId: string, query: string): Promise<Context7QueryResult> {
+    // Validate inputs
+    if (!libraryId || typeof libraryId !== 'string') {
+      throw new Error('Library ID must be a non-empty string');
+    }
+    if (!query || typeof query !== 'string') {
+      throw new Error('Query must be a non-empty string');
+    }
+
     this.metrics.totalQueries++;
     const startTime = Date.now();
 
@@ -418,7 +434,37 @@ export class Context7Client {
    * Generate cache key from method and params
    */
   private generateCacheKey(method: string, params: Record<string, any>): string {
+    // Validate method name to prevent injection
+    this.validateMethodName(method);
     return RequestDeduplicator.hashRequest(method, params);
+  }
+
+  /**
+   * Validate method name to prevent SQL injection
+   */
+  private validateMethodName(method: string): void {
+    if (!method || typeof method !== 'string') {
+      throw new Error('Method name must be a non-empty string');
+    }
+    // Method names should only contain letters, hyphens, underscores
+    const validPattern = /^[a-zA-Z][a-zA-Z0-9\-_]*$/;
+    if (!validPattern.test(method)) {
+      throw new Error(`Invalid method name: ${method}`);
+    }
+  }
+
+  /**
+   * Validate cache key format
+   */
+  private validateCacheKey(cacheKey: string): void {
+    if (!cacheKey || typeof cacheKey !== 'string') {
+      throw new Error('Cache key must be a non-empty string');
+    }
+    // Cache keys from hash should be hexadecimal
+    const validPattern = /^[a-fA-F0-9]+$/;
+    if (!validPattern.test(cacheKey)) {
+      throw new Error(`Invalid cache key format: ${cacheKey}`);
+    }
   }
 
   /**
@@ -426,6 +472,9 @@ export class Context7Client {
    */
   private getFromCache(cacheKey: string): CacheEntry | null {
     const now = Date.now();
+
+    // Validate cache key before query
+    this.validateCacheKey(cacheKey);
 
     const stmt = this.db.prepare(`
       SELECT * FROM context7_cache
@@ -447,6 +496,17 @@ export class Context7Client {
   ): void {
     const now = Date.now();
     const expiresAt = now + ttlMs;
+
+    // Validate cache key before insertion
+    this.validateCacheKey(cacheKey);
+
+    // Validate numeric parameters
+    if (!Number.isInteger(ttlMs) || ttlMs <= 0) {
+      throw new Error(`Invalid TTL: ${ttlMs}`);
+    }
+    if (!Number.isFinite(queryTimeMs) || queryTimeMs < 0) {
+      throw new Error(`Invalid query time: ${queryTimeMs}`);
+    }
 
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO context7_cache (

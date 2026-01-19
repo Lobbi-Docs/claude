@@ -11,6 +11,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { z } from 'zod';
+import { validateRegexPattern, safeRegexTest, RegexValidationError as SafeRegexValidationError } from './safe-regex';
 
 // ============================================================================
 // Zod Schema Definitions
@@ -142,8 +143,14 @@ export function validateHookConfig(config: unknown): HooksConfig {
 /**
  * Validate regex matcher patterns in hooks
  *
+ * Enhanced with ReDoS (Regular Expression Denial of Service) protection:
+ * - Validates pattern complexity and safety
+ * - Rejects dangerous constructs (nested quantifiers, lookaheads)
+ * - Enforces pattern length limits
+ * - Prevents catastrophic backtracking
+ *
  * @param config - Validated hooks configuration
- * @throws HookValidationError if any matcher pattern is invalid
+ * @throws HookValidationError if any matcher pattern is invalid or unsafe
  */
 export function validateMatcherPatterns(config: HooksConfig): void {
   const errors: string[] = [];
@@ -154,11 +161,18 @@ export function validateMatcherPatterns(config: HooksConfig): void {
     hooks.forEach((hook: HookDefinition, index: number) => {
       if (hook.matcher) {
         try {
-          new RegExp(hook.matcher);
+          // Use safe regex validator to check for ReDoS vulnerabilities
+          validateRegexPattern(hook.matcher);
         } catch (error: any) {
-          errors.push(
-            `${eventType}[${index}] "${hook.name}": Invalid regex pattern "${hook.matcher}" - ${error.message}`
-          );
+          if (error instanceof SafeRegexValidationError) {
+            errors.push(
+              `${eventType}[${index}] "${hook.name}": Unsafe regex pattern "${hook.matcher}" - ${error.reason || error.message}`
+            );
+          } else {
+            errors.push(
+              `${eventType}[${index}] "${hook.name}": Invalid regex pattern "${hook.matcher}" - ${error.message}`
+            );
+          }
         }
       }
     });
@@ -230,13 +244,49 @@ export function validateScripts(config: HooksConfig, basePath: string): void {
 }
 
 /**
+ * Validate that a resolved script path stays within the plugin directory
+ *
+ * Prevents path traversal attacks by ensuring resolved paths don't escape
+ * the plugin root directory.
+ *
+ * @param scriptPath - Original script path from hook definition
+ * @param resolvedPath - Resolved absolute path
+ * @param pluginRoot - Plugin root directory
+ * @throws HookValidationError if path escapes plugin root
+ */
+function validateScriptPath(scriptPath: string, resolvedPath: string, pluginRoot: string): void {
+  // Reject paths containing traversal sequences before resolution
+  if (scriptPath.includes('..') ||
+      (process.platform === 'win32' && /^[a-zA-Z]:/.test(scriptPath)) ||
+      (process.platform !== 'win32' && scriptPath.startsWith('/'))) {
+    throw new HookValidationError(
+      `Script path contains invalid characters or absolute path: ${scriptPath}`
+    );
+  }
+
+  // Normalize both paths for comparison
+  const normalizedRoot = path.resolve(pluginRoot);
+  const normalizedPath = path.resolve(resolvedPath);
+
+  // Ensure resolved path is within plugin root
+  if (!normalizedPath.startsWith(normalizedRoot + path.sep) &&
+      normalizedPath !== normalizedRoot) {
+    throw new HookValidationError(
+      `Script path escapes plugin root: ${scriptPath} (resolved to ${resolvedPath})`
+    );
+  }
+}
+
+/**
  * Resolve script path relative to base path
  *
  * Handles environment variable expansion (e.g., ${CLAUDE_PLUGIN_ROOT})
+ * and validates path stays within plugin root to prevent traversal attacks.
  *
  * @param scriptPath - Script path from hook definition
  * @param basePath - Base path for relative resolution
  * @returns Absolute script path
+ * @throws HookValidationError if path escapes plugin root
  */
 export function resolveScriptPath(scriptPath: string, basePath: string): string {
   // Replace environment variables
@@ -244,12 +294,15 @@ export function resolveScriptPath(scriptPath: string, basePath: string): string 
     return process.env[varName] || match;
   });
 
-  // Handle absolute vs relative paths
-  if (path.isAbsolute(resolved)) {
-    return resolved;
-  }
+  // Resolve to absolute path
+  const absolutePath = path.isAbsolute(resolved)
+    ? resolved
+    : path.resolve(basePath, resolved);
 
-  return path.resolve(basePath, resolved);
+  // Validate path doesn't escape plugin root
+  validateScriptPath(scriptPath, absolutePath, basePath);
+
+  return absolutePath;
 }
 
 /**
@@ -299,7 +352,12 @@ export function getHooksForEvent(config: HooksConfig, eventType: HookEventType):
 /**
  * Check if a hook should be triggered based on its matcher
  *
- * @param hook - Hook definition
+ * Enhanced with timeout protection against ReDoS attacks:
+ * - Uses safe regex execution with 100ms timeout
+ * - Truncates long input strings (>10,000 chars)
+ * - Returns false on timeout or error (fail-safe)
+ *
+ * @param hook - Hook definition (with validated matcher pattern)
  * @param matchString - String to match against hook's matcher pattern
  * @returns True if hook should be triggered
  */
@@ -310,11 +368,12 @@ export function shouldTriggerHook(hook: HookDefinition, matchString: string): bo
   }
 
   try {
+    // Use safe regex test with timeout protection (100ms default)
     const regex = new RegExp(hook.matcher);
-    return regex.test(matchString);
+    return safeRegexTest(regex, matchString, 100);
   } catch (error) {
     // Should not happen if validation passed, but fail safe
-    console.error(`Invalid regex in hook "${hook.name}": ${error}`);
+    console.error(`Regex execution error in hook "${hook.name}": ${error}`);
     return false;
   }
 }

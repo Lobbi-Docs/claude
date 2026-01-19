@@ -270,11 +270,49 @@ export class AgentLoader {
   }
 
   /**
+   * Validate that a resolved file path stays within allowed directory
+   *
+   * Prevents path traversal attacks by ensuring resolved paths don't escape
+   * the expected directory.
+   *
+   * @param filePath - Original file path
+   * @param resolvedPath - Resolved absolute path
+   * @param allowedDir - Allowed base directory
+   * @throws Error if path escapes allowed directory
+   */
+  private validateFilePath(filePath: string, resolvedPath: string, allowedDir: string): void {
+    // Reject paths containing traversal sequences
+    if (filePath.includes('..') ||
+        (process.platform === 'win32' && /^[a-zA-Z]:/.test(filePath)) ||
+        (process.platform !== 'win32' && filePath.startsWith('/'))) {
+      throw new Error(
+        `File path contains invalid characters or absolute path: ${filePath}`
+      );
+    }
+
+    // Normalize both paths for comparison
+    const normalizedDir = path.resolve(allowedDir);
+    const normalizedPath = path.resolve(resolvedPath);
+
+    // Ensure resolved path is within allowed directory
+    if (!normalizedPath.startsWith(normalizedDir + path.sep) &&
+        normalizedPath !== normalizedDir) {
+      throw new Error(
+        `File path escapes allowed directory: ${filePath} (resolved to ${resolvedPath})`
+      );
+    }
+  }
+
+  /**
    * Load agent registry from disk
    */
   private async loadRegistry(): Promise<void> {
     try {
       const registryPath = path.resolve(this.options.registryPath);
+      const pluginRoot = path.dirname(path.dirname(registryPath));
+
+      // Validate registry path doesn't escape plugin root
+      this.validateFilePath(this.options.registryPath, registryPath, pluginRoot);
 
       if (!fs.existsSync(registryPath)) {
         throw new Error(`Agent registry not found: ${registryPath}`);
@@ -321,6 +359,10 @@ export class AgentLoader {
       // Determine file path
       const fileName = entry.file || `${name}.md`;
       const filePath = path.join(this.options.agentsDir, fileName);
+      const agentsDir = path.resolve(this.options.agentsDir);
+
+      // Validate file path doesn't escape agents directory
+      this.validateFilePath(fileName, filePath, agentsDir);
 
       if (!fs.existsSync(filePath)) {
         console.warn(`Agent file not found: ${filePath}`);

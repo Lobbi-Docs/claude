@@ -82,6 +82,7 @@ export class RequestDeduplicator {
     savedMs: 0,
     totalWaitTime: 0,
   };
+  private pendingLocks: Map<string, Promise<void>> = new Map();
 
   constructor(options?: Partial<DeduplicatorOptions>) {
     this.options = {
@@ -123,7 +124,12 @@ export class RequestDeduplicator {
 
     this.metrics.totalRequests++;
 
-    // Check if request is already pending
+    // Wait for any in-flight registration to complete (atomic check-and-set)
+    while (this.pendingLocks.has(hash)) {
+      await this.pendingLocks.get(hash);
+    }
+
+    // Atomic check-and-set: Check if request is already pending
     const existing = this.pending.get(hash);
     if (existing && Date.now() <= existing.windowEnd) {
       // Check waiter limit
@@ -153,31 +159,66 @@ export class RequestDeduplicator {
       }
     }
 
-    // Execute new request
-    const promise = this.executeRequest(hash, executor, effectiveWindow);
-
-    // Store pending request
-    const pendingRequest: PendingRequest<T> = {
-      hash,
-      promise,
-      subscribers: 1,
-      startTime,
-      windowEnd: startTime + effectiveWindow,
-    };
-
-    this.pending.set(hash, pendingRequest);
+    // Create a lock to prevent concurrent registration
+    let releaseLock: () => void;
+    const lockPromise = new Promise<void>((resolve) => {
+      releaseLock = resolve;
+    });
+    this.pendingLocks.set(hash, lockPromise);
 
     try {
-      const result = await promise;
+      // Double-check after acquiring lock (in case another request registered while we waited)
+      const existingAfterLock = this.pending.get(hash);
+      if (existingAfterLock && Date.now() <= existingAfterLock.windowEnd) {
+        // Another request registered while we were waiting for the lock
+        existingAfterLock.subscribers++;
+        this.metrics.deduplicated++;
 
-      // Store result briefly for late arrivals
-      pendingRequest.result = result;
+        try {
+          const result = await existingAfterLock.promise;
+          const waitTime = Date.now() - startTime;
+          this.metrics.totalWaitTime += waitTime;
 
-      return result;
-    } catch (error) {
-      // Store error for propagation
-      pendingRequest.error = error as Error;
-      throw error;
+          console.log(
+            `🔄 Deduplicated request ${hash.substring(0, 8)} after lock (${existingAfterLock.subscribers} subscribers, ${waitTime}ms wait)`
+          );
+
+          return result;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      // Execute new request
+      const promise = this.executeRequest(hash, executor, effectiveWindow);
+
+      // Store pending request
+      const pendingRequest: PendingRequest<T> = {
+        hash,
+        promise,
+        subscribers: 1,
+        startTime,
+        windowEnd: startTime + effectiveWindow,
+      };
+
+      this.pending.set(hash, pendingRequest);
+
+      try {
+        const result = await promise;
+
+        // Store result briefly for late arrivals
+        pendingRequest.result = result;
+
+        return result;
+      } catch (error) {
+        // Store error for propagation
+        pendingRequest.error = error as Error;
+        throw error;
+      }
+    } finally {
+      // Release the lock
+      releaseLock!();
+      this.pendingLocks.delete(hash);
     }
   }
 
@@ -280,6 +321,7 @@ export class RequestDeduplicator {
    */
   clear(): void {
     this.pending.clear();
+    this.pendingLocks.clear();
   }
 
   /**
