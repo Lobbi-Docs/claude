@@ -9,8 +9,8 @@ import ora from 'ora';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { execSync } from 'child_process';
-import { ScaffoldOptions, PluginType, PluginManifest, TemplateContext } from './types.js';
-import { TemplateEngine } from './template-engine.js';
+import { ScaffoldOptions, PluginType, PluginManifest, TemplateContext } from './types';
+import { TemplateEngine } from './template-engine';
 
 export class PluginScaffolder {
   private templateDir: string;
@@ -207,9 +207,9 @@ export class PluginScaffolder {
    * Generate directory structure based on plugin type
    */
   async generateStructure(type: PluginType, pluginPath: string): Promise<void> {
+    // Base directories (files like README.md are created in createSupportingFiles)
     const baseStructure = [
-      '.claude-plugin',
-      'README.md'
+      '.claude-plugin'
     ];
 
     const structures: Record<PluginType, string[]> = {

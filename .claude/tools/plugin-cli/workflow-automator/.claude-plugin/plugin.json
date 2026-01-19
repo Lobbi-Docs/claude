@@ -1,0 +1,66 @@
+{
+  "name": "workflow-automator",
+  "version": "0.1.0",
+  "description": "Workflow automation and process orchestration tools for streamlined business operations",
+  "author": "Brookside BI",
+  "license": "MIT",
+  "keywords": [
+    "claude",
+    "plugin",
+    "agents",
+    "skills",
+    "commands",
+    "hooks"
+  ],
+  "categories": [
+    "productivity"
+  ],
+  "agents": {
+    "example-agent": {
+      "description": "Example agent for workflow-automator",
+      "model": "sonnet",
+      "handler": "agents/example-agent.md",
+      "triggers": [
+        "example",
+        "demo"
+      ]
+    }
+  },
+  "skills": {
+    "example-skill": {
+      "description": "Example skill for workflow-automator",
+      "handler": "skills/example-skill/SKILL.md",
+      "triggers": [
+        "example"
+      ],
+      "filePatterns": [
+        "*.example",
+        "example.config.json"
+      ]
+    }
+  },
+  "commands": {
+    "/example": {
+      "description": "Example command for workflow-automator",
+      "handler": "commands/example.md",
+      "examples": [
+        "/example init",
+        "/example run"
+      ]
+    }
+  },
+  "hooks": {
+    "example-hook": {
+      "description": "Example hook that processes file operations",
+      "event": "PostToolUse",
+      "toolPattern": "(Write|Edit)",
+      "filePattern": ".*",
+      "handler": "hooks/scripts/example-hook.sh"
+    }
+  },
+  "configuration": {
+    "localConfig": ".claude/plugin.local.md",
+    "requiredEnvVars": [],
+    "optionalEnvVars": []
+  }
+}

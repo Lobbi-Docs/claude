@@ -11,7 +11,7 @@
 
 import Handlebars from 'handlebars';
 import { readFile } from 'fs/promises';
-import type { TemplateContext } from './types.js';
+import type { TemplateContext } from './types';
 
 export class TemplateEngine {
   private handlebars: typeof Handlebars;
