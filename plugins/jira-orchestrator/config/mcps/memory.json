@@ -1,0 +1,241 @@
+{
+  "$schema": "../../schema/mcp.schema.json",
+  "name": "memory",
+  "version": "1.0.0",
+  "description": "Memory MCP for persistent knowledge graph storage. Enables agents to create, query, and maintain entities, relations, and observations across sessions for organizational learning.",
+  "provider": "builtin",
+  "serverType": "stdio",
+
+  "capabilities": {
+    "tools": [
+      {
+        "name": "create_entities",
+        "description": "Create multiple new entities in the knowledge graph",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "description": "The name of the entity" },
+                  "entityType": { "type": "string", "description": "The type of the entity" },
+                  "observations": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Observations associated with the entity"
+                  }
+                },
+                "required": ["name", "entityType", "observations"]
+              }
+            }
+          },
+          "required": ["entities"]
+        }
+      },
+      {
+        "name": "create_relations",
+        "description": "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": { "type": "string", "description": "Source entity name" },
+                  "relationType": { "type": "string", "description": "Type of relation (active voice)" },
+                  "to": { "type": "string", "description": "Target entity name" }
+                },
+                "required": ["from", "to", "relationType"]
+              }
+            }
+          },
+          "required": ["relations"]
+        }
+      },
+      {
+        "name": "add_observations",
+        "description": "Add new observations to existing entities in the knowledge graph",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "observations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "entityName": { "type": "string", "description": "Entity to add observations to" },
+                  "contents": { "type": "array", "items": { "type": "string" } }
+                },
+                "required": ["entityName", "contents"]
+              }
+            }
+          },
+          "required": ["observations"]
+        }
+      },
+      {
+        "name": "delete_entities",
+        "description": "Delete multiple entities and their associated relations from the knowledge graph",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "entityNames": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Entity names to delete"
+            }
+          },
+          "required": ["entityNames"]
+        }
+      },
+      {
+        "name": "delete_observations",
+        "description": "Delete specific observations from entities in the knowledge graph",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "deletions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "entityName": { "type": "string" },
+                  "observations": { "type": "array", "items": { "type": "string" } }
+                },
+                "required": ["entityName", "observations"]
+              }
+            }
+          },
+          "required": ["deletions"]
+        }
+      },
+      {
+        "name": "delete_relations",
+        "description": "Delete multiple relations from the knowledge graph",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": { "type": "string" },
+                  "relationType": { "type": "string" },
+                  "to": { "type": "string" }
+                },
+                "required": ["from", "to", "relationType"]
+              }
+            }
+          },
+          "required": ["relations"]
+        }
+      },
+      {
+        "name": "read_graph",
+        "description": "Read the entire knowledge graph",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "search_nodes",
+        "description": "Search for nodes in the knowledge graph based on a query",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query to match against entity names, types, and observations"
+            }
+          },
+          "required": ["query"]
+        }
+      },
+      {
+        "name": "open_nodes",
+        "description": "Open specific nodes in the knowledge graph by their names",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "names": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Entity names to retrieve"
+            }
+          },
+          "required": ["names"]
+        }
+      }
+    ],
+    "resources": []
+  },
+
+  "entityTypes": {
+    "JiraIssue": "Jira tickets with key, summary, status",
+    "Agent": "Claude agents with capabilities and specializations",
+    "Pattern": "Recurring patterns discovered in workflows",
+    "Decision": "Architectural decisions and rationale",
+    "Person": "Team members and stakeholders",
+    "Repository": "Code repositories and their structure",
+    "Technology": "Technologies, libraries, frameworks used",
+    "Workflow": "Documented workflows and processes",
+    "LessonLearned": "Insights from past experiences"
+  },
+
+  "relationTypes": {
+    "implements": "Entity implements another",
+    "depends_on": "Entity depends on another",
+    "created_by": "Entity was created by",
+    "assigned_to": "Work assigned to person",
+    "relates_to": "General relationship",
+    "blocks": "Entity blocks another",
+    "follows": "Entity follows after another",
+    "uses": "Entity uses technology/pattern",
+    "learned_from": "Knowledge derived from experience"
+  },
+
+  "usagePatterns": {
+    "issueTracking": "Store Jira issue context, relationships, and progress across sessions",
+    "patternLearning": "Record successful patterns for future reference",
+    "decisionHistory": "Track architectural decisions and their rationale",
+    "teamKnowledge": "Maintain understanding of team capabilities and assignments"
+  },
+
+  "integration": {
+    "agents": [
+      "learning-coordinator",
+      "intelligence-analyzer",
+      "pattern-analyzer",
+      "skill-mapper",
+      "governance-auditor",
+      "task-enricher",
+      "dependency-mapper"
+    ],
+    "autoTriggers": [
+      "remember",
+      "knowledge",
+      "learn",
+      "pattern",
+      "history",
+      "recall",
+      "context"
+    ]
+  },
+
+  "bestPractices": [
+    "Use descriptive entity names that are easy to search",
+    "Relations should use active voice (e.g., 'implements' not 'is implemented by')",
+    "Add observations incrementally as new information emerges",
+    "Search before creating to avoid duplicates",
+    "Keep observations factual and timestamped when relevant"
+  ],
+
+  "priority": "high",
+  "autoActivate": true
+}

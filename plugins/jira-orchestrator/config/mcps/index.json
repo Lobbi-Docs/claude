@@ -1,0 +1,70 @@
+{
+  "$schema": "../../schema/mcps-index.schema.json",
+  "version": "1.0.0",
+  "description": "MCP server configurations for jira-orchestrator plugin",
+  "lastUpdated": "2026-01-19",
+
+  "mcpServers": {
+    "context7": {
+      "configPath": "./context7.json",
+      "description": "Up-to-date documentation and code examples for any library",
+      "provider": "builtin",
+      "autoActivate": true,
+      "priority": "high",
+      "tools": ["resolve-library-id", "query-docs"],
+      "triggers": ["library", "docs", "documentation", "api-reference", "how-to", "example"]
+    },
+    "sequentialthinking": {
+      "configPath": "./sequential-thinking.json",
+      "description": "Dynamic and reflective problem-solving through structured thought chains",
+      "provider": "builtin",
+      "autoActivate": false,
+      "priority": "high",
+      "tools": ["sequentialthinking"],
+      "triggers": ["complex", "debug", "analyze", "investigate", "root-cause", "hypothesis"]
+    },
+    "memory": {
+      "configPath": "./memory.json",
+      "description": "Persistent knowledge graph for organizational learning",
+      "provider": "builtin",
+      "autoActivate": true,
+      "priority": "high",
+      "tools": [
+        "create_entities",
+        "create_relations",
+        "add_observations",
+        "delete_entities",
+        "delete_observations",
+        "delete_relations",
+        "read_graph",
+        "search_nodes",
+        "open_nodes"
+      ],
+      "triggers": ["remember", "knowledge", "learn", "pattern", "history", "recall", "context"]
+    }
+  },
+
+  "agentMcpMapping": {
+    "triage-agent": ["context7", "sequentialthinking", "memory"],
+    "task-enricher": ["context7", "memory"],
+    "code-reviewer": ["context7", "sequentialthinking"],
+    "documentation-writer": ["context7", "memory"],
+    "quality-enhancer": ["context7", "sequentialthinking"],
+    "harness-api-expert": ["context7"],
+    "infrastructure-orchestrator": ["context7"],
+    "pattern-analyzer": ["sequentialthinking", "memory"],
+    "requirements-analyzer": ["sequentialthinking", "memory"],
+    "learning-coordinator": ["memory"],
+    "intelligence-analyzer": ["memory", "sequentialthinking"],
+    "skill-mapper": ["memory"],
+    "governance-auditor": ["memory"],
+    "dependency-mapper": ["sequentialthinking", "memory"],
+    "council-coordinator": ["sequentialthinking"]
+  },
+
+  "stats": {
+    "totalMcpServers": 3,
+    "totalTools": 12,
+    "autoActivateCount": 2
+  }
+}

@@ -6,7 +6,7 @@
 
   "installed": {
     "jira-orchestrator": {
-      "version": "7.1.0",
+      "version": "7.3.0",
       "path": "../../plugins/jira-orchestrator",
       "source": "local",
       "installedAt": "2026-01-01T00:00:00.000Z",
@@ -56,9 +56,9 @@
       "jira-orchestrator": {
         "path": "../../plugins/jira-orchestrator/.claude-plugin/plugin.json",
         "callsign": "Arbiter",
-        "version": "7.1.0",
-        "description": "Enterprise Jira orchestration with 69 agents, 16 teams, 43 commands, and hook-based automation",
-        "provides": { "commands": 43, "agents": 69, "teams": 16, "skills": 11, "hooks": 7 },
+        "version": "7.3.0",
+        "description": "Enterprise Jira orchestration with 77 agents, 16 teams, 45 commands, structured reasoning frameworks, and hook-based automation",
+        "provides": { "commands": 45, "agents": 77, "teams": 16, "skills": 13, "hooks": 6, "mcpServers": 3 },
         "features": [
           "autogen-teams",
           "parent-child-orchestration",
@@ -384,11 +384,11 @@
       "standard": 12,
       "advanced": 6
     },
-    "totalCommands": 260,
-    "totalAgents": 225,
+    "totalCommands": 262,
+    "totalAgents": 233,
     "totalTeams": 16,
-    "totalSkills": 119,
-    "totalHooks": 70,
+    "totalSkills": 121,
+    "totalHooks": 69,
     "totalWorkflows": 3,
     "innovativePlugins": 7,
     "deliberationProtocols": 20

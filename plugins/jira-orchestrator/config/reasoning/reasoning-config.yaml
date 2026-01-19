@@ -1,0 +1,234 @@
+# Reasoning Framework Configuration
+# Configures how reasoning agents operate within jira-orchestrator
+
+version: "1.0.0"
+description: "Configuration for reasoning and problem-solving capabilities"
+
+# Documentation-First Protocol
+documentation_first:
+  enabled: true
+  mandatory: true
+  description: "ALWAYS query Context7 documentation before reasoning about any technology"
+
+  auto_query:
+    # Automatically query docs when these patterns are detected
+    patterns:
+      - regex: "\\b(React|Vue|Angular|Svelte)\\b"
+        library_hint: "frontend framework"
+      - regex: "\\b(Express|Fastify|NestJS|Hono)\\b"
+        library_hint: "nodejs framework"
+      - regex: "\\b(PostgreSQL|MySQL|MongoDB|Redis)\\b"
+        library_hint: "database"
+      - regex: "\\b(AWS|Azure|GCP)\\b"
+        library_hint: "cloud provider"
+      - regex: "\\b(Docker|Kubernetes|Helm)\\b"
+        library_hint: "container"
+      - regex: "\\b(Jest|Vitest|Playwright|Cypress)\\b"
+        library_hint: "testing"
+
+  max_queries_per_task: 5
+  cache_duration_minutes: 30
+
+# Sequential Thinking Configuration
+sequential_thinking:
+  enabled: true
+
+  # Default thinking budgets by complexity
+  budgets:
+    simple: 2000
+    moderate: 5000
+    complex: 8000
+    critical: 15000
+
+  # When to use extended thinking
+  triggers:
+    - keyword: "debug"
+      budget: "complex"
+    - keyword: "architecture"
+      budget: "critical"
+    - keyword: "root cause"
+      budget: "critical"
+    - keyword: "investigate"
+      budget: "complex"
+    - keyword: "compare"
+      budget: "moderate"
+
+  # Revision settings
+  revision:
+    enabled: true
+    max_revisions: 3
+
+  # Branching settings
+  branching:
+    enabled: true
+    max_branches: 5
+
+# Memory Integration
+memory:
+  enabled: true
+
+  # Auto-store reasoning results
+  auto_store:
+    enabled: true
+    entity_types:
+      - ReasoningChain
+      - ArchitectureDecision
+      - RootCauseAnalysis
+      - DebugSession
+      - Pattern
+
+  # Auto-search before reasoning
+  auto_search:
+    enabled: true
+    search_on:
+      - new_task
+      - similar_error
+      - technology_match
+
+  # Retention
+  retention:
+    days: 365
+    archive_after_days: 90
+
+# Reasoning Agents Configuration
+agents:
+  chain-of-thought-reasoner:
+    enabled: true
+    model: sonnet
+    temperature: 0.3
+    thinking_budget: 5000
+    auto_doc_lookup: true
+    use_cases:
+      - sequential_problems
+      - debugging
+      - implementation_planning
+
+  tree-of-thought-reasoner:
+    enabled: true
+    model: sonnet
+    temperature: 0.5
+    thinking_budget: 8000
+    auto_doc_lookup: true
+    use_cases:
+      - multiple_alternatives
+      - architecture_decisions
+      - technology_comparison
+
+  hypothesis-debugger:
+    enabled: true
+    model: sonnet
+    temperature: 0.3
+    thinking_budget: 8000
+    auto_doc_lookup: true
+    use_cases:
+      - complex_bugs
+      - intermittent_failures
+      - production_incidents
+
+  root-cause-analyzer:
+    enabled: true
+    model: opus
+    temperature: 0.4
+    thinking_budget: 10000
+    auto_doc_lookup: true
+    use_cases:
+      - post_mortems
+      - systemic_issues
+      - recurring_problems
+
+# Reasoning Templates
+templates:
+  chain_of_thought:
+    path: "templates/reasoning/chain-of-thought.md"
+    use_for:
+      - linear_problems
+      - debugging
+
+  decision_matrix:
+    path: "templates/reasoning/decision-matrix.md"
+    use_for:
+      - comparing_alternatives
+      - architecture_decisions
+
+  root_cause_analysis:
+    path: "templates/reasoning/root-cause-analysis.md"
+    use_for:
+      - incidents
+      - post_mortems
+
+# Quality Gates
+quality_gates:
+  # Require documentation lookup
+  documentation:
+    required: true
+    min_lookups: 1
+
+  # Require evidence for conclusions
+  evidence:
+    required: true
+    min_evidence_points: 2
+
+  # Require confidence assessment
+  confidence:
+    required: true
+    min_confidence: 0.6
+
+  # Require memory storage
+  memory_storage:
+    required: true
+    for_types:
+      - architecture_decision
+      - root_cause_analysis
+
+# Integration with Jira
+jira_integration:
+  # Auto-comment reasoning summaries
+  auto_comment:
+    enabled: true
+    on_completion: true
+    include_sections:
+      - summary
+      - key_findings
+      - next_actions
+
+  # Link reasoning to issues
+  linking:
+    enabled: true
+    label: "has-reasoning"
+
+  # Track in custom fields
+  custom_fields:
+    reasoning_type: "customfield_10100"
+    confidence_level: "customfield_10101"
+
+# Metrics and Tracking
+metrics:
+  # Track reasoning effectiveness
+  track:
+    - reasoning_time
+    - doc_queries_count
+    - thinking_tokens_used
+    - confidence_level
+    - memory_hits
+    - outcome_accuracy
+
+  # Export metrics
+  export:
+    enabled: true
+    destination: "sessions/intelligence/reasoning-metrics/"
+    format: "yaml"
+
+# Escalation Rules
+escalation:
+  # When to escalate to more powerful model
+  upgrade_to_opus:
+    - thinking_budget_exceeded: 10000
+    - complexity_score_above: 80
+    - incident_severity: "critical"
+    - multiple_hypotheses_failed: 3
+
+  # When to request human review
+  request_human:
+    - confidence_below: 0.5
+    - no_clear_root_cause: true
+    - breaking_change_detected: true

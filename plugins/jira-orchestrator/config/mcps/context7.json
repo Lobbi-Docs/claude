@@ -1,0 +1,88 @@
+{
+  "$schema": "../../schema/mcp.schema.json",
+  "name": "context7",
+  "version": "1.0.0",
+  "description": "Context7 MCP for retrieving up-to-date documentation and code examples for any library. Essential for ensuring agents use current API patterns and library versions.",
+  "provider": "builtin",
+  "serverType": "stdio",
+
+  "capabilities": {
+    "tools": [
+      {
+        "name": "resolve-library-id",
+        "description": "Resolve a package/product name to a Context7-compatible library ID. MUST call before query-docs unless user provides explicit library ID in /org/project format.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "libraryName": {
+              "type": "string",
+              "description": "Library name to search for and retrieve a Context7-compatible library ID"
+            },
+            "query": {
+              "type": "string",
+              "description": "The user's original question or task used to rank results by relevance"
+            }
+          },
+          "required": ["query", "libraryName"]
+        }
+      },
+      {
+        "name": "query-docs",
+        "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "libraryId": {
+              "type": "string",
+              "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js')"
+            },
+            "query": {
+              "type": "string",
+              "description": "The question or task you need help with"
+            }
+          },
+          "required": ["libraryId", "query"]
+        }
+      }
+    ],
+    "resources": []
+  },
+
+  "usagePatterns": {
+    "beforeCoding": "Always resolve library ID and query docs before implementing features using external libraries",
+    "errorResolution": "Query docs when encountering API errors or deprecated patterns",
+    "versionCheck": "Verify correct API version when upgrading dependencies"
+  },
+
+  "integration": {
+    "agents": [
+      "triage-agent",
+      "task-enricher",
+      "code-reviewer",
+      "documentation-writer",
+      "quality-enhancer",
+      "harness-api-expert",
+      "infrastructure-orchestrator"
+    ],
+    "autoTriggers": [
+      "library",
+      "docs",
+      "documentation",
+      "api-reference",
+      "how-to",
+      "example",
+      "upgrade",
+      "migration"
+    ]
+  },
+
+  "bestPractices": [
+    "Always call resolve-library-id before query-docs",
+    "Do not call more than 3 times per question",
+    "Use specific queries for better results",
+    "Include context about what you're building"
+  ],
+
+  "priority": "high",
+  "autoActivate": true
+}

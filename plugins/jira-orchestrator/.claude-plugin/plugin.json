@@ -1,11 +1,8 @@
 {
   "name": "jira-orchestrator",
   "version": "7.3.0",
-  "description": "Comprehensive Jira orchestration plugin with 73 agents, 44 commands, 11 skills, and automated hook-based workflows. Features official Atlassian MCP SSE OAuth, Harness platform integration, Confluence documentation, and multi-agent collaboration patterns.",
-  "author": {
-    "name": "Markus Ahling",
-    "email": "markus@lobbi.io"
-  },
+  "description": "Comprehensive Jira orchestration plugin with 77 agents, 45 commands, 13 skills, and automated hook-based workflows. Features official Atlassian MCP SSE OAuth, Harness platform integration, Confluence documentation, multi-agent collaboration patterns, integrated MCP servers for documentation/reasoning/knowledge, and structured reasoning frameworks (Chain-of-Thought, Tree-of-Thought, Hypothesis Debugging, Root Cause Analysis) with mandatory documentation lookup.",
+  "author": "Markus Ahling <markus@lobbi.io>",
   "keywords": [
     "jira",
     "orchestration",
@@ -16,8 +13,51 @@
     "automation",
     "agents",
     "clean-architecture",
-    "solid"
+    "solid",
+    "mcp",
+    "knowledge-graph",
+    "sequential-thinking"
   ],
   "license": "MIT",
-  "repository": "https://github.com/Lobbi-Docs/claude"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lobbi-Docs/claude"
+  },
+
+  "mcpServers": {
+    "context7": {
+      "description": "Up-to-date documentation and code examples for any library",
+      "provider": "builtin",
+      "autoActivate": true,
+      "priority": "high",
+      "configPath": "../config/mcps/context7.json"
+    },
+    "sequentialthinking": {
+      "description": "Dynamic problem-solving through structured thought chains",
+      "provider": "builtin",
+      "autoActivate": false,
+      "priority": "high",
+      "configPath": "../config/mcps/sequential-thinking.json"
+    },
+    "memory": {
+      "description": "Persistent knowledge graph for organizational learning",
+      "provider": "builtin",
+      "autoActivate": true,
+      "priority": "high",
+      "configPath": "../config/mcps/memory.json"
+    }
+  },
+
+  "provides": {
+    "agents": 77,
+    "commands": 45,
+    "skills": 13,
+    "hooks": 6,
+    "teams": 16,
+    "mcpServers": 3
+  },
+
+  "dependencies": {
+    "mcpServers": ["atlassian", "harness", "obsidian"]
+  }
 }
