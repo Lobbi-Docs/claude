@@ -343,15 +343,29 @@ export class MessageBus {
     if (pattern === '**') return true;
     if (pattern === topic) return true;
 
-    const regex = new RegExp(
-      '^' +
-        pattern
-          .replace(/\*/g, '[^/]+')
-          .replace(/\*\*/g, '.*') +
-        '$'
-    );
+    // Build regex from pattern - this is internal and controlled (not user-provided)
+    // but we still apply length limits as a safety measure
+    if (pattern.length > 500) {
+      console.warn(`Pattern too long (${pattern.length} chars), rejecting: ${pattern}`);
+      return false;
+    }
 
-    return regex.test(topic);
+    try {
+      const regex = new RegExp(
+        '^' +
+          pattern
+            .replace(/\*/g, '[^/]+')
+            .replace(/\*\*/g, '.*') +
+          '$'
+      );
+
+      // Topic strings should be reasonable length
+      const safeTopic = topic.length > 1000 ? topic.slice(0, 1000) : topic;
+      return regex.test(safeTopic);
+    } catch (error) {
+      console.error(`Invalid pattern: ${pattern}`, error);
+      return false;
+    }
   }
 
   private logMessage(message: Message): void {
@@ -451,6 +465,11 @@ export class RPCClient {
 
   constructor(endpoint: string, messageBus?: MessageBus) {
     // Parse endpoint: plugin://plugin-name/rpc
+    // Validate endpoint length to prevent ReDoS
+    if (endpoint.length > 500) {
+      throw new Error(`RPC endpoint too long (${endpoint.length} chars)`);
+    }
+
     const match = endpoint.match(/^plugin:\/\/([^/]+)\/rpc$/);
     if (!match) {
       throw new Error(`Invalid RPC endpoint: ${endpoint}`);
@@ -480,6 +499,11 @@ export class RPCServer {
 
   constructor(endpoint: string, messageBus?: MessageBus) {
     // Parse endpoint: plugin://plugin-name/rpc
+    // Validate endpoint length to prevent ReDoS
+    if (endpoint.length > 500) {
+      throw new Error(`RPC endpoint too long (${endpoint.length} chars)`);
+    }
+
     const match = endpoint.match(/^plugin:\/\/([^/]+)\/rpc$/);
     if (!match) {
       throw new Error(`Invalid RPC endpoint: ${endpoint}`);

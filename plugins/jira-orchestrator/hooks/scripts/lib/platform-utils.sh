@@ -135,6 +135,29 @@ ensure_trace_dir() {
     mkdir -p "$HOOK_TRACE_DIR" 2>/dev/null
 }
 
+# Get current timestamp in milliseconds (cross-platform)
+# Usage: timestamp_ms=$(get_timestamp_ms)
+get_timestamp_ms() {
+    if is_windows; then
+        # Windows Git Bash - use Python
+        python -c "import time; print(int(time.time() * 1000))" 2>/dev/null || echo "0"
+    elif is_macos; then
+        # macOS BSD date - use Python or calculate from seconds
+        if has_python; then
+            python3 -c "import time; print(int(time.time() * 1000))" 2>/dev/null || echo "0"
+        else
+            # Fallback: seconds only (multiply by 1000)
+            echo $(($(date +%s) * 1000))
+        fi
+    else
+        # Linux GNU date - can use %N for nanoseconds
+        local seconds=$(date +%s)
+        local nanoseconds=$(date +%N 2>/dev/null || echo "0")
+        # Convert to milliseconds: seconds * 1000 + nanoseconds / 1000000
+        echo $((seconds * 1000 + nanoseconds / 1000000))
+    fi
+}
+
 # Start a hook trace
 # Usage: trace_id=$(hook_trace_start "hook-name" "event-type" "hook-type")
 hook_trace_start() {
@@ -144,9 +167,11 @@ hook_trace_start() {
 
     ensure_trace_dir
 
-    # Generate trace ID using timestamp + random
-    local trace_id="trace_$(date +%s%N)_${RANDOM}"
-    local start_time=$(date +%s%3N)  # milliseconds
+    # Generate trace ID using timestamp + random (cross-platform)
+    local seconds=$(date +%s)
+    local nanoseconds=$(date +%N 2>/dev/null || echo "${RANDOM}${RANDOM}")
+    local trace_id="trace_${seconds}_${nanoseconds}_${RANDOM}"
+    local start_time=$(get_timestamp_ms)  # milliseconds
 
     # Create trace file
     local trace_file="${HOOK_TRACE_DIR}/${trace_id}.json"
@@ -180,11 +205,24 @@ hook_trace_end() {
         return 1
     fi
 
-    local end_time=$(date +%s%3N)  # milliseconds
+    local end_time=$(get_timestamp_ms)  # milliseconds
 
     # Read existing trace
     local start_time
     start_time=$(grep -o '"startTime": [0-9]*' "$trace_file" | cut -d' ' -f2)
+
+    # Validate start_time was extracted successfully
+    if [[ -z "$start_time" ]] || ! [[ "$start_time" =~ ^[0-9]+$ ]]; then
+        echo "WARN: Failed to extract startTime from trace file: $trace_file" >&2
+        # Try to use jq as fallback if available
+        if has_jq; then
+            start_time=$(jq -r '.startTime // empty' "$trace_file" 2>/dev/null)
+        fi
+        # If still empty, use end_time as fallback (duration will be 0)
+        if [[ -z "$start_time" ]] || ! [[ "$start_time" =~ ^[0-9]+$ ]]; then
+            start_time="$end_time"
+        fi
+    fi
 
     local duration=$((end_time - start_time))
 
@@ -244,4 +282,4 @@ hook_trace_log() {
 export -f is_windows is_macos is_linux
 export -f get_mtime date_to_epoch get_current_epoch get_age_seconds
 export -f has_jq has_python get_python check_dependencies get_platform_info
-export -f ensure_trace_dir hook_trace_start hook_trace_end hook_trace_log
+export -f ensure_trace_dir get_timestamp_ms hook_trace_start hook_trace_end hook_trace_log
