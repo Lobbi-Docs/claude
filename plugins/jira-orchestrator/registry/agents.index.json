@@ -1,8 +1,55 @@
 {
-  "version": "7.3.0",
+  "version": "7.4.0",
   "description": "Jira Orchestrator agent registry with official Atlassian MCP SSE, Harness platform integration, Confluence documentation, SOLID/clean architecture enforcement, and AutoGen-style agent teams",
   "total_agents": 73,
   "total_skills": 11,
+  "metadata": {
+    "version": "7.4.0",
+    "totalAgents": 73,
+    "preloadHints": ["triage-agent", "code-reviewer", "task-enricher", "documentation-writer"]
+  },
+  "agentPerformance": {
+    "triage-agent": {
+      "loadPriority": "high",
+      "expectedLoadTimeMs": 100
+    },
+    "code-reviewer": {
+      "loadPriority": "high",
+      "expectedLoadTimeMs": 150
+    },
+    "task-enricher": {
+      "loadPriority": "high",
+      "expectedLoadTimeMs": 120
+    },
+    "documentation-writer": {
+      "loadPriority": "high",
+      "expectedLoadTimeMs": 90
+    },
+    "confluence-manager": {
+      "loadPriority": "medium",
+      "expectedLoadTimeMs": 130
+    },
+    "pr-creator": {
+      "loadPriority": "medium",
+      "expectedLoadTimeMs": 80
+    },
+    "intelligence-analyzer": {
+      "loadPriority": "medium",
+      "expectedLoadTimeMs": 200
+    },
+    "requirements-analyzer": {
+      "loadPriority": "medium",
+      "expectedLoadTimeMs": 140
+    },
+    "sprint-planner": {
+      "loadPriority": "low",
+      "expectedLoadTimeMs": 180
+    },
+    "infrastructure-orchestrator": {
+      "loadPriority": "low",
+      "expectedLoadTimeMs": 250
+    }
+  },
   "categories": {
     "council": {
       "description": "NEW v5.0 - Agent council for collaborative review",

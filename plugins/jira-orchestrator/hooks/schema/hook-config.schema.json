@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Claude Plugin Hook Configuration Schema",
+  "description": "JSON Schema for validating hooks.json configuration files in Claude Code plugins",
+  "type": "object",
+  "properties": {
+    "UserPromptSubmit": {
+      "$ref": "#/definitions/hookArray",
+      "description": "Hooks triggered when user submits a prompt"
+    },
+    "PostToolUse": {
+      "$ref": "#/definitions/hookArray",
+      "description": "Hooks triggered after a tool is used"
+    },
+    "PreToolUse": {
+      "$ref": "#/definitions/hookArray",
+      "description": "Hooks triggered before a tool is used"
+    },
+    "Stop": {
+      "$ref": "#/definitions/hookArray",
+      "description": "Hooks triggered when a session or sub-agent stops"
+    },
+    "SessionStart": {
+      "$ref": "#/definitions/hookArray",
+      "description": "Hooks triggered when a new session starts"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "hookArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/hookDefinition"
+      },
+      "minItems": 0
+    },
+    "hookDefinition": {
+      "type": "object",
+      "required": ["name", "description", "type", "timeout"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Hook name in kebab-case"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500,
+          "description": "Human-readable description of what the hook does"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["prompt", "command"],
+          "description": "Hook type: 'prompt' injects AI instructions, 'command' executes script"
+        },
+        "matcher": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Regex pattern for conditional hook triggering (optional for SessionStart/Stop)"
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 300000,
+          "description": "Maximum execution time in milliseconds (100ms - 5min)"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Prompt text for 'prompt' type hooks (required if type=prompt)"
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shell command or script path for 'command' type hooks (required if type=command)"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "prompt"
+              }
+            }
+          },
+          "then": {
+            "required": ["prompt"],
+            "not": {
+              "required": ["command"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "command"
+              }
+            }
+          },
+          "then": {
+            "required": ["command"],
+            "not": {
+              "required": ["prompt"]
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema/hook-config.schema.json",
   "UserPromptSubmit": [
     {
       "name": "detect-jira-issue",

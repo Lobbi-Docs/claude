@@ -11,12 +11,22 @@
  * - Build stronger meta-patterns over time
  * - Continuously improve without human intervention
  *
+ * Enhanced in v7.4.0 with:
+ * - Connection pooling for Memory MCP access
+ * - Batch operations for efficient write operations
+ * - Query caching for faster reads
+ * - Graph maintenance integration
+ *
  * @module memory-consolidation
- * @version 5.0.0
+ * @version 7.4.0
  */
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { MemoryPool } from './memory-pool';
+import { MemoryBatcher } from './batch-memory-operations';
+import { MemoryQueryOptimizer } from './memory-query-optimizer';
+import { MemoryGraphMaintenance } from './memory-graph-maintenance';
 
 /**
  * Episodic memory - specific task execution
@@ -185,8 +195,72 @@ export class MemoryConsolidationSystem {
   private storagePath: string;
   private consolidationHistory: ConsolidationReport[] = [];
 
+  // v7.4.0: Memory optimization components (optional - use when available)
+  private memoryPool?: MemoryPool;
+  private memoryBatcher?: MemoryBatcher;
+  private memoryOptimizer?: MemoryQueryOptimizer;
+  private memoryMaintenance?: MemoryGraphMaintenance;
+
   constructor(storagePath: string = './sessions/intelligence') {
     this.storagePath = storagePath;
+  }
+
+  /**
+   * Initialize memory optimization components (v7.4.0)
+   * Call this to enable pooling, batching, caching, and maintenance features
+   */
+  initializeOptimization(): void {
+    this.memoryPool = new MemoryPool({
+      maxConnections: 10,
+      connectionTimeout: 5000,
+      idleTimeout: 30000,
+      maxWaiting: 50,
+      debug: false
+    });
+
+    this.memoryBatcher = new MemoryBatcher(this.memoryPool, {
+      maxBatchSize: 10,
+      flushIntervalMs: 1000,
+      retryOnFailure: true,
+      maxRetries: 2,
+      debug: false
+    });
+
+    this.memoryOptimizer = new MemoryQueryOptimizer(this.memoryPool, {
+      cachePath: path.join(this.storagePath, '../cache/memory-query.db'),
+      cacheTtlMs: 300000,
+      maxResultsPerQuery: 100,
+      enabled: true,
+      debug: false
+    });
+
+    this.memoryMaintenance = new MemoryGraphMaintenance(
+      this.memoryPool,
+      this.memoryOptimizer,
+      {
+        orphanThresholdDays: 30,
+        duplicateThreshold: 0.9,
+        archivePath: path.join(this.storagePath, '../memory/archive/'),
+        debug: false
+      }
+    );
+
+    console.log('✨ Memory optimization enabled (v7.4.0)');
+  }
+
+  /**
+   * Cleanup optimization resources
+   */
+  async cleanupOptimization(): Promise<void> {
+    if (this.memoryBatcher) {
+      await this.memoryBatcher.shutdown();
+    }
+    if (this.memoryOptimizer) {
+      this.memoryOptimizer.close();
+    }
+    if (this.memoryPool) {
+      await this.memoryPool.drain();
+    }
   }
 
   /**

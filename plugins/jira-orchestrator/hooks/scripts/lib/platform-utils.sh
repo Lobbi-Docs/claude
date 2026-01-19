@@ -123,7 +123,125 @@ get_platform_info() {
     echo "OS: $OSTYPE | Shell: $SHELL | Bash: $BASH_VERSION"
 }
 
+# ============================================================================
+# Hook Tracing Utilities
+# ============================================================================
+
+# Hook trace directory
+HOOK_TRACE_DIR="${CLAUDE_PLUGIN_ROOT}/sessions/traces/hooks"
+
+# Ensure trace directory exists
+ensure_trace_dir() {
+    mkdir -p "$HOOK_TRACE_DIR" 2>/dev/null
+}
+
+# Start a hook trace
+# Usage: trace_id=$(hook_trace_start "hook-name" "event-type" "hook-type")
+hook_trace_start() {
+    local hook_name="$1"
+    local event_type="$2"
+    local hook_type="$3"
+
+    ensure_trace_dir
+
+    # Generate trace ID using timestamp + random
+    local trace_id="trace_$(date +%s%N)_${RANDOM}"
+    local start_time=$(date +%s%3N)  # milliseconds
+
+    # Create trace file
+    local trace_file="${HOOK_TRACE_DIR}/${trace_id}.json"
+
+    cat > "$trace_file" <<EOF
+{
+  "traceId": "${trace_id}",
+  "hookName": "${hook_name}",
+  "eventType": "${event_type}",
+  "hookType": "${hook_type}",
+  "startTime": ${start_time},
+  "status": "running",
+  "pid": $$
+}
+EOF
+
+    echo "$trace_id"
+}
+
+# End a hook trace
+# Usage: hook_trace_end "$trace_id" "success|error|timeout" "optional error message"
+hook_trace_end() {
+    local trace_id="$1"
+    local status="$2"
+    local error_msg="${3:-}"
+
+    local trace_file="${HOOK_TRACE_DIR}/${trace_id}.json"
+
+    if [[ ! -f "$trace_file" ]]; then
+        echo "WARN: Trace file not found: $trace_file" >&2
+        return 1
+    fi
+
+    local end_time=$(date +%s%3N)  # milliseconds
+
+    # Read existing trace
+    local start_time
+    start_time=$(grep -o '"startTime": [0-9]*' "$trace_file" | cut -d' ' -f2)
+
+    local duration=$((end_time - start_time))
+
+    # Update trace file with completion data
+    local temp_file="${trace_file}.tmp"
+
+    if [[ -n "$error_msg" ]]; then
+        # Include error message
+        jq --arg status "$status" \
+           --arg endTime "$end_time" \
+           --arg duration "$duration" \
+           --arg error "$error_msg" \
+           '. + {status: $status, endTime: ($endTime|tonumber), duration: ($duration|tonumber), error: $error}' \
+           "$trace_file" > "$temp_file" 2>/dev/null
+    else
+        # No error message
+        jq --arg status "$status" \
+           --arg endTime "$end_time" \
+           --arg duration "$duration" \
+           '. + {status: $status, endTime: ($endTime|tonumber), duration: ($duration|tonumber)}' \
+           "$trace_file" > "$temp_file" 2>/dev/null
+    fi
+
+    if [[ $? -eq 0 ]]; then
+        mv "$temp_file" "$trace_file"
+    else
+        # Fallback if jq not available - simple append
+        rm -f "$temp_file"
+        # Just mark completion in a simple way
+        echo "  # Completed: $status at $end_time (${duration}ms)" >> "$trace_file"
+    fi
+}
+
+# Log trace event (append metadata)
+# Usage: hook_trace_log "$trace_id" "key" "value"
+hook_trace_log() {
+    local trace_id="$1"
+    local key="$2"
+    local value="$3"
+
+    local trace_file="${HOOK_TRACE_DIR}/${trace_id}.json"
+
+    if [[ ! -f "$trace_file" ]]; then
+        return 1
+    fi
+
+    # Add to metadata section
+    if has_jq; then
+        local temp_file="${trace_file}.tmp"
+        jq --arg key "$key" --arg value "$value" \
+           '.metadata = (.metadata // {}) | .metadata[$key] = $value' \
+           "$trace_file" > "$temp_file" 2>/dev/null && mv "$temp_file" "$trace_file"
+    fi
+}
+
 # Export functions
 export -f is_windows is_macos is_linux
 export -f get_mtime date_to_epoch get_current_epoch get_age_seconds
 export -f has_jq has_python get_python check_dependencies get_platform_info
+export -f ensure_trace_dir hook_trace_start hook_trace_end hook_trace_log

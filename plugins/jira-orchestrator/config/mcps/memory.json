@@ -236,6 +236,34 @@
     "Keep observations factual and timestamped when relevant"
   ],
 
+  "pool": {
+    "maxConnections": 10,
+    "connectionTimeoutMs": 5000,
+    "idleTimeoutMs": 30000,
+    "maxWaiting": 50
+  },
+
+  "cache": {
+    "enabled": true,
+    "cachePath": "${CLAUDE_PLUGIN_ROOT}/sessions/cache/memory-query.db",
+    "queryTtlMs": 300000,
+    "maxResultsPerQuery": 100
+  },
+
+  "batching": {
+    "enabled": true,
+    "maxBatchSize": 10,
+    "flushIntervalMs": 1000,
+    "retryOnFailure": true,
+    "maxRetries": 2
+  },
+
+  "maintenance": {
+    "orphanThresholdDays": 30,
+    "duplicateThreshold": 0.9,
+    "archivePath": "${CLAUDE_PLUGIN_ROOT}/sessions/memory/archive/"
+  },
+
   "priority": "high",
   "autoActivate": true
 }
