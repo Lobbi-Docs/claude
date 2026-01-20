@@ -183,6 +183,18 @@ Create `.claude/settings.local.json` to override defaults:
 
 ## Documentation
 
+### 📚 Documentation Hub
+- **[Documentation Index](docs/INDEX.md)** - Complete documentation navigation hub
+
+### 📖 Documentation Categories
+- **Architecture**: [docs/architecture/](docs/architecture/) - System architecture and design
+- **Security**: [docs/security/](docs/security/) - Security policies and reviews
+- **Testing**: [docs/testing/](docs/testing/) - Testing strategies and guides
+- **Planning**: [docs/planning/](docs/planning/) - Project planning and resource allocation
+- **Reference**: [docs/reference/](docs/reference/) - Quick references and guides
+- **Integration**: [docs/integration/](docs/integration/) - Integration guides and analysis
+
+### 🔧 Technical Documentation
 - [Plugin Guide](.claude-plugin/README.md)
 - [Orchestration Protocol](.claude/orchestration/PROTOCOL.md)
 - [Agent Development](.claude/docs/AGENT_ACTIVITY_TRACKING.md)
