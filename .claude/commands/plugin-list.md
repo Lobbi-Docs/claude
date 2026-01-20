@@ -1,6 +1,6 @@
 ---
-description: List installed Claude Code plugins with versions and details
-argument-hint: [--tree] [--outdated] [--format=table|json|tree]
+description: List installed Claude Code plugins or browse the marketplace
+argument-hint: [installed|marketplace|available] [--tree] [--outdated] [--format=table|json|tree]
 allowed-tools:
   - Bash
   - Read
@@ -11,13 +11,18 @@ allowed-tools:
 
 # Plugin List
 
-Display all installed Claude Code plugins with detailed information.
+Display installed Claude Code plugins or browse the marketplace for available plugins.
 
 ## Usage
 
 ```bash
-# List all installed plugins
+# List all installed plugins (default)
 /plugin-list
+/plugin-list installed
+
+# Browse marketplace - show all available plugins
+/plugin-list marketplace
+/plugin-list available
 
 # Show dependency tree
 /plugin-list --tree
@@ -30,6 +35,48 @@ Display all installed Claude Code plugins with detailed information.
 /plugin-list --format=tree
 /plugin-list --format=table
 ```
+
+## View Modes
+
+| Mode | Description |
+|------|-------------|
+| `installed` | List installed plugins (default) |
+| `marketplace` | Browse all available plugins in the registry |
+| `available` | Alias for marketplace |
+
+## Marketplace View
+
+When using `marketplace` or `available` mode, the command reads from:
+- `.claude/registry/plugins.index.json` - Registry section for available plugins
+- `.claude-plugin/marketplace.json` - Additional marketplace entries
+
+### Marketplace Output
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Plugin Marketplace
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Name                        Version    Commands  Agents  Category       Status
+────────────────────────────────────────────────────────────────────────────────
+jira-orchestrator           7.5.0      45        77      integration    ✓ Installed
+lobbi-platform-manager      1.0.0      8         4       devops         ✓ Installed
+frontend-design-system      2.0.0      10        6       frontend       Available
+keycloak-admin              0.9.0      5         3       security       Available
+
+Total: 4 plugins in marketplace | 2 installed | 2 available
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Marketplace Plugin Status
+
+| Icon | Status | Description |
+|------|--------|-------------|
+| ✓ Installed | Already installed | Plugin is in your local environment |
+| Available | Not installed | Click to install from marketplace |
+| ⚠ Update | Update available | Newer version available in marketplace |
+
+---
 
 ## Output Formats
 
@@ -143,13 +190,23 @@ Machine-readable output:
 
 ## Examples
 
-### List All Plugins
+### List All Installed Plugins
 
 ```bash
 /plugin-list
+/plugin-list installed
 ```
 
 Shows table with all installed plugins.
+
+### Browse Marketplace
+
+```bash
+/plugin-list marketplace
+/plugin-list available
+```
+
+Shows all plugins available in the marketplace with installation status.
 
 ### Show Dependency Tree
 
@@ -361,8 +418,13 @@ This command uses the **plugin-manager** agent for execution.
 **Quick Reference:**
 
 ```bash
-# Basic listing
+# List installed plugins
 /plugin-list
+/plugin-list installed
+
+# Browse marketplace
+/plugin-list marketplace
+/plugin-list available
 
 # Check for updates
 /plugin-list --outdated

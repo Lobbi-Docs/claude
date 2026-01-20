@@ -49,7 +49,110 @@
     }
   },
 
-  "registry": {},
+  "registry": {
+    "jira-orchestrator": {
+      "name": "jira-orchestrator",
+      "version": "7.5.0",
+      "description": "Enterprise Jira orchestration with 77 agents, 16 teams, 45 commands, 13 skills. Features Atlassian MCP OAuth, Harness integration, Neon PostgreSQL, Redis caching, Temporal workflows, and structured reasoning frameworks.",
+      "author": "Markus Ahling",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["jira", "confluence", "atlassian", "orchestration", "harness", "neon", "redis", "temporal"],
+      "categories": ["integration", "orchestration", "devops", "automation"],
+      "dependencies": {},
+      "provides": {
+        "commands": 45,
+        "agents": 77,
+        "skills": 13,
+        "hooks": 6
+      }
+    },
+    "frontend-design-system": {
+      "name": "frontend-design-system",
+      "version": "1.0.0",
+      "description": "263+ design styles with multi-tenant Keycloak theming for AI-powered frontend development",
+      "author": "Markus Ahling",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["frontend", "design-system", "keycloak", "theming"],
+      "categories": ["frontend"],
+      "dependencies": {},
+      "provides": {
+        "commands": 8,
+        "agents": 6,
+        "skills": 4,
+        "hooks": 4
+      }
+    },
+    "aws-eks-helm-keycloak": {
+      "name": "aws-eks-helm-keycloak",
+      "version": "1.0.0",
+      "description": "AWS EKS deployments with Helm, Keycloak authentication, and Harness CI/CD",
+      "author": "Golden Armada",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["aws", "eks", "kubernetes", "helm", "keycloak", "harness"],
+      "categories": ["infrastructure"],
+      "dependencies": {},
+      "provides": {
+        "commands": 7,
+        "agents": 4,
+        "skills": 6,
+        "hooks": 2
+      }
+    },
+    "claude-code-templating": {
+      "name": "claude-code-templating",
+      "version": "1.0.0",
+      "description": "Universal templating and Harness expert plugin with multi-format support",
+      "author": "thelobbi.io",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["templating", "scaffolding", "harness", "cookiecutter"],
+      "categories": ["templating"],
+      "dependencies": {},
+      "provides": {
+        "commands": 4,
+        "agents": 5,
+        "skills": 3,
+        "hooks": 0
+      }
+    },
+    "langgraph-architect": {
+      "name": "langgraph-architect",
+      "version": "1.0.0",
+      "description": "Expert LangGraph/LangChain agent builder with comprehensive workflow orchestration",
+      "author": "Brookside BI",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["langgraph", "langchain", "agent-builder", "workflow"],
+      "categories": ["agents"],
+      "dependencies": {},
+      "provides": {
+        "commands": 8,
+        "agents": 12,
+        "skills": 6,
+        "hooks": 0
+      }
+    },
+    "infrastructure-template-generator": {
+      "name": "infrastructure-template-generator",
+      "version": "2.0.0",
+      "description": "Complete infrastructure template automation - Cookiecutter, Terraform, Harness pipelines, GitOps",
+      "author": "thelobbi.io",
+      "license": "MIT",
+      "repository": "https://github.com/Lobbi-Docs/claude",
+      "keywords": ["infrastructure", "terraform", "cookiecutter", "harness", "gitops"],
+      "categories": ["infrastructure"],
+      "dependencies": {},
+      "provides": {
+        "commands": 16,
+        "agents": 10,
+        "skills": 4,
+        "hooks": 1
+      }
+    }
+  },
 
   "plugins": {
     "core": {
