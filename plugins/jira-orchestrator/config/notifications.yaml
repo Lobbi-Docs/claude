@@ -93,6 +93,11 @@ channels:
     formatting:
       adaptive_cards: true
       markdown_support: true
+    incoming_webhook:
+      enabled: false
+      url: "${TEAMS_INCOMING_WEBHOOK_URL}"  # e.g., https://outlook.office.com/webhook/...
+      default_channel: "${TEAMS_CHANNEL_NAME}"
+      include_links: true
 
   # SMS Configuration (Optional - requires Twilio)
   sms:
@@ -167,6 +172,20 @@ webhooks:
         batch_interval_seconds: 60
       timeout_seconds: 30
       max_retries: 5
+
+    # Microsoft Teams PR Updates Webhook
+    - id: webhook-teams-pr
+      name: "Teams PR Updates"
+      url: "${TEAMS_INCOMING_WEBHOOK_URL}"
+      secret: "${TEAMS_WEBHOOK_SECRET}"
+      enabled: false
+      event_filters:
+        - "pr.created"
+        - "pr.updated"
+        - "documentation.updated"
+      payload_template: "teams-pr-update"
+      timeout_seconds: 10
+      max_retries: 3
 
   defaults:
     timeout_seconds: 10

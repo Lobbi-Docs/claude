@@ -121,6 +121,7 @@ mode:
 - Feature list with categorized changes
 - **Documentation section with Confluence links (REQUIRED)**
 - Acceptance criteria from Jira
+- **Acceptance Criteria → Task/Test Map (REQUIRED)**
 - Test coverage report
 - Manual testing instructions
 - Deployment notes (breaking changes, migrations, env vars, dependencies)
@@ -183,6 +184,31 @@ validation:
 ABC-123: Implement user authentication with OAuth2
 ```
 
+## Acceptance Criteria → Task/Test Mapping (Required)
+
+Before PR creation, convert each acceptance criterion into an explicit checklist item linked to evidence.
+
+### Mapping Rules
+
+- Every acceptance criterion must map to **one or more**:
+  - Test cases (unit/integration/e2e),
+  - Manual validation steps, or
+  - Subtasks with implementation evidence.
+- If a criterion cannot be verified, include a **"Not Tested"** justification and a follow-up task.
+- The checklist must appear in the PR description and be posted as a Jira comment.
+
+### Checklist Template
+
+```markdown
+## Acceptance Criteria Coverage
+
+- [ ] AC1: {criterion text}
+  - Evidence: {test name/link or manual step}
+- [ ] AC2: {criterion text}
+  - Evidence: {test name/link or manual step}
+  - Not Tested: {reason} (if applicable)
+```
+
 ## Step-by-Step Execution
 
 ### 1. Pre-flight Validation
@@ -196,6 +222,7 @@ ABC-123: Implement user authentication with OAuth2
 - Extract acceptance criteria
 - Get issue labels, priority, story points
 - Identify subtasks and related issues
+- Build Acceptance Criteria → Task/Test map
 
 ### 3. Create/Verify Feature Branch
 - Auto-detect or create feature branch
@@ -219,6 +246,7 @@ ABC-123: Implement user authentication with OAuth2
 - Build title with issue key and summary
 - Categorize commits into sections
 - **Include Documentation section with Confluence links**
+- **Include Acceptance Criteria coverage checklist**
 - Extract test results
 - Generate manual testing steps
 
