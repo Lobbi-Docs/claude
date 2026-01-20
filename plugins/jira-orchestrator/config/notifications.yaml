@@ -437,6 +437,9 @@ templates:
     deployment-succeeded-email: email/deployment-succeeded.html
     pipeline-failed-email: email/pipeline-failed.html
 
+    # Teams templates (Adaptive Cards JSON)
+    teams-pr-update: teams/pr-update.json
+
   # Handlebars helper functions
   helpers:
     - truncate  # Truncate text to N characters

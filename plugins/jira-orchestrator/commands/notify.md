@@ -87,10 +87,15 @@ Use a Teams incoming webhook to post PR updates that include links to documentat
   --events=pr.created,pr.updated,documentation.updated
 ```
 
+The Teams webhook renders the `teams-pr-update` Adaptive Card template for a structured PR update.
+
 **Expected payload fields:**
-- `pr_url` (PR link)
-- `documentation_links` (array of Confluence URLs)
-- `jira_issue_url` (Jira issue link)
+- `summary` (short summary line for the card header)
+- `pr` (object with `title`, `number`, `url`, `status`, `author`, `source_branch`, `target_branch`)
+- `repository` (object with `name`)
+- `jira` (object with `key`, `url`)
+- `documentation_links` (array of `{title, url}` objects)
+- `documentation_primary_url` (primary documentation link for the card action)
 
 ## Channels
 
