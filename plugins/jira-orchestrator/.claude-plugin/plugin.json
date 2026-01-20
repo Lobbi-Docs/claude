@@ -1,7 +1,7 @@
 {
   "name": "jira-orchestrator",
-  "version": "7.3.0",
-  "description": "Comprehensive Jira orchestration plugin with 77 agents, 45 commands, 13 skills, and automated hook-based workflows. Features official Atlassian MCP SSE OAuth, Harness platform integration, Confluence documentation, multi-agent collaboration patterns, integrated MCP servers for documentation/reasoning/knowledge, and structured reasoning frameworks (Chain-of-Thought, Tree-of-Thought, Hypothesis Debugging, Root Cause Analysis) with mandatory documentation lookup.",
+  "version": "7.5.0",
+  "description": "Enterprise Jira orchestration with 77 agents, 45 commands, 13 skills. Features Atlassian MCP OAuth, Harness integration, Neon PostgreSQL, Redis caching, Temporal workflows, and structured reasoning frameworks.",
   "author": "Markus Ahling <markus@lobbi.io>",
   "keywords": [
     "jira",
@@ -16,9 +16,14 @@
     "solid",
     "mcp",
     "knowledge-graph",
-    "sequential-thinking"
+    "sequential-thinking",
+    "neon",
+    "postgresql",
+    "redis",
+    "temporal"
   ],
   "license": "MIT",
+  "categories": ["integration", "orchestration", "devops", "automation"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Lobbi-Docs/claude"

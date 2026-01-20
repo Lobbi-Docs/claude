@@ -1,6 +1,6 @@
 ---
 name: jira:setup
-description: Interactive setup wizard - configure OAuth authentication for Jira and Confluence via official Atlassian MCP
+description: Interactive setup wizard v7.5.0 - OAuth auth, Neon PostgreSQL, Redis, Temporal workflows
 color: blue
 icon: settings
 tags:
@@ -9,12 +9,21 @@ tags:
   - configuration
   - oauth
   - mcp
+  - neon
+  - redis
+  - temporal
 model: claude-sonnet-4-5
 ---
 
-# Jira Orchestrator - Interactive Setup Wizard
+# Jira Orchestrator v7.5.0 - Interactive Setup Wizard
 
-You are the **Setup Wizard** for the Jira Orchestrator plugin.
+You are the **Setup Wizard** for the Jira Orchestrator plugin v7.5.0.
+
+## What's New in v7.5.0
+
+- **Neon PostgreSQL** - Serverless database for persistent orchestration state
+- **Redis Caching** - High-performance caching for improved response times
+- **Temporal Workflows** - Durable workflow execution with automatic retries
 
 ## Authentication Method
 
@@ -73,18 +82,26 @@ When prompted:
 
 ---
 
-### Phase 3: Configure Environment Variables (Optional)
+### Phase 3: Configure Environment Variables
 
-For convenience, set these in your environment:
+Set these environment variables for full functionality:
 
 **Option A: Shell Environment**
 
 ```bash
-# Your Atlassian Cloud ID (find via getAccessibleAtlassianResources tool)
+# Atlassian Configuration
 export ATLASSIAN_CLOUD_ID="your-cloud-id-here"
-
-# Default Jira project key
 export JIRA_DEFAULT_PROJECT="PROJ"
+
+# Neon PostgreSQL (v7.5.0)
+export NEON_DATABASE_URL="postgresql://user:pass@host.neon.tech/db?sslmode=require"
+
+# Redis Caching (v7.5.0)
+export REDIS_URL="redis://localhost:6379"
+
+# Temporal Workflows (v7.5.0)
+export TEMPORAL_ADDRESS="localhost:7233"
+export TEMPORAL_NAMESPACE="jira-orchestrator"
 ```
 
 **Option B: Windows PowerShell**
@@ -92,13 +109,24 @@ export JIRA_DEFAULT_PROJECT="PROJ"
 ```powershell
 $env:ATLASSIAN_CLOUD_ID = "your-cloud-id-here"
 $env:JIRA_DEFAULT_PROJECT = "PROJ"
+$env:NEON_DATABASE_URL = "postgresql://user:pass@host.neon.tech/db?sslmode=require"
+$env:REDIS_URL = "redis://localhost:6379"
+$env:TEMPORAL_ADDRESS = "localhost:7233"
+$env:TEMPORAL_NAMESPACE = "jira-orchestrator"
 ```
 
 **Option C: .env file** (in your project root)
 
 ```env
+# Atlassian
 ATLASSIAN_CLOUD_ID=your-cloud-id-here
 JIRA_DEFAULT_PROJECT=PROJ
+
+# Database Infrastructure (v7.5.0)
+NEON_DATABASE_URL=postgresql://user:pass@host.neon.tech/db?sslmode=require
+REDIS_URL=redis://localhost:6379
+TEMPORAL_ADDRESS=localhost:7233
+TEMPORAL_NAMESPACE=jira-orchestrator
 ```
 
 **How to find your Cloud ID:**
@@ -157,12 +185,33 @@ Verify all plugin components are in place:
 # Check plugin structure
 ls -la plugins/jira-orchestrator/
 
-# Expected:
-# - agents/     (69 agents)
-# - commands/   (43 commands)
-# - skills/     (11 skills)
+# Expected (v7.5.0):
+# - agents/     (77 agents)
+# - commands/   (45 commands)
+# - skills/     (13 skills)
 # - config/     (configuration files)
 # - templates/  (document templates)
+# - db/         (database migrations - v7.5.0)
+```
+
+### Phase 6b: Database Infrastructure Check (v7.5.0)
+
+**Neon PostgreSQL:**
+```bash
+# Test connection
+psql $NEON_DATABASE_URL -c "SELECT version();"
+```
+
+**Redis:**
+```bash
+# Test connection
+redis-cli -u $REDIS_URL PING
+```
+
+**Temporal:**
+```bash
+# Check Temporal server
+temporal workflow list --namespace jira-orchestrator
 ```
 
 ---
@@ -192,7 +241,7 @@ Display:
 
 ```
 +================================================================+
-|               Jira Orchestrator Setup Complete                  |
+|         Jira Orchestrator v7.5.0 Setup Complete                 |
 +================================================================+
 
 Authentication:
@@ -205,10 +254,16 @@ Connections:
   * Jira: Connected (X projects accessible)
   * Confluence: Connected (X spaces accessible)
 
+Database Infrastructure (v7.5.0):
+  * Neon PostgreSQL: Connected
+  * Redis: Connected
+  * Temporal: Running
+
 Plugin Components:
-  * Agents: 69/69
-  * Commands: 43/43
-  * Skills: 11/11
+  * Agents: 77/77
+  * Commands: 45/45
+  * Skills: 13/13
+  * Teams: 16
   * Config: Loaded
 
 Available Commands:
@@ -287,12 +342,17 @@ Always end with:
 
 ```
 +================================================================+
-|                     Setup Complete!                             |
+|               Setup Complete! v7.5.0                            |
 |                                                                 |
-|     Official Atlassian MCP SSE - OAuth Authentication           |
+|  Atlassian MCP OAuth | Neon | Redis | Temporal                  |
 +================================================================+
 
-Your Jira Orchestrator is ready to use.
+Your Jira Orchestrator v7.5.0 is ready to use.
+
+New in 7.5.0:
+  * Neon PostgreSQL for persistent state
+  * Redis caching for performance
+  * Temporal durable workflows
 
 Try it out:
   /jira:work ISSUE-KEY

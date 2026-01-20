@@ -2,14 +2,13 @@
   "name": "claude-orchestration",
   "version": "4.0.0",
   "description": "Professional-grade multi-LLM agent coordination with comprehensive registry system, mandatory orchestration protocol, and production-ready DevOps workflows. Portable and customizable for any project.",
-  "author": {
-    "name": "Markus Ahling",
-    "email": "contact@example.com",
-    "url": "https://github.com/markus41/claude"
-  },
+  "author": "Markus Ahling <contact@example.com>",
   "license": "MIT",
   "homepage": "https://github.com/markus41/claude",
-  "repository": "https://github.com/markus41/claude",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markus41/claude"
+  },
   "keywords": [
     "orchestration",
     "multi-agent",

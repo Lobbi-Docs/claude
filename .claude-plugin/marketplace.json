@@ -124,15 +124,15 @@
     },
     {
       "name": "jira-orchestrator",
-      "description": "Arbiter - Enterprise Jira orchestration with 68 agents, 16 teams, 43 commands, 11 skills, and 7 hooks. Features AutoGen-style team coordination, domain affinity routing, intelligence system, and Harness platform integration. Validated and operational.",
-      "version": "7.2.0",
+      "description": "Arbiter - Enterprise Jira orchestration with 77 agents, 16 teams, 45 commands, 13 skills. Features Atlassian MCP OAuth, Harness CD, Neon PostgreSQL, Redis caching, Temporal workflows, Confluence sync, and structured reasoning frameworks (CoT, ToT, RCA).",
+      "version": "7.5.0",
       "author": {
-        "name": "The Lobbi",
-        "email": "developers@thelobbi.io"
+        "name": "Markus Ahling",
+        "email": "markus@lobbi.io"
       },
       "source": "./plugins/jira-orchestrator",
       "category": "integration",
-      "tags": ["jira", "confluence", "atlassian", "orchestration", "agile", "sprint", "enterprise", "harness", "ci-cd", "automation", "multi-agent"]
+      "tags": ["jira", "confluence", "atlassian", "orchestration", "agile", "sprint", "enterprise", "harness", "ci-cd", "automation", "multi-agent", "mcp", "knowledge-graph", "clean-architecture", "solid", "neon", "redis", "temporal"]
     },
     {
       "name": "exec-automator",
