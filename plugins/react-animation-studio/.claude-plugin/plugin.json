@@ -1,0 +1,318 @@
+{
+  "$schema": "../../.claude/core/schemas/plugin.schema.json",
+  "name": "react-animation-studio",
+  "displayName": "React Animation Studio",
+  "version": "1.1.0",
+  "description": "Create beautiful, performant web animations for React and TypeScript applications. Includes background effects, text animations, 3D transforms, creative visual effects, Framer Motion, GSAP, and more.",
+  "apiVersion": "v1",
+  "author": {
+    "name": "Brookside BI",
+    "email": "plugins@brooksidebi.com",
+    "url": "https://brooksidebi.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brooksidebi/react-animation-studio"
+  },
+  "keywords": [
+    "react",
+    "animation",
+    "framer-motion",
+    "gsap",
+    "css-animations",
+    "typescript",
+    "motion-design",
+    "spring-physics",
+    "micro-interactions",
+    "page-transitions",
+    "scroll-animations",
+    "creative-effects",
+    "background-animations",
+    "text-animations",
+    "3d-transforms",
+    "particles",
+    "aurora",
+    "typewriter",
+    "flip-card",
+    "parallax"
+  ],
+  "categories": [
+    "frontend",
+    "animation",
+    "react",
+    "design-system",
+    "creative",
+    "visual-effects"
+  ],
+  "provides": {
+    "agents": 6,
+    "skills": 11,
+    "commands": 12,
+    "hooks": 2
+  },
+  "agents": {
+    "animation-architect": {
+      "file": "agents/animation-architect.md",
+      "description": "Master architect for complex animation systems and choreography",
+      "model": "sonnet",
+      "triggers": ["animation system", "choreography", "animation architecture", "design tokens", "animation library"]
+    },
+    "motion-designer": {
+      "file": "agents/motion-designer.md",
+      "description": "Creative motion design with physics-based animations and visual effects",
+      "model": "sonnet",
+      "triggers": ["creative animation", "particle effects", "visual effects", "motion design", "physics animation"]
+    },
+    "performance-optimizer": {
+      "file": "agents/performance-optimizer.md",
+      "description": "Optimize animations for 60fps performance and accessibility",
+      "model": "haiku",
+      "triggers": ["animation performance", "60fps", "reduced motion", "accessibility", "jank", "optimization"]
+    },
+    "interaction-specialist": {
+      "file": "agents/interaction-specialist.md",
+      "description": "Micro-interactions, gestures, and responsive feedback animations",
+      "model": "haiku",
+      "triggers": ["micro-interaction", "gesture", "hover effect", "button animation", "feedback"]
+    },
+    "transition-engineer": {
+      "file": "agents/transition-engineer.md",
+      "description": "Page transitions, route animations, and layout morphing",
+      "model": "sonnet",
+      "triggers": ["page transition", "route animation", "layout animation", "shared element", "view transition"]
+    },
+    "creative-effects-artist": {
+      "file": "agents/creative-effects-artist.md",
+      "description": "Creative effects specialist for backgrounds, text animations, 3D effects, and artistic visual treatments",
+      "model": "sonnet",
+      "triggers": ["creative effects", "background animation", "text animation", "3d effect", "glitch", "aurora", "particles", "typewriter", "flip card", "parallax", "sparkle", "glow"]
+    }
+  },
+  "skills": {
+    "framer-motion": {
+      "file": "skills/framer-motion/SKILL.md",
+      "description": "Framer Motion library expertise for declarative React animations",
+      "triggers": ["framer-motion", "framer motion", "motion.div", "AnimatePresence"],
+      "filePatterns": ["**/*.tsx", "**/*.jsx"]
+    },
+    "gsap": {
+      "file": "skills/gsap/SKILL.md",
+      "description": "GSAP (GreenSock) for professional-grade timeline animations",
+      "triggers": ["gsap", "greensock", "scrolltrigger", "timeline animation"],
+      "filePatterns": ["**/*.tsx", "**/*.ts"]
+    },
+    "css-animations": {
+      "file": "skills/css-animations/SKILL.md",
+      "description": "Pure CSS animations and keyframes for lightweight effects",
+      "triggers": ["css animation", "keyframes", "transition", "tailwind animate"],
+      "filePatterns": ["**/*.css", "**/*.scss", "tailwind.config.*"]
+    },
+    "spring-physics": {
+      "file": "skills/spring-physics/SKILL.md",
+      "description": "Spring-based physics animations for natural motion",
+      "triggers": ["spring physics", "spring animation", "bounce", "stiffness", "damping"],
+      "filePatterns": ["**/*.tsx", "**/*.ts"]
+    },
+    "scroll-animations": {
+      "file": "skills/scroll-animations/SKILL.md",
+      "description": "Scroll-triggered animations and parallax effects",
+      "triggers": ["scroll animation", "parallax", "reveal on scroll", "scroll trigger"],
+      "filePatterns": ["**/*.tsx", "**/*.ts"]
+    },
+    "svg-animations": {
+      "file": "skills/svg-animations/SKILL.md",
+      "description": "SVG path animations, morphing, and vector effects",
+      "triggers": ["svg animation", "path animation", "morphing", "draw path"],
+      "filePatterns": ["**/*.svg", "**/*.tsx"]
+    },
+    "background-animations": {
+      "file": "skills/background-animations/SKILL.md",
+      "description": "Animated backgrounds including gradients, particles, aurora, waves, mesh gradients, and blob effects",
+      "triggers": ["background animation", "gradient background", "particles", "aurora", "animated background", "mesh gradient", "waves", "starfield", "blob background"],
+      "filePatterns": ["**/*.tsx", "**/*.jsx", "**/*Background*.tsx", "**/*Hero*.tsx"]
+    },
+    "accent-animations": {
+      "file": "skills/accent-animations/SKILL.md",
+      "description": "Decorative accent animations including floating shapes, glows, sparkles, animated borders, and shimmer effects",
+      "triggers": ["accent animation", "floating shapes", "glow effect", "sparkle", "animated border", "shimmer", "decorative", "orbs"],
+      "filePatterns": ["**/*.tsx", "**/*.jsx", "**/*Accent*.tsx", "**/*Decoration*.tsx"]
+    },
+    "creative-effects": {
+      "file": "skills/creative-effects/SKILL.md",
+      "description": "Artistic effects including morphing shapes, glitch effects, liquid animations, magnetic interactions, and creative loaders",
+      "triggers": ["creative effect", "glitch", "morph", "liquid", "magnetic", "distortion", "elastic", "blob morph"],
+      "filePatterns": ["**/*.tsx", "**/*.jsx", "**/*Effect*.tsx", "**/*Loader*.tsx"]
+    },
+    "text-animations": {
+      "file": "skills/text-animations/SKILL.md",
+      "description": "Text animations including typewriter, character reveals, kinetic typography, gradient text, and scramble effects",
+      "triggers": ["text animation", "typewriter", "character animation", "kinetic typography", "text reveal", "scramble text", "gradient text", "animated heading"],
+      "filePatterns": ["**/*.tsx", "**/*.jsx", "**/*Text*.tsx", "**/*Heading*.tsx", "**/*Title*.tsx"]
+    },
+    "3d-animations": {
+      "file": "skills/3d-animations/SKILL.md",
+      "description": "CSS/JS-based 3D animations including flip cards, tilt effects, rotating cubes, parallax depth, and 3D carousels",
+      "triggers": ["3d animation", "flip card", "tilt effect", "3d cube", "parallax depth", "3d carousel", "perspective", "3d transform"],
+      "filePatterns": ["**/*.tsx", "**/*.jsx", "**/*3D*.tsx", "**/*Flip*.tsx", "**/*Tilt*.tsx", "**/*Carousel*.tsx"]
+    }
+  },
+  "commands": {
+    "animate": {
+      "file": "commands/animate.md",
+      "description": "Generate animation code from natural language descriptions",
+      "examples": [
+        "/animate fade in from below with a bounce",
+        "/animate --library gsap stagger cards from the left",
+        "/animate hero text types out letter by letter"
+      ]
+    },
+    "animate-component": {
+      "file": "commands/animate-component.md",
+      "description": "Add animations to existing React components",
+      "examples": [
+        "/animate-component src/components/Card.tsx hover-lift",
+        "/animate-component src/components/Modal.tsx --type entrance"
+      ]
+    },
+    "animate-preset": {
+      "file": "commands/animate-preset.md",
+      "description": "Apply pre-built animation presets",
+      "examples": [
+        "/animate-preset --list",
+        "/animate-preset fade-in-up",
+        "/animate-preset hover-lift --as-hook"
+      ]
+    },
+    "animate-sequence": {
+      "file": "commands/animate-sequence.md",
+      "description": "Create choreographed animation sequences",
+      "examples": [
+        "/animate-sequence logo fades in, then title slides up",
+        "/animate-sequence --loop dot pulses, moves right, repeats"
+      ]
+    },
+    "animate-scroll": {
+      "file": "commands/animate-scroll.md",
+      "description": "Add scroll-triggered animations",
+      "examples": [
+        "/animate-scroll .cards reveal",
+        "/animate-scroll .hero-image --parallax 0.5",
+        "/animate-scroll .progress-bar --scrub"
+      ]
+    },
+    "animate-transition": {
+      "file": "commands/animate-transition.md",
+      "description": "Create page/route transitions",
+      "examples": [
+        "/animate-transition fade",
+        "/animate-transition slide --framework nextjs",
+        "/animate-transition morph --shared-elements"
+      ]
+    },
+    "animate-audit": {
+      "file": "commands/animate-audit.md",
+      "description": "Audit animations for performance and accessibility",
+      "examples": [
+        "/animate-audit",
+        "/animate-audit --focus performance",
+        "/animate-audit --strict --fix"
+      ]
+    },
+    "animate-export": {
+      "file": "commands/animate-export.md",
+      "description": "Export animations as reusable components",
+      "examples": [
+        "/animate-export src/animations --format component",
+        "/animate-export --format tokens --output ./design-system",
+        "/animate-export --format package --name @myorg/animations"
+      ]
+    },
+    "animate-background": {
+      "file": "commands/animate-background.md",
+      "description": "Generate animated backgrounds (gradients, particles, aurora, waves, blobs)",
+      "examples": [
+        "/animate-background gradient --colors '#667eea,#764ba2'",
+        "/animate-background aurora --interactive",
+        "/animate-background particles --intensity high",
+        "/animate-background blobs --speed medium"
+      ]
+    },
+    "animate-text": {
+      "file": "commands/animate-text.md",
+      "description": "Create text animations (typewriter, character reveals, gradient text, scramble)",
+      "examples": [
+        "/animate-text typewriter --text 'Hello World' --speed 80",
+        "/animate-text stagger --text 'Animated' --delay 30",
+        "/animate-text gradient --colors '#667eea,#764ba2'",
+        "/animate-text scramble --text 'DECODED'"
+      ]
+    },
+    "animate-3d": {
+      "file": "commands/animate-3d.md",
+      "description": "Create 3D animations (flip cards, tilt effects, cubes, parallax)",
+      "examples": [
+        "/animate-3d flip-card --trigger click",
+        "/animate-3d tilt --intensity medium --interactive",
+        "/animate-3d cube --trigger auto",
+        "/animate-3d parallax --layers 3"
+      ]
+    },
+    "animate-effects": {
+      "file": "commands/animate-effects.md",
+      "description": "Create creative visual effects (glitch, morph, liquid, sparkle, glow)",
+      "examples": [
+        "/animate-effects glitch --intensity medium",
+        "/animate-effects morph --colors '#667eea,#764ba2'",
+        "/animate-effects sparkle --count 5",
+        "/animate-effects magnetic --trigger hover"
+      ]
+    }
+  },
+  "hooks": {
+    "animation-lint": {
+      "event": "PreToolUse",
+      "toolPattern": "Write|Edit",
+      "filePattern": "**/*.{tsx,jsx,ts,js}",
+      "script": "hooks/scripts/animation-lint.sh",
+      "description": "Lint animation code for best practices"
+    },
+    "performance-check": {
+      "event": "PostToolUse",
+      "toolPattern": "Write|Edit",
+      "filePattern": "**/*.{tsx,jsx}",
+      "script": "hooks/scripts/performance-check.sh",
+      "description": "Check animation performance on file changes"
+    }
+  },
+  "dependencies": {
+    "npm": {
+      "framer-motion": "^11.0.0",
+      "gsap": "^3.12.0",
+      "@react-spring/web": "^9.7.0"
+    },
+    "peerDependencies": {
+      "react": ">=18.0.0",
+      "typescript": ">=5.0.0"
+    }
+  },
+  "configuration": {
+    "defaultLibrary": {
+      "type": "string",
+      "default": "framer-motion",
+      "enum": ["framer-motion", "gsap", "react-spring", "css"],
+      "description": "Default animation library to use"
+    },
+    "preferReducedMotion": {
+      "type": "boolean",
+      "default": true,
+      "description": "Automatically respect prefers-reduced-motion"
+    },
+    "performanceMode": {
+      "type": "string",
+      "default": "balanced",
+      "enum": ["quality", "balanced", "performance"],
+      "description": "Animation quality vs performance tradeoff"
+    }
+  }
+}
