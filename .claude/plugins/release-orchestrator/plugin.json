@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["devops", "release", "deployment", "automation"],
   "keywords": [
     "release", "versioning", "semantic-version", "semver",
     "changelog", "release-notes", "deployment", "rollback",
@@ -20,31 +19,6 @@
     "tag", "github-release", "npm-publish", "docker-tag",
     "hotfix", "patch", "major", "minor"
   ],
-
-  "provides": {
-    "commands": 14,
-    "agents": 9,
-    "skills": 5,
-    "hooks": 4
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Links releases to Jira versions, updates fix versions on issues",
-      "commands": ["release:create", "release:publish", "release:notes"],
-      "bidirectional": true
-    },
-    "git-workflow-orchestrator": {
-      "description": "Creates release branches and tags",
-      "commands": ["release:branch", "release:tag"],
-      "required": true
-    },
-    "notification-hub": {
-      "description": "Sends release announcements to all channels",
-      "commands": ["release:announce"],
-      "optional": true
-    }
-  },
 
   "versioningStrategies": {
     "semver": {

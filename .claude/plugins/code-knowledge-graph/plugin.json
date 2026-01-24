@@ -12,44 +12,12 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["ai", "knowledge", "analysis", "semantic"],
   "keywords": [
     "knowledge-graph", "semantic", "graph-database", "code-understanding",
     "impact-analysis", "dependency-graph", "call-graph", "data-flow",
     "architectural-patterns", "domain-model", "entity-relationship",
     "code-search", "semantic-search", "codebase-memory", "neo4j"
   ],
-
-  "provides": {
-    "commands": 15,
-    "agents": 11,
-    "skills": 7,
-    "hooks": 4,
-    "graphTypes": 8
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Links code entities to Jira issues for traceability",
-      "capabilities": ["issue-code-link", "impact-on-issues"],
-      "bidirectional": true
-    },
-    "documentation-orchestrator": {
-      "description": "Auto-generates documentation from knowledge graph",
-      "capabilities": ["graph-to-docs", "relationship-docs"],
-      "enhances": true
-    },
-    "testing-orchestrator": {
-      "description": "Identifies tests affected by code changes",
-      "capabilities": ["test-impact", "coverage-mapping"],
-      "required": false
-    },
-    "cognitive-code-reasoner": {
-      "description": "Provides context for deep reasoning",
-      "capabilities": ["context-enrichment", "relationship-context"],
-      "enhances": true
-    }
-  },
 
   "graphTypes": {
     "call-graph": {

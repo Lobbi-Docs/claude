@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["debugging", "analysis", "troubleshooting", "root-cause"],
   "keywords": [
     "debug", "debugging", "bug", "error", "crash", "null", "undefined",
     "stack-trace", "exception", "breakpoint", "console.log", "debugger",
@@ -23,36 +22,6 @@
     "why-is-this", "unexpected-behavior", "reproduce", "minimal-repro",
     "heisenbug", "edge-case", "corner-case", "boundary-condition"
   ],
-
-  "provides": {
-    "commands": 12,
-    "agents": 11,
-    "skills": 6,
-    "hooks": 4
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Links debugging sessions to bug tickets, updates with findings",
-      "commands": ["debug:jira-link", "debug:update-ticket"],
-      "bidirectional": true
-    },
-    "git-workflow-orchestrator": {
-      "description": "Automates git bisect for regression hunting",
-      "commands": ["debug:bisect-auto"],
-      "blocking": false
-    },
-    "testing-orchestrator": {
-      "description": "Generates reproduction tests from debugging sessions",
-      "commands": ["debug:generate-test"],
-      "blocking": false
-    },
-    "code-knowledge-graph": {
-      "description": "Traces data flow through call graphs",
-      "commands": ["debug:trace-flow"],
-      "blocking": false
-    }
-  },
 
   "debuggingStrategies": {
     "hypothesis-driven": {

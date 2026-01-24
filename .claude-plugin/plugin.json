@@ -20,30 +20,5 @@
     "docker",
     "ci-cd",
     "testing"
-  ],
-  "categories": ["orchestration", "agents", "devops"],
-  "provides": {
-    "agents": "dynamic",
-    "skills": "dynamic",
-    "commands": "dynamic",
-    "workflows": "dynamic",
-    "hooks": "dynamic"
-  },
-  "discovery": {
-    "agents": {
-      "enabled": true,
-      "directory": "../.claude/registry",
-      "pattern": "agents.index.json"
-    },
-    "skills": {
-      "enabled": true,
-      "directory": "../.claude/registry",
-      "pattern": "skills.index.json"
-    },
-    "commands": {
-      "enabled": true,
-      "directory": "../.claude/commands",
-      "pattern": "*.md"
-    }
-  }
+  ]
 }

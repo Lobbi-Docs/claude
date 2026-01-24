@@ -12,39 +12,12 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["ai", "llm", "orchestration", "optimization"],
   "keywords": [
     "multi-model", "llm-routing", "model-selection", "ensemble",
     "claude", "gpt", "gemini", "llama", "mistral", "ollama",
     "cost-optimization", "latency-optimization", "capability-matching",
     "consensus", "voting", "model-cascade", "fallback", "load-balancing"
   ],
-
-  "provides": {
-    "commands": 14,
-    "agents": 10,
-    "skills": 6,
-    "hooks": 4,
-    "routingStrategies": 8
-  },
-
-  "integrations": {
-    "cognitive-code-reasoner": {
-      "description": "Routes complex reasoning to optimal model",
-      "capabilities": ["model-selection", "thinking-budget-allocation"],
-      "enhances": true
-    },
-    "testing-orchestrator": {
-      "description": "Uses fast models for test generation",
-      "capabilities": ["speed-optimization"],
-      "costOptimization": true
-    },
-    "documentation-orchestrator": {
-      "description": "Routes docs to cost-effective models",
-      "capabilities": ["cost-optimization"],
-      "costOptimization": true
-    }
-  },
 
   "supportedModels": {
     "anthropic": {

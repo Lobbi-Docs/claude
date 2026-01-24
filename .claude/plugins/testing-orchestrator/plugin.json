@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["testing", "qa", "automation", "ci-cd"],
   "keywords": [
     "testing", "unit-test", "integration-test", "e2e", "end-to-end",
     "pytest", "jest", "vitest", "playwright", "cypress",
@@ -20,36 +19,6 @@
     "performance", "load-test", "k6", "locust", "artillery",
     "snapshot", "visual-regression", "accessibility", "a11y"
   ],
-
-  "provides": {
-    "commands": 18,
-    "agents": 12,
-    "skills": 8,
-    "hooks": 6
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Links test cases to Jira issues, reports test results",
-      "commands": ["test:jira", "test:report"],
-      "bidirectional": true
-    },
-    "code-quality-orchestrator": {
-      "description": "Enforces test coverage thresholds",
-      "commands": ["test:coverage"],
-      "blocking": true
-    },
-    "release-orchestrator": {
-      "description": "Gates releases on test results",
-      "commands": ["test:release-gate"],
-      "blocking": true
-    },
-    "git-workflow-orchestrator": {
-      "description": "Runs tests on PR, prevents merge on failure",
-      "commands": ["test:pr"],
-      "blocking": true
-    }
-  },
 
   "testTypes": {
     "unit": {

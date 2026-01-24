@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["ai", "debugging", "reasoning", "analysis"],
   "keywords": [
     "extended-thinking", "ultrathink", "cognitive", "reasoning",
     "hypothesis-driven", "causal-analysis", "root-cause", "debugging",
@@ -20,32 +19,6 @@
     "multi-step-reasoning", "chain-of-thought", "tree-of-thought",
     "abductive-reasoning", "counterfactual", "invariant-analysis"
   ],
-
-  "provides": {
-    "commands": 12,
-    "agents": 15,
-    "skills": 8,
-    "hooks": 4,
-    "reasoningPatterns": 12
-  },
-
-  "integrations": {
-    "jira-orchestrator": {
-      "description": "Generates root cause analysis reports linked to Jira bugs",
-      "commands": ["reason:jira-bug"],
-      "outputs": ["root-cause-report", "fix-hypothesis"]
-    },
-    "testing-orchestrator": {
-      "description": "Reasons about test failures, suggests targeted tests",
-      "commands": ["reason:test-failure"],
-      "bidirectional": true
-    },
-    "code-quality-orchestrator": {
-      "description": "Deep analysis of code quality issues",
-      "commands": ["reason:quality-issue"],
-      "enhances": true
-    }
-  },
 
   "thinkingModes": {
     "ultrathink": {

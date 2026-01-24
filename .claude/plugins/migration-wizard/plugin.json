@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["code-generation", "refactoring", "automation", "devops"],
   "keywords": [
     "migration", "codemod", "refactor", "transform", "modernize",
     "react-hooks", "vue2-vue3", "express-fastify", "angular-react",
@@ -20,14 +19,6 @@
     "ast", "jscodeshift", "babel", "typescript", "eslint-codemod",
     "api-migration", "breaking-changes", "deprecation", "upgrade"
   ],
-
-  "provides": {
-    "commands": 15,
-    "agents": 12,
-    "skills": 6,
-    "hooks": 4,
-    "workflows": 8
-  },
 
   "migrationTypes": {
     "react": {

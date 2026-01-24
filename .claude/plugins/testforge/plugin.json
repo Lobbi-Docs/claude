@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["testing", "automation", "code-quality", "tdd"],
   "keywords": [
     "test-generation", "auto-test", "unit-test", "integration-test",
     "jest", "pytest", "vitest", "mocha", "jasmine",
@@ -23,36 +22,6 @@
     "assertion", "test-data", "factory-pattern",
     "regression-prevention", "bug-detection", "quality"
   ],
-
-  "provides": {
-    "commands": 10,
-    "agents": 12,
-    "skills": 7,
-    "hooks": 5
-  },
-
-  "integrations": {
-    "testing-orchestrator": {
-      "description": "Executes generated tests and validates coverage improvements",
-      "commands": ["testforge:validate", "testforge:run"],
-      "bidirectional": true
-    },
-    "code-quality-orchestrator": {
-      "description": "Ensures generated tests meet quality standards",
-      "commands": ["testforge:quality-check"],
-      "blocking": false
-    },
-    "git-workflow-orchestrator": {
-      "description": "Generates tests for changed files in PRs",
-      "commands": ["testforge:pr-generate"],
-      "blocking": false
-    },
-    "cognitive-code-reasoner": {
-      "description": "Deep code analysis for behavior understanding",
-      "commands": ["testforge:analyze"],
-      "bidirectional": true
-    }
-  },
 
   "testFrameworks": {
     "javascript": {

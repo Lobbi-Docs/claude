@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "repository": "https://github.com/Lobbi-Docs/claude",
-  "categories": ["database", "backend", "devops", "performance"],
   "keywords": [
     "database", "schema", "migration", "prisma", "typeorm", "alembic",
     "sql", "postgres", "mysql", "mongodb", "index", "optimization",
@@ -21,13 +20,6 @@
     "foreign-key", "constraint", "trigger", "view", "materialized-view",
     "partition", "sharding", "replication", "backup", "restore"
   ],
-
-  "provides": {
-    "commands": 15,
-    "agents": 10,
-    "skills": 6,
-    "hooks": 5
-  },
 
   "databases": {
     "relational": {
