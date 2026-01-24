@@ -21,7 +21,7 @@ Orchestrate work on Jira issues: detect sub-issues, parallelize, assign experts,
 
 ## Core Workflow
 
-**Validate → Tag → Detect Sub-Issues → Assign Agents → Parallelize Subs → EXPLORE → PLAN (+TDD) → CODE (+Impl Notes) → TEST (+Test Plan) → FIX → DOCUMENT (+Runbook) → Confluence Hub → Commit & PR (with Doc Links) → Jira Comments → Summary**
+**Validate → Tag → Detect Sub-Issues → Load PR Plan Artifact → Break Down Tasks (Granular) → Assign Expert Sub-Agents → Parallelize Subs → EXPLORE → PLAN (+TDD) → CODE (+Impl Notes) → TEST (+Test Plan) → FIX → DOCUMENT (+Runbook) → Checkpoint Update → Orchestrator Confirmation → Progress Gating → Confluence Hub → Commit & PR (with Doc Links) → Jira Comments → Summary**
 
 ## Confluence Documentation Integration
 
@@ -79,6 +79,10 @@ pr_creation:
 - SOLID principles required
 - Git worktrees for parallel sub-issues
 - Sub-agents: 3-5 minimum per task
+- Task breakdown must be **granular** (5-15 minute subtasks) with explicit owners
+- Every subtask must be routed to a **domain expert sub-agent** (no generalists unless explicitly justified)
+- `/jira:plan-prs` work plan artifact is required for orchestration scope, sequencing, and PR splits
+- Progress-aware gating must be enforced using `/jira:status` and `/jira:metrics` signals
 - 4+ Confluence pages required
 
 ## Tag Management (Auto-Created)
@@ -119,14 +123,19 @@ pr_creation:
 2. **Transition** - Set status to "In Progress"
 3. **Tag Management** - Apply domain/status/type tags
 4. **Sub-Issue Detection** - Find all subtasks/linked issues
-5. **Expert Assignment** - Match specialists per domain
-6. **Parallel Sub-Issues** - Execute independently with DAG
-7. **Main Issue Orchestration** - Run 6-phase protocol
-8. **Gap Analysis** - Complete any missing acceptance criteria
-9. **Confluence Docs** - Create 4+ pages (design, implementation, tests, runbook)
-10. **Commit & PR** - Smart commit with tracking
-11. **Jira Comments** - Post milestones: start, sub-count, agents, phase completions, PR, transitions, summary
-12. **Final Summary** - Audit trail with metrics
+5. **Load PR Plan Artifact** - Read `.claude/orchestration/plans/{ISSUE-KEY}-plan.json`
+6. **Granular Task Breakdown** - Decompose into 5-15 minute subtasks with owners and dependencies
+7. **Expert Assignment** - Match specialists per domain for every subtask
+8. **Parallel Sub-Issues** - Execute independently with DAG
+9. **Main Issue Orchestration** - Run 6-phase protocol
+10. **Checkpoint Update** - Persist checkpoint after each phase and subtask cluster
+11. **Orchestrator Confirmation** - Require orchestrator sign-off before PR creation
+12. **Progress Gating** - Block phase transitions if status/metrics thresholds are unmet
+13. **Gap Analysis** - Complete any missing acceptance criteria
+14. **Confluence Docs** - Create 4+ pages (design, implementation, tests, runbook)
+15. **Commit & PR** - Smart commit with tracking
+16. **Jira Comments** - Post milestones: start, sub-count, agents, checkpoint updates, phase completions, PR, transitions, summary
+17. **Final Summary** - Audit trail with metrics
 
 ## Success Criteria
 
@@ -136,6 +145,7 @@ pr_creation:
 - **Confluence docs: 4+ pages (TDD, Implementation, Test Plan, Runbook)**
 - **Hub page created linking all documentation**
 - **PR includes "## Documentation" section with Confluence links**
+- Progress gating satisfied (coverage, blockers cleared, acceptance criteria mapped)
 - All sub-items documented
 - PR created and merged
 - All issues transitioned to QA
@@ -188,10 +198,13 @@ PRs MUST include this section with Confluence links:
 1. Start orchestration
 2. Sub-issues detected (count)
 3. Expert agents assigned
-4. Each phase completion with Confluence links
-5. PR created and linked
-6. Sub-items documented
-7. Items transitioned to QA
-8. Final summary with metrics
+4. Granular task breakdown posted (owners, dependencies, estimates)
+5. Checkpoint update after each phase (snapshot + progress)
+6. Orchestrator confirmation recorded before PR creation
+7. Each phase completion with Confluence links
+8. PR created and linked
+9. Sub-items documented
+10. Items transitioned to QA
+11. Final summary with metrics
 
 **⚓ Golden Armada** | *You ask - The Fleet Ships*

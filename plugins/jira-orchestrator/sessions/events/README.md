@@ -77,13 +77,17 @@ The Event Sourcing Orchestrator provides a complete, immutable audit trail of al
 - `CheckpointCreated` - State checkpoint created
 - `CheckpointRestored` - State restored from checkpoint
 
+### Summaries & Retention (2 types)
+- `PhaseSummaryCreated` - Rolling summary of phase events
+- `OrchestrationSummaryCreated` - Rolling summary of orchestration events
+
 ### Error Recovery (4 types)
 - `ErrorOccurred` - Error occurred with details
 - `RecoveryAttempted` - Recovery attempt initiated
 - `RecoverySucceeded` - Recovery successful
 - `RecoveryFailed` - Recovery failed
 
-**Total: 37 event types**
+**Total: 39 event types**
 
 ## Event Structure
 
@@ -215,6 +219,14 @@ create_snapshot("PROJ-123", at_sequence=100)
 
 # Snapshots stored in: {ISSUE-KEY}/snapshot-{sequence}.json
 ```
+
+### 8. Summary Events & Retention
+To keep context efficient while preserving traceability:
+
+- Emit `PhaseSummaryCreated` every N events (default: 25) within a phase.
+- Emit `OrchestrationSummaryCreated` every N events (default: 100) across the session.
+- Retain summary events indefinitely; archive raw events after the retention window (default: 90 days).
+- All summaries include references to source event ranges for audit tracebacks.
 
 ## Usage Examples
 

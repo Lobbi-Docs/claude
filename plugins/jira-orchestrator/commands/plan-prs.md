@@ -70,6 +70,7 @@ This command helps by **planning** how to split work into small, reviewable PRs 
 5. **Configures Orchestration**
    - Saves strategy for CODE phase agents
    - Enables checkpoint PR creation
+   - Generates a **work plan artifact** consumed by `/jira:work`
 
 ## Usage
 
@@ -109,6 +110,7 @@ Strategy: 3-PR Split (Sub-Item Based)
 
 ✅ Strategy posted to Jira: https://jira.company.com/browse/PROJ-123
 ✅ Configuration saved for CODE phase agents
+✅ Work plan artifact saved: `.claude/orchestration/plans/PROJ-123-plan.json`
 
 Next Steps:
 1. Run /jira:work PROJ-123 to start development
@@ -143,7 +145,7 @@ graph TD
     H --> I
 
     I --> J[Post to Jira]
-    J --> K[Save Config]
+    J --> K[Save Config + Work Plan Artifact]
     K --> L[Ready for /jira:work]
 ```
 
@@ -173,9 +175,32 @@ PR_MAX_SIZE=400             # Target max size per PR
 
 This command works with:
 - **`/jira:work`**: Uses the strategy during CODE phase
+- **`/jira:work`**: Loads the work plan artifact to adapt phase staffing, gating, and PR splits
 - **checkpoint-pr-manager**: Creates PRs based on strategy
 - **draft-pr-manager**: Creates early draft PRs
 - **pr-size-guard hook**: Enforces size limits
+
+## Work Plan Artifact (Required)
+
+`/jira:plan-prs` writes a JSON artifact to `.claude/orchestration/plans/{ISSUE-KEY}-plan.json`.
+`/jira:work` must load this file before task breakdown to enforce scope, sequencing, and PR splits.
+
+```json
+{
+  "issue_key": "PROJ-123",
+  "estimated_total_loc": 1450,
+  "pr_strategy": "sub_item",
+  "max_pr_size": 400,
+  "pr_splits": [
+    {"name": "Database Layer", "sub_items": ["PROJ-201", "PROJ-202"], "dependencies": []},
+    {"name": "API Layer", "sub_items": ["PROJ-203"], "dependencies": ["Database Layer"]}
+  ],
+  "gates": {
+    "max_parallel_prs": 2,
+    "required_reviewers": ["backend-architect", "api-security-expert"]
+  }
+}
+```
 
 ## When to Use
 
