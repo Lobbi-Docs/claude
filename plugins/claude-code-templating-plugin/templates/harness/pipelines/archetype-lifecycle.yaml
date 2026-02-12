@@ -1,0 +1,801 @@
+pipeline:
+  name: Archetype Lifecycle CI/CD
+  identifier: archetype_lifecycle_ci_cd
+  projectIdentifier: thelobbi
+  orgIdentifier: default
+  description: |
+    Complete archetype lifecycle pipeline:
+    - Analyze existing projects for template conversion
+    - Create and validate archetypes
+    - Generate Structurizr architecture fragments
+    - Publish Harness templates
+    - Export architecture diagrams
+    - Push to GitHub Pages
+
+  tags:
+    type: archetype
+    integration: structurizr
+    integration: harness-templates
+    integration: gradle
+
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.GitHub_OAuth
+        repoName: <+input>
+        build: <+input>
+
+  variables:
+    - name: ARCHETYPE_NAME
+      type: String
+      description: Name for the archetype
+      required: true
+      default: svc-template-fastapi
+
+    - name: SOURCE_PROJECT
+      type: String
+      description: Source project path to convert
+      required: false
+      default: ""
+
+    - name: STRUCTURIZR_WORKSPACE
+      type: String
+      description: Path to Structurizr workspace.dsl
+      required: true
+      default: structurizr/workspace.dsl
+
+    - name: GITHUB_PAGES_REPO
+      type: String
+      description: GitHub Pages repository for diagrams
+      required: false
+      default: Lobbi/architecture-diagrams
+
+    - name: PUBLISH_HARNESS_TEMPLATES
+      type: String
+      description: Whether to publish Harness templates
+      required: true
+      default: "true"
+
+  stages:
+    # ==========================================================================
+    # Stage 1: Analyze Source Project
+    # ==========================================================================
+    - stage:
+        name: Analyze Project
+        identifier: analyze_project
+        type: CI
+        when:
+          condition: <+pipeline.variables.SOURCE_PROJECT> != ""
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Install Analysis Tools
+                  identifier: install_tools
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Installing archetype analysis tools..."
+                      npm install -g copier-cli || true
+                      pip install cookiecutter || true
+
+              - step:
+                  type: Run
+                  name: Analyze Project Structure
+                  identifier: analyze_structure
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Analyzing source project: <+pipeline.variables.SOURCE_PROJECT>"
+
+                      PROJECT_PATH="<+pipeline.variables.SOURCE_PROJECT>"
+
+                      # Detect project type
+                      if [ -f "$PROJECT_PATH/pyproject.toml" ]; then
+                        echo "PROJECT_TYPE=python-poetry" >> $HARNESS_OUTPUT_FILE
+                      elif [ -f "$PROJECT_PATH/package.json" ]; then
+                        if [ -f "$PROJECT_PATH/tsconfig.json" ]; then
+                          echo "PROJECT_TYPE=typescript-node" >> $HARNESS_OUTPUT_FILE
+                        else
+                          echo "PROJECT_TYPE=javascript-node" >> $HARNESS_OUTPUT_FILE
+                        fi
+                      elif [ -f "$PROJECT_PATH/pom.xml" ]; then
+                        echo "PROJECT_TYPE=java-maven" >> $HARNESS_OUTPUT_FILE
+                      elif [ -f "$PROJECT_PATH/build.gradle.kts" ]; then
+                        echo "PROJECT_TYPE=kotlin-gradle" >> $HARNESS_OUTPUT_FILE
+                      elif [ -f "$PROJECT_PATH/go.mod" ]; then
+                        echo "PROJECT_TYPE=go" >> $HARNESS_OUTPUT_FILE
+                      else
+                        echo "PROJECT_TYPE=unknown" >> $HARNESS_OUTPUT_FILE
+                      fi
+
+                      # Count files for variable detection
+                      FILE_COUNT=$(find "$PROJECT_PATH" -type f | wc -l)
+                      echo "ANALYZED_FILES=$FILE_COUNT" >> $HARNESS_OUTPUT_FILE
+
+                      echo "Analysis complete"
+                    outputVariables:
+                      - name: PROJECT_TYPE
+                      - name: ANALYZED_FILES
+
+              - step:
+                  type: Run
+                  name: Generate Analysis Report
+                  identifier: generate_report
+                  spec:
+                    shell: Bash
+                    command: |
+                      cat > build/analysis-report.yaml << EOF
+                      project_analysis:
+                        source: <+pipeline.variables.SOURCE_PROJECT>
+                        type: <+execution.steps.analyze_structure.output.outputVariables.PROJECT_TYPE>
+                        files_analyzed: <+execution.steps.analyze_structure.output.outputVariables.ANALYZED_FILES>
+                        archetype_name: <+pipeline.variables.ARCHETYPE_NAME>
+                        timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+                      EOF
+
+                      echo "Analysis report generated"
+
+    # ==========================================================================
+    # Stage 2: Create Archetype
+    # ==========================================================================
+    - stage:
+        name: Create Archetype
+        identifier: create_archetype
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Setup Gradle
+                  identifier: setup_gradle
+                  spec:
+                    shell: Bash
+                    command: |
+                      # Check for Gradle wrapper
+                      if [ -f "./gradlew" ]; then
+                        chmod +x ./gradlew
+                        echo "Using Gradle wrapper"
+                      else
+                        echo "Installing Gradle..."
+                        # Use system Gradle or install
+                      fi
+
+              - step:
+                  type: Run
+                  name: Create Archetype
+                  identifier: create_archetype
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Creating archetype: <+pipeline.variables.ARCHETYPE_NAME>"
+
+                      # Run Gradle task or manual creation
+                      if [ -f "./gradlew" ]; then
+                        ./gradlew createArchetype \
+                          -ParchetypeName=<+pipeline.variables.ARCHETYPE_NAME> \
+                          --no-daemon
+                      else
+                        # Manual archetype creation
+                        mkdir -p archetypes/<+pipeline.variables.ARCHETYPE_NAME>/template
+                        mkdir -p archetypes/<+pipeline.variables.ARCHETYPE_NAME>/templates/harness/{steps,stages,pipelines}
+                        mkdir -p archetypes/<+pipeline.variables.ARCHETYPE_NAME>/structurizr/fragments
+
+                        echo "Archetype structure created"
+                      fi
+
+              - parallel:
+                  - step:
+                      type: Run
+                      name: Generate Copier Config
+                      identifier: generate_copier
+                      spec:
+                        shell: Bash
+                        command: |
+                          ARCHETYPE_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>"
+
+                          cat > "$ARCHETYPE_DIR/copier.yml" << 'EOF'
+                          _min_copier_version: "9.0.0"
+                          _subdirectory: template
+
+                          project_name:
+                            type: str
+                            help: "Project name (lowercase, hyphenated)"
+                            validator: "{% if not project_name | regex_search('^[a-z][a-z0-9-]*$') %}Invalid format{% endif %}"
+
+                          project_description:
+                            type: str
+                            help: "Brief project description"
+
+                          database_type:
+                            type: str
+                            help: "Database type"
+                            choices:
+                              mongodb: "MongoDB (document store)"
+                              postgresql: "PostgreSQL (relational)"
+                            default: mongodb
+
+                          include_auth:
+                            type: bool
+                            help: "Include Keycloak authentication?"
+                            default: true
+
+                          include_kubernetes:
+                            type: bool
+                            help: "Include Kubernetes manifests?"
+                            default: true
+
+                          service_port:
+                            type: int
+                            help: "Service port"
+                            default: 8000
+                          EOF
+
+                          echo "Copier config generated"
+
+                  - step:
+                      type: Run
+                      name: Generate Structurizr Fragment
+                      identifier: generate_structurizr
+                      spec:
+                        shell: Bash
+                        command: |
+                          ARCHETYPE_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>"
+
+                          cat > "$ARCHETYPE_DIR/structurizr/fragments/service-template.dsl" << 'EOF'
+                          # ===== SERVICE: {{ project_name }} =====
+                          # Auto-generated Structurizr fragment
+
+                          {{ project_name | camelCase }} = softwareSystem "{{ project_name | titleCase }}" "{{ project_description }}" {
+                              tags "Internal" "Backend" "Microservice"
+
+                              {{ project_name | camelCase }}Api = container "{{ project_name | titleCase }} API" "{{ project_description }}" "{{ technology }}" {
+                                  tags "API"
+                              }
+
+                              {% if database_type %}
+                              {{ project_name | camelCase }}Db = container "{{ project_name | titleCase }} Database" "Data store" "{{ database_type | titleCase }}" {
+                                  tags "Database"
+                              }
+                              {{ project_name | camelCase }}Api -> {{ project_name | camelCase }}Db "Reads/Writes"
+                              {% endif %}
+
+                              {% if include_auth %}
+                              {{ project_name | camelCase }}Api -> keycloak "Validates tokens" "OAuth2/OIDC"
+                              {% endif %}
+                          }
+
+                          # Relationships
+                          uiSite -> {{ project_name | camelCase }} "Uses" "REST/HTTPS"
+                          gateway -> {{ project_name | camelCase }} "Routes to"
+                          EOF
+
+                          echo "Structurizr fragment template generated"
+
+    # ==========================================================================
+    # Stage 3: Generate Harness Templates
+    # ==========================================================================
+    - stage:
+        name: Generate Harness Templates
+        identifier: generate_harness_templates
+        type: CI
+        when:
+          condition: <+pipeline.variables.PUBLISH_HARNESS_TEMPLATES> == "true"
+        spec:
+          execution:
+            steps:
+              - parallel:
+                  - step:
+                      type: Run
+                      name: Generate Step Templates
+                      identifier: generate_steps
+                      spec:
+                        shell: Bash
+                        command: |
+                          TEMPLATES_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>/templates/harness/steps"
+
+                          # Poetry Install Step
+                          cat > "$TEMPLATES_DIR/poetry-install.yaml" << 'EOF'
+                          template:
+                            name: poetry-install
+                            identifier: poetry_install
+                            versionLabel: "1.0.0"
+                            type: Step
+                            spec:
+                              type: Run
+                              spec:
+                                shell: Bash
+                                command: |
+                                  pip install poetry
+                                  poetry config virtualenvs.create false
+                                  poetry install --no-interaction
+                          EOF
+
+                          # Pytest Coverage Step
+                          cat > "$TEMPLATES_DIR/pytest-coverage.yaml" << 'EOF'
+                          template:
+                            name: pytest-coverage
+                            identifier: pytest_coverage
+                            versionLabel: "1.0.0"
+                            type: Step
+                            spec:
+                              type: Run
+                              spec:
+                                shell: Bash
+                                command: |
+                                  poetry run pytest \
+                                    --cov=app \
+                                    --cov-report=xml \
+                                    --cov-fail-under=80 \
+                                    --junitxml=test-results.xml \
+                                    tests/
+                                reports:
+                                  type: JUnit
+                                  spec:
+                                    paths:
+                                      - test-results.xml
+                          EOF
+
+                          echo "Step templates generated"
+
+                  - step:
+                      type: Run
+                      name: Generate Stage Templates
+                      identifier: generate_stages
+                      spec:
+                        shell: Bash
+                        command: |
+                          TEMPLATES_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>/templates/harness/stages"
+
+                          # Python Build Stage
+                          cat > "$TEMPLATES_DIR/python-build.yaml" << 'EOF'
+                          template:
+                            name: python-build
+                            identifier: python_build
+                            versionLabel: "1.0.0"
+                            type: Stage
+                            spec:
+                              type: CI
+                              spec:
+                                cloneCodebase: true
+                                execution:
+                                  steps:
+                                    - step:
+                                        type: Run
+                                        name: Install Dependencies
+                                        spec:
+                                          shell: Bash
+                                          command: |
+                                            pip install poetry
+                                            poetry install
+                                    - step:
+                                        type: Run
+                                        name: Lint
+                                        spec:
+                                          shell: Bash
+                                          command: |
+                                            poetry run ruff check app/
+                          EOF
+
+                          echo "Stage templates generated"
+
+                  - step:
+                      type: Run
+                      name: Generate Pipeline Templates
+                      identifier: generate_pipelines
+                      spec:
+                        shell: Bash
+                        command: |
+                          TEMPLATES_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>/templates/harness/pipelines"
+
+                          cat > "$TEMPLATES_DIR/fastapi-ci-cd.yaml" << 'EOF'
+                          template:
+                            name: fastapi-ci-cd
+                            identifier: fastapi_ci_cd
+                            versionLabel: "1.0.0"
+                            type: Pipeline
+                            spec:
+                              stages:
+                                - stage:
+                                    name: Build
+                                    identifier: build
+                                    template:
+                                      templateRef: python_build
+                                      versionLabel: "1.0.0"
+                                - stage:
+                                    name: Test
+                                    identifier: test
+                                    type: CI
+                                    spec:
+                                      execution:
+                                        steps:
+                                          - step:
+                                              template:
+                                                templateRef: pytest_coverage
+                                                versionLabel: "1.0.0"
+                                - stage:
+                                    name: Build Docker
+                                    identifier: build_docker
+                                    type: CI
+                                    spec:
+                                      execution:
+                                        steps:
+                                          - step:
+                                              type: BuildAndPushDockerRegistry
+                                              name: Build and Push
+                                              spec:
+                                                connectorRef: <+input>
+                                                repo: <+input>
+                                                tags:
+                                                  - <+codebase.commitSha>
+                                                  - latest
+                          EOF
+
+                          echo "Pipeline templates generated"
+
+    # ==========================================================================
+    # Stage 4: Validate Archetype
+    # ==========================================================================
+    - stage:
+        name: Validate Archetype
+        identifier: validate_archetype
+        type: CI
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Validate Structure
+                  identifier: validate_structure
+                  spec:
+                    shell: Bash
+                    command: |
+                      ARCHETYPE_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>"
+
+                      echo "Validating archetype structure..."
+
+                      # Check required files
+                      ERRORS=0
+
+                      if [ ! -d "$ARCHETYPE_DIR/template" ]; then
+                        echo "ERROR: Missing template/ directory"
+                        ERRORS=$((ERRORS + 1))
+                      fi
+
+                      if [ ! -f "$ARCHETYPE_DIR/copier.yml" ]; then
+                        echo "ERROR: Missing copier.yml"
+                        ERRORS=$((ERRORS + 1))
+                      fi
+
+                      if [ ! -d "$ARCHETYPE_DIR/structurizr/fragments" ]; then
+                        echo "WARNING: Missing structurizr fragments"
+                      fi
+
+                      if [ $ERRORS -gt 0 ]; then
+                        echo "Validation failed with $ERRORS errors"
+                        exit 1
+                      fi
+
+                      echo "✓ Archetype structure validated"
+
+              - step:
+                  type: Run
+                  name: Test Scaffold
+                  identifier: test_scaffold
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Testing scaffold generation..."
+
+                      ARCHETYPE_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>"
+                      TEST_OUTPUT="/tmp/test-scaffold-$$"
+
+                      # Test with Copier
+                      if command -v copier &> /dev/null; then
+                        copier copy "$ARCHETYPE_DIR" "$TEST_OUTPUT" \
+                          --data project_name=test-project \
+                          --data project_description="Test project" \
+                          --data database_type=mongodb \
+                          --data include_auth=true \
+                          --defaults
+
+                        if [ -d "$TEST_OUTPUT" ]; then
+                          echo "✓ Scaffold test passed"
+                          ls -la "$TEST_OUTPUT"
+                          rm -rf "$TEST_OUTPUT"
+                        else
+                          echo "ERROR: Scaffold test failed"
+                          exit 1
+                        fi
+                      else
+                        echo "Copier not available, skipping scaffold test"
+                      fi
+
+    # ==========================================================================
+    # Stage 5: Validate Structurizr
+    # ==========================================================================
+    - stage:
+        name: Validate Structurizr
+        identifier: validate_structurizr
+        type: CI
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Install Structurizr CLI
+                  identifier: install_structurizr
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Installing Structurizr CLI..."
+                      curl -L https://github.com/structurizr/cli/releases/download/v2024.01.02/structurizr-cli.zip -o structurizr-cli.zip
+                      unzip -o structurizr-cli.zip -d /tmp/structurizr-cli
+                      chmod +x /tmp/structurizr-cli/structurizr.sh
+                      echo "Structurizr CLI installed"
+
+              - step:
+                  type: Run
+                  name: Validate Workspace
+                  identifier: validate_workspace
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Validating Structurizr workspace..."
+                      /tmp/structurizr-cli/structurizr.sh validate \
+                        -workspace <+pipeline.variables.STRUCTURIZR_WORKSPACE>
+                      echo "✓ Workspace validation passed"
+
+    # ==========================================================================
+    # Stage 6: Export Diagrams
+    # ==========================================================================
+    - stage:
+        name: Export Diagrams
+        identifier: export_diagrams
+        type: CI
+        spec:
+          execution:
+            steps:
+              - parallel:
+                  - step:
+                      type: Run
+                      name: Export Mermaid
+                      identifier: export_mermaid
+                      spec:
+                        shell: Bash
+                        command: |
+                          mkdir -p docs/diagrams/mermaid
+                          /tmp/structurizr-cli/structurizr.sh export \
+                            -workspace <+pipeline.variables.STRUCTURIZR_WORKSPACE> \
+                            -format mermaid \
+                            -output docs/diagrams/mermaid
+                          echo "✓ Mermaid diagrams exported"
+
+                  - step:
+                      type: Run
+                      name: Export PlantUML
+                      identifier: export_plantuml
+                      spec:
+                        shell: Bash
+                        command: |
+                          mkdir -p docs/diagrams/plantuml
+                          /tmp/structurizr-cli/structurizr.sh export \
+                            -workspace <+pipeline.variables.STRUCTURIZR_WORKSPACE> \
+                            -format plantuml \
+                            -output docs/diagrams/plantuml
+                          echo "✓ PlantUML diagrams exported"
+
+                  - step:
+                      type: Run
+                      name: Export JSON
+                      identifier: export_json
+                      spec:
+                        shell: Bash
+                        command: |
+                          mkdir -p docs/diagrams/json
+                          /tmp/structurizr-cli/structurizr.sh export \
+                            -workspace <+pipeline.variables.STRUCTURIZR_WORKSPACE> \
+                            -format json \
+                            -output docs/diagrams/json
+                          echo "✓ JSON export complete"
+
+    # ==========================================================================
+    # Stage 7: Push to GitHub Pages
+    # ==========================================================================
+    - stage:
+        name: Push GitHub Pages
+        identifier: push_github_pages
+        type: CI
+        when:
+          condition: <+codebase.branch> == "main" && <+pipeline.variables.GITHUB_PAGES_REPO> != ""
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Generate HTML Site
+                  identifier: generate_html
+                  spec:
+                    shell: Bash
+                    command: |
+                      mkdir -p docs/site
+
+                      cat > docs/site/index.html << 'HTMLEOF'
+                      <!DOCTYPE html>
+                      <html lang="en">
+                      <head>
+                          <meta charset="UTF-8">
+                          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                          <title>Lobbi Platform Architecture</title>
+                          <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+                          <style>
+                              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+                              .container { max-width: 1400px; margin: 0 auto; }
+                              h1 { color: #1a1a2e; border-bottom: 3px solid #4361ee; padding-bottom: 10px; }
+                              .diagram-card { background: white; border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+                              .updated { background: #e8f5e9; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
+                          </style>
+                      </head>
+                      <body>
+                          <div class="container">
+                              <h1>Lobbi Platform Architecture</h1>
+                              <div class="updated">
+                                  Last updated: <strong id="updated-time"></strong> |
+                                  Build: <strong><+pipeline.sequenceId></strong>
+                              </div>
+                              <div id="diagrams"></div>
+                          </div>
+                          <script>
+                              mermaid.initialize({ startOnLoad: true, theme: 'default' });
+                              document.getElementById('updated-time').textContent = new Date().toISOString();
+                          </script>
+                      </body>
+                      </html>
+                      HTMLEOF
+
+                      echo "HTML site generated"
+
+              - step:
+                  type: Run
+                  name: Push to GitHub Pages
+                  identifier: push_pages
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Pushing to GitHub Pages..."
+
+                      git config user.name "Harness CI"
+                      git config user.email "ci@harness.io"
+
+                      # Create orphan branch
+                      git checkout --orphan gh-pages-temp
+
+                      # Keep only docs
+                      git rm -rf --cached .
+                      git add docs/
+
+                      # Move docs to root
+                      mv docs/diagrams/* . 2>/dev/null || true
+                      mv docs/site/* . 2>/dev/null || true
+
+                      # Commit and push
+                      git add .
+                      git commit -m "Update architecture diagrams - Build <+pipeline.sequenceId>"
+                      git push origin gh-pages-temp:gh-pages --force
+
+                      echo "✓ GitHub Pages updated"
+                    envVariables:
+                      GITHUB_TOKEN: <+secrets.getValue("github_token")>
+
+    # ==========================================================================
+    # Stage 8: Publish Harness Templates
+    # ==========================================================================
+    - stage:
+        name: Publish Harness Templates
+        identifier: publish_harness_templates
+        type: CI
+        when:
+          condition: <+pipeline.variables.PUBLISH_HARNESS_TEMPLATES> == "true" && <+codebase.branch> == "main"
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Publish Templates
+                  identifier: publish_templates
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Publishing Harness templates..."
+
+                      TEMPLATES_DIR="archetypes/<+pipeline.variables.ARCHETYPE_NAME>/templates/harness"
+
+                      # List all templates
+                      echo "Step templates:"
+                      ls -la "$TEMPLATES_DIR/steps/" 2>/dev/null || echo "  (none)"
+
+                      echo "Stage templates:"
+                      ls -la "$TEMPLATES_DIR/stages/" 2>/dev/null || echo "  (none)"
+
+                      echo "Pipeline templates:"
+                      ls -la "$TEMPLATES_DIR/pipelines/" 2>/dev/null || echo "  (none)"
+
+                      # Note: Actual publishing would use Harness API
+                      # This is a placeholder for the publishing logic
+                      echo "Templates ready for manual import to Harness"
+                    envVariables:
+                      HARNESS_API_KEY: <+secrets.getValue("harness_api_key")>
+
+    # ==========================================================================
+    # Stage 9: Notify
+    # ==========================================================================
+    - stage:
+        name: Notify
+        identifier: notify
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: Post to Teams
+                  identifier: post_teams
+                  spec:
+                    shell: Bash
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          curl -X POST "<+secrets.getValue("teams_dev_webhook_url")>" \
+                            -H "Content-Type: application/json" \
+                            -d '{
+                              "@type": "MessageCard",
+                              "themeColor": "6B5B95",
+                              "summary": "Archetype Lifecycle Complete",
+                              "sections": [{
+                                "activityTitle": "Archetype Lifecycle Complete",
+                                "facts": [
+                                  {"name": "Archetype", "value": "<+pipeline.variables.ARCHETYPE_NAME>"},
+                                  {"name": "Build", "value": "<+pipeline.sequenceId>"},
+                                  {"name": "Branch", "value": "<+codebase.branch>"}
+                                ],
+                                "markdown": true
+                              }],
+                              "potentialAction": [{
+                                "@type": "OpenUri",
+                                "name": "View Architecture",
+                                "targets": [{"os": "default", "uri": "https://lobbi.github.io/architecture-diagrams/"}]
+                              }]
+                            }'
+
+  # Trigger on archetype changes
+  triggers:
+    - trigger:
+        name: On Archetype Changes
+        identifier: on_archetype_changes
+        enabled: true
+        type: Webhook
+        spec:
+          type: Github
+          spec:
+            type: Push
+            spec:
+              connectorRef: account.GitHub_OAuth
+              autoAbortPreviousExecutions: true
+              payloadConditions:
+                - key: changedFiles
+                  operator: Contains
+                  value: archetypes/
+              repoName: <+input>
+              actions: []
