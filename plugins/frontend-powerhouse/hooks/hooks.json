@@ -1,39 +1,34 @@
 {
-  "hooks": [
-    {
-      "name": "component-structure-validator",
-      "description": "Validates that React components follow Chakra UI patterns and TypeScript best practices",
-      "event": "PostToolUse:Write",
-      "filter": {
-        "tool": "Write",
-        "filePattern": "**/components/**/*.tsx"
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "A React component file was just written. Please validate it follows Chakra UI patterns, TypeScript best practices, and proper component structure. Check for: Chakra UI components and theme tokens, proper TypeScript interfaces for props, functional component pattern with clear naming. Read the file and report any issues without making changes."
+          }
+        ]
       },
-      "action": {
-        "type": "prompt",
-        "prompt": "A React component file was just written at ${tool.file_path}.\n\nPlease validate the component follows these patterns:\n\n1. **Chakra UI Patterns**:\n   - Uses Chakra UI components (Box, Flex, Button, etc.)\n   - Follows Chakra styling conventions (not inline styles or CSS classes)\n   - Uses theme tokens for colors, spacing, typography\n\n2. **TypeScript Best Practices**:\n   - Has proper TypeScript interface for props\n   - Uses type-safe prop destructuring\n   - Exports component and its props interface\n\n3. **Component Structure**:\n   - Follows functional component pattern\n   - Has clear, descriptive component name\n   - Props interface matches component name (e.g., ButtonProps for Button)\n\nRead the file and analyze it. If any issues are found, provide a clear warning to the user with specific recommendations for improvement.\n\nIf the component looks good, briefly confirm it follows the patterns.\n\nDo not make changes unless explicitly asked - just validate and report."
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "A React component file was just edited. Check for accessibility issues: img alt text, button/link accessible labels, form element labels, semantic HTML usage, and proper ARIA attributes. Read the edited file and warn about any accessibility problems without making changes."
+          }
+        ]
       }
-    },
-    {
-      "name": "accessibility-gate",
-      "description": "Checks for proper accessibility attributes in JSX/TSX files",
-      "event": "PostToolUse:Edit",
-      "filter": {
-        "tool": "Edit",
-        "filePattern": "**/*.{jsx,tsx}"
-      },
-      "action": {
-        "type": "prompt",
-        "prompt": "A React component file was just edited at ${tool.file_path}.\n\nPlease check for accessibility issues:\n\n1. **Images**:\n   - All <img> and <Image> tags have alt text\n   - Alt text is descriptive (not just \"image\")\n\n2. **Interactive Elements**:\n   - Buttons have accessible labels or aria-label\n   - Links have descriptive text or aria-label\n   - Custom interactive elements have proper ARIA roles\n\n3. **Form Elements**:\n   - Inputs have associated labels or aria-label\n   - Form controls have proper aria-describedby for error messages\n\n4. **Semantic HTML**:\n   - Uses semantic elements (nav, main, aside, etc.)\n   - Headings follow proper hierarchy (h1 -> h2 -> h3)\n\n5. **ARIA Attributes**:\n   - aria-hidden used appropriately\n   - aria-live regions for dynamic content\n   - Proper aria-expanded, aria-controls for interactive widgets\n\nRead the edited file section and check for these issues. If any accessibility problems are found, provide a WARNING with specific fixes.\n\nIf the component has good accessibility, briefly confirm it passes the check.\n\nDo not make changes unless explicitly asked - just validate and warn."
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "The session is ending. Check if any component files (.tsx, .jsx) were created or modified. If so, remind the user to run tests and check coverage. Keep it brief."
+          }
+        ]
       }
-    },
-    {
-      "name": "test-coverage-reminder",
-      "description": "Reminds to run/write tests when component files were modified during the session",
-      "event": "Stop",
-      "action": {
-        "type": "prompt",
-        "prompt": "The session is ending. Please check if any component files (.tsx, .jsx) were created or modified during this session.\n\nUse git status or search through the conversation history to identify modified files.\n\nIf component files were changed:\n\n1. Check if corresponding test files exist (e.g., Button.tsx -> Button.test.tsx or Button.spec.tsx)\n\n2. Remind the user:\n   - To run existing tests: `npm test` or `pnpm test`\n   - To write tests if missing, covering:\n     - Component renders without errors\n     - Props are handled correctly\n     - User interactions work as expected\n     - Accessibility features are present\n\n3. Suggest running test coverage: `npm test -- --coverage`\n\nIf no component files were changed, or if tests were already written/run during the session, you can skip this reminder.\n\nKeep the reminder brief and actionable."
-      }
-    }
-  ]
+    ]
+  }
 }

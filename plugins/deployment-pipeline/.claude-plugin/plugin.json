@@ -1,9 +1,10 @@
 {
-  "$schema": "https://claude.ai/schemas/plugin.json",
   "name": "deployment-pipeline",
   "version": "1.0.0",
   "description": "Harness CD integration pipeline with state-machine workflow orchestration",
-  "author": "Markus Ahling",
+  "author": {
+    "name": "Markus Ahling"
+  },
   "license": "MIT",
   "repository": "https://github.com/markus41/deployment-pipeline",
   "keywords": [
@@ -15,106 +16,5 @@
     "ci-cd",
     "deployment",
     "pipeline"
-  ],
-  "categories": ["devops", "automation", "workflow"],
-  "engines": {
-    "claude-code": ">=1.0.0"
-  },
-  "features": {
-    "persistence": true,
-    "retry": true,
-    "notifications": true,
-    "metrics": false
-  },
-  "workflow": {
-    "type": "state-machine",
-    "states": [
-      "pending",
-      "validating",
-      "building",
-      "testing",
-      "deploying-dev",
-      "deploying-staging",
-      "awaiting-approval",
-      "deploying-prod",
-      "completed",
-      "failed",
-      "rolled-back"
-    ],
-    "initialState": "pending",
-    "finalStates": ["completed", "failed", "rolled-back"]
-  },
-  "commands": [
-    {
-      "name": "deploy:start",
-      "file": "commands/start.md",
-      "description": "Start a new deployment pipeline"
-    },
-    {
-      "name": "deploy:status",
-      "file": "commands/status.md",
-      "description": "Check deployment pipeline status"
-    },
-    {
-      "name": "deploy:approve",
-      "file": "commands/approve.md",
-      "description": "Approve deployment to production"
-    },
-    {
-      "name": "deploy:rollback",
-      "file": "commands/rollback.md",
-      "description": "Rollback a deployment"
-    },
-    {
-      "name": "deploy:history",
-      "file": "commands/history.md",
-      "description": "View deployment history"
-    }
-  ],
-  "agents": [
-    {
-      "name": "deployment-orchestrator",
-      "file": "agents/orchestrator.md",
-      "model": "sonnet",
-      "description": "Orchestrates deployment workflows through state transitions"
-    },
-    {
-      "name": "deployment-validator",
-      "file": "agents/validator.md",
-      "model": "haiku",
-      "description": "Validates deployment configurations and prerequisites"
-    },
-    {
-      "name": "rollback-specialist",
-      "file": "agents/rollback.md",
-      "model": "sonnet",
-      "description": "Handles deployment rollback procedures"
-    }
-  ],
-  "notifications": {
-    "channels": ["slack", "teams", "email"],
-    "events": [
-      "pipeline.started",
-      "pipeline.stage.completed",
-      "pipeline.approval.required",
-      "pipeline.completed",
-      "pipeline.failed",
-      "pipeline.rollback"
-    ]
-  },
-  "persistence": {
-    "storage": "file",
-    "location": ".claude/workflow-state",
-    "format": "json"
-  },
-  "retry": {
-    "maxAttempts": 3,
-    "backoffMs": 1000,
-    "backoffMultiplier": 2,
-    "retryableStates": ["validating", "building", "testing"]
-  },
-  "dependencies": {},
-  "peerDependencies": {
-    "jira-orchestrator": ">=7.0.0"
-  }
+  ]
 }

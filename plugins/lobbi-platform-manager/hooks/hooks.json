@@ -1,28 +1,30 @@
 {
-  "hooks": [
-    {
-      "name": "pre-commit-security",
-      "event": "PreToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "\\.(env|json|js|ts)$",
-      "description": "Validate no secrets are committed and security best practices are followed",
-      "script": "scripts/check-security.sh"
-    },
-    {
-      "name": "service-health-check",
-      "event": "PostToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "(docker-compose|Dockerfile|package\\.json)$",
-      "description": "Verify service health after deployment-related changes",
-      "script": "scripts/check-health.sh"
-    },
-    {
-      "name": "keycloak-validation",
-      "event": "PostToolUse",
-      "toolPattern": "(Write|Edit)",
-      "filePattern": "(keycloak|realm|theme)",
-      "description": "Validate Keycloak configuration changes",
-      "script": "scripts/check-keycloak.sh"
-    }
-  ]
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Validate no secrets are committed and security best practices are followed for .env, .json, .js, and .ts files."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Verify service health after deployment-related changes to docker-compose, Dockerfile, or package.json files."
+          },
+          {
+            "type": "prompt",
+            "prompt": "Validate Keycloak configuration changes for files matching keycloak, realm, or theme patterns."
+          }
+        ]
+      }
+    ]
+  }
 }

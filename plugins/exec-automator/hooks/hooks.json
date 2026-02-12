@@ -2,50 +2,48 @@
   "version": "1.0.0",
   "plugin": "exec-automator",
   "description": "Hook definitions for executive director automation workflow tracking and state management",
-  "hooks": [
-    {
-      "name": "workflow-init",
-      "event": "SessionStart",
-      "script": "./scripts/workflow-init.sh",
-      "description": "Initialize workflow state and prepare session for executive analysis",
-      "priority": "high",
-      "enabled": true
-    },
-    {
-      "name": "document-detect",
-      "event": "UserPromptSubmit",
-      "script": "./scripts/document-detect.sh",
-      "description": "Detect organizational documents (RFPs, bylaws, job descriptions) and suggest analysis workflows",
-      "priority": "medium",
-      "enabled": true,
-      "patterns": [
-        "rfp",
-        "job description",
-        "bylaws",
-        "executive director",
-        "ed responsibilities",
-        "association",
-        "nonprofit",
-        "trade association"
-      ]
-    },
-    {
-      "name": "execution-tracker",
-      "event": "PostToolUse",
-      "script": "./scripts/execution-tracker.sh",
-      "description": "Track workflow execution progress and update state for automation orchestration",
-      "priority": "medium",
-      "enabled": true
-    },
-    {
-      "name": "workflow-cleanup",
-      "event": "SessionEnd",
-      "script": "./scripts/workflow-cleanup.sh",
-      "description": "Checkpoint workflow state, archive analysis results, and clean up session data",
-      "priority": "high",
-      "enabled": true
-    }
-  ],
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Initialize workflow state and prepare session for executive analysis."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Detect organizational documents (RFPs, bylaws, job descriptions) and suggest analysis workflows. Look for keywords: rfp, job description, bylaws, executive director, ed responsibilities, association, nonprofit, trade association."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Track workflow execution progress and update state for automation orchestration."
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Checkpoint workflow state, archive analysis results, and clean up session data."
+          }
+        ]
+      }
+    ]
+  },
   "settings": {
     "state_dir": "${CLAUDE_PLUGIN_ROOT}/state",
     "checkpoint_dir": "${OBSIDIAN_VAULT_PATH}/Projects/exec-automator/checkpoints",

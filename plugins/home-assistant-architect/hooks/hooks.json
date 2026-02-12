@@ -3,83 +3,69 @@
   "name": "home-assistant-hooks",
   "version": "1.0.0",
   "description": "Event-driven hooks for Home Assistant automation and monitoring",
-  "hooks": [
-    {
-      "name": "ha-state-change",
-      "event": "UserPromptSubmit",
-      "description": "Monitor for HA-related state change requests",
-      "script": "scripts/ha-state-monitor.sh",
-      "env": {
-        "HA_URL": "${HA_URL}",
-        "HA_TOKEN": "${HA_TOKEN}"
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Monitor for Home Assistant-related state change requests. If the user message contains keywords like 'turn on', 'turn off', 'set', 'adjust', 'home assistant', 'light', 'switch', or 'thermostat', detect and handle the HA state change request."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Validate YAML syntax before writing automation files matching *.yaml or automations/*.yaml patterns."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If the Bash command involved Ollama (contained 'ollama'), verify Ollama model availability and status."
+          }
+        ]
       },
-      "timeout": 10000,
-      "conditions": {
-        "prompt_contains": ["turn on", "turn off", "set", "adjust", "home assistant", "light", "switch", "thermostat"]
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Scan for security issues in Home Assistant configuration changes, especially for configuration.yaml, secrets.yaml, and other *.yaml files."
+          }
+        ]
       }
-    },
-    {
-      "name": "ha-health-check",
-      "event": "TaskComplete",
-      "description": "Run health check after HA-related tasks",
-      "script": "scripts/ha-health-check.sh",
-      "env": {
-        "HA_URL": "${HA_URL}",
-        "HA_TOKEN": "${HA_TOKEN}"
-      },
-      "timeout": 30000,
-      "conditions": {
-        "task_type": ["ha-deploy", "ha-automation", "ha-config"]
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Run health check after HA-related tasks of type ha-deploy, ha-automation, or ha-config."
+          }
+        ]
       }
-    },
-    {
-      "name": "ollama-model-ready",
-      "event": "PostToolUse",
-      "description": "Verify Ollama model availability after LLM operations",
-      "script": "scripts/ollama-status.sh",
-      "env": {
-        "OLLAMA_URL": "${OLLAMA_URL:-http://localhost:11434}"
-      },
-      "timeout": 5000,
-      "conditions": {
-        "tool_name": ["Bash"],
-        "command_contains": ["ollama"]
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Remind to backup after significant Home Assistant changes, especially changes to homeassistant or configuration.yaml."
+          }
+        ]
       }
-    },
-    {
-      "name": "ha-automation-validate",
-      "event": "PreToolUse",
-      "description": "Validate YAML before writing automation files",
-      "script": "scripts/validate-yaml.sh",
-      "timeout": 5000,
-      "conditions": {
-        "tool_name": ["Write"],
-        "file_pattern": ["*.yaml", "automations/*.yaml"]
-      }
-    },
-    {
-      "name": "ha-security-scan",
-      "event": "PostToolUse",
-      "description": "Scan for security issues in configuration changes",
-      "script": "scripts/security-scan.sh",
-      "timeout": 15000,
-      "conditions": {
-        "tool_name": ["Write"],
-        "file_pattern": ["configuration.yaml", "secrets.yaml", "*.yaml"]
-      }
-    },
-    {
-      "name": "ha-backup-reminder",
-      "event": "SessionEnd",
-      "description": "Remind to backup after significant HA changes",
-      "script": "scripts/backup-reminder.sh",
-      "timeout": 5000,
-      "conditions": {
-        "changes_made": true,
-        "patterns": ["homeassistant", "configuration.yaml"]
-      }
-    }
-  ],
+    ]
+  },
   "scripts_dir": "scripts",
   "log_level": "info"
 }

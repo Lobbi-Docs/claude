@@ -1,21 +1,13 @@
 {
-  "$schema": "../../core/schemas/plugin.schema.json",
   "name": "langgraph-architect",
   "version": "1.0.0",
   "description": "Expert LangGraph/LangChain agent builder with MCP integration, workflow orchestration, and CLI accessibility. Creates production-ready AI agents that are reachable via command line and Claude Code.",
-  "author": "Brookside BI",
+  "author": {
+    "name": "Brookside BI"
+  },
   "license": "MIT",
   "homepage": "https://github.com/Lobbi-Docs/claude",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Lobbi-Docs/claude.git"
-  },
-  "categories": [
-    "agents",
-    "orchestration",
-    "code-generation",
-    "ai-development"
-  ],
+  "repository": "https://github.com/Lobbi-Docs/claude.git",
   "keywords": [
     "langgraph",
     "langchain",
@@ -33,171 +25,5 @@
     "subgraph",
     "supervisor-pattern",
     "cli-agents"
-  ],
-  "provides": {
-    "commands": 8,
-    "agents": 12,
-    "skills": 6,
-    "hooks": 2
-  },
-  "commands": {
-    "lg:create": "commands/create.md",
-    "lg:agent": "commands/agent.md",
-    "lg:node": "commands/node.md",
-    "lg:edge": "commands/edge.md",
-    "lg:memory": "commands/memory.md",
-    "lg:mcp": "commands/mcp.md",
-    "lg:deploy": "commands/deploy.md",
-    "lg:test": "commands/test.md"
-  },
-  "agents": {
-    "graph-architect": {
-      "path": "agents/graph-architect.md",
-      "model": "sonnet",
-      "description": "Master architect for designing StateGraph structures, workflows, and agent topologies",
-      "triggers": ["langgraph", "graph", "workflow", "state machine", "agent design"]
-    },
-    "node-specialist": {
-      "path": "agents/node-specialist.md",
-      "model": "sonnet",
-      "description": "Expert in creating graph nodes with proper state handling and tool integration",
-      "triggers": ["node", "action", "tool node", "function node"]
-    },
-    "edge-designer": {
-      "path": "agents/edge-designer.md",
-      "model": "sonnet",
-      "description": "Specialist in conditional edges, routing logic, and graph flow control",
-      "triggers": ["edge", "routing", "conditional", "branch", "flow control"]
-    },
-    "state-engineer": {
-      "path": "agents/state-engineer.md",
-      "model": "sonnet",
-      "description": "Expert in TypedDict state schemas, reducers, and state management patterns",
-      "triggers": ["state", "schema", "reducer", "typed dict", "state management"]
-    },
-    "memory-architect": {
-      "path": "agents/memory-architect.md",
-      "model": "sonnet",
-      "description": "Specialist in checkpointing, short-term/long-term memory, and persistence strategies",
-      "triggers": ["memory", "checkpoint", "persistence", "vector store", "semantic memory"]
-    },
-    "tool-integrator": {
-      "path": "agents/tool-integrator.md",
-      "model": "sonnet",
-      "description": "Expert in tool creation, ToolNode setup, and external service integration",
-      "triggers": ["tool", "function", "api", "integration", "tool executor"]
-    },
-    "subgraph-composer": {
-      "path": "agents/subgraph-composer.md",
-      "model": "sonnet",
-      "description": "Specialist in subgraph composition, hierarchical agents, and modular design",
-      "triggers": ["subgraph", "hierarchy", "nested", "modular", "composition"]
-    },
-    "orchestration-master": {
-      "path": "agents/orchestration-master.md",
-      "model": "opus",
-      "description": "Expert in multi-agent patterns: supervisor, swarm, hierarchical teams, parallel execution",
-      "triggers": ["multi-agent", "supervisor", "swarm", "team", "orchestration", "parallel"]
-    },
-    "mcp-bridge-specialist": {
-      "path": "agents/mcp-bridge-specialist.md",
-      "model": "sonnet",
-      "description": "Expert in MCP integration - consuming MCP servers and exposing agents as MCP servers",
-      "triggers": ["mcp", "model context protocol", "mcp server", "mcp client", "bridge"]
-    },
-    "context-engineer": {
-      "path": "agents/context-engineer.md",
-      "model": "sonnet",
-      "description": "Specialist in prompt engineering, context window optimization, and message pruning",
-      "triggers": ["context", "prompt", "token", "pruning", "optimization", "window"]
-    },
-    "cli-wrapper-specialist": {
-      "path": "agents/cli-wrapper-specialist.md",
-      "model": "sonnet",
-      "description": "Expert in wrapping LangGraph agents for CLI accessibility and Claude Code integration",
-      "triggers": ["cli", "command line", "wrapper", "executable", "claude code"]
-    },
-    "deployment-specialist": {
-      "path": "agents/deployment-specialist.md",
-      "model": "sonnet",
-      "description": "Expert in LangGraph Platform, Cloud deployment, and production configurations",
-      "triggers": ["deploy", "production", "platform", "cloud", "langgraph cloud"]
-    }
-  },
-  "skills": {
-    "graph-patterns": "skills/graph-patterns.md",
-    "state-design": "skills/state-design.md",
-    "memory-systems": "skills/memory-systems.md",
-    "orchestration-patterns": "skills/orchestration-patterns.md",
-    "mcp-integration": "skills/mcp-integration.md",
-    "context-engineering": "skills/context-engineering.md"
-  },
-  "hooks": {
-    "post-generate": {
-      "path": "hooks/post-generate.sh",
-      "trigger": "after_agent_creation",
-      "description": "Validates generated agent and creates CLI wrapper"
-    },
-    "pre-deploy": {
-      "path": "hooks/pre-deploy.sh",
-      "trigger": "before_deployment",
-      "description": "Runs tests and validation before deployment"
-    }
-  },
-  "activation": {
-    "auto": true,
-    "priority": 850,
-    "conditions": {
-      "filePatterns": [
-        "**/*langgraph*.py",
-        "**/*langchain*.py",
-        "**/graph*.py",
-        "**/agent*.py",
-        "**/workflow*.py"
-      ],
-      "keywords": [
-        "langgraph",
-        "langchain",
-        "stategraph",
-        "agent",
-        "workflow",
-        "multi-agent",
-        "mcp"
-      ]
-    }
-  },
-  "orchestration": {
-    "enabled": true,
-    "mandatory": false,
-    "protocol": {
-      "version": "2.0.0",
-      "minSubAgents": 1,
-      "maxSubAgents": 8,
-      "defaultSubAgents": 3
-    }
-  },
-  "dependencies": {
-    "python": ">=3.10",
-    "packages": [
-      "langgraph>=0.2.0",
-      "langchain>=0.3.0",
-      "langchain-core>=0.3.0",
-      "langchain-mcp-adapters>=0.1.0"
-    ]
-  },
-  "mcp": {
-    "servers": {
-      "langgraph-agents": {
-        "description": "MCP server exposing created LangGraph agents as tools",
-        "transport": "stdio",
-        "command": "python",
-        "args": ["-m", "langgraph_mcp_server"]
-      }
-    },
-    "clientCapabilities": [
-      "tool-calling",
-      "resource-access",
-      "prompt-templates"
-    ]
-  }
+  ]
 }

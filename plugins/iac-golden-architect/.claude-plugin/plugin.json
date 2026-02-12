@@ -21,34 +21,5 @@
     "gcp",
     "soc2",
     "compliance"
-  ],
-  "categories": ["devops", "cloud", "security"],
-  "provides": {
-    "commands": 8,
-    "agents": 4,
-    "skills": 5,
-    "hooks": 2
-  },
-  "discovery": {
-    "commands": {
-      "enabled": true,
-      "directory": "../commands",
-      "pattern": "*.md"
-    },
-    "agents": {
-      "enabled": true,
-      "directory": "../agents",
-      "pattern": "*.md"
-    },
-    "skills": {
-      "enabled": true,
-      "directory": "../skills",
-      "pattern": "**/SKILL.md"
-    },
-    "hooks": {
-      "enabled": true,
-      "directory": "../hooks",
-      "pattern": "hooks.json"
-    }
-  }
+  ]
 }
