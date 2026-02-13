@@ -30,7 +30,7 @@ Manage Jira Orchestrator notification system: preferences, webhooks, channels, s
 ```
 
 **Key Options:**
-- `--channel`: slack, email, webhook
+- `--channel`: slack, teams, email, webhook
 - `--quiet-hours`: HH:MM-HH:MM format
 - `--digest-interval`: hourly, daily, weekly
 - `--rate-limit`: Max per hour
@@ -76,6 +76,26 @@ Manage Jira Orchestrator notification system: preferences, webhooks, channels, s
 ```bash
 /jira:notify webhook remove webhook-abc123 --confirm=true
 ```
+
+### Teams PR Updates Webhook
+
+Use a Teams incoming webhook to post PR updates that include links to documentation and the Jira issue.
+
+```bash
+/jira:notify webhook add "${TEAMS_INCOMING_WEBHOOK_URL}" \
+  --name="Teams PR Updates" \
+  --events=pr.created,pr.updated,documentation.updated
+```
+
+The Teams webhook renders the `teams-pr-update` Adaptive Card template for a structured PR update.
+
+**Expected payload fields:**
+- `summary` (short summary line for the card header)
+- `pr` (object with `title`, `number`, `url`, `status`, `author`, `source_branch`, `target_branch`)
+- `repository` (object with `name`)
+- `jira` (object with `key`, `url`)
+- `documentation_links` (array of `{title, url}` objects)
+- `documentation_primary_url` (primary documentation link for the card action)
 
 ## Channels
 
@@ -132,6 +152,7 @@ Lists available channels (Slack, Email, Teams, Webhooks, SMS) with status and co
 | `SLACK_SIGNING_SECRET` | Slack signing secret |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Email config |
 | `WEBHOOK_SECRET_*` | Webhook signing secrets |
+| `TEAMS_INCOMING_WEBHOOK_URL` | Teams incoming webhook for PR updates |
 
 ## Config Files
 

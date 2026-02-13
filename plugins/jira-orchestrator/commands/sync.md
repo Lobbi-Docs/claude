@@ -27,11 +27,13 @@ Synchronize local development progress with Jira: pull changes, push updates, re
 | 1. Validate | Verify API credentials, parse ISSUE-KEY, build sync list |
 | 2. Local State | Find branch, gather metrics (commits, changes, PR status, sync timestamp) |
 | 3. Pull from Jira | Fetch issue details, detect remote changes (description, status, priority, comments) |
-| 4. Detect Conflicts | Status mismatches, change conflicts, branch conflicts |
-| 5. Push to Jira | Post progress comment, update status/PR info, set custom fields |
-| 6. Bi-Directional Merge | Merge remote+local state, update `.jira-sync-state.json` |
-| 7. Report Conflicts | List conflicts with resolution options |
-| 8. Complete | Summary output, update sync timestamp, error handling |
+| 4. Generate Delta | Compare against last checkpoint and build minimal change set |
+| 5. Detect Conflicts | Status mismatches, change conflicts, branch conflicts |
+| 6. Resolve Conflicts | Apply deterministic resolution policy and record outcomes |
+| 7. Push to Jira | Post progress comment, update status/PR info, set custom fields |
+| 8. Bi-Directional Merge | Merge remote+local state, update `.jira-sync-state.json` |
+| 9. Report Conflicts | List conflicts with resolution options |
+| 10. Complete | Summary output, update sync timestamp, error handling |
 
 ## Issue Detection Priority
 
@@ -47,6 +49,26 @@ Synchronize local development progress with Jira: pull changes, push updates, re
 **Change Conflict:** Remote updated + local changes pending (Description changed remotely, have local commits)
 
 **Branch Conflict:** Local behind main, PR has conflicts, remote branch deleted
+
+## Delta Sync & Checkpointing
+
+To maximize context efficiency and avoid redundant updates, `/jira:sync` performs a delta-only sync using checkpoints.
+
+- **Checkpoint Source:** `.claude/.jira-sync-state.json` stores last-known Jira fields and local state hashes.
+- **Delta Generation:** Compare current Jira fields and local changes against the checkpoint to produce a minimal change set.
+- **Write Minimization:** Only push changes when deltas exist (no-op otherwise).
+- **Conflict Safety:** Any delta touching a conflicting field is withheld until resolved.
+
+### Deterministic Conflict Resolution
+
+Use fixed precedence to remove ambiguity:
+
+1. **Acceptance Criteria & Priority:** Jira-authoritative
+2. **Local Phase Progress & Implementation Notes:** Local-authoritative
+3. **Status Transitions:** If local commits exist and Jira is "To Do", promote to "In Progress"
+4. **Documentation Links:** Merge (preserve both)
+
+All resolutions are recorded to the conflict log with a reason tag.
 
 ## Progress Comment Template
 
