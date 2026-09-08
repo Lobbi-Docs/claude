@@ -2,11 +2,67 @@
 
 ## Status
 
-**Proposed**
+**Proposed — headline consolidation claim disproven, see Findings**
 
 ## Date
 
 2026-09-08
+
+## Findings that revise this ADR (2026-09-08)
+
+An adversarial pass over all 133 commands tested the "collapse to ~30 verbs"
+claim below. **It does not hold.** 24 verbs were proposed; every one of the 21
+that absorbed more than one command was refuted, with evidence.
+
+| Claimed here | Measured |
+|---|---|
+| ~134 commands → ~30 verbs | 24 proposed → **74** after applying the refutations, and 74 is the optimistic floor |
+| Consolidation is mostly mechanical | **4** merges survive on their own evidence; the rest are renames, splits or deletions |
+
+**The single defect behind 19 of the 21 refutations: read-only fused with
+mutating, or mutating fused with irreversible.** The mapping grouped commands
+by *topic*; merge-compatibility is decided by *contract*. `/do:advise` was the
+clearest case — `jira:advise` and `gh:advise` enforce read-only through
+`disallowedTools`, while `pm-risk --rescore` writes HITL gates back into
+`tasks.json` that later gate execution. One verb, and the user cannot tell from
+the name whether they get a read or a plan rewrite.
+
+The existing `risk:` frontmatter does not capture this — it is `low` on
+`gh:audit`, which writes branch-protection settings.
+
+### What to do instead
+
+1. **Add a `mutation-class` field to every command manifest and make it the
+   merge predicate.** Read-only, mutating, and irreversible never share a verb.
+2. **Ship only the four merges that hold**: `jira:advise`+`gh:advise`;
+   `jira:sla`+`linear:sla`; `gh:triage`+`linear:triage` (with an explicit
+   `--apply`); `deploy:history`+`jira:events` as a ledger verb.
+3. **Delete five commands in-plugin first** — `jira:sprint-plan` (a deprecated
+   alias by `jira:sprint`'s own admission), `jira:iterate` and `pr-fix`
+   (tombstones), `jira:enterprise` (a pure umbrella).
+4. **Build the adapter capability registry before, not during, phase 2.** Six
+   of the splits are unimplementable without it.
+5. **Re-classify the platform escape hatch.** 6 of 14 are misfiled, and the
+   error is systematic: it asked "is this platform-*branded*?" instead of "is
+   this capability platform-*specific*?".
+6. **Treat Harness as a second VCS adapter**, not escape-hatch residue. The
+   original proposal missed this; `plugins/delivery-orchestrator/lib/vcs/`
+   already implements it correctly.
+7. **A capability nothing covers: scheduling.** Four commands create durable
+   recurring commitments (cron, SMTP, a 15-minute SLA poller) and no proposed
+   verb registers, lists or cancels one.
+
+### Consequence for the merge already shipped
+
+`plugins/delivery-orchestrator` preserves all 133 commands with their
+namespaces intact rather than collapsing them. Given these findings that is
+**closer to correct than this ADR's proposal**, not a compromise on it. The
+kernel-and-adapters split below still stands for the *runtime* — which merged
+cleanly into 155 passing tests. It is the command-surface collapse that was
+wrong.
+
+As the critic put it: a consolidation that ends at 74 verbs and 128 commands
+has not consolidated anything — it has renamed the problem.
 
 ## Context
 
@@ -102,9 +158,13 @@ The ports are the contract. `linear-orchestrator` 2.0.0 already proves the
 pattern works: `lib/vcs/provider.mjs` is a `VcsPort` with GitHub and Harness
 adapters behind it, and every behaviour above the interface is written once.
 
-### Command surface: ~134 becomes ~30
+### Command surface: ~134 becomes ~30 — DISPROVEN, see Findings
 
 Consolidation is verb-first with a platform flag, not one command per platform.
+
+> **This table did not survive verification.** Every multi-command row below was
+> refuted; the measured floor is 74 verbs, not ~30. It is kept as the record of
+> what was proposed and tested. See Findings at the top.
 
 | Kernel command | Absorbs |
 |---|---|
