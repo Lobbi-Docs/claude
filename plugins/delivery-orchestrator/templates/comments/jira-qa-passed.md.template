@@ -1,0 +1,51 @@
+---
+template: jira-qa-passed
+version: 1.0.0
+description: Comment template for when QA passes
+---
+
+# ✅ QA Passed
+
+**Tester:** {{AUTHOR}}
+**Tested:** {{TIMESTAMP}}
+**Environment:** {{ENVIRONMENT}}
+
+## Test Results
+
+{{TEST_RESULTS}}
+
+## Test Coverage
+
+- **Test Cases Executed:** {{TESTS_EXECUTED}}
+- **Passed:** {{TESTS_PASSED}}
+- **Failed:** {{TESTS_FAILED}}
+- **Skipped:** {{TESTS_SKIPPED}}
+- **Success Rate:** {{SUCCESS_RATE}}%
+
+## Tested Scenarios
+
+{{TESTED_SCENARIOS}}
+
+## Performance Notes
+
+{{PERFORMANCE_NOTES}}
+
+## Browser/Device Testing
+
+{{BROWSER_DEVICE_TESTING}}
+
+## Accessibility Testing
+
+{{ACCESSIBILITY_NOTES}}
+
+## Approval
+
+{{APPROVAL_NOTES}}
+
+## Ready for Production
+
+{{PRODUCTION_READINESS}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

@@ -1,0 +1,706 @@
+# Technical Design Document: {{TITLE}}
+
+![Status](https://img.shields.io/badge/status-{{STATUS}}-{{STATUS_COLOR}})
+
+## Document Metadata
+
+| Field | Value |
+|-------|-------|
+| **Author** | {{AUTHOR}} |
+| **Date** | {{DATE}} |
+| **Jira Issue** | {{JIRA_KEY}} |
+| **Version** | {{VERSION}} |
+| **Last Updated** | {{LAST_UPDATED}} |
+| **Reviewers** | {{REVIEWERS}} |
+
+## Overview
+
+### Purpose
+
+{{PURPOSE_DESCRIPTION}}
+
+### Goals
+
+- {{GOAL_1}}
+- {{GOAL_2}}
+- {{GOAL_3}}
+
+### Non-Goals
+
+- {{NON_GOAL_1}}
+- {{NON_GOAL_2}}
+
+## Requirements
+
+### Functional Requirements
+
+| ID | Requirement | Priority | Notes |
+|----|-------------|----------|-------|
+| FR-1 | {{FUNCTIONAL_REQ_1}} | High/Medium/Low | {{NOTES_1}} |
+| FR-2 | {{FUNCTIONAL_REQ_2}} | High/Medium/Low | {{NOTES_2}} |
+| FR-3 | {{FUNCTIONAL_REQ_3}} | High/Medium/Low | {{NOTES_3}} |
+
+### Non-Functional Requirements
+
+| Category | Requirement | Target Metric |
+|----------|-------------|---------------|
+| Performance | {{PERF_REQ}} | {{PERF_METRIC}} |
+| Scalability | {{SCALE_REQ}} | {{SCALE_METRIC}} |
+| Availability | {{AVAIL_REQ}} | {{AVAIL_METRIC}} |
+| Security | {{SEC_REQ}} | {{SEC_METRIC}} |
+| Maintainability | {{MAINT_REQ}} | {{MAINT_METRIC}} |
+
+## Architecture
+
+### Context Diagram (C4 Model - Level 1)
+
+System boundaries showing how the {{SERVICE_NAME}} interacts with external systems and users:
+
+```mermaid
+graph TB
+    subgraph USERS["End Users"]
+        ADMIN["👤 {{USER_TYPE_1}}<br/>{{USER_DESC_1}}"]
+        CUSTOMER["👥 {{USER_TYPE_2}}<br/>{{USER_DESC_2}}"]
+        EXT_SYSTEM["🔌 {{EXTERNAL_SYSTEM_1}}<br/>{{EXT_DESC_1}}"]
+    end
+
+    subgraph SYSTEM["System Scope"]
+        MAIN["<b>{{SERVICE_NAME}}</b><br/>{{SERVICE_DESCRIPTION}}"]
+    end
+
+    subgraph EXTERNAL["External Systems & Services"]
+        AUTH_SYS["🔐 {{AUTH_SYSTEM}}<br/>{{AUTH_DESC}}"]
+        NOTIF_SYS["📧 {{NOTIFICATION_SYSTEM}}<br/>{{NOTIF_DESC}}"]
+        MONITOR_SYS["📊 {{MONITORING_SYSTEM}}<br/>{{MONITOR_DESC}}"]
+        EXT_API["🔌 {{EXTERNAL_SYSTEM_2}}<br/>{{EXT_DESC_2}}"]
+    end
+
+    ADMIN -->|"{{INTERACTION_1}}"| MAIN
+    CUSTOMER -->|"{{INTERACTION_2}}"| MAIN
+    EXT_SYSTEM -->|"{{INTERACTION_3}}"| MAIN
+    MAIN -->|"{{AUTH_INTERACTION}}"| AUTH_SYS
+    MAIN -->|"{{NOTIFY_INTERACTION}}"| NOTIF_SYS
+    MAIN -->|"{{MONITOR_INTERACTION}}"| MONITOR_SYS
+    MAIN -->|"{{API_INTERACTION}}"| EXT_API
+
+    style MAIN fill:#e1f5ff,stroke:#01579b,stroke-width:3px,color:#000
+    style USERS fill:#f3e5f5,stroke:#4a148c
+    style EXTERNAL fill:#fff3e0,stroke:#e65100
+    style AUTH_SYS fill:#e8f5e9,stroke:#1b5e20
+```
+
+**Description:** {{CONTEXT_DIAGRAM_DESCRIPTION}}
+
+**Key Interactions:**
+- {{CONTEXT_INTERACTION_1}}
+- {{CONTEXT_INTERACTION_2}}
+- {{CONTEXT_INTERACTION_3}}
+
+### System Components
+
+#### Component: {{COMPONENT_1_NAME}}
+
+**Responsibility:** {{COMPONENT_1_RESPONSIBILITY}}
+
+**Technologies:** {{COMPONENT_1_TECH}}
+
+**Interfaces:**
+- {{INTERFACE_1}}
+- {{INTERFACE_2}}
+
+#### Component: {{COMPONENT_2_NAME}}
+
+**Responsibility:** {{COMPONENT_2_RESPONSIBILITY}}
+
+**Technologies:** {{COMPONENT_2_TECH}}
+
+**Interfaces:**
+- {{INTERFACE_1}}
+- {{INTERFACE_2}}
+
+### Data Flow Diagram
+
+Shows how data flows through {{SERVICE_NAME}}, including sources, processing steps, storage, and consumption:
+
+```mermaid
+graph LR
+    SRC["📥 {{DATA_SOURCE}}<br/>{{SOURCE_TYPE}}<br/>{{SOURCE_FORMAT}}"]
+
+    subgraph INGESTION["Ingestion & Validation"]
+        VALIDATE["✓ Validate<br/>{{VALIDATION_LOGIC}}"]
+        PARSE["📋 Parse<br/>{{PARSE_FORMAT}}"]
+    end
+
+    subgraph PROCESSING["Processing Pipeline"]
+        TRANSFORM["🔄 Transform<br/>{{TRANSFORM_LOGIC}}"]
+        ENRICH["➕ Enrich<br/>{{ENRICHMENT_SOURCE}}"]
+        AGGREGATE["📊 Aggregate<br/>{{AGGREGATION_LOGIC}}"]
+    end
+
+    subgraph STORAGE["Storage Layer"]
+        PRIMARY_DB["🗄️ {{PRIMARY_STORAGE}}<br/>{{STORAGE_TYPE_1}}"]
+        CACHE["⚡ {{CACHE_SYSTEM}}<br/>{{CACHE_TYPE}}<br/>TTL: {{CACHE_TTL}}"]
+        ARCHIVE["📦 {{ARCHIVE_STORAGE}}<br/>{{ARCHIVE_TYPE}}"]
+    end
+
+    CONSUMERS["📤 {{DATA_CONSUMER}}<br/>{{CONSUMER_TYPE}}<br/>{{CONSUMPTION_PATTERN}}"]
+
+    SRC --> VALIDATE
+    VALIDATE -->|"Valid"| PARSE
+    PARSE -->|"Parsed Data"| TRANSFORM
+    TRANSFORM -->|"Transformed"| ENRICH
+    ENRICH -->|"Enriched"| AGGREGATE
+    AGGREGATE -->|"Aggregated Data"| PRIMARY_DB
+    AGGREGATE -->|"Hot Data"| CACHE
+    PRIMARY_DB -->|"Query Results"| CONSUMERS
+    CACHE -->|"Cache Hit"| CONSUMERS
+    PRIMARY_DB -->|"Cold Data"| ARCHIVE
+
+    style INGESTION fill:#fff9c4,stroke:#f57f17
+    style PROCESSING fill:#ffe0b2,stroke:#e65100
+    style STORAGE fill:#e0f2f1,stroke:#00695c
+    style SRC fill:#f3e5f5,stroke:#4a148c
+    style CONSUMERS fill:#c8e6c9,stroke:#1b5e20
+```
+
+**Data Movement Phases:**
+1. **Ingestion**: {{DATA_INGEST_DESC}}
+2. **Processing**: {{DATA_PROCESS_DESC}}
+3. **Storage**: {{DATA_STORE_DESC}}
+4. **Consumption**: {{DATA_CONSUME_DESC}}
+
+**Transformation Rules:**
+- {{TRANSFORM_RULE_1}}
+- {{TRANSFORM_RULE_2}}
+- {{TRANSFORM_RULE_3}}
+
+**Error Handling:**
+- {{ERROR_HANDLING_1}}
+- {{ERROR_HANDLING_2}}
+
+### Data Model
+
+```yaml
+{{DATA_MODEL_SCHEMA}}
+```
+
+**Key Entities:**
+
+- **{{ENTITY_1}}**: {{ENTITY_1_DESCRIPTION}}
+  - Primary Identifier: {{ENTITY_1_PK}}
+  - Lifecycle: {{ENTITY_1_LIFECYCLE}}
+
+- **{{ENTITY_2}}**: {{ENTITY_2_DESCRIPTION}}
+  - Primary Identifier: {{ENTITY_2_PK}}
+  - Lifecycle: {{ENTITY_2_LIFECYCLE}}
+
+- **{{ENTITY_3}}**: {{ENTITY_3_DESCRIPTION}}
+  - Primary Identifier: {{ENTITY_3_PK}}
+  - Lifecycle: {{ENTITY_3_LIFECYCLE}}
+
+### Entity Relationship Diagram (ERD)
+
+Database schema relationships, cardinality, and key attributes:
+
+```mermaid
+erDiagram
+    {{ENTITY_1}} ||--o{ {{ENTITY_2}} : "{{RELATIONSHIP_1_TYPE}}"
+    {{ENTITY_1}} ||--o{ {{ENTITY_3}} : "{{RELATIONSHIP_2_TYPE}}"
+    {{ENTITY_2}} }o--|| {{ENTITY_3}} : "{{RELATIONSHIP_3_TYPE}}"
+
+    {{ENTITY_1}} {
+        {{ENTITY_1_PK}} {{PK_TYPE}} "Primary Key"
+        {{ENTITY_1_FIELD_1}} {{FIELD_TYPE_1}} "{{FIELD_DESC_1}}"
+        {{ENTITY_1_FIELD_2}} {{FIELD_TYPE_2}} "{{FIELD_DESC_2}}"
+        {{ENTITY_1_FIELD_3}} {{FIELD_TYPE_3}} "{{FIELD_DESC_3}}"
+        created_at timestamp "Record creation timestamp"
+        updated_at timestamp "Record modification timestamp"
+    }
+
+    {{ENTITY_2}} {
+        {{ENTITY_2_PK}} {{PK_TYPE}} "Primary Key"
+        {{ENTITY_2_FK}} {{FK_TYPE}} "Foreign Key to {{ENTITY_1}}"
+        {{ENTITY_2_FIELD_1}} {{FIELD_TYPE_1}} "{{FIELD_DESC_1}}"
+        {{ENTITY_2_FIELD_2}} {{FIELD_TYPE_2}} "{{FIELD_DESC_2}}"
+        created_at timestamp "Record creation timestamp"
+        updated_at timestamp "Record modification timestamp"
+    }
+
+    {{ENTITY_3}} {
+        {{ENTITY_3_PK}} {{PK_TYPE}} "Primary Key"
+        {{ENTITY_3_FIELD_1}} {{FIELD_TYPE_1}} "{{FIELD_DESC_1}}"
+        {{ENTITY_3_FIELD_2}} {{FIELD_TYPE_2}} "{{FIELD_DESC_2}}"
+        {{ENTITY_3_FIELD_3}} {{FIELD_TYPE_3}} "{{FIELD_DESC_3}}"
+        created_at timestamp "Record creation timestamp"
+        updated_at timestamp "Record modification timestamp"
+    }
+```
+
+**Relationship Details:**
+
+| From | To | Type | Cardinality | Description | Referential Action |
+|------|-----|------|-------------|-------------|-------------------|
+| {{ENTITY_1}} | {{ENTITY_2}} | {{RELATIONSHIP_1_TYPE}} | {{CARDINALITY_1}} | {{REL_DESC_1}} | {{REFERENTIAL_ACTION_1}} |
+| {{ENTITY_1}} | {{ENTITY_3}} | {{RELATIONSHIP_2_TYPE}} | {{CARDINALITY_2}} | {{REL_DESC_2}} | {{REFERENTIAL_ACTION_2}} |
+| {{ENTITY_2}} | {{ENTITY_3}} | {{RELATIONSHIP_3_TYPE}} | {{CARDINALITY_3}} | {{REL_DESC_3}} | {{REFERENTIAL_ACTION_3}} |
+
+### API Design
+
+#### Endpoint: {{ENDPOINT_1}}
+
+**Method:** {{HTTP_METHOD}}
+
+**Path:** `{{API_PATH}}`
+
+**Authentication:** {{AUTH_TYPE}}
+
+**Request:**
+```json
+{{REQUEST_EXAMPLE}}
+```
+
+**Response:**
+```json
+{{RESPONSE_EXAMPLE}}
+```
+
+**Status Codes:**
+- `200 OK`: {{STATUS_200_DESCRIPTION}}
+- `201 Created`: {{STATUS_201_DESCRIPTION}}
+- `400 Bad Request`: {{STATUS_400_DESCRIPTION}}
+- `401 Unauthorized`: {{STATUS_401_DESCRIPTION}}
+- `403 Forbidden`: {{STATUS_403_DESCRIPTION}}
+- `404 Not Found`: {{STATUS_404_DESCRIPTION}}
+- `500 Internal Server Error`: {{STATUS_500_DESCRIPTION}}
+- `503 Service Unavailable`: {{STATUS_503_DESCRIPTION}}
+
+### Database Schema
+
+```sql
+{{DATABASE_SCHEMA}}
+```
+
+**Indexes:**
+- {{INDEX_1}}
+- {{INDEX_2}}
+- {{INDEX_3}}
+
+**Partitioning Strategy:** {{PARTITIONING_STRATEGY}}
+
+**Sharding Strategy:** {{SHARDING_STRATEGY}}
+
+**Backup Strategy:** {{BACKUP_STRATEGY}}
+
+### External Dependencies
+
+| Dependency | Version | Purpose | SLA | Notes |
+|------------|---------|---------|-----|-------|
+| {{DEP_1}} | {{VERSION_1}} | {{PURPOSE_1}} | {{SLA_1}} | {{NOTES_1}} |
+| {{DEP_2}} | {{VERSION_2}} | {{PURPOSE_2}} | {{SLA_2}} | {{NOTES_2}} |
+| {{DEP_3}} | {{VERSION_3}} | {{PURPOSE_3}} | {{SLA_3}} | {{NOTES_3}} |
+
+## Implementation Plan
+
+### Phase 1: {{PHASE_1_NAME}}
+
+**Timeline:** {{PHASE_1_TIMELINE}}
+
+**Deliverables:**
+- {{DELIVERABLE_1}}
+- {{DELIVERABLE_2}}
+- {{DELIVERABLE_3}}
+
+**Dependencies:** {{PHASE_1_DEPENDENCIES}}
+
+**Owner:** {{PHASE_1_OWNER}}
+
+### Phase 2: {{PHASE_2_NAME}}
+
+**Timeline:** {{PHASE_2_TIMELINE}}
+
+**Deliverables:**
+- {{DELIVERABLE_1}}
+- {{DELIVERABLE_2}}
+- {{DELIVERABLE_3}}
+
+**Dependencies:** {{PHASE_2_DEPENDENCIES}}
+
+**Owner:** {{PHASE_2_OWNER}}
+
+### Phase 3: {{PHASE_3_NAME}}
+
+**Timeline:** {{PHASE_3_TIMELINE}}
+
+**Deliverables:**
+- {{DELIVERABLE_1}}
+- {{DELIVERABLE_2}}
+- {{DELIVERABLE_3}}
+
+**Dependencies:** {{PHASE_3_DEPENDENCIES}}
+
+**Owner:** {{PHASE_3_OWNER}}
+
+## Key Workflows
+
+### Sequence Diagram: {{WORKFLOW_NAME}}
+
+Interaction sequence between components for: {{WORKFLOW_DESCRIPTION}}
+
+```mermaid
+sequenceDiagram
+    participant USER as {{ACTOR_1}}<br/>{{ACTOR_1_TYPE}}
+    participant API as {{COMPONENT_1}}<br/>{{COMPONENT_1_TYPE}}
+    participant SVC as {{COMPONENT_2}}<br/>{{COMPONENT_2_TYPE}}
+    participant DB as {{COMPONENT_3}}<br/>{{COMPONENT_3_TYPE}}
+    participant AUTH as {{AUTH_COMPONENT}}<br/>{{AUTH_TYPE}}
+
+    USER->>+API: {{STEP_1_ACTION}}<br/>{{STEP_1_DETAIL}}
+    Note over API: {{STEP_1_NOTE}}
+
+    API->>+AUTH: {{STEP_2_ACTION}}<br/>{{AUTH_CHECK}}
+    AUTH-->>-API: {{AUTH_RESPONSE}}<br/>{{AUTH_DETAIL}}
+
+    alt {{ALT_CONDITION_1}}
+        API->>+SVC: {{STEP_3_ACTION}}<br/>{{STEP_3_DETAIL}}
+        Note over SVC: {{STEP_3_NOTE}}
+
+        SVC->>+DB: {{STEP_4_ACTION}}<br/>{{STEP_4_DETAIL}}
+        DB-->>-SVC: {{STEP_4_RESPONSE}}<br/>{{STEP_4_DETAIL}}
+        Note over DB: {{STEP_4_NOTE}}
+
+        SVC-->>-API: {{STEP_3_RESPONSE}}<br/>{{STEP_3_RESULT}}
+
+    else {{ALT_CONDITION_2}}
+        API-->>USER: {{ERROR_RESPONSE}}<br/>{{ERROR_CODE}}
+        Note over API: {{ERROR_NOTE}}
+    end
+
+    API->>+DB: {{STEP_5_ACTION}}<br/>{{STEP_5_DETAIL}}
+    DB-->>-API: {{STEP_5_RESPONSE}}<br/>{{STEP_5_DETAIL}}
+
+    API-->>-USER: {{FINAL_RESPONSE}}<br/>{{FINAL_CODE}}
+    Note over USER: {{FINAL_NOTE}}
+```
+
+**Success Path:** {{WORKFLOW_SUCCESS_PATH}}
+
+**Error Handling:** {{WORKFLOW_ERROR_HANDLING}}
+
+**Timeout Policy:** {{WORKFLOW_TIMEOUT}}
+
+**Retry Strategy:** {{WORKFLOW_RETRY_STRATEGY}}
+
+## Architecture Components Diagram (C4 Model - Level 2)
+
+High-level architecture showing component dependencies, data flows, and technology stack:
+
+```mermaid
+graph TB
+    subgraph CLIENT["Client Layer"]
+        WEB["🌐 {{CLIENT_1}}<br/>{{CLIENT_DESC_1}}<br/>{{CLIENT_1_TECH}}"]
+        MOBILE["📱 {{CLIENT_2}}<br/>{{CLIENT_DESC_2}}<br/>{{CLIENT_2_TECH}}"]
+        ADMIN["⚙️ {{CLIENT_3}}<br/>{{CLIENT_DESC_3}}<br/>{{CLIENT_3_TECH}}"]
+    end
+
+    subgraph GATEWAY["API Gateway & Routing"]
+        LB["⚖️ {{LB_NAME}}<br/>Load Balancer<br/>{{LB_TECH}}"]
+        GATEWAY_SVC["🚪 {{GATEWAY_NAME}}<br/>{{GATEWAY_DESC}}<br/>{{GATEWAY_TECH}}"]
+        RATE_LIMIT["🎯 Rate Limiter<br/>{{RATE_LIMIT_TECH}}"]
+    end
+
+    subgraph SERVICES["Microservices"]
+        SVC1["🔧 {{SERVICE_1}}<br/>{{SERVICE_1_DESC}}<br/>{{SERVICE_1_TECH}}"]
+        SVC2["🔧 {{SERVICE_2}}<br/>{{SERVICE_2_DESC}}<br/>{{SERVICE_2_TECH}}"]
+        SVC3["🔧 {{SERVICE_3}}<br/>{{SERVICE_3_DESC}}<br/>{{SERVICE_3_TECH}}"]
+    end
+
+    subgraph DATA["Data Layer"]
+        PRIMARY_DB["🗄️ {{PRIMARY_DB}}<br/>{{DB_TYPE_1}}<br/>{{DB_VERSION}}"]
+        REPLICA_DB["🗄️ {{REPLICA_DB}}<br/>{{DB_TYPE_2}}<br/>Read-Only"]
+        CACHE["⚡ {{CACHE_NAME}}<br/>{{CACHE_TYPE}}<br/>{{CACHE_CONFIG}}"]
+        QUEUE["📦 {{QUEUE_NAME}}<br/>{{QUEUE_TYPE}}<br/>{{QUEUE_CONFIG}}"]
+    end
+
+    subgraph EXTERNAL["External Services"]
+        AUTH_SVC["🔐 {{AUTH_SERVICE}}<br/>{{AUTH_TECH}}<br/>{{AUTH_PROTOCOL}}"]
+        NOTIFY["📧 {{NOTIFY_SERVICE}}<br/>{{NOTIFY_TECH}}<br/>{{NOTIFY_TYPE}}"]
+        MONITOR["📊 {{MONITOR_SERVICE}}<br/>{{MONITOR_TECH}}<br/>{{MONITOR_TYPE}}"]
+        STORAGE["📁 {{STORAGE_SERVICE}}<br/>{{STORAGE_TECH}}<br/>{{STORAGE_TYPE}}"]
+    end
+
+    WEB -->|HTTP/HTTPS| LB
+    MOBILE -->|HTTP/HTTPS| LB
+    ADMIN -->|HTTP/HTTPS| LB
+
+    LB --> RATE_LIMIT
+    RATE_LIMIT --> GATEWAY_SVC
+
+    GATEWAY_SVC -->|Route {{SERVICE_1_ROUTE}}| SVC1
+    GATEWAY_SVC -->|Route {{SERVICE_2_ROUTE}}| SVC2
+    GATEWAY_SVC -->|Route {{SERVICE_3_ROUTE}}| SVC3
+
+    SVC1 -->|Read/Write| PRIMARY_DB
+    SVC2 -->|Read/Write| PRIMARY_DB
+    SVC3 -->|Read/Write| PRIMARY_DB
+
+    PRIMARY_DB -->|Replicate| REPLICA_DB
+    SVC1 -->|Read| REPLICA_DB
+    SVC2 -->|Read| REPLICA_DB
+
+    SVC1 -->|Cache| CACHE
+    SVC2 -->|Cache| CACHE
+    SVC3 -->|Cache| CACHE
+
+    SVC1 -->|Publish| QUEUE
+    SVC2 -->|Publish| QUEUE
+    SVC3 -->|Subscribe| QUEUE
+
+    SVC1 -.->|Verify Token| AUTH_SVC
+    SVC2 -.->|Verify Token| AUTH_SVC
+    SVC3 -.->|Verify Token| AUTH_SVC
+
+    SVC1 -->|Send Events| NOTIFY
+    SVC2 -->|Send Events| NOTIFY
+
+    SVC1 -->|Upload| STORAGE
+    SVC2 -->|Upload| STORAGE
+    SVC3 -.->|Metrics| MONITOR
+
+    style CLIENT fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style GATEWAY fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style SERVICES fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style DATA fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    style EXTERNAL fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+```
+
+**Component Responsibilities:**
+
+| Component | Role | Technology | Scalability | Failover |
+|-----------|------|-----------|-------------|----------|
+| {{GATEWAY_NAME}} | API Entry Point & Auth | {{GATEWAY_TECH}} | {{GATEWAY_SCALE}} | {{GATEWAY_FAILOVER}} |
+| {{SERVICE_1}} | {{SERVICE_1_ROLE}} | {{SERVICE_1_TECH}} | {{SERVICE_1_SCALE}} | {{SERVICE_1_FAILOVER}} |
+| {{SERVICE_2}} | {{SERVICE_2_ROLE}} | {{SERVICE_2_TECH}} | {{SERVICE_2_SCALE}} | {{SERVICE_2_FAILOVER}} |
+| {{SERVICE_3}} | {{SERVICE_3_ROLE}} | {{SERVICE_3_TECH}} | {{SERVICE_3_SCALE}} | {{SERVICE_3_FAILOVER}} |
+| {{PRIMARY_DB}} | Primary Data Store | {{DB_TYPE_1}} | {{DB_SCALE}} | {{DB_FAILOVER}} |
+| {{CACHE_NAME}} | Hot Data Cache | {{CACHE_TYPE}} | {{CACHE_SCALE}} | {{CACHE_FAILOVER}} |
+| {{QUEUE_NAME}} | Message Queue | {{QUEUE_TYPE}} | {{QUEUE_SCALE}} | {{QUEUE_FAILOVER}} |
+
+**Component Interactions:**
+
+- {{COMPONENT_INT_1}}
+- {{COMPONENT_INT_2}}
+- {{COMPONENT_INT_3}}
+- {{COMPONENT_INT_4}}
+
+**Data Flow Between Components:**
+
+- {{DATAFLOW_INT_1}}
+- {{DATAFLOW_INT_2}}
+- {{DATAFLOW_INT_3}}
+
+## Testing Strategy
+
+### Unit Testing
+
+**Coverage Target:** {{UNIT_TEST_COVERAGE}}%
+
+**Key Test Scenarios:**
+- {{TEST_SCENARIO_1}}
+- {{TEST_SCENARIO_2}}
+- {{TEST_SCENARIO_3}}
+
+**Testing Framework:** {{UNIT_TEST_FRAMEWORK}}
+
+### Integration Testing
+
+**Scope:** {{INTEGRATION_TEST_SCOPE}}
+
+**Key Test Scenarios:**
+- {{TEST_SCENARIO_1}}
+- {{TEST_SCENARIO_2}}
+- {{TEST_SCENARIO_3}}
+
+**Test Environment:** {{INTEGRATION_TEST_ENV}}
+
+### Performance Testing
+
+**Load Profile:** {{LOAD_PROFILE}}
+
+**Success Criteria:**
+- {{PERF_CRITERIA_1}}
+- {{PERF_CRITERIA_2}}
+- {{PERF_CRITERIA_3}}
+
+**Tools:** {{PERF_TEST_TOOLS}}
+
+### Security Testing
+
+**Tests:**
+- {{SECURITY_TEST_1}}
+- {{SECURITY_TEST_2}}
+- {{SECURITY_TEST_3}}
+
+**Compliance:** {{COMPLIANCE_TEST_FRAMEWORK}}
+
+## Security Considerations
+
+### Authentication & Authorization
+
+{{AUTH_DESCRIPTION}}
+
+**Mechanism:** {{AUTH_MECHANISM}}
+
+**Token Type:** {{TOKEN_TYPE}}
+
+**Session Duration:** {{SESSION_DURATION}}
+
+### Data Protection
+
+| Data Type | Protection Method | Encryption | Retention |
+|-----------|------------------|------------|-----------|
+| {{DATA_TYPE_1}} | {{PROTECTION_1}} | {{ENCRYPTION_1}} | {{RETENTION_1}} |
+| {{DATA_TYPE_2}} | {{PROTECTION_2}} | {{ENCRYPTION_2}} | {{RETENTION_2}} |
+| {{DATA_TYPE_3}} | {{PROTECTION_3}} | {{ENCRYPTION_3}} | {{RETENTION_3}} |
+
+### Compliance
+
+**Standards:** {{COMPLIANCE_STANDARDS}}
+
+**Requirements:**
+- {{COMPLIANCE_REQ_1}}
+- {{COMPLIANCE_REQ_2}}
+- {{COMPLIANCE_REQ_3}}
+
+### Threat Model
+
+| Threat | Likelihood | Impact | Mitigation | Owner |
+|--------|-----------|--------|------------|-------|
+| {{THREAT_1}} | High/Medium/Low | High/Medium/Low | {{MITIGATION_1}} | {{THREAT_OWNER_1}} |
+| {{THREAT_2}} | High/Medium/Low | High/Medium/Low | {{MITIGATION_2}} | {{THREAT_OWNER_2}} |
+| {{THREAT_3}} | High/Medium/Low | High/Medium/Low | {{MITIGATION_3}} | {{THREAT_OWNER_3}} |
+
+## Deployment Plan
+
+### Prerequisites
+
+- {{PREREQ_1}}
+- {{PREREQ_2}}
+- {{PREREQ_3}}
+
+### Deployment Steps
+
+1. {{STEP_1}} - {{STEP_1_DETAIL}}
+2. {{STEP_2}} - {{STEP_2_DETAIL}}
+3. {{STEP_3}} - {{STEP_3_DETAIL}}
+4. {{STEP_4}} - {{STEP_4_DETAIL}}
+
+### Rollback Procedure
+
+1. {{ROLLBACK_STEP_1}} - {{ROLLBACK_DETAIL_1}}
+2. {{ROLLBACK_STEP_2}} - {{ROLLBACK_DETAIL_2}}
+3. {{ROLLBACK_STEP_3}} - {{ROLLBACK_DETAIL_3}}
+
+**Rollback Decision Criteria:** {{ROLLBACK_CRITERIA}}
+
+**Rollback Timeline:** {{ROLLBACK_TIMELINE}}
+
+### Feature Flags
+
+| Flag | Purpose | Default State | Owner | Rollout Strategy |
+|------|---------|---------------|-------|-----------------|
+| {{FLAG_1}} | {{FLAG_PURPOSE_1}} | {{FLAG_STATE_1}} | {{FLAG_OWNER_1}} | {{ROLLOUT_STRATEGY_1}} |
+| {{FLAG_2}} | {{FLAG_PURPOSE_2}} | {{FLAG_STATE_2}} | {{FLAG_OWNER_2}} | {{ROLLOUT_STRATEGY_2}} |
+| {{FLAG_3}} | {{FLAG_PURPOSE_3}} | {{FLAG_STATE_3}} | {{FLAG_OWNER_3}} | {{ROLLOUT_STRATEGY_3}} |
+
+### Canary Deployment
+
+**Canary Percentage:** {{CANARY_PERCENTAGE}}
+
+**Success Metrics:** {{CANARY_METRICS}}
+
+**Rollback Threshold:** {{CANARY_ROLLBACK_THRESHOLD}}
+
+## Monitoring & Alerting
+
+### Key Metrics
+
+| Metric | Type | Threshold | Alert Severity | Dashboard |
+|--------|------|-----------|----------------|-----------|
+| {{METRIC_1}} | {{TYPE_1}} | {{THRESHOLD_1}} | Critical/Warning/Info | {{DASHBOARD_1}} |
+| {{METRIC_2}} | {{TYPE_2}} | {{THRESHOLD_2}} | Critical/Warning/Info | {{DASHBOARD_2}} |
+| {{METRIC_3}} | {{TYPE_3}} | {{THRESHOLD_3}} | Critical/Warning/Info | {{DASHBOARD_3}} |
+
+### Dashboards
+
+- **{{DASHBOARD_1}}**: {{DASHBOARD_1_DESC}} - {{DASHBOARD_1_URL}}
+- **{{DASHBOARD_2}}**: {{DASHBOARD_2_DESC}} - {{DASHBOARD_2_URL}}
+- **{{DASHBOARD_3}}**: {{DASHBOARD_3_DESC}} - {{DASHBOARD_3_URL}}
+
+### Logging
+
+**Log Level:** {{LOG_LEVEL}}
+
+**Retention Period:** {{LOG_RETENTION}}
+
+**Key Events:**
+- {{LOG_EVENT_1}} - {{LOG_EVENT_1_DETAIL}}
+- {{LOG_EVENT_2}} - {{LOG_EVENT_2_DETAIL}}
+- {{LOG_EVENT_3}} - {{LOG_EVENT_3_DETAIL}}
+
+**Structured Logging Format:** {{LOG_FORMAT}}
+
+### SLOs (Service Level Objectives)
+
+| SLO | Target | Measurement Window | Owner | Review Frequency |
+|-----|--------|-------------------|-------|-----------------|
+| {{SLO_1}} | {{TARGET_1}} | {{WINDOW_1}} | {{SLO_OWNER_1}} | {{REVIEW_FREQ_1}} |
+| {{SLO_2}} | {{TARGET_2}} | {{WINDOW_2}} | {{SLO_OWNER_2}} | {{REVIEW_FREQ_2}} |
+| {{SLO_3}} | {{TARGET_3}} | {{WINDOW_3}} | {{SLO_OWNER_3}} | {{REVIEW_FREQ_3}} |
+
+## Open Questions
+
+| ID | Question | Owner | Status | Resolution Date |
+|----|----------|-------|--------|-----------------|
+| Q-1 | {{QUESTION_1}} | {{OWNER_1}} | Open/Resolved | {{RES_DATE_1}} |
+| Q-2 | {{QUESTION_2}} | {{OWNER_2}} | Open/Resolved | {{RES_DATE_2}} |
+| Q-3 | {{QUESTION_3}} | {{OWNER_3}} | Open/Resolved | {{RES_DATE_3}} |
+
+## Risks & Mitigations
+
+| Risk ID | Risk | Impact | Probability | Mitigation | Owner | Status |
+|---------|------|--------|-------------|-----------|-------|--------|
+| R-1 | {{RISK_1}} | High/Medium/Low | High/Medium/Low | {{MITIGATION_1}} | {{OWNER_1}} | Active/Mitigated |
+| R-2 | {{RISK_2}} | High/Medium/Low | High/Medium/Low | {{MITIGATION_2}} | {{OWNER_2}} | Active/Mitigated |
+| R-3 | {{RISK_3}} | High/Medium/Low | High/Medium/Low | {{MITIGATION_3}} | {{OWNER_3}} | Active/Mitigated |
+
+## Glossary
+
+| Term | Definition | Context |
+|------|-----------|---------|
+| {{TERM_1}} | {{DEFINITION_1}} | {{CONTEXT_1}} |
+| {{TERM_2}} | {{DEFINITION_2}} | {{CONTEXT_2}} |
+| {{TERM_3}} | {{DEFINITION_3}} | {{CONTEXT_3}} |
+
+## Approval Checklist
+
+- [ ] Architecture reviewed and approved by {{ARCH_REVIEWER}}
+- [ ] Security reviewed and approved by {{SEC_REVIEWER}}
+- [ ] Performance requirements validated by {{PERF_REVIEWER}}
+- [ ] Data privacy compliance verified by {{PRIVACY_REVIEWER}}
+- [ ] Monitoring and alerting configured and tested
+- [ ] Runbook created and reviewed
+- [ ] Team training completed
+- [ ] Stakeholder sign-off obtained
+
+## References
+
+- **Related ADRs**: {{RELATED_ADRS}}
+- **API Documentation**: {{API_DOCS_URL}}
+- **Runbook**: {{RUNBOOK_URL}}
+- **Jira Epic**: {{EPIC_URL}}
+- **Architecture Repository**: {{ARCH_REPO_URL}}
+- **Design Specifications**: {{DESIGN_SPEC_URL}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

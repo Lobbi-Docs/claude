@@ -1,0 +1,327 @@
+{
+  "id": "mobile-app",
+  "name": "Mobile Application",
+  "type": "software",
+  "description": "A cross-platform mobile application using React Native, covering project setup, core UI components, feature implementation, device testing, and app store submission. Use this template for iOS and Android apps built with Expo or bare React Native.",
+  "phases": [
+    {
+      "id": "p1",
+      "name": "Setup",
+      "description": "Initialize the React Native project, configure the development environment for both iOS and Android, and establish the foundational architecture.",
+      "epics": [
+        {
+          "id": "p1-e1",
+          "name": "Project Initialization",
+          "description": "Scaffold the React Native project and verify it runs on both simulators.",
+          "stories": [
+            {
+              "id": "p1-e1-s1",
+              "title": "Create Expo project with TypeScript template",
+              "description": "Initialize the project using `npx create-expo-app` with the TypeScript template, configure the app.json with the app name, bundle identifier, and version, and verify both the iOS simulator and Android emulator show the default screen.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "The app runs on the iOS simulator without errors and displays the default Expo splash screen followed by the app entry point",
+                "The app runs on the Android emulator without errors with the same entry point"
+              ]
+            },
+            {
+              "id": "p1-e1-s2",
+              "title": "Configure TypeScript strict mode and path aliases",
+              "description": "Enable TypeScript strict mode in tsconfig.json, add `@/` path aliases mapped to the src/ directory, and configure babel-plugin-module-resolver to resolve the aliases at runtime.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "`npx tsc --noEmit` exits 0 with strict mode enabled on the initial scaffold",
+                "An import using `@/components/Button` resolves correctly in both TypeScript and the Metro bundler"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e2",
+          "name": "Navigation Architecture",
+          "description": "Set up React Navigation with type-safe route params and a tab/stack layout.",
+          "stories": [
+            {
+              "id": "p1-e2-s1",
+              "title": "Install React Navigation and configure typed root navigator",
+              "description": "Install @react-navigation/native and the required dependencies, define the root navigation type declarations, and create a bottom-tab navigator with at least 3 stub tabs.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "Tapping each bottom tab navigates to its respective screen without errors on both iOS and Android",
+                "The `useNavigation` and `useRoute` hooks return typed objects — TypeScript errors on accessing an undefined route param"
+              ]
+            },
+            {
+              "id": "p1-e2-s2",
+              "title": "Implement deep linking configuration",
+              "description": "Configure a URL scheme and Universal Links / App Links for the app so that external URLs open the correct screen.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Opening the URL `{scheme}://home` on the simulator launches the app and navigates to the home tab",
+                "The deep link configuration is documented in docs/deep-links.md with examples for each supported path"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e3",
+          "name": "State Management and API Client",
+          "description": "Configure the global state store and the typed API client for backend communication.",
+          "stories": [
+            {
+              "id": "p1-e3-s1",
+              "title": "Configure Zustand store and TanStack Query client",
+              "description": "Install Zustand and TanStack Query, create the root QueryClientProvider, configure default stale times and retry behavior, and implement a base API client using axios with automatic JWT header injection.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "A test screen that triggers a TanStack Query fetch against a mock endpoint shows the loading and success states correctly on both platforms",
+                "The axios client automatically attaches the Authorization: Bearer header when a token is present in the Zustand auth store"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "UI Components",
+      "description": "Build the core component library that all feature screens will use, ensuring visual consistency and accessibility on both platforms.",
+      "epics": [
+        {
+          "id": "p2-e1",
+          "name": "Design System Foundation",
+          "description": "Define the token-based design system (colors, typography, spacing) and implement the primitive components.",
+          "stories": [
+            {
+              "id": "p2-e1-s1",
+              "title": "Define design tokens and theme context",
+              "description": "Create src/theme/tokens.ts with the color palette, typography scale (font families, sizes, weights), and spacing scale. Wrap the app in a ThemeProvider context that supports light and dark mode.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Switching the device to dark mode causes the app's background color to change to the dark theme background token without a restart",
+                "Every token is typed as a specific TypeScript literal type so invalid token names produce a compile error"
+              ]
+            },
+            {
+              "id": "p2-e1-s2",
+              "title": "Implement Button, Text, Input, and Card primitive components",
+              "description": "Build the 4 foundational UI components with size variants (sm/md/lg), theme token consumption, and accessibility props (accessibilityLabel, accessibilityRole).",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "All 4 components are visually correct on both iOS and Android with no platform-specific rendering artifacts",
+                "VoiceOver (iOS) and TalkBack (Android) correctly announce each component's accessibilityLabel"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2-e2",
+          "name": "List and Form Components",
+          "description": "Build the FlatList wrappers and form field components used throughout the app.",
+          "stories": [
+            {
+              "id": "p2-e2-s1",
+              "title": "Build typed FlatList wrapper with pull-to-refresh and empty state",
+              "description": "Create a generic TypedList component wrapping FlatList that includes a pull-to-refresh handler, a loading skeleton state, and an empty state slot for customizable empty content.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "Pulling down on the list triggers the `onRefresh` callback and shows a RefreshControl spinner during the async operation",
+                "Passing an empty array shows the empty state slot content instead of the list"
+              ]
+            },
+            {
+              "id": "p2-e2-s2",
+              "title": "Build form field components with react-hook-form integration",
+              "description": "Create ControlledTextInput, ControlledSelect, and ControlledCheckbox components that integrate with react-hook-form's Controller and display inline validation error messages.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "A form field showing a validation error displays the error text in red below the input, and the input border changes to the error color token",
+                "The keyboard is dismissed and focus moves to the first invalid field when submitting a form with validation errors"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Features",
+      "description": "Implement the core application features including authentication, the primary user flow, and offline support.",
+      "epics": [
+        {
+          "id": "p3-e1",
+          "name": "Authentication Flow",
+          "description": "Build the onboarding and authentication screens with biometric authentication support.",
+          "stories": [
+            {
+              "id": "p3-e1-s1",
+              "title": "Build Login and Registration screens",
+              "description": "Create the Login and Register screens using the form components from the UI library. On successful login, store the JWT in the secure keychain (not AsyncStorage).",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "Successful login stores the JWT using expo-secure-store and navigates to the main tab navigator",
+                "The JWT is not stored in AsyncStorage or any unencrypted storage — verified by inspecting the app's data directory on a rooted Android emulator"
+              ]
+            },
+            {
+              "id": "p3-e1-s2",
+              "title": "Implement biometric authentication for app unlock",
+              "description": "Use expo-local-authentication to offer Face ID / Touch ID / Fingerprint unlock when reopening the app after it has been backgrounded for more than 5 minutes.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "On a device with biometrics enrolled, the biometric prompt appears when the app is foregrounded after 5+ minutes in the background",
+                "If biometric authentication fails 3 times, the app falls back to requiring the user's PIN or password"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p3-e2",
+          "name": "Primary Feature Screens",
+          "description": "Implement the screens that constitute the app's core value proposition.",
+          "stories": [
+            {
+              "id": "p3-e2-s1",
+              "title": "Build home feed screen with infinite scroll",
+              "description": "Implement the home tab screen with an infinite-scrolling list using TanStack Query's `useInfiniteQuery`, rendering items with the TypedList component and loading the next page when the user scrolls within 3 items of the end.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "Scrolling to the bottom of the list automatically loads the next page without any user action beyond scrolling",
+                "The list shows a footer loading indicator while the next page is fetching"
+              ]
+            },
+            {
+              "id": "p3-e2-s2",
+              "title": "Build detail screen with optimistic like/bookmark actions",
+              "description": "Create a detail screen reachable from the home feed that shows full item content and provides like and bookmark actions that apply optimistic updates.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "Tapping the like button immediately toggles the filled/outline heart icon before the API responds",
+                "If the like API call fails, the heart icon reverts to its previous state and a brief error toast is shown"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p3-e3",
+          "name": "Offline Support",
+          "description": "Make the app usable when the device has no network connection.",
+          "stories": [
+            {
+              "id": "p3-e3-s1",
+              "title": "Implement offline-first data persistence with MMKV",
+              "description": "Persist the TanStack Query cache to MMKV storage so the last-fetched data is visible when the app is reopened offline. Show a 'You are offline' banner when network connectivity is lost.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "Killing the app, disabling network, and relaunching shows the previously cached feed data rather than a loading or error state",
+                "A yellow 'You are offline — showing cached data' banner appears at the top of each screen when NetInfo reports no connection"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "Testing",
+      "description": "Test the app on physical devices and with automated tests to catch platform-specific bugs before submission.",
+      "epics": [
+        {
+          "id": "p4-e1",
+          "name": "Unit and Component Tests",
+          "description": "Test business logic and components with Jest and React Native Testing Library.",
+          "stories": [
+            {
+              "id": "p4-e1-s1",
+              "title": "Write unit tests for auth store and API client",
+              "description": "Test the Zustand auth store's token persistence and the axios client's header injection behavior.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Tests verify that logging in sets the token in the store and that a subsequent API call includes the Authorization header",
+                "Tests verify that logging out clears the token from the store and from expo-secure-store"
+              ]
+            },
+            {
+              "id": "p4-e1-s2",
+              "title": "Write component tests for the form components",
+              "description": "Use React Native Testing Library to test the validation error display, focus behavior, and submission handling of the form field components.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Tests verify that submitting a form with an empty required field shows the error text without calling the submit callback",
+                "Tests verify that focus moves to the next field when the user taps the keyboard's 'Next' button"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p4-e2",
+          "name": "Physical Device Testing",
+          "description": "Verify the app on real iOS and Android devices to catch simulator gaps.",
+          "stories": [
+            {
+              "id": "p4-e2-s1",
+              "title": "Test on physical iOS and Android devices and document results",
+              "description": "Install the app on at least one physical iOS device (iPhone) and one physical Android device. Test every primary user flow and document any issues found.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "A device-testing-report.md lists the devices tested (model, OS version) and the test results for each primary user flow",
+                "All P0 issues found during physical device testing are resolved before this story is marked complete"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "name": "Store Submission",
+      "description": "Prepare the app for App Store and Google Play submission: assets, metadata, signing, and compliance.",
+      "epics": [
+        {
+          "id": "p5-e1",
+          "name": "App Store Assets",
+          "description": "Produce all required visual assets and metadata for both stores.",
+          "stories": [
+            {
+              "id": "p5-e1-s1",
+              "title": "Create app icon, splash screen, and all required screenshot sizes",
+              "description": "Design and export the app icon at all required sizes for iOS and Android, create the splash screen, and capture the required screenshot sizes for both stores.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "The app icon set contains assets at all sizes required by the current App Store Connect guidelines without any upscaled pixelation",
+                "Screenshots for iPhone 6.7\", 6.5\", and iPad 12.9\" are provided for iOS; screenshots for phone and 7-inch tablet are provided for Android"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p5-e2",
+          "name": "Build Signing and Store Upload",
+          "description": "Configure code signing and automate the build-and-upload process.",
+          "stories": [
+            {
+              "id": "p5-e2-s1",
+              "title": "Configure EAS Build for production iOS and Android builds",
+              "description": "Set up eas.json with production build profiles for both platforms, configure automatic code signing with EAS credentials, and produce a production build of each platform.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "`eas build --platform all --profile production` completes without errors and produces a signed .ipa and .aab",
+                "The production .ipa installs and runs on a physical iPhone without any 'untrusted developer' prompts"
+              ]
+            },
+            {
+              "id": "p5-e2-s2",
+              "title": "Submit first build to TestFlight and Google Play Internal Testing",
+              "description": "Upload the production builds to TestFlight (iOS) and the Google Play Internal Testing track. Verify the builds pass Apple's and Google's automated review checks.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "The iOS build is visible in TestFlight and at least one internal tester can install it",
+                "The Android build is in the Google Play Internal Testing track and at least one internal tester has downloaded it"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

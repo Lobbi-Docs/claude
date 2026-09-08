@@ -1,0 +1,297 @@
+# External Documentation Publishing Configuration
+# This file defines platforms and settings for publishing documentation
+# outside the repository (beyond Confluence)
+
+# ============================================================================
+# General Settings
+# ============================================================================
+
+general:
+  enabled: true
+  auto_sync: false  # Enable automatic synchronization
+  sync_interval: daily  # on-change, daily, weekly, on-release
+  default_format: markdown
+  preserve_links: true
+  update_cross_references: true
+
+# ============================================================================
+# Platform Configurations
+# ============================================================================
+
+platforms:
+  # GitHub Wiki
+  github_wiki:
+    enabled: false
+    repository: "${GITHUB_REPO}/wiki"  # e.g., "org/repo/wiki"
+    branch: "master"
+    auth:
+      token: "${GITHUB_TOKEN}"  # GitHub personal access token
+    auto_sync: false
+    sync_interval: daily
+    pages:
+      # Map source files to wiki pages
+      - source: "docs/CONFLUENCE-DOCUMENTATION.md"
+        target: "Home.md"
+        update_on: [release, major-change]
+      - source: "docs/INSTALLATION.md"
+        target: "Installation.md"
+        update_on: [change]
+      - source: "docs/ARCHITECTURE-SUMMARY.md"
+        target: "Architecture.md"
+        update_on: [major-change]
+    navigation:
+      enabled: true
+      auto_update: true
+
+  # API Documentation Sites
+  api_docs:
+    enabled: false
+    platforms:
+      # SwaggerHub
+      swaggerhub:
+        enabled: false
+        api_key: "${SWAGGERHUB_API_KEY}"
+        organization: "${SWAGGERHUB_ORG}"
+        api_name: "jira-orchestrator"
+        version: "latest"
+        auto_publish: true
+        formats: [openapi, swagger]
+      
+      # ReadTheDocs
+      readthedocs:
+        enabled: false
+        project_slug: "${RTD_PROJECT_SLUG}"
+        api_token: "${RTD_API_TOKEN}"
+        version: "latest"
+        auto_build: true
+        formats: [sphinx, mkdocs]
+      
+      # API Blueprint
+      api_blueprint:
+        enabled: false
+        repository: "${API_BLUEPRINT_REPO}"
+        branch: "master"
+        formats: [apib]
+    
+    source_files:
+      - "docs/api/openapi.yaml"
+      - "docs/api/swagger.json"
+      - "docs/api/blueprint.apib"
+
+  # GitBook
+  gitbook:
+    enabled: false
+    space_id: "${GITBOOK_SPACE_ID}"
+    api_key: "${GITBOOK_API_KEY}"
+    organization: "${GITBOOK_ORG}"
+    auto_sync: false
+    sync_interval: daily
+    structure:
+      # Define page hierarchy
+      root: "Jira Orchestrator"
+      sections:
+        - title: "Getting Started"
+          pages:
+            - source: "docs/INSTALLATION.md"
+              title: "Installation"
+            - source: "docs/QUICK-START.md"
+              title: "Quick Start"
+        - title: "Documentation"
+          pages:
+            - source: "docs/CONFLUENCE-DOCUMENTATION.md"
+              title: "Complete Documentation"
+
+  # Notion
+  notion:
+    enabled: false
+    workspace_id: "${NOTION_WORKSPACE_ID}"
+    api_key: "${NOTION_API_KEY}"
+    database_id: "${NOTION_DATABASE_ID}"  # Optional: Use database for structured docs
+    auto_sync: false
+    sync_interval: weekly
+    page_mapping:
+      # Map source files to Notion pages
+      - source: "docs/CONFLUENCE-DOCUMENTATION.md"
+        notion_page_id: "${NOTION_PAGE_ID}"
+        update_strategy: replace  # replace, append, merge
+
+  # Repository README
+  readme:
+    enabled: true
+    repository: "${GITHUB_REPO}"  # e.g., "org/repo"
+    file: "README.md"
+    branch: "main"  # or "master"
+    auth:
+      token: "${GITHUB_TOKEN}"
+    auto_update: true
+    update_on: [release, version-change]
+    sections:
+      # Define which sections to auto-update
+      - name: "version"
+        source: "package.json"  # Extract from package.json
+      - name: "features"
+        source: "docs/FEATURES.md"
+      - name: "installation"
+        source: "docs/INSTALLATION.md"
+      - name: "quick-start"
+        source: "docs/QUICK-START.md"
+    create_pr: true  # Create PR instead of direct commit
+    pr_labels: ["documentation", "automated"]
+
+  # Blog Posts
+  blog:
+    enabled: false
+    platforms:
+      # Medium
+      medium:
+        enabled: false
+        api_key: "${MEDIUM_API_KEY}"
+        user_id: "${MEDIUM_USER_ID}"
+        publication_id: "${MEDIUM_PUBLICATION_ID}"  # Optional
+        auto_publish: false
+        tags: [jira, orchestration, devops, automation]
+      
+      # Dev.to
+      dev_to:
+        enabled: false
+        api_key: "${DEV_TO_API_KEY}"
+        auto_publish: false
+        tags: [jira, orchestration, devops]
+        canonical_url: ""  # Optional: Link to original post
+      
+      # Custom (via webhook)
+      custom:
+        enabled: false
+        webhook_url: "${BLOG_WEBHOOK_URL}"
+        api_key: "${BLOG_API_KEY}"
+        format: markdown  # or html
+    
+    templates:
+      release: "templates/blog/release-post.md"
+      feature: "templates/blog/feature-post.md"
+      migration: "templates/blog/migration-guide.md"
+    
+    auto_generate:
+      releases: true
+      major_features: true
+      migrations: false
+
+  # Static Site Generators
+  static_sites:
+    enabled: false
+    platforms:
+      # Docusaurus
+      docusaurus:
+        enabled: false
+        repository: "${DOCUSAURUS_REPO}"
+        branch: "main"
+        docs_path: "docs"
+        auto_deploy: true
+      
+      # MkDocs
+      mkdocs:
+        enabled: false
+        repository: "${MKDOCS_REPO}"
+        branch: "gh-pages"
+        docs_path: "docs"
+        auto_deploy: true
+      
+      # VuePress
+      vuepress:
+        enabled: false
+        repository: "${VUEPRESS_REPO}"
+        branch: "gh-pages"
+        docs_path: "docs"
+        auto_deploy: true
+
+# ============================================================================
+# Content Transformation
+# ============================================================================
+
+transformation:
+  markdown:
+    # Markdown processing options
+    preserve_code_blocks: true
+    convert_links: true
+    handle_images: true
+    add_toc: false  # Table of contents
+  
+  html:
+    # HTML processing options
+    sanitize: true
+    preserve_structure: true
+    add_metadata: true
+  
+  platform_specific:
+    # Platform-specific transformations
+    github_wiki:
+      convert_wiki_links: true
+      handle_attachments: true
+    
+    notion:
+      convert_to_blocks: true
+      handle_embeds: true
+    
+    gitbook:
+      handle_summary: true
+      preserve_frontmatter: true
+
+# ============================================================================
+# Link Management
+# ============================================================================
+
+links:
+  cross_platform:
+    enabled: true
+    update_on_sync: true
+    link_format: "platform-specific"  # or "universal"
+  
+  broken_link_detection:
+    enabled: true
+    check_on_sync: true
+    alert_on_found: true
+  
+  link_mapping:
+    # Map internal links to external links
+    confluence: "https://company.atlassian.net/wiki/spaces/GA"
+    github: "https://github.com/org/repo"
+    gitbook: "https://docs.company.com"
+
+# ============================================================================
+# Version Management
+# ============================================================================
+
+versioning:
+  enabled: true
+  strategy: semantic  # semantic, date-based, manual
+  archive_old_versions: false
+  max_versions: 10
+  version_format: "{major}.{minor}.{patch}"
+
+# ============================================================================
+# Sync Schedule
+# ============================================================================
+
+sync_schedule:
+  # Platform-specific sync schedules
+  github_wiki: daily
+  api_docs: on-change
+  gitbook: weekly
+  notion: weekly
+  readme: on-release
+  blog: manual
+  static_sites: on-change
+
+# ============================================================================
+# Monitoring & Alerts
+# ============================================================================
+
+monitoring:
+  enabled: true
+  check_interval: 3600  # seconds
+  alert_on_failure: true
+  alert_channels: [slack, email]
+  metrics:
+    track_sync_frequency: true
+    track_success_rate: true
+    track_latency: true

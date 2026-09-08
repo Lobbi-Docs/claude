@@ -1,0 +1,45 @@
+# Rollback Log: {{RELEASE_VERSION}}
+
+**Issue:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+**Service:** {{SERVICE_NAME}}
+**Environment:** {{ENV}}
+**Rollback Started:** {{ROLLBACK_STARTED_AT}}
+
+## Page Properties
+
+| Key | Value |
+|-----|-------|
+| issue-key | {{JIRA_KEY}} |
+| release | {{RELEASE_VERSION}} |
+| incident | {{INCIDENT_ID}} |
+| env | {{ENV}} |
+| service | {{SERVICE_NAME}} |
+| project-key | {{JIRA_PROJECT}} |
+| quarter | {{QUARTER}} |
+| doc-type | rollback-log |
+
+## Labels
+
+`issue-key` `release` `incident` `env` `service`
+
+## Rollback Steps
+
+| Step | Action | Status | Owner | Timestamp |
+|------|--------|--------|-------|-----------|
+| 1 | Disable new traffic | {{STEP_1_STATUS}} | {{STEP_1_OWNER}} | {{STEP_1_TIME}} |
+| 2 | Revert deployment | {{STEP_2_STATUS}} | {{STEP_2_OWNER}} | {{STEP_2_TIME}} |
+| 3 | Validate health checks | {{STEP_3_STATUS}} | {{STEP_3_OWNER}} | {{STEP_3_TIME}} |
+| 4 | Close incident comms | {{STEP_4_STATUS}} | {{STEP_4_OWNER}} | {{STEP_4_TIME}} |
+
+## Validation
+
+{{ROLLBACK_VALIDATION}}
+
+## Linked Operations Index
+
+- Parent Index: {{OPERATIONS_INDEX_URL}}
+- Canonical Page URL: {{CANONICAL_PAGE_URL}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

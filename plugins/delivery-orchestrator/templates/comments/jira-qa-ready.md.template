@@ -1,0 +1,53 @@
+---
+template: jira-qa-ready
+version: 1.0.0
+description: Comment template for when issue is ready for QA
+---
+
+# 🧪 Ready for QA
+
+**Developer:** {{AUTHOR}}
+**Ready:** {{TIMESTAMP}}
+**Build:** {{BUILD_NUMBER}}
+
+## Test Environments
+
+- **Environment:** {{ENVIRONMENT_URL}}
+- **Version:** {{VERSION}}
+- **Database:** {{DATABASE_VERSION}}
+
+## Test Instructions
+
+{{TEST_INSTRUCTIONS}}
+
+## Test Scenarios
+
+{{TEST_SCENARIOS}}
+
+## Test Data
+
+{{TEST_DATA}}
+
+## Known Limitations
+
+{{KNOWN_LIMITATIONS}}
+
+## Credentials
+
+{{CREDENTIALS_INFO}}
+
+## Success Criteria
+
+{{SUCCESS_CRITERIA}}
+
+## Related PRs
+
+{{RELATED_PRS}}
+
+## Notes for QA
+
+{{QA_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

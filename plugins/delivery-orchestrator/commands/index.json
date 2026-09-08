@@ -1,0 +1,1909 @@
+{
+  "version": 1,
+  "plugin": "delivery-orchestrator",
+  "type": "commands",
+  "generatedBy": "scripts/generate-plugin-indexes.mjs",
+  "entries": [
+    {
+      "name": "deploy:approve",
+      "intent": "Approve deployment to production",
+      "tags": [
+        "deployment-pipeline",
+        "command",
+        "approve"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/deploy-approve.md"
+    },
+    {
+      "name": "deploy:history",
+      "intent": "View deployment history",
+      "tags": [
+        "deployment-pipeline",
+        "command",
+        "history"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/deploy-history.md"
+    },
+    {
+      "name": "deploy:rollback",
+      "intent": "Rollback a deployment",
+      "tags": [
+        "deployment-pipeline",
+        "command",
+        "rollback"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/deploy-rollback.md"
+    },
+    {
+      "name": "deploy:start",
+      "intent": "Start a new deployment pipeline",
+      "tags": [
+        "deployment-pipeline",
+        "command",
+        "start"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/deploy-start.md"
+    },
+    {
+      "name": "deploy:status",
+      "intent": "Check deployment pipeline status",
+      "tags": [
+        "deployment-pipeline",
+        "command",
+        "status"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/deploy-status.md"
+    },
+    {
+      "name": "fleet-orchestration:fleet-blockers",
+      "intent": "Measure what a lane is waiting on and whether it has already cleared - the waiter's check that caught every idle-on-done-work case",
+      "tags": [
+        "fleet-orchestration",
+        "command",
+        "coordination"
+      ],
+      "inputs": [
+        "lane-name",
+        "repo"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/fleet-fleet-blockers.md"
+    },
+    {
+      "name": "fleet-orchestration:fleet-census",
+      "intent": "Take a fleet census in one command - every lane's heartbeat age, state and class, malformed lines flagged, and the artifact reads for anything past the staleness threshold",
+      "tags": [
+        "fleet-orchestration",
+        "command",
+        "monitoring"
+      ],
+      "inputs": [
+        "lane-name"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/fleet-fleet-census.md"
+    },
+    {
+      "name": "fleet-orchestration:fleet-checks",
+      "intent": "Read a pull request's check state the way the merge gate must - typename-aware, grouped by run, two independent readings printed raw beside the verdict",
+      "tags": [
+        "fleet-orchestration",
+        "command",
+        "merge-gate"
+      ],
+      "inputs": [
+        "repo",
+        "pr"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/fleet-fleet-checks.md"
+    },
+    {
+      "name": "fleet-orchestration:fleet-decisions",
+      "intent": "Produce the founder decision sheet - every item only the human can decide, each with what it unblocks, what it costs, the exact action, and every state claim stamped with the moment it was measured",
+      "tags": [
+        "fleet-orchestration",
+        "command",
+        "reporting"
+      ],
+      "inputs": [
+        "output-path"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/fleet-fleet-decisions.md"
+    },
+    {
+      "name": "fleet-orchestration:fleet-start",
+      "intent": "Stand up a fleet run in one pass - doctor, config, run directory, briefs, and the exact text to paste into each session",
+      "tags": [
+        "fleet-orchestration",
+        "command",
+        "bootstrap"
+      ],
+      "inputs": [
+        "run-id"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/fleet-fleet-start.md"
+    },
+    {
+      "name": "fleet-orchestration:fleet-unblocks",
+      "intent": "After a merge, name both audiences it affects - lanes it unblocks and open PRs whose green it just invalidated - so the notification happens as part of the merge",
+      "tags": [
+        "fleet-orchestration",
+        "command",
+        "merge-gate"
+      ],
+      "inputs": [
+        "repo",
+        "pr"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/fleet-fleet-unblocks.md"
+    },
+    {
+      "name": "gh:actions",
+      "intent": "Author, audit, and cost-optimize GitHub Actions workflows including caching, matrices, permissions, and runtime",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "ci"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/gh-actions.md"
+    },
+    {
+      "name": "gh:advise",
+      "intent": "Get prioritized, evidence-backed recommendations for the next best actions across PRs, CI, issues, alerts, and releases",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "advisor"
+      ],
+      "inputs": [
+        "scope"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/gh-advise.md"
+    },
+    {
+      "name": "gh:audit",
+      "intent": "Audit repository hygiene across branch protection, templates, stale branches, settings, and workflow security",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "intel"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/gh-audit.md"
+    },
+    {
+      "name": "gh:backlog",
+      "intent": "Groom and prioritize the issue backlog by value, risk, staleness, and unblocking potential",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "planning"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/gh-backlog.md"
+    },
+    {
+      "name": "gh:ci",
+      "intent": "Triage CI failures by class and loop fix-push-recheck until required checks are green",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "ci"
+      ],
+      "inputs": [
+        "pr",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "commands/gh-ci.md"
+    },
+    {
+      "name": "gh:conflict",
+      "intent": "Predict which in-flight pull requests will conflict and resolve conflicts with intent-preserving merges",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "delivery"
+      ],
+      "inputs": [
+        "pr",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/gh-conflict.md"
+    },
+    {
+      "name": "gh:delegate",
+      "intent": "Hand well-scoped work to agents that run inside GitHub and track the pull requests they produce",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "agents"
+      ],
+      "inputs": [
+        "target",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/gh-delegate.md"
+    },
+    {
+      "name": "gh:deps",
+      "intent": "Assess dependency health and orchestrate upgrades in risk-ordered batches with verification between batches",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "security"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/gh-deps.md"
+    },
+    {
+      "name": "gh:insights",
+      "intent": "Report DORA four keys, change-failure hotspots, review latency, and flake rate with attribution to specific causes",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "intel"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/gh-insights.md"
+    },
+    {
+      "name": "gh:issue",
+      "intent": "Create, update, link, and decompose GitHub issues with well-formed bodies and correct relationships",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "issues"
+      ],
+      "inputs": [
+        "action",
+        "issue",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/gh-issue.md"
+    },
+    {
+      "name": "gh:merge-train",
+      "intent": "Land a stack or merge queue of pull requests in dependency order with automatic rebasing between landings",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "delivery"
+      ],
+      "inputs": [
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "commands/gh-merge-train.md"
+    },
+    {
+      "name": "gh:ownership",
+      "intent": "Synthesize CODEOWNERS from real authorship, find coverage gaps and bus-factor risk, and route reviewers",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "intel"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/gh-ownership.md"
+    },
+    {
+      "name": "gh:plan-prs",
+      "intent": "Decompose a goal into a dependency-ordered stack of independently reviewable and shippable pull requests",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "planning"
+      ],
+      "inputs": [
+        "goal",
+        "flags"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/gh-plan-prs.md"
+    },
+    {
+      "name": "gh:pr",
+      "intent": "Create, update, and iterate on pull requests with template-filled bodies and size discipline",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "delivery"
+      ],
+      "inputs": [
+        "action",
+        "pr",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/gh-pr.md"
+    },
+    {
+      "name": "gh:project",
+      "intent": "Read and update GitHub Projects boards, fields, and items across the REST and GraphQL surfaces",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "projects"
+      ],
+      "inputs": [
+        "action",
+        "project",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/gh-project.md"
+    },
+    {
+      "name": "gh:release",
+      "intent": "Run a release train from semver calculation through changelog, release notes, tagging, and publication",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "release"
+      ],
+      "inputs": [
+        "bump",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "commands/gh-release.md"
+    },
+    {
+      "name": "gh:review",
+      "intent": "Run a parallel multi-lens review board over a pull request and adversarially verify every finding before reporting",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "review"
+      ],
+      "inputs": [
+        "pr",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "high",
+      "path": "commands/gh-review.md"
+    },
+    {
+      "name": "gh:rollback",
+      "intent": "Plan and execute a revert or release rollback with blast-radius analysis and a forward-fix comparison",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "release"
+      ],
+      "inputs": [
+        "target",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/gh-rollback.md"
+    },
+    {
+      "name": "gh:security",
+      "intent": "Triage CodeQL, Dependabot, and secret-scanning alerts ranked by reachability rather than raw severity",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "security"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "commands/gh-security.md"
+    },
+    {
+      "name": "gh:setup",
+      "intent": "Detect how this session reaches GitHub, verify capabilities, and write merge policy and routing configuration",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "setup"
+      ],
+      "inputs": [
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/gh-setup.md"
+    },
+    {
+      "name": "gh:ship",
+      "intent": "Drive a change end to end from goal to merged commit through plan, branch, implement, PR, review, green CI, and merge",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "delivery"
+      ],
+      "inputs": [
+        "goal",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "commands/gh-ship.md"
+    },
+    {
+      "name": "gh:triage",
+      "intent": "Triage issues by deduplicating, classifying, labeling, sizing, and routing or decomposing them",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "issues"
+      ],
+      "inputs": [
+        "scope",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/gh-triage.md"
+    },
+    {
+      "name": "gh:watch",
+      "intent": "Subscribe to pull request activity and act autonomously on CI failures, review comments, and merge conflicts until the PR lands",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "delivery"
+      ],
+      "inputs": [
+        "pr",
+        "flags"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/gh-watch.md"
+    },
+    {
+      "name": "gh:workflow",
+      "intent": "List, inspect, validate, and run the declarative multi-agent workflow definitions bundled with this plugin",
+      "tags": [
+        "github-orchestrator",
+        "command",
+        "workflow"
+      ],
+      "inputs": [
+        "action",
+        "name",
+        "flags"
+      ],
+      "risk": "medium",
+      "cost": "high",
+      "path": "commands/gh-workflow.md"
+    },
+    {
+      "name": "jira:advise",
+      "intent": "Get prioritized, evidence-backed recommendations for the next best actions across Jira, sprints, PRs, and CI",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "advisor"
+      ],
+      "inputs": [
+        "scope"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/jira-advise.md"
+    },
+    {
+      "name": "jira:approve",
+      "intent": "Request, view, and process approvals (pr, deploy, release, issue)",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "approve"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-approve.md"
+    },
+    {
+      "name": "jira-orchestrator:batch",
+      "intent": "Jira Batch Operations",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "batch"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-batch.md"
+    },
+    {
+      "name": "jira:branch",
+      "intent": "Create feature branch with Jira issue key naming and auto-transition",
+      "tags": [
+        "jira",
+        "git",
+        "branches"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-branch.md"
+    },
+    {
+      "name": "jira:bulk-commit",
+      "intent": "Process multiple existing commits and send aggregated updates to Jira",
+      "tags": [
+        "jira",
+        "git",
+        "batch",
+        "smart-commits",
+        "time-tracking"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-bulk-commit.md"
+    },
+    {
+      "name": "jira:cancel",
+      "intent": "Cancel ongoing Jira issue orchestration and save checkpoint for resume",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "cancel"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-cancel.md"
+    },
+    {
+      "name": "jira:commit-template",
+      "intent": "Generate conventional commit templates from Jira issue context with smart commits",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "commit-template"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-commit-template.md"
+    },
+    {
+      "name": "jira:commit",
+      "intent": "Create git commit with Jira smart commit syntax for automatic issue updates",
+      "tags": [
+        "jira",
+        "git",
+        "smart-commit",
+        "automation"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-commit.md"
+    },
+    {
+      "name": "jira:compliance",
+      "intent": "Generate compliance reports, track controls, export audit evidence, and manage exceptions for SOC2, GDPR, and ISO27001",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "compliance"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-compliance.md"
+    },
+    {
+      "name": "jira:confluence",
+      "intent": "Read, write, sync, create, or link Confluence pages to Jira issues",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "confluence"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-confluence.md"
+    },
+    {
+      "name": "jira:council",
+      "intent": "Agent council review using blackboard pattern for comprehensive PR analysis",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "council"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-council.md"
+    },
+    {
+      "name": "jira:create-repo",
+      "intent": "Create a new modular Harness repository with full infrastructure scaffolding (Helm, Terraform, K8s), concise README with Confluence links, and Jira integration. Interactive by default.",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "create-repo"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-create-repo.md"
+    },
+    {
+      "name": "jira:deploy",
+      "intent": "Track deployment, update Jira with status, timestamps, metadata",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "deploy"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-deploy.md"
+    },
+    {
+      "name": "jira:docs-external",
+      "intent": "Publish documentation to external platforms (GitHub Wiki, API docs, GitBook, Notion, README updates, blog posts)",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "docs-external"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-docs-external.md"
+    },
+    {
+      "name": "jira:docs",
+      "intent": "Generate documentation for completed Jira issue work with Confluence sync",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "docs"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-docs.md"
+    },
+    {
+      "name": "jira:enterprise",
+      "intent": "Enterprise features - notifications, approvals, portfolio, compliance, exports",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "enterprise"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-enterprise.md"
+    },
+    {
+      "name": "jira:events",
+      "intent": "Query event sourcing system for audit trails, time-travel debugging, and state reconstruction",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "events"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-events.md"
+    },
+    {
+      "name": "jira:export",
+      "intent": "Export Jira issues and generate reports in multiple formats with templates and scheduling",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "export"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-export.md"
+    },
+    {
+      "name": "jira-orchestrator:harness-review",
+      "intent": "Harness PR Review Command",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "harness-review"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-harness-review.md"
+    },
+    {
+      "name": "jira:infra",
+      "intent": "Infrastructure management - create repos, deploy, manage pipelines",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "infra"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-infra.md"
+    },
+    {
+      "name": "jira-orchestrator:install-hooks",
+      "intent": "/jira:install-hooks",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "install-hooks"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-install-hooks.md"
+    },
+    {
+      "name": "jira:intelligence",
+      "intent": "Access AI-powered predictive analytics, smart prioritization, and learning insights",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "intelligence"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-intelligence.md"
+    },
+    {
+      "name": "jira:iterate",
+      "intent": "[DEPRECATED] Use /jira:pr --iterate instead",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "iterate"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-iterate.md"
+    },
+    {
+      "name": "jira:metrics",
+      "intent": "Generate real-time metrics dashboard with SLA tracking, agent performance, and throughput analysis",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "metrics"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-metrics.md"
+    },
+    {
+      "name": "jira:notify",
+      "intent": "Manage notifications, webhooks, channels, and subscriptions",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "notify"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-notify.md"
+    },
+    {
+      "name": "jira:orchestrate-advanced",
+      "intent": "Execute advanced orchestration patterns including Blackboard, Circuit Breaker, Dynamic Replanning, and Saga patterns",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "orchestrate-advanced"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-orchestrate-advanced.md"
+    },
+    {
+      "name": "jira:plan-prs",
+      "intent": "Analyze issue and create PR delivery strategy before coding",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "plan-prs"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-plan-prs.md"
+    },
+    {
+      "name": "jira-orchestrator:portfolio",
+      "intent": "Portfolio Management",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "portfolio"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-portfolio.md"
+    },
+    {
+      "name": "pr-fix",
+      "intent": "[DEPRECATED] Use /jira:pr --fix instead",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "pr-fix"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-pr-fix.md"
+    },
+    {
+      "name": "jira:pr",
+      "intent": "Create, fix, or iterate on pull requests for Jira issues",
+      "tags": [
+        "jira",
+        "harness",
+        "pull-request",
+        "automation"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-pr.md"
+    },
+    {
+      "name": "jira:prepare",
+      "intent": "Analyze task, decompose into subtasks, enrich with details, create TDD draft",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "prepare"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-prepare.md"
+    },
+    {
+      "name": "jira:process-worklogs",
+      "intent": "Process pending worklogs and post them to Jira",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "process-worklogs"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-process-worklogs.md"
+    },
+    {
+      "name": "jira:qa-review",
+      "intent": "Review QA tickets - improve content, create docs, respond to comments",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "qa-review"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-qa-review.md"
+    },
+    {
+      "name": "jira:quality",
+      "intent": "Generate quality intelligence report with tech debt analysis, health scoring, and predictive insights",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "quality"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-quality.md"
+    },
+    {
+      "name": "jira-orchestrator:reason",
+      "intent": "Reasoning Command",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "reason"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-reason.md"
+    },
+    {
+      "name": "jira:release",
+      "intent": "Multi-project release planning, coordination, and execution with automated release notes, go/no-go decisions, and rollback management",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "release"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-release.md"
+    },
+    {
+      "name": "jira:review",
+      "intent": "Comprehensive code review with security, performance, quality, and accessibility analysis",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "review"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-review.md"
+    },
+    {
+      "name": "jira:setup",
+      "intent": "Interactive setup wizard - OAuth auth, Neon PostgreSQL, Redis, Temporal workflows",
+      "tags": [
+        "jira",
+        "setup",
+        "configuration",
+        "oauth",
+        "mcp",
+        "neon",
+        "redis",
+        "temporal"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-setup.md"
+    },
+    {
+      "name": "jira:ship",
+      "intent": "One command to ship - intelligent question gathering, prepare, code, PR, and council review",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "ship"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-ship.md"
+    },
+    {
+      "name": "jira:sla",
+      "intent": "Monitor SLA status, configure SLA rules, generate SLA reports, and analyze SLA breaches",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "sla"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-sla.md"
+    },
+    {
+      "name": "jira:sprint-plan",
+      "intent": "Automated sprint planning with capacity calculation, backlog prioritization, and velocity-based commitment",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "sprint-plan"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-sprint-plan.md"
+    },
+    {
+      "name": "jira:sprint",
+      "intent": "Sprint planning, metrics, and quality - consolidated command for all sprint operations",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "sprint"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-sprint.md"
+    },
+    {
+      "name": "jira:status",
+      "intent": "Monitor active Jira orchestration sessions and track sub-agent progress across all phases",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "status"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-status.md"
+    },
+    {
+      "name": "jira:sync",
+      "intent": "Bi-directional sync - pull Jira details, push local progress, detect & resolve conflicts",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "sync"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-sync.md"
+    },
+    {
+      "name": "jira:team",
+      "intent": "Team and resource management - capacity, skills, workload, burnout, and forecasting",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "team"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-team.md"
+    },
+    {
+      "name": "jira:triage",
+      "intent": "Analyze issue to determine optimal workflow path",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "triage"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-triage.md"
+    },
+    {
+      "name": "jira:work",
+      "intent": "Orchestrate Jira issue work - parallelize sub-issues, assign experts, execute 6-phase protocol, document via Harness",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "work"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/jira-work.md"
+    },
+    {
+      "name": "jira:workflow",
+      "intent": "List, inspect, validate, and run declarative multi-agent workflows for Jira delivery",
+      "tags": [
+        "jira-orchestrator",
+        "command",
+        "workflow"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/jira-workflow.md"
+    },
+    {
+      "name": "linear:agent",
+      "intent": "Operate this plugin as a Linear agent — inspect sessions, emit activities, manage delegation, and read workspace agent guidance and skills",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "agent",
+        "agent-session"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "low",
+      "path": "commands/linear-agent.md"
+    },
+    {
+      "name": "linear:assign",
+      "intent": "Assign or reassign Linear issues; supports single, bulk, and round-robin assignment strategies",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "assign"
+      ],
+      "inputs": [
+        "id",
+        "assignee"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/linear-assign.md"
+    },
+    {
+      "name": "linear:attachment",
+      "intent": "Upload files to Linear, link external URLs as attachments, and download/inspect existing attachments",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "attachment"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/linear-attachment.md"
+    },
+    {
+      "name": "linear:comment",
+      "intent": "Comment on issues, reply in threads, add reactions; supports markdown editor features and customer-request linkage",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "comment"
+      ],
+      "inputs": [
+        "id",
+        "body"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/linear-comment.md"
+    },
+    {
+      "name": "linear:customer",
+      "intent": "Manage customers and customer requests — link to issues, track aggregate demand, route to teams",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "customer",
+        "customer-requests"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-customer.md"
+    },
+    {
+      "name": "linear:cycle",
+      "intent": "Plan, update, and report on Linear cycles (sprints) — velocity, scope changes, carry-over",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "cycle"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-cycle.md"
+    },
+    {
+      "name": "linear:documents",
+      "intent": "Manage Linear issue documents and project documents — create, update, link, and version",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "documents"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/linear-documents.md"
+    },
+    {
+      "name": "linear:harness-git",
+      "intent": "Harness Git Experience integration — bidirectional repo sync, signed commits, OAuth, auto-creation, rate-limit best practices, git cache, environments-as-code",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "harness",
+        "harness-git-experience",
+        "git-experience",
+        "bidir-sync",
+        "signed-commits"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/linear-harness-git.md"
+    },
+    {
+      "name": "linear:harness-platform",
+      "intent": "Harness Platform automation — API keys/JWT, custom approvals, tags, triggers, variables/expressions, connectors (YAML), authentication",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "harness",
+        "harness-platform",
+        "api-keys",
+        "triggers",
+        "approvals",
+        "connectors"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/linear-harness-platform.md"
+    },
+    {
+      "name": "linear:initiative",
+      "intent": "Manage Linear initiatives and sub-initiatives — strategic groupings of projects with their own status updates",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "initiative"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-initiative.md"
+    },
+    {
+      "name": "linear:issue",
+      "intent": "Create, edit, select, delete Linear issues with full feature support — sub-issues, templates, labels, priority, estimates, due dates",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "issue"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-issue.md"
+    },
+    {
+      "name": "linear:mcp",
+      "intent": "Connect and operate Linear's official remote MCP server, and decide when to route through it versus this plugin's own client",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "mcp"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/linear-mcp.md"
+    },
+    {
+      "name": "linear:project",
+      "intent": "Manage Linear projects — create, milestone planning, status updates, templates, overview, and documents",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "project"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-project.md"
+    },
+    {
+      "name": "linear:query",
+      "intent": "Run arbitrary GraphQL queries with cursor pagination, filtering DSL, and complexity-budget rate limiting",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "query",
+        "graphql"
+      ],
+      "inputs": [
+        "query"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "commands/linear-query.md"
+    },
+    {
+      "name": "linear:relations",
+      "intent": "Manage issue relations — blocks, blocked-by, duplicate, related, and parent/child",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "relations"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "commands/linear-relations.md"
+    },
+    {
+      "name": "linear:review",
+      "intent": "Work Linear Diffs — the in-Linear code review surface for GitHub pull requests, covering diffs, inline threads, review submission and merge",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "review",
+        "diffs",
+        "code-review"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/linear-review.md"
+    },
+    {
+      "name": "linear:setup",
+      "intent": "Configure the plugin end to end — Linear auth, the remote MCP server, webhooks, and the GitHub or Harness Code bridge",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "setup",
+        "auth",
+        "oauth"
+      ],
+      "inputs": [
+        "mode"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-setup.md"
+    },
+    {
+      "name": "linear:sla",
+      "intent": "Manage SLA policies, monitor breach risk, and surface escalations",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "sla"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-sla.md"
+    },
+    {
+      "name": "linear:swarm",
+      "intent": "Run many Claude Code workers in parallel against a Linear backlog, each in an isolated git worktree, reporting into Linear agent sessions",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "swarm",
+        "orchestration",
+        "conductor"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "commands/linear-swarm.md"
+    },
+    {
+      "name": "linear:sync",
+      "intent": "Two-way sync between Linear issues and a git host — GitHub or Harness Code — covering branches, pull requests, reviews and deploys",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "sync",
+        "github",
+        "harness",
+        "two-way-sync"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/linear-sync.md"
+    },
+    {
+      "name": "linear:team",
+      "intent": "Manage Linear teams, members, default team pages, and team settings",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "team"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-team.md"
+    },
+    {
+      "name": "linear:triage",
+      "intent": "Manage the Linear triage queue — list, route, accept, decline, and configure auto-triage rules",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "triage"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "commands/linear-triage.md"
+    },
+    {
+      "name": "linear:webhook",
+      "intent": "Register, verify, replay, and dead-letter Linear webhooks",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "webhook"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "low",
+      "path": "commands/linear-webhook.md"
+    },
+    {
+      "name": "linear:workflow",
+      "intent": "Configure team workflow states, transitions, and SLA-driven escalations",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "workflow"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "low",
+      "path": "commands/linear-workflow.md"
+    },
+    {
+      "name": "project-management-plugin:pm-anchor",
+      "intent": "Set or clear the focus anchor that keeps Claude on task across every turn",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-anchor"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-anchor.md"
+    },
+    {
+      "name": "project-management-plugin:pm-auto",
+      "intent": "Autonomous project execution loop that runs until completion or block",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-auto"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-auto.md"
+    },
+    {
+      "name": "project-management-plugin:pm-backlog",
+      "intent": "/pm:backlog — Backlog Management",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-backlog"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-backlog.md"
+    },
+    {
+      "name": "project-management-plugin:pm-budget",
+      "intent": "Cap the number of tool calls allowed for the current task; nudges Claude at 80% and 120%",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-budget"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-budget.md"
+    },
+    {
+      "name": "project-management-plugin:pm-checkpoint",
+      "intent": "Save or restore project state checkpoints",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-checkpoint"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-checkpoint.md"
+    },
+    {
+      "name": "project-management-plugin:pm-debug",
+      "intent": "Inspect or repair project state files and caches",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-debug"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-debug.md"
+    },
+    {
+      "name": "project-management-plugin:pm-delegate",
+      "intent": "Delegate a task to a specific specialized agent",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-delegate"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-delegate.md"
+    },
+    {
+      "name": "project-management-plugin:pm-done-when",
+      "intent": "Declare the binary-testable criteria Claude must verify before the session may end",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-done-when"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-done-when.md"
+    },
+    {
+      "name": "project-management-plugin:pm-drift",
+      "intent": "Audit the breadcrumb trail for scope drift, over-engineering, and criterion advancement",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-drift"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-drift.md"
+    },
+    {
+      "name": "project-management-plugin:pm-focus",
+      "intent": "Narrow execution scope to a specific phase, epic, or story",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-focus"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-focus.md"
+    },
+    {
+      "name": "project-management-plugin:pm-handoff",
+      "intent": "Snapshot active task state for post-/compact resume, or display the current handoff",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-handoff"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-handoff.md"
+    },
+    {
+      "name": "project-management-plugin:pm-init",
+      "intent": "8-phase interview-first project initialization with micro-task decomposition",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-init"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-init.md"
+    },
+    {
+      "name": "project-management-plugin:pm-integrate",
+      "intent": "Connect an external PM platform (Jira, Linear, Notion, Asana, Trello, ClickUp, Monday, Todoist, GitHub)",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-integrate"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-integrate.md"
+    },
+    {
+      "name": "project-management-plugin:pm-next",
+      "intent": "Show next actionable tasks based on dependencies and priority",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-next"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-next.md"
+    },
+    {
+      "name": "project-management-plugin:pm-plan",
+      "intent": "Recursive task decomposition from phases to stories to micro-tasks (5-15 min)",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-plan"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-plan.md"
+    },
+    {
+      "name": "project-management-plugin:pm-report",
+      "intent": "Generate a full project report with progress, risks, and artifacts",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-report"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-report.md"
+    },
+    {
+      "name": "project-management-plugin:pm-research",
+      "intent": "Run deep research protocol for a specific task using codebase, Perplexity, Context7, and Firecrawl sources",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-research"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-research.md"
+    },
+    {
+      "name": "project-management-plugin:pm-retrospective",
+      "intent": "Post-completion retrospective analysis with lessons learned",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-retrospective"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-retrospective.md"
+    },
+    {
+      "name": "project-management-plugin:pm-review",
+      "intent": "Multi-agent quality council review of completed work",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-review"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-review.md"
+    },
+    {
+      "name": "project-management-plugin:pm-risk",
+      "intent": "Assess project risks with severity scoring and mitigation suggestions",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-risk"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-risk.md"
+    },
+    {
+      "name": "project-management-plugin:pm-scope",
+      "intent": "Manage the file/command allowlist that blocks out-of-scope edits during the active task",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-scope"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-scope.md"
+    },
+    {
+      "name": "project-management-plugin:pm-status",
+      "intent": "ASCII progress dashboard for the active project",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-status"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-status.md"
+    },
+    {
+      "name": "project-management-plugin:pm-sync",
+      "intent": "Bidirectional sync between local project state and integrated PM platform",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-sync"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-sync.md"
+    },
+    {
+      "name": "project-management-plugin:pm-task",
+      "intent": "/pm:task — Task Management CRUD",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-task"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-task.md"
+    },
+    {
+      "name": "project-management-plugin:pm-template",
+      "intent": "Use or create reusable project templates (webapp, api-service, ml-pipeline, mobile-app, infrastructure)",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-template"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-template.md"
+    },
+    {
+      "name": "project-management-plugin:pm-work",
+      "intent": "/pm:work — Research-First Task Execution",
+      "tags": [
+        "project-management-plugin",
+        "command",
+        "pm-work"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "commands/pm-pm-work.md"
+    }
+  ]
+}

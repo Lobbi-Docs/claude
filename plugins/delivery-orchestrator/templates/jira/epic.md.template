@@ -1,0 +1,133 @@
+# {{EPIC_TITLE}}
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+## Business Objective
+
+{{BUSINESS_OBJECTIVE}}
+
+### Problem Statement
+
+{{PROBLEM_STATEMENT}}
+
+### Target Outcome
+
+{{TARGET_OUTCOME}}
+
+## Success Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| {{METRIC_1}} | {{TARGET_1}} | {{METHOD_1}} |
+| {{METRIC_2}} | {{TARGET_2}} | {{METHOD_2}} |
+| {{METRIC_3}} | {{TARGET_3}} | {{METHOD_3}} |
+
+## Timeline & Roadmap
+
+**Target Start:** {{START_DATE}}
+**Target Completion:** {{END_DATE}}
+**Duration:** {{DURATION}}
+
+### Phases
+
+1. **Phase 1: {{PHASE_1_NAME}}** ({{PHASE_1_DURATION}})
+   - {{PHASE_1_DELIVERABLE_1}}
+   - {{PHASE_1_DELIVERABLE_2}}
+
+2. **Phase 2: {{PHASE_2_NAME}}** ({{PHASE_2_DURATION}})
+   - {{PHASE_2_DELIVERABLE_1}}
+   - {{PHASE_2_DELIVERABLE_2}}
+
+3. **Phase 3: {{PHASE_3_NAME}}** ({{PHASE_3_DURATION}})
+   - {{PHASE_3_DELIVERABLE_1}}
+   - {{PHASE_3_DELIVERABLE_2}}
+
+## Stakeholders
+
+| Role | Name | Involvement |
+|------|------|-------------|
+| Executive Sponsor | {{SPONSOR_NAME}} | {{SPONSOR_ROLE}} |
+| Product Owner | {{PO_NAME}} | {{PO_ROLE}} |
+| Technical Lead | {{TECH_LEAD_NAME}} | {{TECH_LEAD_ROLE}} |
+| Key Stakeholder | {{STAKEHOLDER_NAME}} | {{STAKEHOLDER_ROLE}} |
+
+## Child Issues
+
+### Stories
+- [ ] {{STORY_1_KEY}} - {{STORY_1_TITLE}}
+- [ ] {{STORY_2_KEY}} - {{STORY_2_TITLE}}
+- [ ] {{STORY_3_KEY}} - {{STORY_3_TITLE}}
+
+### Technical Tasks
+- [ ] {{TASK_1_KEY}} - {{TASK_1_TITLE}}
+- [ ] {{TASK_2_KEY}} - {{TASK_2_TITLE}}
+
+### Spikes
+- [ ] {{SPIKE_1_KEY}} - {{SPIKE_1_TITLE}}
+
+## Dependencies
+
+### Upstream Dependencies (Blocking This Epic)
+- {{UPSTREAM_DEP_1}} - {{UPSTREAM_STATUS_1}}
+- {{UPSTREAM_DEP_2}} - {{UPSTREAM_STATUS_2}}
+
+### Downstream Dependencies (Blocked by This Epic)
+- {{DOWNSTREAM_DEP_1}}
+- {{DOWNSTREAM_DEP_2}}
+
+### External Dependencies
+- {{EXTERNAL_DEP_1}} - Owner: {{EXTERNAL_OWNER_1}}
+- {{EXTERNAL_DEP_2}} - Owner: {{EXTERNAL_OWNER_2}}
+
+## Risks & Mitigation
+
+| Risk | Probability | Impact | Mitigation Strategy |
+|------|-------------|--------|-------------------|
+| {{RISK_1}} | {{PROB_1}} | {{IMPACT_1}} | {{MITIGATION_1}} |
+| {{RISK_2}} | {{PROB_2}} | {{IMPACT_2}} | {{MITIGATION_2}} |
+
+## Technical Scope
+
+### In Scope
+- {{IN_SCOPE_1}}
+- {{IN_SCOPE_2}}
+- {{IN_SCOPE_3}}
+
+### Out of Scope
+- {{OUT_SCOPE_1}}
+- {{OUT_SCOPE_2}}
+
+### Future Considerations
+- {{FUTURE_1}}
+- {{FUTURE_2}}
+
+## Release Notes
+
+### User-Facing Changes
+{{USER_FACING_CHANGES}}
+
+### Internal Changes
+{{INTERNAL_CHANGES}}
+
+## Documentation
+
+- [ ] Architecture Decision Records (ADRs)
+- [ ] API Documentation
+- [ ] User Guide Updates
+- [ ] Training Materials
+- [ ] Runbook Updates
+
+## Acceptance Criteria
+
+- [ ] All child issues completed
+- [ ] Success metrics achieved
+- [ ] Stakeholder sign-off obtained
+- [ ] Documentation complete
+- [ ] Production deployment successful
+
+---
+
+**Epic Owner:** {{EPIC_OWNER}}
+**Team:** {{TEAM_NAME}}
+**Created:** {{CREATED_DATE}}
+**Last Updated:** {{UPDATED_DATE}}

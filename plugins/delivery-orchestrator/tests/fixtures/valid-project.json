@@ -1,0 +1,20 @@
+{
+  "id": "fixture-alpha",
+  "name": "Fixture Alpha",
+  "goal": "A minimal but valid project used for unit tests.",
+  "type": "software",
+  "status": "PLANNED",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Foundation",
+      "status": "PENDING",
+      "task_ids": [
+        "T-001",
+        "T-002"
+      ]
+    }
+  ],
+  "created_at": "2026-04-23T00:00:00Z",
+  "updated_at": "2026-04-23T00:00:00Z"
+}

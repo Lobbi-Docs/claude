@@ -1,0 +1,141 @@
+# {{SUBTASK_TITLE}}
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+## Parent Context
+
+**Parent Issue:** {{PARENT_KEY}} - {{PARENT_TITLE}}
+**Parent Type:** {{PARENT_TYPE}}
+
+## Scope
+
+{{SUBTASK_SCOPE}}
+
+### Specific Deliverable
+
+{{SPECIFIC_DELIVERABLE}}
+
+### Boundaries
+
+**In Scope:**
+- {{IN_SCOPE_1}}
+- {{IN_SCOPE_2}}
+- {{IN_SCOPE_3}}
+
+**Out of Scope:**
+- {{OUT_SCOPE_1}}
+- {{OUT_SCOPE_2}}
+
+## Implementation Details
+
+### Approach
+
+{{IMPLEMENTATION_APPROACH}}
+
+### Technical Steps
+
+1. {{TECH_STEP_1}}
+2. {{TECH_STEP_2}}
+3. {{TECH_STEP_3}}
+4. {{TECH_STEP_4}}
+
+### Files to Change
+
+- `{{FILE_1}}` - {{CHANGE_1}}
+- `{{FILE_2}}` - {{CHANGE_2}}
+- `{{FILE_3}}` - {{CHANGE_3}}
+
+### Code Changes
+
+```{{CODE_LANGUAGE}}
+{{CODE_EXAMPLE}}
+```
+
+## Dependencies
+
+### Blocked By
+- {{BLOCKING_SUBTASK_1}}
+- {{BLOCKING_SUBTASK_2}}
+
+### Blocking
+- {{BLOCKED_SUBTASK_1}}
+- {{BLOCKED_SUBTASK_2}}
+
+### External Dependencies
+- {{EXTERNAL_DEP_1}}
+- {{EXTERNAL_DEP_2}}
+
+## Testing
+
+### Test Coverage
+
+- [ ] {{TEST_1}}
+- [ ] {{TEST_2}}
+- [ ] {{TEST_3}}
+
+### Test Code
+
+```{{TEST_LANGUAGE}}
+{{TEST_CODE}}
+```
+
+### Manual Verification
+
+1. {{MANUAL_VERIFY_1}}
+2. {{MANUAL_VERIFY_2}}
+3. {{MANUAL_VERIFY_3}}
+
+## Completion Criteria
+
+- [ ] {{CRITERIA_1}}
+- [ ] {{CRITERIA_2}}
+- [ ] {{CRITERIA_3}}
+- [ ] Code reviewed
+- [ ] Tests passing
+- [ ] Documentation updated
+- [ ] Changes committed
+
+## Acceptance Checklist
+
+- [ ] Functionality works as expected
+- [ ] No regressions introduced
+- [ ] Performance acceptable
+- [ ] Error handling in place
+- [ ] Logging added
+- [ ] Security considerations addressed
+- [ ] Code style consistent
+- [ ] Comments added where needed
+
+## Documentation
+
+### Code Comments
+
+{{CODE_COMMENTS_DESCRIPTION}}
+
+### Documentation Updates
+
+- [ ] {{DOC_UPDATE_1}}
+- [ ] {{DOC_UPDATE_2}}
+
+## Notes
+
+{{ADDITIONAL_NOTES}}
+
+## Resources
+
+- Related Documentation: {{DOC_URL}}
+- Design Reference: {{DESIGN_URL}}
+- Example Implementation: {{EXAMPLE_URL}}
+
+## Time Tracking
+
+**Estimated:** {{ESTIMATED_HOURS}}h
+**Actual:** {{ACTUAL_HOURS}}h
+**Remaining:** {{REMAINING_HOURS}}h
+
+---
+
+**Assignee:** {{ASSIGNEE}}
+**Sprint:** {{SPRINT_NAME}}
+**Created:** {{CREATED_DATE}}
+**Last Updated:** {{UPDATED_DATE}}

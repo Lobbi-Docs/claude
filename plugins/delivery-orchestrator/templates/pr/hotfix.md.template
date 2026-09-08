@@ -1,0 +1,171 @@
+# 🚨 HOTFIX: {{HOTFIX_TITLE}}
+
+## Incident Summary
+
+**Severity:** {{SEVERITY}} | **Status:** {{STATUS}} | **Environment:** {{ENVIRONMENT}}
+
+**Incident Reference:** [{{INCIDENT_ID}}]({{INCIDENT_URL}})
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}})
+
+### Timeline
+- **Detected:** {{DETECTION_TIME}}
+- **Impact Started:** {{IMPACT_START_TIME}}
+- **Fix Started:** {{FIX_START_TIME}}
+- **Fix Deployed:** {{DEPLOYMENT_TIME}}
+
+## Impact Assessment
+
+### Business Impact
+{{BUSINESS_IMPACT}}
+
+### Affected Services
+- {{SERVICE_1}}
+- {{SERVICE_2}}
+
+### Affected Users
+{{USER_IMPACT_DESCRIPTION}}
+
+### Metrics
+- **Users Affected:** {{AFFECTED_USER_COUNT}}
+- **Error Rate:** {{ERROR_RATE}}
+- **Downtime:** {{DOWNTIME_DURATION}}
+- **Revenue Impact:** {{REVENUE_IMPACT}}
+
+## Root Cause
+
+{{ROOT_CAUSE_SUMMARY}}
+
+### Technical Details
+{{TECHNICAL_ROOT_CAUSE}}
+
+## Fix Description
+
+### Changes Made
+{{FIX_DESCRIPTION}}
+
+### Files Modified
+- {{FILE_1}} - {{CHANGE_1}}
+- {{FILE_2}} - {{CHANGE_2}}
+
+### Critical Code Changes
+```{{LANGUAGE}}
+// Emergency Fix
+{{CODE_CHANGES}}
+```
+
+## Testing Performed
+
+### Pre-Deployment Verification
+- [ ] {{TEST_1}}
+- [ ] {{TEST_2}}
+- [ ] {{TEST_3}}
+
+### Staging Environment Results
+{{STAGING_TEST_RESULTS}}
+
+## Deployment Plan
+
+### Deployment Steps
+1. {{DEPLOY_STEP_1}}
+2. {{DEPLOY_STEP_2}}
+3. {{DEPLOY_STEP_3}}
+
+### Deployment Window
+{{DEPLOYMENT_WINDOW}}
+
+### Services to Restart
+- {{SERVICE_1}}
+- {{SERVICE_2}}
+
+### Configuration Changes
+{{CONFIG_CHANGES}}
+
+## Rollback Plan
+
+### Rollback Trigger Conditions
+- {{ROLLBACK_CONDITION_1}}
+- {{ROLLBACK_CONDITION_2}}
+
+### Rollback Steps
+1. {{ROLLBACK_STEP_1}}
+2. {{ROLLBACK_STEP_2}}
+3. {{ROLLBACK_STEP_3}}
+
+### Rollback Time Estimate
+{{ROLLBACK_TIME}}
+
+## Post-Deployment Verification
+
+### Health Checks
+- [ ] {{HEALTH_CHECK_1}}
+- [ ] {{HEALTH_CHECK_2}}
+- [ ] {{HEALTH_CHECK_3}}
+
+### Monitoring Queries
+```{{QUERY_LANGUAGE}}
+{{MONITORING_QUERIES}}
+```
+
+### Success Metrics
+- {{SUCCESS_METRIC_1}}
+- {{SUCCESS_METRIC_2}}
+
+### Monitoring Duration
+{{MONITORING_DURATION}}
+
+## Communication Plan
+
+### Stakeholders Notified
+- {{STAKEHOLDER_1}}
+- {{STAKEHOLDER_2}}
+
+### Status Page Update
+{{STATUS_PAGE_MESSAGE}}
+
+### Customer Communication
+{{CUSTOMER_COMMUNICATION}}
+
+## Follow-Up Actions
+
+### Immediate (Post-Deployment)
+- [ ] {{IMMEDIATE_ACTION_1}}
+- [ ] {{IMMEDIATE_ACTION_2}}
+
+### Short-Term (Next Sprint)
+- [ ] {{SHORT_TERM_ACTION_1}}
+- [ ] {{SHORT_TERM_ACTION_2}}
+
+### Long-Term Prevention
+- [ ] {{PREVENTION_ACTION_1}}
+- [ ] {{PREVENTION_ACTION_2}}
+
+### Post-Mortem Scheduled
+{{POST_MORTEM_SCHEDULE}}
+
+## Approval
+
+### Approvers Required
+- [ ] {{APPROVER_1}} - {{ROLE_1}}
+- [ ] {{APPROVER_2}} - {{ROLE_2}}
+- [ ] {{APPROVER_3}} - {{ROLE_3}}
+
+## Checklist
+
+- [ ] Incident severity confirmed
+- [ ] Root cause identified
+- [ ] Fix tested in staging
+- [ ] Rollback plan documented
+- [ ] Approvers notified
+- [ ] Monitoring queries prepared
+- [ ] Communication plan executed
+- [ ] Post-deployment verification plan ready
+- [ ] Post-mortem scheduled
+- [ ] Jira ticket updated
+
+## Additional Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

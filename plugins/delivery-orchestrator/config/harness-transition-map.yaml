@@ -1,0 +1,170 @@
+{
+  "version": "1.0",
+  "description": "Harness execution state and failure strategy to Jira transition mappings",
+  "mappings": [
+    {
+      "when": {
+        "state": "QUEUED"
+      },
+      "transition": "Ready for Deploy",
+      "comment": "Harness execution {{executionId}} queued.",
+      "properties": {
+        "harness.phase": "queued"
+      }
+    },
+    {
+      "when": {
+        "state": "RUNNING"
+      },
+      "transition": "Deploying",
+      "comment": "Deployment is running in Harness.",
+      "properties": {
+        "harness.phase": "deploying"
+      }
+    },
+    {
+      "when": {
+        "state": "SUCCEEDED"
+      },
+      "transition": "Done",
+      "comment": "Deployment succeeded and release can be closed.",
+      "properties": {
+        "harness.result": "success"
+      }
+    },
+    {
+      "when": {
+        "state": "FAILED"
+      },
+      "transition": "Failed",
+      "comment": "Deployment failed. Review pipeline logs and mitigation plan.",
+      "properties": {
+        "harness.result": "failed"
+      }
+    },
+    {
+      "when": {
+        "state": "FAILED",
+        "failureStrategyOutcome": "MANUAL_APPROVAL_TIMEOUT"
+      },
+      "transition": "Blocked",
+      "comment": "Manual approval timed out; release is blocked pending owner action.",
+      "properties": {
+        "harness.failure.outcome": "manual_approval_timeout"
+      }
+    },
+    {
+      "when": {
+        "state": "ABORTED"
+      },
+      "transition": "Aborted",
+      "comment": "Deployment aborted by operator or policy. Investigate and re-queue if needed.",
+      "properties": {
+        "harness.result": "aborted"
+      }
+    },
+    {
+      "when": {
+        "state": "ROLLBACK_RUNNING",
+        "failureStrategyOutcome": "PARTIAL_ROLLBACK"
+      },
+      "transition": "Rollback In Progress",
+      "comment": "Partial rollback in progress; validate impacted components before closure.",
+      "properties": {
+        "harness.rollback": "partial"
+      }
+    },
+    {
+      "when": {
+        "state": "VERIFYING",
+        "failureStrategyOutcome": "POST_DEPLOY_VERIFICATION_FAILED"
+      },
+      "transition": "Verification Failed",
+      "comment": "Post-deploy verification failed. Initiating rollback strategy.",
+      "properties": {
+        "harness.verification": "failed"
+      }
+    },
+    {
+      "when": {
+        "state": "REDEPLOYED",
+        "failureStrategyOutcome": "AFTER_ROLLBACK"
+      },
+      "transition": "Ready for Redeploy Validation",
+      "comment": "Redeploy completed after rollback; awaiting validation checks.",
+      "properties": {
+        "harness.redeploy": "after_rollback"
+      }
+    },
+    {
+      "when": {
+        "state": "VERIFYING"
+      },
+      "transition": "Verifying",
+      "comment": "Verification checks running.",
+      "properties": {
+        "harness.phase": "verifying"
+      }
+    },
+    {
+      "when": {
+        "state": "ROLLBACK_REQUIRED"
+      },
+      "transition": "Rollback Required",
+      "comment": "Rollback required before proceeding.",
+      "properties": {
+        "harness.rollback": "required"
+      }
+    },
+    {
+      "when": {
+        "state": "ROLLBACK_RUNNING"
+      },
+      "transition": "Rollback In Progress",
+      "comment": "Rollback execution started.",
+      "properties": {
+        "harness.rollback": "running"
+      }
+    },
+    {
+      "when": {
+        "state": "ROLLBACK_SUCCEEDED"
+      },
+      "transition": "Recovered",
+      "comment": "Rollback completed and service recovered.",
+      "properties": {
+        "harness.rollback": "recovered"
+      }
+    },
+    {
+      "when": {
+        "state": "INCIDENT_OPEN"
+      },
+      "transition": "Incident",
+      "comment": "Incident escalation triggered from release pipeline.",
+      "properties": {
+        "harness.incident": "open"
+      }
+    },
+    {
+      "when": {
+        "state": "INCIDENT_MITIGATED"
+      },
+      "transition": "Mitigated",
+      "comment": "Incident impact mitigated.",
+      "properties": {
+        "harness.incident": "mitigated"
+      }
+    },
+    {
+      "when": {
+        "state": "POSTMORTEM_REQUIRED"
+      },
+      "transition": "Postmortem",
+      "comment": "Postmortem required for incident closure.",
+      "properties": {
+        "harness.incident": "postmortem"
+      }
+    }
+  ]
+}

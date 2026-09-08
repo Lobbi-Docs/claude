@@ -1,0 +1,220 @@
+{
+  "$schema": "../schemas/flags.schema.json",
+  "version": "1.0.0",
+  "description": "Comprehensive flag system for Jira Orchestrator commands",
+
+  "globalFlags": {
+    "output": {
+      "--verbose": {"short": "-v", "type": "boolean", "default": false, "description": "Enable verbose output", "env": "JIRA_VERBOSE"},
+      "--quiet": {"short": "-q", "type": "boolean", "default": false, "description": "Minimal output", "conflicts": ["--verbose"]},
+      "--json": {"short": "-j", "type": "boolean", "default": false, "description": "JSON output"},
+      "--yaml": {"type": "boolean", "default": false, "description": "YAML output"},
+      "--no-color": {"type": "boolean", "default": false, "description": "Disable colors", "env": "NO_COLOR"},
+      "--log-file": {"short": "-l", "type": "string", "description": "Log to file"}
+    },
+    "execution": {
+      "--dry-run": {"short": "-n", "type": "boolean", "default": false, "description": "Show without executing", "safe": true},
+      "--interactive": {"short": "-i", "type": "boolean", "default": false, "description": "Prompt before actions"},
+      "--yes": {"short": "-y", "type": "boolean", "default": false, "description": "Auto-confirm", "conflicts": ["--interactive"]},
+      "--timeout": {"short": "-t", "type": "integer", "default": 300, "min": 30, "max": 3600, "description": "Timeout (seconds)", "env": "JIRA_TIMEOUT"},
+      "--retry": {"type": "integer", "default": 3, "min": 0, "max": 10, "description": "Retry count"},
+      "--fail-fast": {"type": "boolean", "default": false, "description": "Stop on first error"}
+    },
+    "configuration": {
+      "--config": {"short": "-c", "type": "string", "description": "Config file path"},
+      "--profile": {"short": "-p", "type": "string", "default": "default", "description": "Config profile"},
+      "--preset": {"type": "string", "description": "Flag preset"},
+      "--env": {"short": "-e", "type": "string", "enum": ["dev", "staging", "prod"], "default": "dev", "description": "Environment"}
+    },
+    "debugging": {
+      "--debug": {"short": "-d", "type": "boolean", "default": false, "description": "Debug mode"},
+      "--trace": {"type": "boolean", "default": false, "description": "Execution tracing"},
+      "--profile-perf": {"type": "boolean", "default": false, "description": "Performance profiling"}
+    }
+  },
+
+  "orchestrationFlags": {
+    "agents": {
+      "--agents": {"short": "-a", "type": "integer", "default": 5, "min": 1, "max": 13, "description": "Number of agents"},
+      "--model": {"short": "-m", "type": "string", "enum": ["opus", "sonnet", "haiku", "auto"], "default": "auto", "description": "Agent model", "env": "JIRA_DEFAULT_MODEL"},
+      "--model-strategy": {"type": "string", "enum": ["cost-optimized", "speed-optimized", "quality-optimized", "balanced"], "default": "balanced", "description": "Model routing"},
+      "--parallel": {"type": "boolean", "default": true, "description": "Parallel execution"},
+      "--sequential": {"type": "boolean", "default": false, "description": "Sequential execution", "conflicts": ["--parallel"]},
+      "--max-concurrent": {"type": "integer", "default": 5, "min": 1, "max": 10, "description": "Max concurrent agents"}
+    },
+    "phases": {
+      "--phases": {"type": "array", "items": ["explore", "plan", "code", "test", "fix", "document"], "default": ["explore", "plan", "code", "test", "fix", "document"], "description": "Phases to execute"},
+      "--skip-phases": {"type": "array", "items": ["explore", "plan", "code", "test", "fix", "document"], "default": [], "description": "Phases to skip"},
+      "--start-phase": {"type": "string", "enum": ["explore", "plan", "code", "test", "fix", "document"], "description": "Start phase"},
+      "--end-phase": {"type": "string", "enum": ["explore", "plan", "code", "test", "fix", "document"], "description": "End phase"}
+    },
+    "checkpointing": {
+      "--checkpoint": {"type": "boolean", "default": true, "description": "Save checkpoints"},
+      "--checkpoint-interval": {"type": "integer", "default": 300, "description": "Checkpoint interval (s)"},
+      "--resume": {"short": "-r", "type": "boolean", "default": false, "description": "Resume from checkpoint"},
+      "--resume-from": {"type": "string", "description": "Resume from specific checkpoint"},
+      "--checkpoint-dir": {"type": "string", "default": ".jira-checkpoints", "description": "Checkpoint directory"}
+    },
+    "coordination": {
+      "--blackboard": {"type": "boolean", "default": true, "description": "Blackboard pattern"},
+      "--hierarchy": {"type": "string", "enum": ["flat", "tree", "mesh", "star"], "default": "tree", "description": "Agent hierarchy"},
+      "--domain-routing": {"type": "boolean", "default": true, "description": "Domain-based routing"}
+    }
+  },
+
+  "jiraFlags": {
+    "issue": {
+      "--project": {"short": "-P", "type": "string", "description": "Jira project", "env": "JIRA_PROJECT"},
+      "--assignee": {"type": "string", "description": "Assignee"},
+      "--reporter": {"type": "string", "description": "Reporter"},
+      "--labels": {"type": "array", "description": "Issue labels"},
+      "--components": {"type": "array", "description": "Components"},
+      "--priority": {"type": "string", "enum": ["lowest", "low", "medium", "high", "highest", "blocker"], "description": "Priority"},
+      "--story-points": {"type": "integer", "min": 1, "max": 100, "description": "Story points"}
+    },
+    "sprint": {
+      "--sprint": {"short": "-s", "type": "string", "description": "Sprint name/ID"},
+      "--sprint-active": {"type": "boolean", "default": false, "description": "Active sprint"},
+      "--sprint-next": {"type": "boolean", "default": false, "description": "Next sprint"},
+      "--backlog": {"type": "boolean", "default": false, "description": "Move to backlog"}
+    },
+    "linking": {
+      "--epic": {"type": "string", "description": "Epic key"},
+      "--parent": {"type": "string", "description": "Parent issue"},
+      "--blocks": {"type": "array", "description": "Blocking issues"},
+      "--blocked-by": {"type": "array", "description": "Blocked by"},
+      "--relates-to": {"type": "array", "description": "Related issues"},
+      "--duplicates": {"type": "string", "description": "Duplicate of"}
+    },
+    "transitions": {
+      "--transition": {"type": "string", "description": "Transition status"},
+      "--auto-transition": {"type": "boolean", "default": true, "description": "Auto transition"},
+      "--transition-comment": {"type": "string", "description": "Transition comment"}
+    }
+  },
+
+  "reviewFlags": {
+    "depth": {
+      "--depth": {"type": "string", "enum": ["quick", "standard", "deep", "exhaustive"], "default": "standard", "description": "Review depth"},
+      "--quick": {"type": "boolean", "default": false, "description": "Quick review", "sets": {"--depth": "quick"}},
+      "--deep": {"type": "boolean", "default": false, "description": "Deep review", "sets": {"--depth": "deep"}},
+      "--exhaustive": {"type": "boolean", "default": false, "description": "Exhaustive review", "sets": {"--depth": "exhaustive"}}
+    },
+    "focus": {
+      "--focus": {"type": "array", "items": ["security", "performance", "architecture", "testing", "documentation", "accessibility", "maintainability"], "default": ["security", "performance", "architecture"], "description": "Focus areas"},
+      "--security-only": {"type": "boolean", "default": false, "description": "Security only", "sets": {"--focus": ["security"]}},
+      "--perf-only": {"type": "boolean", "default": false, "description": "Performance only", "sets": {"--focus": ["performance"]}}
+    },
+    "council": {
+      "--council": {"type": "boolean", "default": false, "description": "Agent council"},
+      "--council-size": {"type": "integer", "default": 5, "min": 3, "max": 11, "description": "Council size"},
+      "--council-protocol": {"type": "string", "enum": ["adversarial", "socratic", "dialectic", "jury", "delphi", "devils-advocate", "six-thinking-hats", "red-blue-team"], "default": "socratic", "description": "Council protocol"},
+      "--council-timeout": {"type": "integer", "default": 600, "description": "Council timeout (s)"},
+      "--require-consensus": {"type": "boolean", "default": false, "description": "Require consensus"},
+      "--majority-threshold": {"type": "number", "default": 0.6, "min": 0.5, "max": 1.0, "description": "Majority threshold"}
+    },
+    "quality": {
+      "--min-coverage": {"type": "integer", "default": 80, "min": 0, "max": 100, "description": "Min coverage %"},
+      "--max-complexity": {"type": "integer", "default": 10, "min": 1, "max": 50, "description": "Max complexity"},
+      "--lint-strict": {"type": "boolean", "default": false, "description": "Strict linting"},
+      "--type-strict": {"type": "boolean", "default": true, "description": "Strict types"}
+    },
+    "autofix": {
+      "--auto-fix": {"type": "boolean", "default": false, "description": "Auto-fix issues"},
+      "--fix-style": {"type": "boolean", "default": true, "description": "Fix style"},
+      "--fix-imports": {"type": "boolean", "default": true, "description": "Fix imports"},
+      "--fix-types": {"type": "boolean", "default": false, "description": "Fix types (experimental)"},
+      "--fix-security": {"type": "boolean", "default": false, "description": "Fix security (review required)"}
+    }
+  },
+
+  "gitFlags": {
+    "branching": {
+      "--branch-prefix": {"type": "string", "default": "feature", "enum": ["feature", "bugfix", "hotfix", "release", "chore", "refactor"], "description": "Branch prefix"},
+      "--branch-pattern": {"type": "string", "default": "{prefix}/{issue-key}-{slug}", "description": "Branch pattern"},
+      "--from-branch": {"type": "string", "default": "main", "description": "Source branch"},
+      "--no-branch": {"type": "boolean", "default": false, "description": "Skip branch creation"}
+    },
+    "commits": {
+      "--commit-style": {"type": "string", "enum": ["conventional", "gitmoji", "simple", "detailed"], "default": "conventional", "description": "Commit style"},
+      "--sign-commits": {"type": "boolean", "default": false, "description": "GPG sign"},
+      "--co-authors": {"type": "array", "description": "Co-authors"},
+      "--no-verify": {"type": "boolean", "default": false, "description": "Skip hooks (not recommended)"}
+    },
+    "pr": {
+      "--draft": {"type": "boolean", "default": false, "description": "Draft PR"},
+      "--reviewers": {"type": "array", "description": "Reviewers"},
+      "--team-reviewers": {"type": "array", "description": "Team reviewers"},
+      "--labels": {"type": "array", "description": "PR labels"},
+      "--milestone": {"type": "string", "description": "Milestone"},
+      "--auto-merge": {"type": "boolean", "default": false, "description": "Auto-merge"},
+      "--merge-method": {"type": "string", "enum": ["merge", "squash", "rebase"], "default": "squash", "description": "Merge method"},
+      "--pr-template": {"type": "string", "description": "PR template"}
+    }
+  },
+
+  "notificationFlags": {
+    "channels": {
+      "--notify": {"type": "array", "items": ["slack", "teams", "discord", "email", "webhook"], "description": "Channels"},
+      "--slack-channel": {"type": "string", "description": "Slack channel", "env": "JIRA_SLACK_CHANNEL"},
+      "--teams-channel": {"type": "string", "description": "Teams channel"},
+      "--email-to": {"type": "array", "description": "Email recipients"},
+      "--webhook-url": {"type": "string", "description": "Webhook URL"}
+    },
+    "triggers": {
+      "--notify-on-start": {"type": "boolean", "default": false, "description": "Notify on start"},
+      "--notify-on-complete": {"type": "boolean", "default": true, "description": "Notify on complete"},
+      "--notify-on-error": {"type": "boolean", "default": true, "description": "Notify on error"},
+      "--notify-on-pr": {"type": "boolean", "default": true, "description": "Notify on PR"},
+      "--notify-on-merge": {"type": "boolean", "default": true, "description": "Notify on merge"}
+    },
+    "content": {
+      "--notify-verbose": {"type": "boolean", "default": false, "description": "Verbose notifications"},
+      "--notify-mentions": {"type": "array", "description": "Mentions"},
+      "--notify-template": {"type": "string", "description": "Template"}
+    }
+  },
+
+  "reportFlags": {
+    "generation": {
+      "--report": {"type": "boolean", "default": false, "description": "Generate report"},
+      "--report-format": {"type": "string", "enum": ["markdown", "html", "pdf", "json"], "default": "markdown", "description": "Report format"},
+      "--report-output": {"type": "string", "description": "Output path"},
+      "--report-template": {"type": "string", "description": "Template"}
+    },
+    "content": {
+      "--include-metrics": {"type": "boolean", "default": true, "description": "Include metrics"},
+      "--include-timeline": {"type": "boolean", "default": true, "description": "Include timeline"},
+      "--include-diffs": {"type": "boolean", "default": false, "description": "Include diffs"},
+      "--include-screenshots": {"type": "boolean", "default": false, "description": "Include screenshots"}
+    },
+    "destination": {
+      "--report-to-confluence": {"type": "boolean", "default": false, "description": "Publish to Confluence"},
+      "--confluence-space": {"type": "string", "description": "Confluence space"},
+      "--report-to-obsidian": {"type": "boolean", "default": false, "description": "Save to Obsidian"}
+    }
+  },
+
+  "harnessFlags": {
+    "pipeline": {
+      "--harness-org": {"type": "string", "description": "Harness org", "env": "HARNESS_ORG_ID"},
+      "--harness-project": {"type": "string", "description": "Harness project", "env": "HARNESS_PROJECT_ID"},
+      "--pipeline": {"type": "string", "description": "Pipeline ID"},
+      "--pipeline-branch": {"type": "string", "description": "Pipeline branch"},
+      "--pipeline-inputs": {"type": "object", "description": "Pipeline inputs (JSON)"}
+    },
+    "deployment": {
+      "--deploy-env": {"type": "string", "enum": ["dev", "qa", "staging", "prod"], "description": "Environment"},
+      "--deploy-strategy": {"type": "string", "enum": ["rolling", "blue-green", "canary", "recreate"], "default": "rolling", "description": "Strategy"},
+      "--wait-for-deploy": {"type": "boolean", "default": true, "description": "Wait for completion"},
+      "--rollback-on-fail": {"type": "boolean", "default": true, "description": "Auto rollback"}
+    }
+  },
+
+  "experimentalFlags": {
+    "--experimental": {"type": "boolean", "default": false, "description": "Experimental features"},
+    "--ai-suggestions": {"type": "boolean", "default": false, "description": "AI suggestions"},
+    "--predictive-analysis": {"type": "boolean", "default": false, "description": "Predictive analysis"},
+    "--auto-decompose": {"type": "boolean", "default": false, "description": "Auto decompose"}
+  }
+}

@@ -1,0 +1,46 @@
+# Incident Timeline: {{INCIDENT_ID}}
+
+**Issue:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+**Service:** {{SERVICE_NAME}}
+**Environment:** {{ENV}}
+**Severity:** {{SEVERITY}}
+**Opened:** {{INCIDENT_OPENED_AT}}
+
+## Page Properties
+
+| Key | Value |
+|-----|-------|
+| issue-key | {{JIRA_KEY}} |
+| release | {{RELEASE_VERSION}} |
+| incident | {{INCIDENT_ID}} |
+| env | {{ENV}} |
+| service | {{SERVICE_NAME}} |
+| project-key | {{JIRA_PROJECT}} |
+| quarter | {{QUARTER}} |
+| doc-type | incident-timeline |
+
+## Labels
+
+`issue-key` `incident` `env` `service`
+
+## Timeline
+
+| Time (UTC) | Event | Owner | Evidence |
+|------------|-------|-------|----------|
+| {{T0}} | Incident detected | {{DETECTED_BY}} | {{EVIDENCE_T0}} |
+| {{T1}} | Triage started | {{TRIAGE_OWNER}} | {{EVIDENCE_T1}} |
+| {{T2}} | Mitigation applied | {{MITIGATION_OWNER}} | {{EVIDENCE_T2}} |
+| {{T3}} | Recovery confirmed | {{RECOVERY_OWNER}} | {{EVIDENCE_T3}} |
+
+## Impact
+
+{{INCIDENT_IMPACT}}
+
+## Linked Operations Index
+
+- Parent Index: {{OPERATIONS_INDEX_URL}}
+- Canonical Page URL: {{CANONICAL_PAGE_URL}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

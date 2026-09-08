@@ -1,0 +1,138 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- {{ADDED_ITEM_1}}
+- {{ADDED_ITEM_2}}
+
+### Changed
+- {{CHANGED_ITEM_1}}
+- {{CHANGED_ITEM_2}}
+
+### Deprecated
+- {{DEPRECATED_ITEM_1}}
+
+### Removed
+- {{REMOVED_ITEM_1}}
+
+### Fixed
+- {{FIXED_ITEM_1}}
+- {{FIXED_ITEM_2}}
+
+### Security
+- {{SECURITY_ITEM_1}}
+
+---
+
+## [{{VERSION}}] - {{RELEASE_DATE}}
+
+### Added
+- {{ADDED_ITEM_1}} ([{{JIRA_KEY_1}}]({{JIRA_URL_1}}))
+- {{ADDED_ITEM_2}} ([{{JIRA_KEY_2}}]({{JIRA_URL_2}}))
+- {{ADDED_ITEM_3}} by [@{{CONTRIBUTOR}}]({{CONTRIBUTOR_URL}})
+
+### Changed
+- **BREAKING**: {{BREAKING_CHANGE_1}} ([{{JIRA_KEY}}]({{JIRA_URL}}))
+  - Migration: {{MIGRATION_NOTES}}
+- {{CHANGED_ITEM_2}} ([{{JIRA_KEY}}]({{JIRA_URL}}))
+- {{CHANGED_ITEM_3}}
+
+### Deprecated
+- {{DEPRECATED_ITEM_1}} - will be removed in {{REMOVAL_VERSION}}
+  - Use {{ALTERNATIVE}} instead
+- {{DEPRECATED_ITEM_2}} ([{{JIRA_KEY}}]({{JIRA_URL}}))
+
+### Removed
+- {{REMOVED_ITEM_1}} (deprecated in {{DEPRECATED_VERSION}})
+- {{REMOVED_ITEM_2}}
+
+### Fixed
+- {{FIXED_ITEM_1}} ([{{JIRA_KEY}}]({{JIRA_URL}}))
+- {{FIXED_ITEM_2}} that caused {{ISSUE_DESCRIPTION}}
+- {{FIXED_ITEM_3}} reported by [@{{REPORTER}}]({{REPORTER_URL}})
+
+### Security
+- {{SECURITY_ITEM_1}} ([CVE-{{CVE_ID}}]({{CVE_URL}}))
+- Updated {{DEPENDENCY}} to {{NEW_VERSION}} to address {{VULNERABILITY}}
+
+---
+
+## [{{VERSION}}] - {{RELEASE_DATE}}
+
+### Added
+- {{ADDED_ITEM_1}}
+- {{ADDED_ITEM_2}}
+
+### Changed
+- {{CHANGED_ITEM_1}}
+
+### Fixed
+- {{FIXED_ITEM_1}}
+- {{FIXED_ITEM_2}}
+
+---
+
+## [{{VERSION}}] - {{RELEASE_DATE}}
+
+### Added
+- Initial release
+- {{FEATURE_1}}
+- {{FEATURE_2}}
+- {{FEATURE_3}}
+
+---
+
+## Release Types
+
+### Major Releases (x.0.0)
+- Breaking changes
+- Major new features
+- Significant architectural changes
+
+### Minor Releases (0.x.0)
+- New features
+- Enhancements
+- Non-breaking changes
+- Deprecations
+
+### Patch Releases (0.0.x)
+- Bug fixes
+- Security patches
+- Performance improvements
+- Documentation updates
+
+## Categories Explained
+
+### Added
+New features and capabilities added to the project.
+
+### Changed
+Changes in existing functionality, including breaking changes.
+
+### Deprecated
+Features that are deprecated and will be removed in future versions.
+
+### Removed
+Features that have been removed from the project.
+
+### Fixed
+Bug fixes and corrections.
+
+### Security
+Security-related changes, including vulnerability fixes and security enhancements.
+
+## Version Links
+
+[Unreleased]: {{REPO_URL}}/compare/v{{LATEST_VERSION}}...HEAD
+[{{VERSION_1}}]: {{REPO_URL}}/compare/v{{PREVIOUS_VERSION}}...v{{VERSION_1}}
+[{{VERSION_2}}]: {{REPO_URL}}/compare/v{{PREVIOUS_VERSION}}...v{{VERSION_2}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

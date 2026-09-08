@@ -1,0 +1,69 @@
+---
+template: pr-changes-requested
+version: 1.0.0
+description: Comment template for PR review with requested changes
+---
+
+# 🔄 Changes Requested
+
+**Reviewer:** {{AUTHOR}}
+**Reviewed:** {{TIMESTAMP}}
+**Status:** Changes Requested
+
+## Summary
+
+{{REVIEW_SUMMARY}}
+
+## Required Changes
+
+{{REQUIRED_CHANGES}}
+
+## Suggestions
+
+{{SUGGESTIONS}}
+
+## Code Quality Issues
+
+{{CODE_QUALITY_ISSUES}}
+
+## Performance Concerns
+
+{{PERFORMANCE_CONCERNS}}
+
+## Security Concerns
+
+{{SECURITY_CONCERNS}}
+
+## Testing Gaps
+
+{{TESTING_GAPS}}
+
+## Documentation Needs
+
+{{DOCUMENTATION_NEEDS}}
+
+## Specific Comments
+
+{{SPECIFIC_COMMENTS}}
+
+## Examples/References
+
+{{EXAMPLES_REFERENCES}}
+
+## Priority
+
+- **High Priority:** {{HIGH_PRIORITY_COUNT}} items
+- **Medium Priority:** {{MEDIUM_PRIORITY_COUNT}} items
+- **Low Priority:** {{LOW_PRIORITY_COUNT}} items
+
+## Next Steps
+
+{{NEXT_STEPS}}
+
+## Re-review Timeline
+
+{{REREVIEW_TIMELINE}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

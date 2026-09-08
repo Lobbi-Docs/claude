@@ -1,0 +1,297 @@
+# {{BUG_TITLE}}
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+## Summary
+
+{{BUG_SUMMARY}}
+
+## Severity
+
+**Priority:** {{PRIORITY}}
+**Severity:** {{SEVERITY}}
+**Impact:** {{IMPACT}}
+
+### Impact Assessment
+
+- **Users Affected:** {{USERS_AFFECTED}}
+- **Business Impact:** {{BUSINESS_IMPACT}}
+- **Frequency:** {{FREQUENCY}}
+
+## Environment
+
+| Detail | Value |
+|--------|-------|
+| Environment | {{ENVIRONMENT}} |
+| Application Version | {{APP_VERSION}} |
+| Database Version | {{DB_VERSION}} |
+| Browser | {{BROWSER}} |
+| OS | {{OS}} |
+| Device | {{DEVICE}} |
+| Network | {{NETWORK}} |
+
+## Steps to Reproduce
+
+### Prerequisites
+
+{{PREREQUISITES}}
+
+### Reproduction Steps
+
+1. {{STEP_1}}
+2. {{STEP_2}}
+3. {{STEP_3}}
+4. {{STEP_4}}
+5. {{STEP_5}}
+
+### Reproduction Rate
+
+{{REPRODUCTION_RATE}}
+
+## Expected Behavior
+
+{{EXPECTED_BEHAVIOR}}
+
+### Expected Result
+
+{{EXPECTED_RESULT}}
+
+## Actual Behavior
+
+{{ACTUAL_BEHAVIOR}}
+
+### Actual Result
+
+{{ACTUAL_RESULT}}
+
+## Evidence
+
+### Screenshots
+
+{{SCREENSHOT_1_URL}}
+{{SCREENSHOT_2_URL}}
+
+### Videos
+
+{{VIDEO_URL}}
+
+### Error Messages
+
+```
+{{ERROR_MESSAGE}}
+```
+
+### Stack Trace
+
+```
+{{STACK_TRACE}}
+```
+
+### Logs
+
+```
+{{LOG_EXCERPT}}
+```
+
+### Network Requests
+
+```
+{{NETWORK_REQUEST_1}}
+{{NETWORK_REQUEST_2}}
+```
+
+## Root Cause Analysis
+
+### Investigation Timeline
+
+| Date | Investigator | Finding |
+|------|-------------|---------|
+| {{DATE_1}} | {{INVESTIGATOR_1}} | {{FINDING_1}} |
+| {{DATE_2}} | {{INVESTIGATOR_2}} | {{FINDING_2}} |
+
+### Root Cause
+
+{{ROOT_CAUSE}}
+
+### Contributing Factors
+
+1. {{FACTOR_1}}
+2. {{FACTOR_2}}
+3. {{FACTOR_3}}
+
+### Code Location
+
+**File:** `{{FILE_PATH}}`
+**Line:** {{LINE_NUMBER}}
+**Function:** `{{FUNCTION_NAME}}`
+
+```{{CODE_LANGUAGE}}
+{{PROBLEMATIC_CODE}}
+```
+
+## Solution
+
+### Proposed Fix
+
+{{PROPOSED_FIX}}
+
+### Implementation Details
+
+```{{CODE_LANGUAGE}}
+{{FIX_CODE}}
+```
+
+### Alternative Solutions Considered
+
+#### Option 1: {{ALT_SOLUTION_1_NAME}}
+
+**Pros:**
+- {{ALT_1_PRO_1}}
+- {{ALT_1_PRO_2}}
+
+**Cons:**
+- {{ALT_1_CON_1}}
+- {{ALT_1_CON_2}}
+
+#### Option 2: {{ALT_SOLUTION_2_NAME}}
+
+**Pros:**
+- {{ALT_2_PRO_1}}
+- {{ALT_2_PRO_2}}
+
+**Cons:**
+- {{ALT_2_CON_1}}
+- {{ALT_2_CON_2}}
+
+## Testing
+
+### Test Cases to Add
+
+- [ ] {{TEST_CASE_1}}
+- [ ] {{TEST_CASE_2}}
+- [ ] {{TEST_CASE_3}}
+
+### Regression Test Plan
+
+- [ ] {{REGRESSION_1}}
+- [ ] {{REGRESSION_2}}
+- [ ] {{REGRESSION_3}}
+
+### Manual Testing Steps
+
+1. {{MANUAL_TEST_1}}
+2. {{MANUAL_TEST_2}}
+3. {{MANUAL_TEST_3}}
+
+## Fix Verification Steps
+
+### Pre-Fix Verification (Bug Exists)
+
+- [ ] {{PRE_FIX_VERIFY_1}}
+- [ ] {{PRE_FIX_VERIFY_2}}
+
+### Post-Fix Verification (Bug Resolved)
+
+- [ ] {{POST_FIX_VERIFY_1}}
+- [ ] {{POST_FIX_VERIFY_2}}
+- [ ] {{POST_FIX_VERIFY_3}}
+
+### Performance Verification
+
+- [ ] No performance regression
+- [ ] Response time within acceptable range
+- [ ] Memory usage stable
+- [ ] No new errors in logs
+
+## Deployment Plan
+
+### Deployment Strategy
+
+{{DEPLOYMENT_STRATEGY}}
+
+### Deployment Steps
+
+1. {{DEPLOY_STEP_1}}
+2. {{DEPLOY_STEP_2}}
+3. {{DEPLOY_STEP_3}}
+
+### Rollback Plan
+
+1. {{ROLLBACK_STEP_1}}
+2. {{ROLLBACK_STEP_2}}
+3. {{ROLLBACK_STEP_3}}
+
+## Prevention
+
+### Long-term Prevention
+
+- [ ] {{PREVENTION_1}}
+- [ ] {{PREVENTION_2}}
+- [ ] {{PREVENTION_3}}
+
+### Process Improvements
+
+- {{PROCESS_IMPROVEMENT_1}}
+- {{PROCESS_IMPROVEMENT_2}}
+
+### Monitoring Enhancements
+
+- [ ] {{MONITORING_1}}
+- [ ] {{MONITORING_2}}
+
+## Related Issues
+
+### Duplicates
+- {{DUPLICATE_1}}
+- {{DUPLICATE_2}}
+
+### Related Bugs
+- {{RELATED_BUG_1}}
+- {{RELATED_BUG_2}}
+
+### Caused By
+- {{CAUSED_BY_ISSUE}}
+
+## Communication
+
+### Users to Notify
+
+- {{USER_GROUP_1}}
+- {{USER_GROUP_2}}
+
+### Release Notes Entry
+
+```
+{{RELEASE_NOTES_TEXT}}
+```
+
+### Support Article
+
+{{SUPPORT_ARTICLE_URL}}
+
+## Checklist
+
+- [ ] Root cause identified
+- [ ] Fix implemented
+- [ ] Code reviewed
+- [ ] Unit tests added
+- [ ] Integration tests added
+- [ ] Manual testing completed
+- [ ] Regression testing completed
+- [ ] Documentation updated
+- [ ] Monitoring added
+- [ ] Deployed to dev
+- [ ] Deployed to staging
+- [ ] Verified in staging
+- [ ] Ready for production
+- [ ] Users notified
+- [ ] Release notes updated
+
+---
+
+**Discovered By:** {{REPORTER}}
+**Assigned To:** {{ASSIGNEE}}
+**Discovered:** {{DISCOVERED_DATE}}
+**Fixed:** {{FIXED_DATE}}
+**Verified:** {{VERIFIED_DATE}}
+**Last Updated:** {{UPDATED_DATE}}

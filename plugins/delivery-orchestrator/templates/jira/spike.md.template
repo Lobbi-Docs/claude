@@ -1,0 +1,325 @@
+# {{SPIKE_TITLE}}
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+## Research Question
+
+{{RESEARCH_QUESTION}}
+
+## Context
+
+{{SPIKE_CONTEXT}}
+
+### Problem Statement
+
+{{PROBLEM_STATEMENT}}
+
+### Why This Research is Needed
+
+{{WHY_NEEDED}}
+
+## Time-Box
+
+**Allocated Time:** {{TIMEBOX_HOURS}}h
+**Start Date:** {{START_DATE}}
+**End Date:** {{END_DATE}}
+
+### Time Breakdown
+
+- Research: {{RESEARCH_HOURS}}h
+- Prototyping: {{PROTOTYPE_HOURS}}h
+- Documentation: {{DOC_HOURS}}h
+- Presentation: {{PRESENTATION_HOURS}}h
+
+## Success Criteria
+
+### Must Answer
+- [ ] {{MUST_ANSWER_1}}
+- [ ] {{MUST_ANSWER_2}}
+- [ ] {{MUST_ANSWER_3}}
+
+### Should Answer
+- [ ] {{SHOULD_ANSWER_1}}
+- [ ] {{SHOULD_ANSWER_2}}
+
+### Nice to Answer
+- [ ] {{NICE_TO_ANSWER_1}}
+- [ ] {{NICE_TO_ANSWER_2}}
+
+## Research Areas
+
+### Area 1: {{AREA_1_NAME}}
+
+**Questions:**
+- {{AREA_1_Q1}}
+- {{AREA_1_Q2}}
+
+**Approach:**
+{{AREA_1_APPROACH}}
+
+### Area 2: {{AREA_2_NAME}}
+
+**Questions:**
+- {{AREA_2_Q1}}
+- {{AREA_2_Q2}}
+
+**Approach:**
+{{AREA_2_APPROACH}}
+
+### Area 3: {{AREA_3_NAME}}
+
+**Questions:**
+- {{AREA_3_Q1}}
+- {{AREA_3_Q2}}
+
+**Approach:**
+{{AREA_3_APPROACH}}
+
+## Research Plan
+
+### Phase 1: Literature Review ({{PHASE_1_HOURS}}h)
+
+- [ ] {{LITERATURE_1}}
+- [ ] {{LITERATURE_2}}
+- [ ] {{LITERATURE_3}}
+
+### Phase 2: Experimentation ({{PHASE_2_HOURS}}h)
+
+- [ ] {{EXPERIMENT_1}}
+- [ ] {{EXPERIMENT_2}}
+- [ ] {{EXPERIMENT_3}}
+
+### Phase 3: Analysis ({{PHASE_3_HOURS}}h)
+
+- [ ] {{ANALYSIS_1}}
+- [ ] {{ANALYSIS_2}}
+- [ ] {{ANALYSIS_3}}
+
+### Phase 4: Documentation ({{PHASE_4_HOURS}}h)
+
+- [ ] {{DOC_TASK_1}}
+- [ ] {{DOC_TASK_2}}
+
+## Options to Evaluate
+
+### Option 1: {{OPTION_1_NAME}}
+
+**Description:**
+{{OPTION_1_DESC}}
+
+**Pros:**
+- {{OPTION_1_PRO_1}}
+- {{OPTION_1_PRO_2}}
+- {{OPTION_1_PRO_3}}
+
+**Cons:**
+- {{OPTION_1_CON_1}}
+- {{OPTION_1_CON_2}}
+- {{OPTION_1_CON_3}}
+
+**Evaluation Criteria:**
+- {{OPTION_1_CRITERIA_1}}
+- {{OPTION_1_CRITERIA_2}}
+
+### Option 2: {{OPTION_2_NAME}}
+
+**Description:**
+{{OPTION_2_DESC}}
+
+**Pros:**
+- {{OPTION_2_PRO_1}}
+- {{OPTION_2_PRO_2}}
+- {{OPTION_2_PRO_3}}
+
+**Cons:**
+- {{OPTION_2_CON_1}}
+- {{OPTION_2_CON_2}}
+- {{OPTION_2_CON_3}}
+
+**Evaluation Criteria:**
+- {{OPTION_2_CRITERIA_1}}
+- {{OPTION_2_CRITERIA_2}}
+
+### Option 3: {{OPTION_3_NAME}}
+
+**Description:**
+{{OPTION_3_DESC}}
+
+**Pros:**
+- {{OPTION_3_PRO_1}}
+- {{OPTION_3_PRO_2}}
+- {{OPTION_3_PRO_3}}
+
+**Cons:**
+- {{OPTION_3_CON_1}}
+- {{OPTION_3_CON_2}}
+- {{OPTION_3_CON_3}}
+
+**Evaluation Criteria:**
+- {{OPTION_3_CRITERIA_1}}
+- {{OPTION_3_CRITERIA_2}}
+
+## Prototype/POC
+
+### Scope
+
+{{PROTOTYPE_SCOPE}}
+
+### Implementation
+
+```{{CODE_LANGUAGE}}
+{{PROTOTYPE_CODE}}
+```
+
+### Testing Approach
+
+{{PROTOTYPE_TESTING}}
+
+## Findings
+
+### Key Discoveries
+
+#### Discovery 1: {{DISCOVERY_1_TITLE}}
+
+{{DISCOVERY_1_DETAIL}}
+
+**Impact:** {{DISCOVERY_1_IMPACT}}
+**Confidence Level:** {{DISCOVERY_1_CONFIDENCE}}
+
+#### Discovery 2: {{DISCOVERY_2_TITLE}}
+
+{{DISCOVERY_2_DETAIL}}
+
+**Impact:** {{DISCOVERY_2_IMPACT}}
+**Confidence Level:** {{DISCOVERY_2_CONFIDENCE}}
+
+#### Discovery 3: {{DISCOVERY_3_TITLE}}
+
+{{DISCOVERY_3_DETAIL}}
+
+**Impact:** {{DISCOVERY_3_IMPACT}}
+**Confidence Level:** {{DISCOVERY_3_CONFIDENCE}}
+
+### Data Collected
+
+| Metric | Option 1 | Option 2 | Option 3 |
+|--------|----------|----------|----------|
+| {{METRIC_1}} | {{O1_M1}} | {{O2_M1}} | {{O3_M1}} |
+| {{METRIC_2}} | {{O1_M2}} | {{O2_M2}} | {{O3_M2}} |
+| {{METRIC_3}} | {{O1_M3}} | {{O2_M3}} | {{O3_M3}} |
+
+### Performance Benchmarks
+
+```
+{{BENCHMARK_RESULTS}}
+```
+
+### Risks Identified
+
+| Risk | Severity | Likelihood | Mitigation |
+|------|----------|-----------|------------|
+| {{RISK_1}} | {{SEV_1}} | {{LIKE_1}} | {{MIT_1}} |
+| {{RISK_2}} | {{SEV_2}} | {{LIKE_2}} | {{MIT_2}} |
+| {{RISK_3}} | {{SEV_3}} | {{LIKE_3}} | {{MIT_3}} |
+
+## Recommendations
+
+### Primary Recommendation
+
+**Recommended Approach:** {{RECOMMENDED_OPTION}}
+
+**Rationale:**
+{{RECOMMENDATION_RATIONALE}}
+
+### Implementation Considerations
+
+1. {{IMPLEMENTATION_1}}
+2. {{IMPLEMENTATION_2}}
+3. {{IMPLEMENTATION_3}}
+
+### Resource Requirements
+
+- **Development Effort:** {{DEV_EFFORT}}
+- **Infrastructure:** {{INFRASTRUCTURE}}
+- **External Services:** {{EXTERNAL_SERVICES}}
+- **Training Needed:** {{TRAINING}}
+
+### Timeline Estimate
+
+| Phase | Duration | Dependencies |
+|-------|----------|--------------|
+| {{PHASE_1}} | {{DURATION_1}} | {{DEP_1}} |
+| {{PHASE_2}} | {{DURATION_2}} | {{DEP_2}} |
+| {{PHASE_3}} | {{DURATION_3}} | {{DEP_3}} |
+
+### Next Steps
+
+1. {{NEXT_STEP_1}}
+2. {{NEXT_STEP_2}}
+3. {{NEXT_STEP_3}}
+
+### Follow-up Stories
+
+- [ ] {{FOLLOWUP_STORY_1}}
+- [ ] {{FOLLOWUP_STORY_2}}
+- [ ] {{FOLLOWUP_STORY_3}}
+
+## Open Questions
+
+- {{OPEN_Q_1}}
+- {{OPEN_Q_2}}
+- {{OPEN_Q_3}}
+
+## References
+
+### Documentation
+- {{REF_DOC_1}}
+- {{REF_DOC_2}}
+- {{REF_DOC_3}}
+
+### Code Examples
+- {{REF_CODE_1}}
+- {{REF_CODE_2}}
+
+### External Resources
+- {{REF_EXTERNAL_1}}
+- {{REF_EXTERNAL_2}}
+
+### Related Research
+- {{REF_RESEARCH_1}}
+- {{REF_RESEARCH_2}}
+
+## Appendix
+
+### Detailed Analysis
+
+{{DETAILED_ANALYSIS}}
+
+### Code Samples
+
+```{{CODE_LANGUAGE}}
+{{CODE_SAMPLE_1}}
+```
+
+```{{CODE_LANGUAGE}}
+{{CODE_SAMPLE_2}}
+```
+
+### Performance Data
+
+```
+{{PERFORMANCE_DATA}}
+```
+
+### Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**Researcher:** {{RESEARCHER}}
+**Reviewers:** {{REVIEWERS}}
+**Sprint:** {{SPRINT_NAME}}
+**Created:** {{CREATED_DATE}}
+**Completed:** {{COMPLETED_DATE}}
+**Last Updated:** {{UPDATED_DATE}}

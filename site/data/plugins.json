@@ -7,12 +7,12 @@
       "name": "Markus Ahling",
       "email": "markus@thelobbi.io"
     },
-    "generatedAt": "2026-09-08T18:39:14.543Z",
+    "generatedAt": "2026-09-08T19:34:30.181Z",
     "repo": "https://github.com/markus41/claude",
     "url": "https://markus41.github.io/claude/"
   },
   "stats": {
-    "plugins": 39,
+    "plugins": 34,
     "subplugins": 6,
     "commands": 343,
     "agents": 322,
@@ -38,15 +38,16 @@
       "icon": "✦",
       "blurb": "Design systems, animation, and diagramming for stunning, accessible UIs.",
       "plugins": [
+        "delivery-orchestrator",
         "frontend-design-system",
         "react-animation-studio",
         "mui-expert",
         "drawio-diagramming"
       ],
       "counts": {
-        "commands": 48,
-        "agents": 25,
-        "skills": 59
+        "commands": 181,
+        "agents": 181,
+        "skills": 111
       }
     },
     {
@@ -55,14 +56,14 @@
       "icon": "☁",
       "blurb": "Ship to Kubernetes with Helm, Keycloak auth, IaC, and quality-gated pipelines.",
       "plugins": [
+        "delivery-orchestrator",
         "aws-eks-helm-keycloak",
-        "fullstack-iac",
-        "deployment-pipeline"
+        "fullstack-iac"
       ],
       "counts": {
-        "commands": 20,
-        "agents": 9,
-        "skills": 11
+        "commands": 148,
+        "agents": 162,
+        "skills": 62
       }
     },
     {
@@ -71,15 +72,15 @@
       "icon": "⌁",
       "blurb": "A second brain, PM guardrails, doc intelligence, and reusable automation.",
       "plugins": [
+        "delivery-orchestrator",
         "claude-code-expert",
-        "project-management-plugin",
         "scrapin-aint-easy",
         "work-automation"
       ],
       "counts": {
-        "commands": 49,
-        "agents": 48,
-        "skills": 36
+        "commands": 156,
+        "agents": 188,
+        "skills": 81
       }
     },
     {
@@ -88,14 +89,13 @@
       "icon": "◎",
       "blurb": "Multi-agent Jira & Linear orchestration plus a full team toolkit.",
       "plugins": [
-        "jira-orchestrator",
-        "linear-orchestrator",
+        "delivery-orchestrator",
         "team-accelerator"
       ],
       "counts": {
-        "commands": 80,
-        "agents": 99,
-        "skills": 29
+        "commands": 141,
+        "agents": 162,
+        "skills": 57
       }
     },
     {
@@ -104,15 +104,16 @@
       "icon": "🏛",
       "blurb": "Domain automation for insurance, mortgage, compliance, and documents.",
       "plugins": [
+        "delivery-orchestrator",
         "lobbi-insurance-domain",
         "lobbi-mortgage-domain",
         "lobbi-compliance-guard",
         "lobbi-document-intelligence"
       ],
       "counts": {
-        "commands": 0,
-        "agents": 0,
-        "skills": 19
+        "commands": 133,
+        "agents": 156,
+        "skills": 71
       }
     },
     {
@@ -121,14 +122,15 @@
       "icon": "⊞",
       "blurb": "Fabric, Dataverse, M365 automation, and .NET / Blazor application building.",
       "plugins": [
+        "delivery-orchestrator",
         "tvs-microsoft-deploy",
         "lobbi-m365-automator",
         "dotnet-blazor"
       ],
       "counts": {
-        "commands": 26,
-        "agents": 25,
-        "skills": 26
+        "commands": 159,
+        "agents": 181,
+        "skills": 78
       }
     }
   ],
@@ -266,36 +268,36 @@
       "hasReadme": false
     },
     {
-      "name": "deployment-pipeline",
-      "version": "2.0.0",
-      "description": "Harness CD integration pipeline with state-machine workflow orchestration",
+      "name": "delivery-orchestrator",
+      "version": "1.0.0",
+      "description": "Unified delivery orchestration: one plugin replacing six. A tested, dependency-free kernel (swarm conductor with leased claims and worktree isolation, guardrails, transactional state MCP, fleet protocol) behind platform adapters for Linear, Jira, GitHub and Harness. 133 commands, 156 agents, 52 skills, 12 schema-validated workflows, 155 tests.",
       "author": "Markus Ahling",
       "authorUrl": "",
-      "source": "./plugins/deployment-pipeline",
-      "category": "Infrastructure & DevOps",
+      "source": "./plugins/delivery-orchestrator",
+      "category": "Project Management",
       "keywords": [
-        "workflow",
-        "automation",
-        "state-machine",
         "orchestration",
+        "delivery",
+        "linear",
+        "jira",
+        "github",
         "harness",
-        "ci-cd",
-        "deployment",
-        "pipeline",
-        "agentic-patterns",
-        "prompt-chaining",
-        "hitl",
-        "guardrails"
+        "swarm",
+        "conductor",
+        "agents",
+        "agent-sessions",
+        "pull-requests",
+        "ci-cd"
       ],
       "license": "MIT",
       "homepage": "",
       "counts": {
-        "commands": 5,
-        "agents": 3,
-        "skills": 1,
+        "commands": 133,
+        "agents": 156,
+        "skills": 52,
         "hooks": 0
       },
-      "mcp": false,
+      "mcp": true,
       "hasReadme": true
     },
     {
@@ -431,39 +433,6 @@
       "hasReadme": true
     },
     {
-      "name": "fleet-orchestration",
-      "version": "1.1.0",
-      "description": "Run many Claude Code sessions on one codebase without them lying to each other — and faster. A zero-dependency CLI turns the protocol into eleven one-command rituals (validated heartbeats, census, the waiter's blocker check, typename-aware run-grouped PR checks, stale-verdict sweep, post-merge unblocks, jobs-not-runs CI load, digests), each with its evidence rule built in and each proved on a live run. Plus the session protocol, ten evidence rules each carrying its incident and its non-application case, a staleness monitor that reads a lane's artifact before calling it silent, and ten descending-model role definitions. Repo list, lane names and paths are configuration.",
-      "author": "Markus Ahling",
-      "authorUrl": "",
-      "source": "./plugins/fleet-orchestration",
-      "category": "AI & Claude Code",
-      "keywords": [
-        "orchestration",
-        "multi-agent",
-        "fleet",
-        "protocol",
-        "heartbeat",
-        "evidence",
-        "verification",
-        "falsifier",
-        "code-review",
-        "merge-safety",
-        "git-discipline",
-        "model-routing"
-      ],
-      "license": "MIT",
-      "homepage": "",
-      "counts": {
-        "commands": 6,
-        "agents": 10,
-        "skills": 4,
-        "hooks": 0
-      },
-      "mcp": false,
-      "hasReadme": true
-    },
-    {
       "name": "frontend-design-system",
       "version": "2.0.0",
       "description": "263+ design styles with multi-tenant Keycloak theming for AI-powered frontend development",
@@ -530,39 +499,6 @@
       "hasReadme": true
     },
     {
-      "name": "github-orchestrator",
-      "version": "1.1.0",
-      "description": "Autonomous GitHub delivery orchestration: 34 agents in 7 teams, 24 commands, 16 skills, and 7 schema-validated declarative workflows. Drives PRs from branch to merged — adversarial review boards, CI drive-to-green loops, stacked-PR merge trains, conflict prediction, supply-chain triage, release trains, and DORA/hotspot repo intelligence over the GitHub MCP.",
-      "author": "Markus Ahling",
-      "authorUrl": "",
-      "source": "./plugins/github-orchestrator",
-      "category": "Project Management",
-      "keywords": [
-        "github",
-        "orchestration",
-        "pull-request",
-        "code-review",
-        "ci-cd",
-        "github-actions",
-        "merge-queue",
-        "stacked-prs",
-        "merge-train",
-        "drive-to-green",
-        "flaky-tests",
-        "dora"
-      ],
-      "license": "MIT",
-      "homepage": "",
-      "counts": {
-        "commands": 24,
-        "agents": 34,
-        "skills": 16,
-        "hooks": 0
-      },
-      "mcp": false,
-      "hasReadme": true
-    },
-    {
       "name": "home-assistant-architect",
       "version": "3.0.0",
       "description": "Complete Home Assistant platform with frontend design, energy management, cameras, sensors, local LLM integration, and Ubuntu server deployment",
@@ -593,72 +529,6 @@
         "hooks": 0
       },
       "mcp": true,
-      "hasReadme": true
-    },
-    {
-      "name": "jira-orchestrator",
-      "version": "8.3.0",
-      "description": "Enterprise Jira orchestration with 82 agents, 16 teams, 48 commands, 14 skills, 5 schema-validated workflows, and a read-only advisor. Features Atlassian MCP OAuth, Harness integration, Neon PostgreSQL, Redis caching, Temporal workflows, declarative workflow definitions, lifecycle telemetry hooks, and structured reasoning frameworks.",
-      "author": "Markus Ahling",
-      "authorUrl": "",
-      "source": "./plugins/jira-orchestrator",
-      "category": "Project Management",
-      "keywords": [
-        "jira",
-        "orchestration",
-        "atlassian",
-        "harness",
-        "ci-cd",
-        "workflow",
-        "advisor",
-        "automation",
-        "agents",
-        "clean-architecture",
-        "solid",
-        "mcp"
-      ],
-      "license": "MIT",
-      "homepage": "",
-      "counts": {
-        "commands": 48,
-        "agents": 82,
-        "skills": 14,
-        "hooks": 0
-      },
-      "mcp": false,
-      "hasReadme": true
-    },
-    {
-      "name": "linear-orchestrator",
-      "version": "2.0.0",
-      "description": "Linear orchestration for Claude Code. Agent sessions and delegation, a Symphony-style swarm conductor that runs parallel workers in isolated git worktrees, and provider-neutral two-way sync with GitHub and Harness Code. Covers the GraphQL API, OAuth, webhooks, attachments, cycles, projects, initiatives, customers, SLA, triage, and Linear Diffs. 24 commands, 10 skills, 11 agents.",
-      "author": "Markus Ahling",
-      "authorUrl": "",
-      "source": "./plugins/linear-orchestrator",
-      "category": "Project Management",
-      "keywords": [
-        "linear",
-        "linear-app",
-        "graphql",
-        "oauth",
-        "webhooks",
-        "agents",
-        "agent-sessions",
-        "swarm",
-        "orchestration",
-        "conductor",
-        "symphony",
-        "github"
-      ],
-      "license": "MIT",
-      "homepage": "",
-      "counts": {
-        "commands": 24,
-        "agents": 11,
-        "skills": 10,
-        "hooks": 0
-      },
-      "mcp": false,
       "hasReadme": true
     },
     {
@@ -1116,34 +986,6 @@
       },
       "mcp": true,
       "hasReadme": false
-    },
-    {
-      "name": "project-management-plugin",
-      "version": "1.4.0",
-      "description": "Universal project manager with keep-Claude-on-task guardrails: focus anchor, scope lock, done-when contract, over-engineering detector, drift auditor, turn budget, user-prompt archive, and compaction-safe handoff. Plus interview-first init, micro-task decomposition, deep research, transactional state MCP, and 9 PM platform integrations.",
-      "author": "Markus Ahling",
-      "authorUrl": "",
-      "source": "./plugins/project-management-plugin",
-      "category": "Project Management",
-      "keywords": [
-        "project-management",
-        "task-decomposition",
-        "research-first",
-        "micro-tasks",
-        "autonomous",
-        "pm-integration",
-        "mcp"
-      ],
-      "license": "MIT",
-      "homepage": "",
-      "counts": {
-        "commands": 26,
-        "agents": 16,
-        "skills": 7,
-        "hooks": 0
-      },
-      "mcp": true,
-      "hasReadme": true
     },
     {
       "name": "react-animation-studio",

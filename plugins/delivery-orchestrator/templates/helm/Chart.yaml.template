@@ -1,0 +1,24 @@
+apiVersion: v2
+name: {{SERVICE_NAME}}
+description: {{DESCRIPTION}}
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+keywords:
+  - {{SERVICE_NAME}}
+  - microservice
+
+home: {{REPO_URL}}
+
+sources:
+  - {{REPO_URL}}
+
+maintainers:
+  - name: {{TEAM_NAME}}
+    email: {{TEAM_EMAIL}}
+
+annotations:
+  jira.issue: "{{JIRA_KEY}}"
+  created.by: "jira-orchestrator"
+  created.date: "{{DATE}}"

@@ -1,0 +1,331 @@
+# Event Sourcing Configuration
+# This file configures the event sourcing system for jira-orchestrator
+
+event_sourcing:
+  # Storage Configuration
+  storage:
+    base_path: "/home/user/claude/jira-orchestrator/sessions/events"
+    partition_by: "date"  # Options: date, issue, session
+    format: "jsonl"  # Options: jsonl, json, parquet
+    compression: false
+    max_file_size_mb: 100
+    rotate_on_size: true
+
+  # Snapshot Configuration
+  snapshots:
+    enabled: true
+    frequency: 50  # Create snapshot every N events
+    retention_days: 30
+    compression: true
+    auto_cleanup: true
+    min_events_for_snapshot: 20  # Don't snapshot if fewer events
+
+  # Indexing Configuration
+  indexing:
+    enabled: true
+    index_fields:
+      - event_type
+      - issue_key
+      - phase
+      - agent_name
+      - actor.id
+      - timestamp
+    full_text_search: false  # Enable for searching in metadata
+    index_update_mode: "realtime"  # Options: realtime, batch
+    rebuild_on_startup: false
+
+  # Validation Configuration
+  validation:
+    strict_mode: true
+    schema_version: "1.0.0"
+    validate_on_write: true
+    validate_on_read: false
+    allow_unknown_event_types: false
+    required_fields:
+      - event_id
+      - event_type
+      - timestamp
+      - issue_key
+      - session_id
+      - actor
+
+  # Performance Configuration
+  performance:
+    cache_recent_events: 1000  # Cache last N events in memory
+    cache_snapshots: 10  # Cache last N snapshots
+    async_writes: false  # Enable for better performance (may lose events on crash)
+    batch_write_size: 100  # Write events in batches (if async_writes enabled)
+    write_buffer_size_mb: 10
+
+  # Cleanup Configuration
+  cleanup:
+    enabled: true
+    archive_after_days: 90  # Move to archive after N days
+    delete_after_days: 365  # Permanently delete after N days
+    archive_path: "/home/user/claude/jira-orchestrator/sessions/events/archive"
+    cleanup_schedule: "0 2 * * *"  # Cron: 2 AM daily
+    preserve_completed_orchestrations: true  # Never delete completed orchestrations
+
+  # Query Configuration
+  query:
+    default_page_size: 100
+    max_page_size: 1000
+    enable_pagination: true
+    max_query_time_seconds: 30
+    cache_query_results: true
+    cache_ttl_seconds: 300
+
+  # Replay Configuration
+  replay:
+    enabled: true
+    dry_run_default: true
+    max_replay_events: 10000
+    skip_non_idempotent: true
+    non_replayable_events:
+      - CommentPosted  # Don't re-post comments
+      - WorklogAdded  # Don't re-add worklogs
+      - ConfluencePageCreated  # Don't recreate pages
+    emit_replay_markers: true
+
+  # Audit Configuration
+  audit:
+    generate_reports: true
+    report_formats:
+      - json
+      - html
+      - csv
+    report_retention_days: 365
+    include_sensitive_data: false  # Exclude passwords, tokens, etc
+    compliance_mode: false  # Enable for strict compliance (immutable, signed events)
+
+  # Monitoring Configuration
+  monitoring:
+    enabled: true
+    log_level: "info"  # Options: debug, info, warn, error
+    metrics_enabled: true
+    metrics_export_interval_seconds: 60
+    alert_on_write_failures: true
+    alert_on_validation_failures: true
+    health_check_interval_seconds: 30
+
+  # Event Type Configuration
+  event_types:
+    # Orchestration Lifecycle
+    OrchestrationStarted:
+      category: "orchestration_lifecycle"
+      severity: "info"
+      retention_days: 365
+      indexable: true
+
+    OrchestrationCompleted:
+      category: "orchestration_lifecycle"
+      severity: "info"
+      retention_days: 365
+      indexable: true
+
+    OrchestrationFailed:
+      category: "orchestration_lifecycle"
+      severity: "error"
+      retention_days: 730  # Keep failures longer
+      indexable: true
+      alert: true
+
+    # Phase Lifecycle
+    PhaseStarted:
+      category: "phase_lifecycle"
+      severity: "info"
+      retention_days: 180
+      indexable: true
+
+    PhaseCompleted:
+      category: "phase_lifecycle"
+      severity: "info"
+      retention_days: 180
+      indexable: true
+
+    PhaseFailed:
+      category: "phase_lifecycle"
+      severity: "error"
+      retention_days: 365
+      indexable: true
+      alert: true
+
+    # Agent Lifecycle
+    AgentSpawned:
+      category: "agent_lifecycle"
+      severity: "info"
+      retention_days: 90
+      indexable: true
+
+    AgentCompleted:
+      category: "agent_lifecycle"
+      severity: "info"
+      retention_days: 90
+      indexable: true
+
+    AgentFailed:
+      category: "agent_lifecycle"
+      severity: "error"
+      retention_days: 180
+      indexable: true
+      alert: true
+
+    # Gap Management
+    GapIdentified:
+      category: "gap_management"
+      severity: "warning"
+      retention_days: 180
+      indexable: true
+      alert: true
+
+    GapResolved:
+      category: "gap_management"
+      severity: "info"
+      retention_days: 180
+      indexable: true
+
+    GapEscalated:
+      category: "gap_management"
+      severity: "critical"
+      retention_days: 365
+      indexable: true
+      alert: true
+
+    # Git Operations
+    CommitCreated:
+      category: "git_operations"
+      severity: "info"
+      retention_days: 365
+      indexable: true
+
+    PRCreated:
+      category: "git_operations"
+      severity: "info"
+      retention_days: 365
+      indexable: true
+
+    PRMerged:
+      category: "git_operations"
+      severity: "info"
+      retention_days: 365
+      indexable: true
+
+    # Error Recovery
+    ErrorOccurred:
+      category: "error_recovery"
+      severity: "error"
+      retention_days: 365
+      indexable: true
+      alert: true
+
+    RecoverySucceeded:
+      category: "error_recovery"
+      severity: "info"
+      retention_days: 180
+      indexable: true
+
+    RecoveryFailed:
+      category: "error_recovery"
+      severity: "critical"
+      retention_days: 730
+      indexable: true
+      alert: true
+
+# Correlation Rules
+# Define how events are correlated
+correlation_rules:
+  # Link agent events to orchestration
+  - name: "agent_to_orchestration"
+    source_event: "AgentSpawned"
+    target_events:
+      - "AgentCompleted"
+      - "AgentFailed"
+    correlation_key: "session_id"
+
+  # Link gaps to resolution
+  - name: "gap_lifecycle"
+    source_event: "GapIdentified"
+    target_events:
+      - "GapResolved"
+      - "GapEscalated"
+    correlation_key: "metadata.gap_id"
+
+  # Link errors to recovery
+  - name: "error_recovery_chain"
+    source_event: "ErrorOccurred"
+    target_events:
+      - "RecoveryAttempted"
+      - "RecoverySucceeded"
+      - "RecoveryFailed"
+    correlation_key: "correlation_id"
+
+  # Link commits to PRs
+  - name: "commit_to_pr"
+    source_event: "CommitCreated"
+    target_events:
+      - "PRCreated"
+      - "PRMerged"
+    correlation_key: "issue_key"
+
+# State Projections
+# Define different views of state from event stream
+state_projections:
+  - name: "orchestration_state"
+    description: "Current state of orchestration"
+    events:
+      - OrchestrationStarted
+      - PhaseCompleted
+      - AgentSpawned
+      - AgentCompleted
+      - CommitCreated
+      - PRCreated
+      - OrchestrationCompleted
+    output_format: "json"
+    cache_enabled: true
+
+  - name: "agent_metrics"
+    description: "Agent performance metrics"
+    events:
+      - AgentSpawned
+      - AgentCompleted
+      - AgentFailed
+    output_format: "json"
+    cache_enabled: true
+    aggregations:
+      - type: "avg"
+        field: "metadata.duration_seconds"
+        group_by: "metadata.agent_name"
+      - type: "count"
+        field: "event_type"
+        group_by: "metadata.agent_name"
+
+  - name: "timeline"
+    description: "Timeline view of all events"
+    events: "*"  # All events
+    output_format: "timeline"
+    cache_enabled: false
+
+  - name: "quality_metrics"
+    description: "Quality check and test metrics"
+    events:
+      - QualityCheckCompleted
+      - TestRunCompleted
+    output_format: "json"
+    cache_enabled: true
+    aggregations:
+      - type: "avg"
+        field: "metadata.overall_score"
+      - type: "sum"
+        field: "metadata.issues_found"
+
+# Migration Settings
+migrations:
+  enabled: true
+  auto_migrate: false  # Require manual approval
+  backup_before_migration: true
+  migration_path: "/home/user/claude/jira-orchestrator/sessions/events/migrations"
+  schema_versions:
+    - version: "1.0.0"
+      created: "2025-12-22"
+      description: "Initial event sourcing schema"
+      breaking_changes: false

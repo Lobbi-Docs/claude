@@ -1,0 +1,122 @@
+{
+  "$schema": "../../schema/mcp.schema.json",
+  "name": "sequentialthinking",
+  "version": "1.0.0",
+  "description": "Sequential Thinking MCP for dynamic and reflective problem-solving through structured thought chains. Enables agents to break down complex problems, revise thinking, and reach verified solutions.",
+  "provider": "builtin",
+  "serverType": "stdio",
+
+  "capabilities": {
+    "tools": [
+      {
+        "name": "sequentialthinking",
+        "description": "A detailed tool for dynamic and reflective problem-solving through thoughts. Supports branching, revision, hypothesis generation and verification.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "thought": {
+              "type": "string",
+              "description": "Your current thinking step - analytical, revision, question, or hypothesis"
+            },
+            "nextThoughtNeeded": {
+              "type": "boolean",
+              "description": "True if more thinking is needed, even at what seemed like the end"
+            },
+            "thoughtNumber": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Current thought number in sequence"
+            },
+            "totalThoughts": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Current estimate of thoughts needed (can be adjusted)"
+            },
+            "isRevision": {
+              "type": "boolean",
+              "description": "Whether this thought revises previous thinking"
+            },
+            "revisesThought": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Which thought number is being reconsidered"
+            },
+            "branchFromThought": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Branching point thought number"
+            },
+            "branchId": {
+              "type": "string",
+              "description": "Branch identifier"
+            },
+            "needsMoreThoughts": {
+              "type": "boolean",
+              "description": "If more thoughts are needed beyond initial estimate"
+            }
+          },
+          "required": ["thought", "nextThoughtNeeded", "thoughtNumber", "totalThoughts"]
+        }
+      }
+    ],
+    "resources": []
+  },
+
+  "usagePatterns": {
+    "complexAnalysis": "Use for multi-step debugging, architecture decisions, or root cause analysis",
+    "hypothesisTesting": "Generate hypotheses, verify against evidence, iterate until solution found",
+    "branchExploration": "Explore alternative approaches by branching from key decision points",
+    "revisionCycle": "Revise earlier thoughts as new information emerges"
+  },
+
+  "integration": {
+    "agents": [
+      "triage-agent",
+      "pattern-analyzer",
+      "requirements-analyzer",
+      "cognitive-code-reasoner",
+      "code-reviewer",
+      "council-coordinator",
+      "dependency-mapper"
+    ],
+    "autoTriggers": [
+      "complex",
+      "debug",
+      "analyze",
+      "investigate",
+      "root-cause",
+      "hypothesis",
+      "multi-step"
+    ]
+  },
+
+  "thoughtPatterns": {
+    "chainOfThought": {
+      "description": "Linear step-by-step reasoning",
+      "useWhen": "Breaking down straightforward multi-step problems"
+    },
+    "treeOfThought": {
+      "description": "Branching exploration of alternatives",
+      "useWhen": "Multiple valid approaches exist, need to evaluate trade-offs"
+    },
+    "hypothesisDriven": {
+      "description": "Generate, test, refine hypotheses",
+      "useWhen": "Debugging, root cause analysis, or uncertainty about cause"
+    },
+    "dialectic": {
+      "description": "Thesis, antithesis, synthesis",
+      "useWhen": "Resolving conflicting requirements or design tensions"
+    }
+  },
+
+  "bestPractices": [
+    "Start with an initial estimate of needed thoughts, be ready to adjust",
+    "Feel free to question or revise previous thoughts",
+    "Express uncertainty when present",
+    "Mark thoughts that revise previous thinking or branch",
+    "Only set nextThoughtNeeded to false when truly done"
+  ],
+
+  "priority": "high",
+  "autoActivate": false
+}

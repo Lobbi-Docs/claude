@@ -1,0 +1,290 @@
+{
+  "id": "ml-pipeline",
+  "name": "ML Pipeline",
+  "type": "software",
+  "description": "An end-to-end machine learning project covering data collection and preprocessing, model development, evaluation, and production deployment with monitoring. Use this template for predictive models, classifiers, recommendation systems, and NLP pipelines.",
+  "phases": [
+    {
+      "id": "p1",
+      "name": "Data Collection",
+      "description": "Identify, acquire, and document the raw data needed to train and evaluate the model. No training happens in this phase — only data sourcing and initial inspection.",
+      "epics": [
+        {
+          "id": "p1-e1",
+          "name": "Data Source Identification",
+          "description": "Catalogue available data sources, assess their quality and licensing, and select the primary dataset.",
+          "stories": [
+            {
+              "id": "p1-e1-s1",
+              "title": "Document all candidate data sources and their access requirements",
+              "description": "Research available datasets (public benchmarks, internal databases, third-party APIs) and record their size, format, license, access method, and estimated data quality in a data-sources.md document.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "data-sources.md exists and contains at least 3 candidate sources with size, format, license, and access method documented for each",
+                "A recommendation section names the selected primary source with a written justification comparing it against the alternatives"
+              ]
+            },
+            {
+              "id": "p1-e1-s2",
+              "title": "Obtain data access credentials and verify download",
+              "description": "Set up credentials, API keys, or database access for the selected data source. Verify a sample download works and document the access setup in the project README.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "A sample of at least 1,000 records is downloaded to data/raw/ and the file size matches the expected download size",
+                "The data access setup is documented in README.md with steps reproducible by a new team member"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e2",
+          "name": "Data Acquisition Pipeline",
+          "description": "Build a repeatable, automated pipeline that downloads and versions raw data.",
+          "stories": [
+            {
+              "id": "p1-e2-s1",
+              "title": "Write data download script with checksum verification",
+              "description": "Create scripts/download_data.py that downloads the full dataset, verifies its SHA-256 checksum against a stored expected value, and saves the raw files to data/raw/ with a timestamp suffix.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "Running `python scripts/download_data.py` downloads the dataset to data/raw/ and prints the file path and byte count",
+                "If the checksum does not match the expected value, the script exits with code 1 and deletes the corrupted file"
+              ]
+            },
+            {
+              "id": "p1-e2-s2",
+              "title": "Generate initial Exploratory Data Analysis (EDA) notebook",
+              "description": "Create a Jupyter notebook at notebooks/01_eda.ipynb that loads the raw data, computes summary statistics (shape, dtypes, null counts, value distributions), and visualizes the target variable distribution.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "The notebook runs end-to-end without errors using `jupyter nbconvert --to notebook --execute`",
+                "The notebook includes: a markdown summary of dataset shape, a table of null counts per column, and a histogram of the target variable"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e3",
+          "name": "Data Quality Assessment",
+          "description": "Profile the dataset for quality issues that will affect model performance.",
+          "stories": [
+            {
+              "id": "p1-e3-s1",
+              "title": "Profile data quality and document findings",
+              "description": "Run a systematic data quality assessment covering: missing values, duplicates, outliers, class imbalance (for classification), and label quality. Document findings in data/quality-report.md.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "data/quality-report.md quantifies: the percentage of rows with at least one null, the exact duplicate row count, and the class distribution for the target variable",
+                "The report includes a recommended action for each identified quality issue (impute / drop / flag / resample)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Preprocessing",
+      "description": "Transform raw data into model-ready feature matrices with a reproducible, testable pipeline.",
+      "epics": [
+        {
+          "id": "p2-e1",
+          "name": "Feature Engineering",
+          "description": "Design and implement the feature extraction and transformation logic.",
+          "stories": [
+            {
+              "id": "p2-e1-s1",
+              "title": "Implement data cleaning pipeline with scikit-learn Pipeline",
+              "description": "Build a scikit-learn Pipeline that handles: missing value imputation (median for numeric, constant for categorical), outlier capping at the 1st and 99th percentile, and duplicate removal.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "Running the pipeline on the raw dataset produces a DataFrame with zero null values",
+                "The pipeline is wrapped in a Python class with `fit` and `transform` methods that are unit-tested in tests/test_preprocessing.py"
+              ]
+            },
+            {
+              "id": "p2-e1-s2",
+              "title": "Engineer domain-specific features and encode categoricals",
+              "description": "Add domain-specific derived features, apply ordinal or one-hot encoding to categorical columns, and scale numeric features using StandardScaler or MinMaxScaler.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "The feature matrix produced by the full pipeline has no infinite or NaN values (verified by `np.isfinite(X).all()`)",
+                "The names and dtypes of all output features are documented in docs/features.md"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2-e2",
+          "name": "Train/Validation/Test Split",
+          "description": "Partition the dataset in a way that prevents data leakage and enables unbiased evaluation.",
+          "stories": [
+            {
+              "id": "p2-e2-s1",
+              "title": "Implement stratified train/validation/test split with fixed seed",
+              "description": "Create scripts/split_data.py that splits the preprocessed dataset 70/15/15 with stratification on the target variable and a fixed random seed. Save splits to data/splits/.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "The split script produces train.parquet, val.parquet, and test.parquet with row counts matching 70/15/15% of the total (within 1 row rounding)",
+                "The target class distribution in each split matches the full dataset distribution within 2 percentage points"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Model Development",
+      "description": "Train, compare, and tune candidate models. Select the best performer for productionization.",
+      "epics": [
+        {
+          "id": "p3-e1",
+          "name": "Baseline Model",
+          "description": "Establish a simple baseline to measure all subsequent models against.",
+          "stories": [
+            {
+              "id": "p3-e1-s1",
+              "title": "Train and evaluate a majority-class or linear baseline",
+              "description": "Train a simple baseline model (majority class classifier or logistic regression) and log its performance metrics to MLflow. This sets the floor that every subsequent model must beat.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "The baseline model's metrics (accuracy, F1, AUC-ROC where applicable) are logged to an MLflow run named 'baseline'",
+                "A baseline-results.md file records the metrics and the rationale for choosing this baseline type"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p3-e2",
+          "name": "Candidate Model Training",
+          "description": "Train and compare multiple model families to identify the best-performing architecture.",
+          "stories": [
+            {
+              "id": "p3-e2-s1",
+              "title": "Train gradient boosting model with hyperparameter search",
+              "description": "Train an XGBoost or LightGBM model using Optuna for hyperparameter optimization over 50 trials. Log all trials to MLflow.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "The best trial's validation metric exceeds the baseline's validation metric by at least 2 percentage points",
+                "All 50 Optuna trials are logged as child runs under an MLflow experiment named 'gradient-boosting'"
+              ]
+            },
+            {
+              "id": "p3-e2-s2",
+              "title": "Train neural network model and compare to gradient boosting",
+              "description": "Train a PyTorch or scikit-learn MLP, evaluate on the validation set, and produce a comparison table of all candidate models in models/comparison.md.",
+              "estimate_hours": 7,
+              "completion_criteria": [
+                "models/comparison.md contains a table comparing at least 3 model variants on validation accuracy, F1, training time, and inference latency",
+                "The selected model is named and justified based on the comparison criteria defined in the project goal"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "Evaluation",
+      "description": "Rigorously evaluate the selected model on held-out test data, analyze failure modes, and document limitations.",
+      "epics": [
+        {
+          "id": "p4-e1",
+          "name": "Test Set Evaluation",
+          "description": "Run the final model on the held-out test set and produce the official evaluation report.",
+          "stories": [
+            {
+              "id": "p4-e1-s1",
+              "title": "Evaluate selected model on test set and generate evaluation report",
+              "description": "Run inference on the held-out test set, compute all relevant metrics, generate confusion matrix and ROC curve visualizations, and write the evaluation report to docs/evaluation-report.md.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "docs/evaluation-report.md includes: test set accuracy, precision, recall, F1, and AUC-ROC (for classifiers) or RMSE and MAE (for regressors)",
+                "The report includes a confusion matrix heatmap saved to docs/figures/confusion-matrix.png"
+              ]
+            },
+            {
+              "id": "p4-e1-s2",
+              "title": "Perform error analysis on misclassified samples",
+              "description": "Identify the top-50 highest-confidence errors, examine them for patterns (e.g., specific feature ranges, data quality issues, edge cases), and document findings.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "docs/error-analysis.md describes at least 3 distinct error patterns identified in the misclassified samples",
+                "Each pattern includes a count of affected samples and a proposed mitigation (data collection, feature engineering, or model adjustment)"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p4-e2",
+          "name": "Bias and Fairness Audit",
+          "description": "Check model performance across demographic subgroups to identify disparate impact.",
+          "stories": [
+            {
+              "id": "p4-e2-s1",
+              "title": "Compute performance metrics disaggregated by protected attributes",
+              "description": "Identify relevant protected attributes in the dataset, compute the primary metric (accuracy or F1) separately for each subgroup, and flag any subgroup where performance falls more than 5 percentage points below the overall metric.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "docs/fairness-audit.md reports the primary metric for each subgroup of each identified protected attribute",
+                "Any subgroup with performance more than 5pp below average is flagged with a REVIEW REQUIRED label"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "name": "Deployment",
+      "description": "Package the trained model as a serving API, deploy to the target environment, and set up monitoring.",
+      "epics": [
+        {
+          "id": "p5-e1",
+          "name": "Model Serving API",
+          "description": "Wrap the trained model in a REST API for real-time inference.",
+          "stories": [
+            {
+              "id": "p5-e1-s1",
+              "title": "Implement FastAPI inference endpoint",
+              "description": "Create a FastAPI application with a POST /predict endpoint that accepts feature input as JSON, runs the preprocessing pipeline and model inference, and returns a prediction with a confidence score.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "POST /predict with valid input returns HTTP 200 with `{\"prediction\": <value>, \"confidence\": <float 0-1>}` in under 200ms",
+                "POST /predict with missing required feature fields returns HTTP 422 with a field-level validation error"
+              ]
+            },
+            {
+              "id": "p5-e1-s2",
+              "title": "Containerize the model server and push to registry",
+              "description": "Write a Dockerfile for the FastAPI inference server, build the image, run the test suite against the containerized version, and push to the container registry.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "The Docker image builds in under 5 minutes and the container starts and passes the health check within 30 seconds",
+                "The image is pushed to the configured registry and the image digest is recorded in deployment/image-digests.md"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p5-e2",
+          "name": "Monitoring and Drift Detection",
+          "description": "Set up production monitoring to detect data drift, prediction drift, and performance degradation.",
+          "stories": [
+            {
+              "id": "p5-e2-s1",
+              "title": "Implement prediction logging and statistical drift alerts",
+              "description": "Log every prediction request (features + prediction, no PII) to a structured store. Set up a daily job that computes the Population Stability Index (PSI) for each input feature and alerts when PSI > 0.2.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "Every prediction request writes a log entry containing the feature values (excluding PII fields), the prediction, confidence, and timestamp",
+                "The daily drift check script exits with code 1 and prints the PSI value and feature name when PSI exceeds 0.2 for any feature"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

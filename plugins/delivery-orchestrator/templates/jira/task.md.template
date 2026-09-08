@@ -1,0 +1,188 @@
+# {{TASK_TITLE}}
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+## Objective
+
+{{TASK_OBJECTIVE}}
+
+## Context
+
+{{TASK_CONTEXT}}
+
+## Implementation Steps
+
+### 1. {{STEP_1_TITLE}}
+
+{{STEP_1_DESCRIPTION}}
+
+**Expected Outcome:** {{STEP_1_OUTCOME}}
+**Estimated Time:** {{STEP_1_TIME}}
+
+### 2. {{STEP_2_TITLE}}
+
+{{STEP_2_DESCRIPTION}}
+
+**Expected Outcome:** {{STEP_2_OUTCOME}}
+**Estimated Time:** {{STEP_2_TIME}}
+
+### 3. {{STEP_3_TITLE}}
+
+{{STEP_3_DESCRIPTION}}
+
+**Expected Outcome:** {{STEP_3_OUTCOME}}
+**Estimated Time:** {{STEP_3_TIME}}
+
+### 4. {{STEP_4_TITLE}}
+
+{{STEP_4_DESCRIPTION}}
+
+**Expected Outcome:** {{STEP_4_OUTCOME}}
+**Estimated Time:** {{STEP_4_TIME}}
+
+## Technical Details
+
+### Files to Modify
+
+- `{{FILE_1}}` - {{FILE_1_CHANGE}}
+- `{{FILE_2}}` - {{FILE_2_CHANGE}}
+- `{{FILE_3}}` - {{FILE_3_CHANGE}}
+
+### New Files to Create
+
+- `{{NEW_FILE_1}}` - {{NEW_FILE_1_PURPOSE}}
+- `{{NEW_FILE_2}}` - {{NEW_FILE_2_PURPOSE}}
+
+### Configuration Changes
+
+```yaml
+{{CONFIG_CHANGES}}
+```
+
+### Code Snippets
+
+```{{CODE_LANGUAGE}}
+{{CODE_SNIPPET}}
+```
+
+### Environment Variables
+
+```bash
+{{ENV_VAR_1}}={{ENV_VALUE_1}}
+{{ENV_VAR_2}}={{ENV_VALUE_2}}
+```
+
+## Dependencies
+
+### Related Issues
+- {{RELATED_ISSUE_1}} - {{RELATION_TYPE_1}}
+- {{RELATED_ISSUE_2}} - {{RELATION_TYPE_2}}
+
+### Third-Party Dependencies
+- {{DEPENDENCY_1}} (version: {{VERSION_1}})
+- {{DEPENDENCY_2}} (version: {{VERSION_2}})
+
+### System Dependencies
+- {{SYSTEM_DEP_1}}
+- {{SYSTEM_DEP_2}}
+
+## Testing Requirements
+
+### Unit Tests
+- [ ] {{UNIT_TEST_1}}
+- [ ] {{UNIT_TEST_2}}
+
+### Integration Tests
+- [ ] {{INTEGRATION_TEST_1}}
+- [ ] {{INTEGRATION_TEST_2}}
+
+### Smoke Tests
+- [ ] {{SMOKE_TEST_1}}
+- [ ] {{SMOKE_TEST_2}}
+
+## Rollback Plan
+
+### Rollback Steps
+
+1. {{ROLLBACK_STEP_1}}
+2. {{ROLLBACK_STEP_2}}
+3. {{ROLLBACK_STEP_3}}
+
+### Rollback Verification
+
+- [ ] {{ROLLBACK_VERIFY_1}}
+- [ ] {{ROLLBACK_VERIFY_2}}
+
+## Security Checklist
+
+- [ ] No hardcoded secrets
+- [ ] Input validation implemented
+- [ ] SQL injection prevention
+- [ ] XSS prevention
+- [ ] CSRF protection
+- [ ] Authentication required
+- [ ] Authorization checks
+- [ ] Audit logging added
+
+## Performance Checklist
+
+- [ ] Database queries optimized
+- [ ] Caching strategy implemented
+- [ ] No N+1 queries
+- [ ] Async operations where appropriate
+- [ ] Resource cleanup handled
+- [ ] Memory leaks checked
+- [ ] Load testing performed
+
+## Documentation
+
+### Code Documentation
+- [ ] Function/method documentation
+- [ ] Complex logic explained
+- [ ] Examples provided
+
+### External Documentation
+- [ ] README updated
+- [ ] API docs updated
+- [ ] Confluence page updated
+- [ ] Runbook updated
+
+## Definition of Done
+
+- [ ] All implementation steps completed
+- [ ] Code review passed
+- [ ] All tests passing
+- [ ] Security checklist completed
+- [ ] Performance checklist completed
+- [ ] Documentation updated
+- [ ] Changes deployed to dev
+- [ ] Changes deployed to staging
+- [ ] Smoke tests passed
+- [ ] Ready for production
+
+## Verification Steps
+
+1. {{VERIFY_STEP_1}}
+2. {{VERIFY_STEP_2}}
+3. {{VERIFY_STEP_3}}
+4. {{VERIFY_STEP_4}}
+
+## Notes
+
+{{ADDITIONAL_NOTES}}
+
+## Resources
+
+- Documentation: {{DOC_URL}}
+- Design: {{DESIGN_URL}}
+- Related PRs: {{PR_URL}}
+- Confluence: {{CONFLUENCE_URL}}
+
+---
+
+**Parent Story:** {{PARENT_KEY}} - {{PARENT_TITLE}}
+**Sprint:** {{SPRINT_NAME}}
+**Assignee:** {{ASSIGNEE}}
+**Estimated Time:** {{ESTIMATED_HOURS}}h
+**Created:** {{CREATED_DATE}}
+**Last Updated:** {{UPDATED_DATE}}

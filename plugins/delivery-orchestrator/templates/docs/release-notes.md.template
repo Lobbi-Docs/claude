@@ -1,0 +1,463 @@
+# Release Notes: {{VERSION}}
+
+## Release Information
+
+| Field | Value |
+|-------|-------|
+| **Version** | {{VERSION}} |
+| **Release Date** | {{RELEASE_DATE}} |
+| **Release Type** | Major/Minor/Patch |
+| **Status** | {{STATUS}} |
+| **Build** | {{BUILD_NUMBER}} |
+| **Git Tag** | {{GIT_TAG}} |
+
+## Highlights
+
+{{HIGHLIGHTS_SUMMARY}}
+
+### Key Features
+
+- **{{FEATURE_1_TITLE}}**: {{FEATURE_1_BRIEF}}
+- **{{FEATURE_2_TITLE}}**: {{FEATURE_2_BRIEF}}
+- **{{FEATURE_3_TITLE}}**: {{FEATURE_3_BRIEF}}
+
+### Performance Improvements
+
+- {{PERF_1}}: {{PERF_1_IMPROVEMENT}}
+- {{PERF_2}}: {{PERF_2_IMPROVEMENT}}
+
+## What's New
+
+### New Features
+
+#### {{FEATURE_1_TITLE}}
+
+**Jira:** {{JIRA_KEY_1}}
+
+{{FEATURE_1_DESCRIPTION}}
+
+**Benefits:**
+- {{BENEFIT_1}}
+- {{BENEFIT_2}}
+
+**Example:**
+```{{CODE_LANGUAGE}}
+{{CODE_EXAMPLE}}
+```
+
+---
+
+#### {{FEATURE_2_TITLE}}
+
+**Jira:** {{JIRA_KEY_2}}
+
+{{FEATURE_2_DESCRIPTION}}
+
+**Benefits:**
+- {{BENEFIT_1}}
+- {{BENEFIT_2}}
+
+**Example:**
+```{{CODE_LANGUAGE}}
+{{CODE_EXAMPLE}}
+```
+
+---
+
+### Enhancements
+
+#### {{ENHANCEMENT_1_TITLE}}
+
+**Jira:** {{JIRA_KEY}}
+
+{{ENHANCEMENT_1_DESCRIPTION}}
+
+**Impact:**
+- {{IMPACT_1}}
+- {{IMPACT_2}}
+
+---
+
+#### {{ENHANCEMENT_2_TITLE}}
+
+**Jira:** {{JIRA_KEY}}
+
+{{ENHANCEMENT_2_DESCRIPTION}}
+
+**Impact:**
+- {{IMPACT_1}}
+- {{IMPACT_2}}
+
+---
+
+## Bug Fixes
+
+### Critical Fixes
+
+#### {{BUG_1_TITLE}}
+
+**Jira:** {{JIRA_KEY}}
+
+**Issue:** {{BUG_DESCRIPTION}}
+
+**Fix:** {{FIX_DESCRIPTION}}
+
+**Affected Versions:** {{AFFECTED_VERSIONS}}
+
+---
+
+### High Priority Fixes
+
+#### {{BUG_2_TITLE}}
+
+**Jira:** {{JIRA_KEY}}
+
+**Issue:** {{BUG_DESCRIPTION}}
+
+**Fix:** {{FIX_DESCRIPTION}}
+
+---
+
+### Medium Priority Fixes
+
+- {{FIX_1}} ({{JIRA_KEY_1}})
+- {{FIX_2}} ({{JIRA_KEY_2}})
+- {{FIX_3}} ({{JIRA_KEY_3}})
+
+### Low Priority Fixes
+
+- {{FIX_1}} ({{JIRA_KEY_1}})
+- {{FIX_2}} ({{JIRA_KEY_2}})
+
+## Breaking Changes
+
+### {{BREAKING_CHANGE_1_TITLE}}
+
+**Impact:** {{IMPACT_LEVEL}}
+
+**Change Description:**
+
+{{BREAKING_CHANGE_1_DESCRIPTION}}
+
+**Before:**
+```{{CODE_LANGUAGE}}
+{{OLD_CODE}}
+```
+
+**After:**
+```{{CODE_LANGUAGE}}
+{{NEW_CODE}}
+```
+
+**Migration Path:**
+
+{{MIGRATION_INSTRUCTIONS}}
+
+**Affected Users:** {{AFFECTED_USERS}}
+
+---
+
+### {{BREAKING_CHANGE_2_TITLE}}
+
+**Impact:** {{IMPACT_LEVEL}}
+
+**Change Description:**
+
+{{BREAKING_CHANGE_2_DESCRIPTION}}
+
+**Migration Path:**
+
+{{MIGRATION_INSTRUCTIONS}}
+
+---
+
+## Deprecations
+
+| Feature | Deprecated In | Removal Planned | Alternative |
+|---------|---------------|-----------------|-------------|
+| {{FEATURE_1}} | {{VERSION_1}} | {{REMOVAL_VERSION_1}} | {{ALTERNATIVE_1}} |
+| {{FEATURE_2}} | {{VERSION_2}} | {{REMOVAL_VERSION_2}} | {{ALTERNATIVE_2}} |
+
+### {{DEPRECATION_1_TITLE}}
+
+**Reason:** {{DEPRECATION_REASON}}
+
+**Alternative:** {{ALTERNATIVE_APPROACH}}
+
+**Migration Guide:** {{MIGRATION_GUIDE_URL}}
+
+## Security Updates
+
+### {{SECURITY_1_TITLE}}
+
+**Severity:** Critical/High/Medium/Low
+
+**CVE:** {{CVE_ID}}
+
+**Description:** {{SECURITY_DESCRIPTION}}
+
+**Affected Versions:** {{AFFECTED_VERSIONS}}
+
+**Patched In:** {{PATCHED_VERSION}}
+
+**Action Required:** {{ACTION_REQUIRED}}
+
+---
+
+## Performance Improvements
+
+| Area | Improvement | Measurement |
+|------|-------------|-------------|
+| {{AREA_1}} | {{IMPROVEMENT_1}} | {{METRIC_1}} |
+| {{AREA_2}} | {{IMPROVEMENT_2}} | {{METRIC_2}} |
+| {{AREA_3}} | {{IMPROVEMENT_3}} | {{METRIC_3}} |
+
+### Details
+
+**{{PERF_IMPROVEMENT_1}}:**
+- Before: {{BEFORE_METRIC}}
+- After: {{AFTER_METRIC}}
+- Improvement: {{IMPROVEMENT_PERCENTAGE}}
+
+**{{PERF_IMPROVEMENT_2}}:**
+- Before: {{BEFORE_METRIC}}
+- After: {{AFTER_METRIC}}
+- Improvement: {{IMPROVEMENT_PERCENTAGE}}
+
+## Dependencies
+
+### Updated Dependencies
+
+| Dependency | Previous Version | New Version | Reason |
+|------------|------------------|-------------|--------|
+| {{DEP_1}} | {{OLD_VER_1}} | {{NEW_VER_1}} | {{REASON_1}} |
+| {{DEP_2}} | {{OLD_VER_2}} | {{NEW_VER_2}} | {{REASON_2}} |
+| {{DEP_3}} | {{OLD_VER_3}} | {{NEW_VER_3}} | {{REASON_3}} |
+
+### New Dependencies
+
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| {{DEP_1}} | {{VERSION_1}} | {{PURPOSE_1}} |
+| {{DEP_2}} | {{VERSION_2}} | {{PURPOSE_2}} |
+
+### Removed Dependencies
+
+| Dependency | Reason |
+|------------|--------|
+| {{DEP_1}} | {{REASON_1}} |
+| {{DEP_2}} | {{REASON_2}} |
+
+## Known Issues
+
+### {{ISSUE_1_TITLE}}
+
+**Jira:** {{JIRA_KEY}}
+
+**Description:** {{ISSUE_DESCRIPTION}}
+
+**Workaround:** {{WORKAROUND}}
+
+**Fix Planned:** {{FIX_VERSION}}
+
+---
+
+### {{ISSUE_2_TITLE}}
+
+**Jira:** {{JIRA_KEY}}
+
+**Description:** {{ISSUE_DESCRIPTION}}
+
+**Workaround:** {{WORKAROUND}}
+
+**Fix Planned:** {{FIX_VERSION}}
+
+---
+
+## Migration Guide
+
+### Prerequisites
+
+- {{PREREQUISITE_1}}
+- {{PREREQUISITE_2}}
+- {{PREREQUISITE_3}}
+
+### Step-by-Step Migration
+
+#### Step 1: {{STEP_1_TITLE}}
+
+{{STEP_1_INSTRUCTIONS}}
+
+```bash
+{{STEP_1_COMMANDS}}
+```
+
+#### Step 2: {{STEP_2_TITLE}}
+
+{{STEP_2_INSTRUCTIONS}}
+
+```bash
+{{STEP_2_COMMANDS}}
+```
+
+#### Step 3: {{STEP_3_TITLE}}
+
+{{STEP_3_INSTRUCTIONS}}
+
+```bash
+{{STEP_3_COMMANDS}}
+```
+
+### Verification
+
+```bash
+# Verify migration
+{{VERIFICATION_COMMANDS}}
+
+# Expected output
+{{EXPECTED_OUTPUT}}
+```
+
+### Rollback Procedure
+
+If you need to rollback:
+
+```bash
+{{ROLLBACK_COMMANDS}}
+```
+
+## Installation & Upgrade
+
+### New Installation
+
+```bash
+# Install {{VERSION}}
+{{INSTALL_COMMAND}}
+
+# Verify installation
+{{VERIFY_COMMAND}}
+```
+
+### Upgrade from {{PREVIOUS_VERSION}}
+
+```bash
+# Backup current installation
+{{BACKUP_COMMAND}}
+
+# Upgrade to {{VERSION}}
+{{UPGRADE_COMMAND}}
+
+# Run migrations
+{{MIGRATION_COMMAND}}
+
+# Verify upgrade
+{{VERIFY_COMMAND}}
+```
+
+### Configuration Changes
+
+**Required Changes:**
+
+```yaml
+# Old configuration
+{{OLD_CONFIG}}
+
+# New configuration
+{{NEW_CONFIG}}
+```
+
+**Optional Changes:**
+
+```yaml
+{{OPTIONAL_CONFIG}}
+```
+
+## Testing
+
+### Test Coverage
+
+- Unit Tests: {{UNIT_TEST_COVERAGE}}%
+- Integration Tests: {{INTEGRATION_TEST_COVERAGE}}%
+- End-to-End Tests: {{E2E_TEST_COVERAGE}}%
+
+### Tested Environments
+
+| Environment | Version | Status |
+|-------------|---------|--------|
+| {{ENV_1}} | {{VERSION_1}} | {{STATUS_1}} |
+| {{ENV_2}} | {{VERSION_2}} | {{STATUS_2}} |
+| {{ENV_3}} | {{VERSION_3}} | {{STATUS_3}} |
+
+## Documentation
+
+### Updated Documentation
+
+- {{DOC_1_TITLE}}: {{DOC_1_URL}}
+- {{DOC_2_TITLE}}: {{DOC_2_URL}}
+- {{DOC_3_TITLE}}: {{DOC_3_URL}}
+
+### New Documentation
+
+- {{NEW_DOC_1_TITLE}}: {{NEW_DOC_1_URL}}
+- {{NEW_DOC_2_TITLE}}: {{NEW_DOC_2_URL}}
+
+## Contributors
+
+We would like to thank the following contributors for their work on this release:
+
+- {{CONTRIBUTOR_1}} ({{CONTRIBUTION_1}})
+- {{CONTRIBUTOR_2}} ({{CONTRIBUTION_2}})
+- {{CONTRIBUTOR_3}} ({{CONTRIBUTION_3}})
+
+### Statistics
+
+- Total Commits: {{TOTAL_COMMITS}}
+- Contributors: {{CONTRIBUTOR_COUNT}}
+- Files Changed: {{FILES_CHANGED}}
+- Lines Added: {{LINES_ADDED}}
+- Lines Removed: {{LINES_REMOVED}}
+
+## Feedback & Support
+
+### Getting Help
+
+- **Documentation**: {{DOCS_URL}}
+- **Support Forum**: {{FORUM_URL}}
+- **Slack Channel**: {{SLACK_URL}}
+- **GitHub Issues**: {{GITHUB_URL}}
+
+### Reporting Issues
+
+If you encounter any issues with this release:
+
+1. Check the [Known Issues](#known-issues) section
+2. Search existing issues: {{ISSUES_URL}}
+3. Create a new issue with:
+   - Version number
+   - Environment details
+   - Steps to reproduce
+   - Expected vs actual behavior
+
+## What's Next
+
+### Upcoming Features ({{NEXT_VERSION}})
+
+- {{UPCOMING_1}}
+- {{UPCOMING_2}}
+- {{UPCOMING_3}}
+
+### Roadmap
+
+See our [public roadmap]({{ROADMAP_URL}}) for planned features and improvements.
+
+## References
+
+- **Full Changelog**: {{CHANGELOG_URL}}
+- **GitHub Release**: {{GITHUB_RELEASE_URL}}
+- **Jira Release**: {{JIRA_RELEASE_URL}}
+- **Documentation**: {{DOCS_URL}}
+- **Migration Guide**: {{MIGRATION_GUIDE_URL}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

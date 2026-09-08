@@ -1,0 +1,687 @@
+# Jira Orchestrator Tag System
+# Comprehensive hierarchical tag taxonomy for issue tracking, PR management, and workflow automation
+# Version: 1.0.0
+# Last Updated: 2026-01-02
+
+version: "1.0.0"
+metadata:
+  name: "Jira Orchestrator Tag System"
+  description: "Hierarchical tag taxonomy for unified tracking across Jira, GitHub, and Confluence"
+  maintainer: "Golden Armada"
+  last_updated: "2026-01-02"
+
+# ====================
+# TYPE TAGS
+# ====================
+type_tags:
+  prefix: "type/"
+  description: "Categorizes the nature of work being performed"
+  applies_to: ["jira", "github", "confluence"]
+
+  tags:
+    - name: "type/feature"
+      description: "New feature or enhancement"
+      color: "#0E8A16"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "issue_type == 'Story' OR issue_type == 'Epic'"
+          platforms: ["jira"]
+        - condition: "pr_title contains '[feat]' OR pr_title starts_with 'feat:'"
+          platforms: ["github"]
+
+    - name: "type/bugfix"
+      description: "Bug fix or error correction"
+      color: "#D73A4A"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "issue_type == 'Bug'"
+          platforms: ["jira"]
+        - condition: "pr_title contains '[fix]' OR pr_title starts_with 'fix:'"
+          platforms: ["github"]
+
+    - name: "type/hotfix"
+      description: "Critical production fix requiring immediate deployment"
+      color: "#B60205"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "priority == 'Critical' AND issue_type == 'Bug'"
+          platforms: ["jira"]
+        - condition: "pr_title contains '[hotfix]' OR branch contains 'hotfix/'"
+          platforms: ["github"]
+
+    - name: "type/refactor"
+      description: "Code refactoring without functionality changes"
+      color: "#FBCA04"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_title contains '[refactor]' OR pr_title starts_with 'refactor:'"
+          platforms: ["github"]
+
+    - name: "type/docs"
+      description: "Documentation updates or additions"
+      color: "#0075CA"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "issue_type == 'Documentation'"
+          platforms: ["jira"]
+        - condition: "pr_title contains '[docs]' OR pr_files only_in 'docs/'"
+          platforms: ["github"]
+
+    - name: "type/infra"
+      description: "Infrastructure or tooling changes"
+      color: "#5319E7"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "component contains 'Infrastructure'"
+          platforms: ["jira"]
+        - condition: "pr_files modified_in ['terraform/', '.github/', 'docker/']"
+          platforms: ["github"]
+
+    - name: "type/security"
+      description: "Security-related changes or fixes"
+      color: "#D93F0B"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "labels contains 'security' OR component contains 'Security'"
+          platforms: ["jira"]
+
+    - name: "type/performance"
+      description: "Performance optimization or improvement"
+      color: "#006B75"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_title contains '[perf]' OR summary contains 'performance'"
+          platforms: ["github", "jira"]
+
+    - name: "type/test"
+      description: "Test additions or modifications"
+      color: "#C5DEF5"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_title contains '[test]' OR pr_files only_in 'test/'"
+          platforms: ["github"]
+
+    - name: "type/spike"
+      description: "Research or investigation task"
+      color: "#E99695"
+      applies_to: ["jira"]
+      auto_apply_rules:
+        - condition: "issue_type == 'Spike' OR summary contains 'spike:'"
+          platforms: ["jira"]
+
+    - name: "type/chore"
+      description: "Maintenance tasks, dependency updates, or tooling"
+      color: "#EDEDED"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_title contains '[chore]' OR pr_title starts_with 'chore:'"
+          platforms: ["github"]
+
+# ====================
+# PRIORITY TAGS
+# ====================
+priority_tags:
+  prefix: "priority/"
+  description: "Indicates urgency and importance of work"
+  applies_to: ["jira", "github"]
+
+  tags:
+    - name: "priority/critical"
+      description: "Production down or critical business impact"
+      color: "#B60205"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "priority == 'Critical' OR priority == 'Highest'"
+          platforms: ["jira"]
+
+    - name: "priority/high"
+      description: "Important work that should be prioritized"
+      color: "#D93F0B"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "priority == 'High'"
+          platforms: ["jira"]
+
+    - name: "priority/medium"
+      description: "Standard priority work"
+      color: "#FBCA04"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "priority == 'Medium'"
+          platforms: ["jira"]
+
+    - name: "priority/low"
+      description: "Nice-to-have or can be deferred"
+      color: "#0E8A16"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "priority == 'Low' OR priority == 'Lowest'"
+          platforms: ["jira"]
+
+# ====================
+# STATUS TAGS
+# ====================
+status_tags:
+  prefix: "status/"
+  description: "Current state of work item"
+  applies_to: ["jira", "github", "confluence"]
+
+  tags:
+    - name: "status/blocked"
+      description: "Work is blocked by dependencies or issues"
+      color: "#B60205"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "status == 'Blocked' OR labels contains 'blocked'"
+          platforms: ["jira"]
+
+    - name: "status/in-progress"
+      description: "Active work in progress"
+      color: "#0075CA"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "status == 'In Progress' OR status == 'In Development'"
+          platforms: ["jira"]
+        - condition: "pr_state == 'open' AND NOT is_draft"
+          platforms: ["github"]
+
+    - name: "status/review"
+      description: "Awaiting code review"
+      color: "#FBCA04"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "status == 'Code Review' OR status == 'Peer Review'"
+          platforms: ["jira"]
+        - condition: "pr_state == 'open' AND review_requested"
+          platforms: ["github"]
+
+    - name: "status/qa"
+      description: "In quality assurance testing"
+      color: "#C5DEF5"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "status == 'QA' OR status == 'Testing'"
+          platforms: ["jira"]
+
+    - name: "status/done"
+      description: "Work completed and verified"
+      color: "#0E8A16"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "status == 'Done' OR status == 'Closed'"
+          platforms: ["jira"]
+        - condition: "pr_state == 'merged'"
+          platforms: ["github"]
+
+    - name: "status/on-hold"
+      description: "Work paused temporarily"
+      color: "#EDEDED"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "status == 'On Hold' OR status == 'Paused'"
+          platforms: ["jira"]
+
+# ====================
+# COMPONENT TAGS
+# ====================
+component_tags:
+  prefix: "component/"
+  description: "System component or area affected"
+  applies_to: ["jira", "github", "confluence"]
+
+  tags:
+    - name: "component/frontend"
+      description: "Frontend UI and user-facing code"
+      color: "#0075CA"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "component contains 'Frontend' OR component contains 'UI'"
+          platforms: ["jira"]
+        - condition: "pr_files modified_in ['src/components/', 'src/pages/', 'public/']"
+          platforms: ["github"]
+
+    - name: "component/backend"
+      description: "Backend services and business logic"
+      color: "#5319E7"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "component contains 'Backend' OR component contains 'API'"
+          platforms: ["jira"]
+        - condition: "pr_files modified_in ['src/services/', 'src/controllers/', 'src/models/']"
+          platforms: ["github"]
+
+    - name: "component/api"
+      description: "API interfaces and contracts"
+      color: "#006B75"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "component contains 'API'"
+          platforms: ["jira"]
+        - condition: "pr_files modified_in ['src/api/', 'openapi.yaml', 'swagger/']"
+          platforms: ["github"]
+
+    - name: "component/database"
+      description: "Database schemas, migrations, and queries"
+      color: "#D93F0B"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "component contains 'Database' OR component contains 'DB'"
+          platforms: ["jira"]
+        - condition: "pr_files modified_in ['migrations/', 'schema/', 'db/']"
+          platforms: ["github"]
+
+    - name: "component/infra"
+      description: "Infrastructure and deployment"
+      color: "#1D76DB"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "component contains 'Infrastructure' OR component contains 'DevOps'"
+          platforms: ["jira"]
+        - condition: "pr_files modified_in ['terraform/', 'ansible/', 'k8s/']"
+          platforms: ["github"]
+
+    - name: "component/ci-cd"
+      description: "CI/CD pipelines and automation"
+      color: "#C5DEF5"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_files modified_in ['.github/workflows/', '.gitlab-ci.yml', 'Jenkinsfile']"
+          platforms: ["github"]
+
+    - name: "component/docs"
+      description: "Documentation and guides"
+      color: "#0E8A16"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "component contains 'Documentation'"
+          platforms: ["jira"]
+        - condition: "pr_files modified_in ['docs/', 'README.md', '*.md']"
+          platforms: ["github"]
+
+    - name: "component/testing"
+      description: "Test infrastructure and test cases"
+      color: "#FBCA04"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_files modified_in ['test/', '__tests__/', 'spec/']"
+          platforms: ["github"]
+
+# ====================
+# ENVIRONMENT TAGS
+# ====================
+environment_tags:
+  prefix: "env/"
+  description: "Target deployment environment"
+  applies_to: ["jira", "github"]
+
+  tags:
+    - name: "env/dev"
+      description: "Development environment"
+      color: "#0075CA"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "branch contains 'dev/' OR environment == 'Development'"
+          platforms: ["github", "jira"]
+
+    - name: "env/staging"
+      description: "Staging/UAT environment"
+      color: "#FBCA04"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "branch contains 'staging/' OR environment == 'Staging'"
+          platforms: ["github", "jira"]
+
+    - name: "env/prod"
+      description: "Production environment"
+      color: "#D93F0B"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "branch contains 'prod/' OR branch == 'main' OR environment == 'Production'"
+          platforms: ["github", "jira"]
+
+    - name: "env/all"
+      description: "Affects all environments"
+      color: "#5319E7"
+      applies_to: ["jira", "github"]
+
+# ====================
+# TEAM TAGS
+# ====================
+team_tags:
+  prefix: "team/"
+  description: "Team ownership and responsibility"
+  applies_to: ["jira", "github", "confluence"]
+
+  tags:
+    - name: "team/platform"
+      description: "Platform engineering team"
+      color: "#1D76DB"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "assignee in platform_team OR labels contains 'platform'"
+          platforms: ["jira"]
+
+    - name: "team/frontend"
+      description: "Frontend development team"
+      color: "#0075CA"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "assignee in frontend_team OR component contains 'Frontend'"
+          platforms: ["jira"]
+
+    - name: "team/backend"
+      description: "Backend development team"
+      color: "#5319E7"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "assignee in backend_team OR component contains 'Backend'"
+          platforms: ["jira"]
+
+    - name: "team/devops"
+      description: "DevOps and infrastructure team"
+      color: "#006B75"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "assignee in devops_team OR component contains 'Infrastructure'"
+          platforms: ["jira"]
+
+    - name: "team/qa"
+      description: "Quality assurance team"
+      color: "#C5DEF5"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "assignee in qa_team OR status contains 'QA'"
+          platforms: ["jira"]
+
+    - name: "team/security"
+      description: "Security team"
+      color: "#D93F0B"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "assignee in security_team OR component contains 'Security'"
+          platforms: ["jira"]
+
+# ====================
+# RISK TAGS
+# ====================
+risk_tags:
+  prefix: "risk/"
+  description: "Risk indicators for changes"
+  applies_to: ["jira", "github"]
+
+  tags:
+    - name: "risk/breaking-change"
+      description: "Introduces breaking API or behavior changes"
+      color: "#B60205"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_title contains 'BREAKING' OR labels contains 'breaking-change'"
+          platforms: ["github"]
+
+    - name: "risk/data-migration"
+      description: "Requires database migration or data transformation"
+      color: "#D93F0B"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "pr_files modified_in ['migrations/'] OR labels contains 'migration'"
+          platforms: ["github"]
+
+    - name: "risk/security-sensitive"
+      description: "Touches security-critical code or data"
+      color: "#D73A4A"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "component contains 'Security' OR pr_files modified_in ['auth/', 'security/']"
+          platforms: ["jira", "github"]
+
+    - name: "risk/performance-impact"
+      description: "May impact system performance"
+      color: "#FBCA04"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "labels contains 'performance' OR summary contains 'performance'"
+          platforms: ["jira", "github"]
+
+# ====================
+# REVIEW TAGS
+# ====================
+review_tags:
+  prefix: "review/"
+  description: "Code review and approval status"
+  applies_to: ["github"]
+
+  tags:
+    - name: "review/needs-review"
+      description: "Awaiting initial review"
+      color: "#FBCA04"
+      applies_to: ["github"]
+      auto_apply_rules:
+        - condition: "pr_state == 'open' AND review_count == 0"
+          platforms: ["github"]
+
+    - name: "review/changes-requested"
+      description: "Reviewer requested changes"
+      color: "#D93F0B"
+      applies_to: ["github"]
+      auto_apply_rules:
+        - condition: "review_state == 'changes_requested'"
+          platforms: ["github"]
+
+    - name: "review/approved"
+      description: "Approved by required reviewers"
+      color: "#0E8A16"
+      applies_to: ["github"]
+      auto_apply_rules:
+        - condition: "review_state == 'approved' AND required_approvals_met"
+          platforms: ["github"]
+
+    - name: "review/council-review"
+      description: "Requires architecture council review"
+      color: "#5319E7"
+      applies_to: ["github"]
+      auto_apply_rules:
+        - condition: "labels contains 'council-review' OR has_tag 'risk/breaking-change'"
+          platforms: ["github"]
+
+# ====================
+# AUTOMATION TAGS
+# ====================
+automation_tags:
+  prefix: "auto/"
+  description: "Automation and tooling indicators"
+  applies_to: ["jira", "github", "confluence"]
+
+  tags:
+    - name: "auto/generated"
+      description: "Automatically generated content"
+      color: "#EDEDED"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "creator == 'bot' OR author contains 'bot'"
+          platforms: ["jira", "github", "confluence"]
+
+    - name: "auto/synced"
+      description: "Synced across platforms (Jira/GitHub/Confluence)"
+      color: "#C5DEF5"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "has_remote_link OR description contains 'synced from'"
+          platforms: ["jira", "github", "confluence"]
+
+    - name: "auto/linked"
+      description: "Linked to external resources"
+      color: "#0075CA"
+      applies_to: ["jira", "github", "confluence"]
+      auto_apply_rules:
+        - condition: "has_remote_links OR has_issue_links"
+          platforms: ["jira", "confluence"]
+
+    - name: "auto/deployed"
+      description: "Automatically deployed"
+      color: "#0E8A16"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "deployment_status == 'success'"
+          platforms: ["github"]
+
+# ====================
+# SIZE TAGS
+# ====================
+size_tags:
+  prefix: "size/"
+  description: "Estimated size or complexity of work"
+  applies_to: ["jira", "github"]
+
+  tags:
+    - name: "size/xs"
+      description: "Extra small - trivial change (< 50 lines)"
+      color: "#C5DEF5"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "story_points <= 1 OR pr_lines_changed < 50"
+          platforms: ["jira", "github"]
+
+    - name: "size/s"
+      description: "Small - minor change (50-150 lines)"
+      color: "#0075CA"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "story_points <= 3 OR pr_lines_changed < 150"
+          platforms: ["jira", "github"]
+
+    - name: "size/m"
+      description: "Medium - moderate change (150-500 lines)"
+      color: "#FBCA04"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "story_points <= 5 OR pr_lines_changed < 500"
+          platforms: ["jira", "github"]
+
+    - name: "size/l"
+      description: "Large - significant change (500-1000 lines)"
+      color: "#D93F0B"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "story_points <= 8 OR pr_lines_changed < 1000"
+          platforms: ["jira", "github"]
+
+    - name: "size/xl"
+      description: "Extra large - major change (> 1000 lines)"
+      color: "#B60205"
+      applies_to: ["jira", "github"]
+      auto_apply_rules:
+        - condition: "story_points > 8 OR pr_lines_changed >= 1000"
+          platforms: ["jira", "github"]
+
+# ====================
+# TAG RULES ENGINE
+# ====================
+tag_rules:
+  description: "Automated tag application rules and conflict resolution"
+
+  conflict_resolution:
+    priority_tags:
+      strategy: "highest_priority_wins"
+      mutual_exclusive: true
+
+    status_tags:
+      strategy: "latest_state_wins"
+      mutual_exclusive: true
+
+    size_tags:
+      strategy: "calculated_value_wins"
+      mutual_exclusive: true
+
+    type_tags:
+      strategy: "allow_multiple"
+      mutual_exclusive: false
+      max_tags: 3
+
+    team_tags:
+      strategy: "allow_multiple"
+      mutual_exclusive: false
+      max_tags: 2
+
+  propagation_rules:
+    - source: "jira"
+      target: "github"
+      conditions:
+        - "issue has remote_link to PR"
+      tags_to_sync: ["type/*", "priority/*", "component/*", "team/*"]
+
+    - source: "github"
+      target: "jira"
+      conditions:
+        - "PR description contains JIRA issue key"
+      tags_to_sync: ["status/*", "review/*", "size/*"]
+
+    - source: "jira"
+      target: "confluence"
+      conditions:
+        - "issue type is Documentation"
+      tags_to_sync: ["type/*", "component/*", "team/*"]
+
+# ====================
+# INTEGRATION SETTINGS
+# ====================
+integration:
+  jira:
+    label_prefix: ""  # No prefix for Jira labels
+    custom_field_mapping:
+      risk_level: "customfield_10050"
+      deployment_env: "customfield_10051"
+
+  github:
+    label_prefix: ""  # No prefix for GitHub labels
+    create_missing_labels: true
+    sync_on_pr_create: true
+    sync_on_pr_update: true
+
+  confluence:
+    label_prefix: ""  # No prefix for Confluence labels
+    apply_to_pages: true
+    apply_to_blog_posts: false
+
+# ====================
+# VALIDATION RULES
+# ====================
+validation:
+  required_tags:
+    jira_issue:
+      - at_least_one_from: ["type/*"]
+      - at_least_one_from: ["priority/*"]
+
+    github_pr:
+      - at_least_one_from: ["type/*"]
+      - at_least_one_from: ["component/*"]
+
+    confluence_page:
+      - at_least_one_from: ["team/*"]
+
+  recommended_tags:
+    jira_epic:
+      - "team/*"
+      - "component/*"
+
+    github_pr:
+      - "size/*"
+      - "review/*"
+
+  warnings:
+    - condition: "has_tag('risk/breaking-change') AND NOT has_tag('review/council-review')"
+      message: "Breaking changes should be marked for council review"
+
+    - condition: "has_tag('priority/critical') AND NOT has_tag('team/*')"
+      message: "Critical issues should have a team assigned"
+
+    - condition: "has_tag('size/xl') AND NOT has_tag('type/epic')"
+      message: "XL-sized work should be broken down into an Epic"
+
+# ====================
+# METADATA
+# ====================
+statistics:
+  total_tags: 65
+  categories: 10
+  platforms_supported: 3
+  auto_apply_rules: 47

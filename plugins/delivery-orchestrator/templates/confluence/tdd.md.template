@@ -1,0 +1,695 @@
+# Technical Design Document: {{SERVICE_NAME}}
+
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+**Author:** {{AUTHOR}}
+**Created:** {{DATE}}
+**Status:** Draft | In Review | Approved
+
+---
+
+## Overview
+
+### Problem Statement
+
+{{DESCRIPTION}}
+
+### Goals
+
+- [ ] Goal 1
+- [ ] Goal 2
+- [ ] Goal 3
+
+### Non-Goals
+
+- Non-goal 1
+- Non-goal 2
+
+---
+
+## Architecture
+
+### High-Level System Design
+
+```mermaid
+graph LR
+    Client["Client<br/>(Browser/Mobile)"]
+    Gateway["API Gateway<br/>(Kong/NGINX)"]
+    Service["{{SERVICE_NAME}}<br/>(Business Logic)"]
+    Database[("Database<br/>(PostgreSQL)")]
+    Cache["Cache<br/>(Redis)"]
+
+    Client -->|HTTPS| Gateway
+    Gateway -->|Route| Service
+    Service -->|Query/Persist| Database
+    Service -->|Read/Write| Cache
+    Cache -->|Invalidate| Service
+
+    style Client fill:#e1f5ff
+    style Gateway fill:#fff3e0
+    style Service fill:#f3e5f5
+    style Database fill:#e8f5e9
+    style Cache fill:#fce4ec
+```
+
+### Component Architecture
+
+| Component | Purpose | Technology | Responsibility |
+|-----------|---------|------------|-----------------|
+| API Gateway | Request routing, rate limiting, auth | Kong/NGINX | Entry point, load balancing |
+| {{SERVICE_NAME}} | Business logic & core service | Node.js/Python | Domain logic, orchestration |
+| Database | Persistent data storage | PostgreSQL | ACID compliance, data integrity |
+| Cache | High-speed data access | Redis | Performance optimization |
+| Queue | Async task processing | RabbitMQ/SQS | Event-driven architecture |
+
+### Data Flow with Caching
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway as API Gateway
+    participant Service as {{SERVICE_NAME}}
+    participant Cache
+    participant Database
+
+    Client->>Gateway: HTTP Request
+    Gateway->>Service: Route Request
+    Service->>Cache: Check Cache
+    alt Cache Hit
+        Cache-->>Service: Return Data
+    else Cache Miss
+        Service->>Database: Query Data
+        Database-->>Service: Return Data
+        Service->>Cache: Store in Cache
+    end
+    Service-->>Gateway: Response
+    Gateway-->>Client: HTTP Response
+```
+
+---
+
+## Technical Decisions
+
+### Technology Stack
+
+| Layer | Technology | Version | Rationale |
+|-------|------------|---------|-----------|
+| Runtime | Node.js | 20+ | Team expertise, performance, ecosystem |
+| Framework | Fastify | Latest | Speed, TypeScript support, minimal overhead |
+| Database | PostgreSQL | 14+ | ACID compliance, JSON support, proven stability |
+| ORM | Prisma | Latest | Type safety, migrations, developer experience |
+| Container | Docker | Latest | Consistency across environments |
+| Orchestration | Kubernetes | 1.26+ | Scalability, self-healing, Helm support |
+| Monitoring | Prometheus | Latest | Time-series metrics, alerting |
+
+### Architecture Decisions
+
+See [ADR Index](./adr/) for detailed decisions:
+- [ADR-001: Initial Architecture](./adr/0001-initial-architecture.md)
+- [ADR-002: Database Strategy](./adr/0002-database-strategy.md)
+- [ADR-003: Caching Strategy](./adr/0003-caching-strategy.md)
+
+---
+
+## API Design
+
+### REST Endpoints
+
+| Method | Endpoint | Description | Auth | Rate Limit |
+|--------|----------|-------------|------|------------|
+| GET | `/api/v1/{{resource}}` | List resources | JWT | 100/min |
+| POST | `/api/v1/{{resource}}` | Create resource | JWT | 50/min |
+| GET | `/api/v1/{{resource}}/:id` | Get resource | JWT | 200/min |
+| PUT | `/api/v1/{{resource}}/:id` | Update resource | JWT | 50/min |
+| DELETE | `/api/v1/{{resource}}/:id` | Delete resource | JWT | 50/min |
+| PATCH | `/api/v1/{{resource}}/:id` | Partial update | JWT | 50/min |
+
+### API Request/Response Flow
+
+```mermaid
+flowchart TD
+    A["Request:<br/>POST /api/v1/{{resource}}"]
+    B["Validate Schema"]
+    C["Authenticate JWT"]
+    D["Check Authorization"]
+    E["Process Business Logic"]
+    F["Store in Database"]
+    G["Invalidate Cache"]
+    H["Response 201 Created"]
+
+    A --> B
+    B -->|Valid| C
+    B -->|Invalid| Z["400 Bad Request"]
+    C -->|Valid Token| D
+    C -->|Invalid| Y["401 Unauthorized"]
+    D -->|Authorized| E
+    D -->|Forbidden| X["403 Forbidden"]
+    E --> F
+    F --> G
+    G --> H
+
+    style A fill:#e3f2fd
+    style H fill:#c8e6c9
+    style Z fill:#ffcdd2
+    style Y fill:#ffcdd2
+    style X fill:#ffcdd2
+```
+
+### Request/Response Examples
+
+```json
+// POST /api/v1/{{resource}}
+{
+  "name": "Example Resource",
+  "description": "A detailed description",
+  "properties": {
+    "key": "value"
+  }
+}
+
+// Response 201
+{
+  "id": "{{uuid}}",
+  "name": "Example Resource",
+  "description": "A detailed description",
+  "createdAt": "2025-12-31T00:00:00Z",
+  "updatedAt": "2025-12-31T00:00:00Z"
+}
+```
+
+---
+
+## Data Model
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    {{ENTITY_A}} ||--o{ {{ENTITY_B}} : "has many"
+    {{ENTITY_B}} }o--|| {{ENTITY_C}} : "belongs to"
+    {{ENTITY_C}} ||--|| {{ENTITY_D}} : "one-to-one"
+    {{ENTITY_A}} }o--o{ {{ENTITY_D}} : "many-to-many"
+
+    {{ENTITY_A}} {
+        uuid id PK
+        string name
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    {{ENTITY_B}} {
+        uuid id PK
+        uuid entity_a_id FK
+        string title
+        timestamp created_at
+    }
+
+    {{ENTITY_C}} {
+        uuid id PK
+        uuid entity_b_id FK
+        string status
+        timestamp created_at
+    }
+
+    {{ENTITY_D}} {
+        uuid id PK
+        uuid entity_a_id FK
+        string metadata
+        timestamp created_at
+    }
+```
+
+### Database Schema
+
+```sql
+-- Core entity table
+CREATE TABLE {{entity_a}} (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  deleted_at TIMESTAMP WITH TIME ZONE,
+  CONSTRAINT {{entity_a}}_name_unique UNIQUE(name)
+);
+
+-- Related entity table with foreign key
+CREATE TABLE {{entity_b}} (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  {{entity_a}}_id UUID NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT fk_{{entity_a}} FOREIGN KEY ({{entity_a}}_id)
+    REFERENCES {{entity_a}}(id) ON DELETE CASCADE
+);
+
+-- Indexes for performance
+CREATE INDEX idx_{{entity_b}}_entity_a_id ON {{entity_b}}({{entity_a}}_id);
+CREATE INDEX idx_{{entity_a}}_created_at ON {{entity_a}}(created_at DESC);
+CREATE INDEX idx_{{entity_a}}_deleted_at ON {{entity_a}}(deleted_at) WHERE deleted_at IS NULL;
+```
+
+---
+
+## Security Considerations
+
+### Authentication & Authorization
+
+```mermaid
+flowchart LR
+    User["User"]
+    Login["Login Endpoint"]
+    JWT["Generate JWT<br/>(HS256)"]
+    Verify["Verify Token"]
+    RBAC["Check Roles<br/>& Permissions"]
+    Resource["Access Resource"]
+
+    User -->|Email + Password| Login
+    Login -->|Valid Credentials| JWT
+    JWT -->|Token| User
+    User -->|Authorization Header| Verify
+    Verify -->|Valid| RBAC
+    RBAC -->|Authorized| Resource
+    RBAC -->|Forbidden| X["403 Forbidden"]
+
+    style JWT fill:#fff9c4
+    style RBAC fill:#e1bee7
+    style Resource fill:#c8e6c9
+    style X fill:#ffcdd2
+```
+
+### Security Checklist
+
+- [ ] **Authentication**: JWT-based, 1-hour expiration, refresh token support
+- [ ] **Authorization**: Role-based access control (RBAC) with fine-grained permissions
+- [ ] **Encryption at Rest**: Database encryption, encrypted backups
+- [ ] **Encryption in Transit**: TLS 1.3 for all API communications
+- [ ] **PII Handling**: Compliance with GDPR, data masking in logs
+- [ ] **Input Validation**: Schema validation, SQL injection prevention
+- [ ] **Rate Limiting**: Per-user and global rate limits
+- [ ] **CORS Policy**: Restricted origin headers
+- [ ] **Security Headers**: CSP, X-Frame-Options, X-Content-Type-Options
+
+---
+
+## Deployment
+
+### Infrastructure Architecture
+
+```mermaid
+graph TB
+    LB["Load Balancer<br/>(AWS ELB)"]
+
+    subgraph Kubernetes["Kubernetes Cluster (Production)"]
+        Namespace["Namespace: {{SERVICE_NAME}}"]
+
+        subgraph Pods["Pod Replicas (3+)"]
+            Pod1["Pod 1<br/>({{SERVICE_NAME}})"]
+            Pod2["Pod 2<br/>({{SERVICE_NAME}})"]
+            Pod3["Pod 3<br/>({{SERVICE_NAME}})"]
+        end
+
+        Service["Kubernetes Service<br/>(Internal DNS)"]
+        ConfigMap["ConfigMap<br/>(Configuration)"]
+        Secret["Secret<br/>(Credentials)"]
+    end
+
+    subgraph Storage["Persistent Storage"]
+        Database["PostgreSQL<br/>(RDS)"]
+        Cache["Redis Cache<br/>(ElastiCache)"]
+    end
+
+    LB --> Service
+    Service --> Pod1
+    Service --> Pod2
+    Service --> Pod3
+    Pod1 --> Database
+    Pod1 --> Cache
+    Pod2 --> Database
+    Pod2 --> Cache
+    Pod3 --> Database
+    Pod3 --> Cache
+    Pod1 -.-> ConfigMap
+    Pod1 -.-> Secret
+
+    style LB fill:#e0e0e0
+    style Kubernetes fill:#f3e5f5
+    style Storage fill:#e8f5e9
+```
+
+### Environment Specifications
+
+| Environment | Replicas | CPU | Memory | Disk | Auto-Scaling |
+|-------------|----------|-----|--------|------|--------------|
+| Development | 1 | 0.5 | 256Mi | 10Gi | Disabled |
+| Staging | 2 | 1 | 512Mi | 20Gi | Manual |
+| Production | 3+ | 2 | 1Gi | 50Gi+ | Auto (2-5) |
+
+### Helm Deployment
+
+Located in: `deployment/helm/{{SERVICE_NAME}}/`
+
+```bash
+# Deploy to staging
+helm upgrade --install {{SERVICE_NAME}} ./deployment/helm/{{SERVICE_NAME}} \
+  -f ./deployment/helm/{{SERVICE_NAME}}/values-staging.yaml \
+  -n {{SERVICE_NAME}} --create-namespace
+
+# Deploy to production
+helm upgrade --install {{SERVICE_NAME}} ./deployment/helm/{{SERVICE_NAME}} \
+  -f ./deployment/helm/{{SERVICE_NAME}}/values-production.yaml \
+  -n {{SERVICE_NAME}} --create-namespace
+```
+
+### CI/CD Pipeline
+
+```mermaid
+graph LR
+    A["Git Push<br/>(Feature Branch)"]
+    B["Build<br/>(Docker Image)"]
+    C["Unit Tests<br/>(Jest)"]
+    D["Integration Tests<br/>(Supertest)"]
+    E["Security Scan<br/>(Trivy)"]
+    F["Staging Deploy<br/>(Helm)"]
+    G["E2E Tests<br/>(Playwright)"]
+    H["Approval Gate"]
+    I["Production Deploy<br/>(Canary 10%)"]
+    J["Monitor Metrics"]
+    K["Full Rollout"]
+
+    A --> B
+    B --> C
+    C -->|Pass| D
+    C -->|Fail| X["⚠ Build Failed"]
+    D -->|Pass| E
+    D -->|Fail| X
+    E -->|Pass| F
+    E -->|Fail| X
+    F --> G
+    G -->|Pass| H
+    G -->|Fail| X
+    H -->|Approve| I
+    H -->|Reject| Y["⚠ Awaiting Changes"]
+    I --> J
+    J -->|Healthy| K
+    J -->|Issues| Z["⚠ Rollback"]
+
+    style B fill:#fff3e0
+    style C fill:#e3f2fd
+    style D fill:#e3f2fd
+    style E fill:#fce4ec
+    style F fill:#e8f5e9
+    style K fill:#c8e6c9
+    style X fill:#ffcdd2
+    style Z fill:#ffcdd2
+```
+
+---
+
+## Monitoring & Observability
+
+### Metrics Dashboard
+
+```mermaid
+graph TB
+    Prometheus["Prometheus<br/>(Metrics)"]
+    Grafana["Grafana<br/>(Visualization)"]
+
+    subgraph Metrics["Key Metrics"]
+        M1["http_requests_total"]
+        M2["http_request_duration_seconds"]
+        M3["error_rate"]
+        M4["database_query_duration"]
+        M5["cache_hit_ratio"]
+    end
+
+    subgraph Alerts["Alert Conditions"]
+        A1["High Error Rate > 1%"]
+        A2["High Latency p99 > 500ms"]
+        A3["Pod Restarts > 3/5min"]
+        A4["Database Connections > 80%"]
+    end
+
+    {{SERVICE_NAME}}["{{SERVICE_NAME}}<br/>(Metrics Exporter)"]
+
+    {{SERVICE_NAME}} --> Prometheus
+    Prometheus --> Metrics
+    Prometheus --> Alerts
+    Metrics --> Grafana
+    Alerts -->|Page On-Call| AlertManager["Alert Manager"]
+
+    style Prometheus fill:#ffd54f
+    style Grafana fill:#81c784
+    style AlertManager fill:#ef9a9a
+```
+
+### Metrics Reference
+
+| Metric | Type | Description | Alert Threshold |
+|--------|------|-------------|-----------------|
+| `http_requests_total` | Counter | Total requests by method/path | N/A |
+| `http_request_duration_seconds` | Histogram | Request latency buckets | p99 > 500ms |
+| `error_rate` | Gauge | Percentage of failed requests | > 1% |
+| `database_query_duration_seconds` | Histogram | DB query latency | p99 > 200ms |
+| `cache_hit_ratio` | Gauge | Cache effectiveness (0-1) | < 0.7 |
+| `active_connections` | Gauge | Current active connections | > 80 |
+
+### Logging Strategy
+
+| Level | Environment | Destination | Retention |
+|-------|-------------|------------|-----------|
+| DEBUG | Development | Console | 7 days |
+| INFO | Staging | CloudWatch | 30 days |
+| INFO | Production | CloudWatch | 90 days |
+| ERROR | All | PagerDuty | 1 year |
+| WARNING | All | Slack | 60 days |
+
+```json
+// Example structured log entry
+{
+  "timestamp": "2025-12-31T12:00:00Z",
+  "level": "INFO",
+  "service": "{{SERVICE_NAME}}",
+  "traceId": "abc-123-def",
+  "userId": "user-456",
+  "action": "resource.created",
+  "duration_ms": 125,
+  "status": 201,
+  "path": "/api/v1/resources"
+}
+```
+
+---
+
+## Testing Strategy
+
+### Test Pyramid
+
+```mermaid
+graph TB
+    E2E["E2E Tests<br/>(5-10%)<br/>Playwright"]
+    Integration["Integration Tests<br/>(20-30%)<br/>Supertest + Docker"]
+    Unit["Unit Tests<br/>(60-75%)<br/>Jest/Vitest"]
+
+    Unit --> Integration
+    Integration --> E2E
+
+    style E2E fill:#ffcdd2
+    style Integration fill:#fff9c4
+    style Unit fill:#c8e6c9
+```
+
+### Test Coverage Requirements
+
+| Test Type | Coverage Target | Tools | Environment |
+|-----------|-----------------|-------|-------------|
+| Unit | 80%+ | Jest/Vitest | In-memory |
+| Integration | Key user flows | Supertest | Docker Compose |
+| E2E | Critical paths | Playwright | Staging cluster |
+| Performance | Baseline | k6/Artillery | Staging |
+| Security | OWASP Top 10 | Burp/OWASP ZAP | Staging |
+
+### Test Execution Pipeline
+
+```bash
+# Unit tests (fast feedback)
+npm run test:unit -- --coverage
+
+# Integration tests (isolated environments)
+npm run test:integration -- --setup=docker
+
+# E2E tests (against staging)
+npm run test:e2e -- --baseUrl=https://staging.example.com
+
+# Performance baseline
+npm run test:performance -- --threshold=p95<500ms
+```
+
+---
+
+## Rollout Plan
+
+### Phase 1: Development (Week 1-2)
+
+```mermaid
+graph LR
+    A["Setup Dev Env"] --> B["Implement Core"]
+    B --> C["Unit Tests"]
+    C --> D["Code Review"]
+    D -->|Approve| E["Dev Complete ✓"]
+    D -->|Changes| B
+
+    style E fill:#c8e6c9
+```
+
+- [ ] Initialize service structure
+- [ ] Implement core business logic
+- [ ] Setup test environment
+- [ ] Achieve 80% code coverage
+- [ ] Local integration testing
+- [ ] Code review approval
+
+### Phase 2: Staging (Week 3)
+
+```mermaid
+graph LR
+    A["Deploy Staging"] --> B["Integration Tests"]
+    B --> C["Performance Test"]
+    C --> D["Security Review"]
+    D --> E["Load Testing"]
+    E -->|Pass| F["Staging Ready ✓"]
+    E -->|Fail| G["Fix Issues"]
+    G --> E
+
+    style F fill:#c8e6c9
+```
+
+- [ ] Deploy to staging cluster
+- [ ] Run full integration test suite
+- [ ] Conduct performance testing (p99 < 500ms)
+- [ ] Security vulnerability scan
+- [ ] Load testing (2x expected traffic)
+- [ ] Stakeholder approval
+
+### Phase 3: Production Rollout (Week 4)
+
+```mermaid
+graph LR
+    A["Canary 10%"] --> B["Monitor 4h"]
+    B -->|Healthy| C["Canary 50%"]
+    B -->|Issues| Z["Rollback"]
+    C --> D["Monitor 4h"]
+    D -->|Healthy| E["Full Rollout"]
+    D -->|Issues| Z
+    E --> F["Monitor 24h"]
+    F -->|Stable| G["Production Ready ✓"]
+    F -->|Issues| Z
+
+    style G fill:#c8e6c9
+    style Z fill:#ffcdd2
+```
+
+- [ ] Canary deployment (10% traffic)
+- [ ] Monitor error rate, latency, resource usage
+- [ ] Gradual rollout (25% → 50% → 100%)
+- [ ] 24-hour stability monitoring
+- [ ] On-call team standby
+
+---
+
+## Risks & Mitigations
+
+### Risk Assessment Matrix
+
+```mermaid
+graph TB
+    A["Database<br/>Bottleneck"]
+    B["Third-party API<br/>Failure"]
+    C["Cache<br/>Invalidation"]
+    D["Deployment<br/>Issues"]
+
+    A -->|Impact: High| A1["Connection pooling<br/>Read replicas<br/>Query optimization"]
+    B -->|Impact: Medium| B1["Circuit breaker<br/>Fallback service<br/>Retry logic"]
+    C -->|Impact: Medium| C1["Event-driven invalidation<br/>TTL strategy<br/>Dual-write"]
+    D -->|Impact: High| D1["Canary rollout<br/>Automated tests<br/>Easy rollback"]
+
+    style A fill:#ffcdd2
+    style B fill:#fff9c4
+    style C fill:#fff9c4
+    style D fill:#ffcdd2
+```
+
+| Risk | Impact | Likelihood | Mitigation Strategy | Owner |
+|------|--------|-----------|---------------------|-------|
+| Database bottleneck | High | Medium | Connection pooling, read replicas, query optimization | {{DBA}} |
+| Third-party API failure | Medium | Low | Circuit breaker, fallback service, retry logic | {{BACKEND_LEAD}} |
+| Cache invalidation issues | Medium | Medium | Event-driven invalidation, TTL strategy | {{BACKEND_LEAD}} |
+| Deployment failures | High | Low | Automated tests, canary rollout, easy rollback | {{DEVOPS}} |
+| Memory leaks | Medium | Low | Profiling, load testing, automated monitoring | {{BACKEND_LEAD}} |
+| Security vulnerability | High | Low | Regular scanning, penetration testing, code review | {{SECURITY}} |
+
+---
+
+## Open Questions
+
+- [ ] What is the expected scale (users, requests per second)?
+- [ ] Are there specific compliance requirements (GDPR, HIPAA)?
+- [ ] What is the acceptable RTO/RPO for disaster recovery?
+- [ ] Should we implement read replicas immediately or phase in?
+- [ ] What monitoring/alerting SLA should we target?
+
+---
+
+## Success Criteria
+
+```mermaid
+graph TD
+    A["Deployment Successful"]
+
+    A --> B["Performance<br/>p99 latency < 500ms"]
+    A --> C["Reliability<br/>99.9% uptime"]
+    A --> D["Security<br/>0 critical vulns"]
+    A --> E["Coverage<br/>80%+ test coverage"]
+    A --> F["Ops<br/>< 5min deploy time"]
+
+    B -->|✓| G["Success"]
+    C -->|✓| G
+    D -->|✓| G
+    E -->|✓| G
+    F -->|✓| G
+
+    style G fill:#c8e6c9
+```
+
+---
+
+## Appendix
+
+### References
+
+- [SOLID Principles & Clean Code](../docs/DEVELOPMENT-STANDARDS.md#solid-principles)
+- [Helm Chart Standards](../docs/DEVELOPMENT-STANDARDS.md#deployment-standards)
+- [API Standards & Best Practices](../docs/API-STANDARDS.md)
+- [Security & Compliance](../docs/SECURITY.md)
+
+### Related Documentation
+
+- [API Documentation]({{CONFLUENCE_BASE}}/api-{{JIRA_KEY}})
+- [Operations Runbook]({{CONFLUENCE_BASE}}/runbook-{{JIRA_KEY}})
+- [Architecture Decision Records](./adr/)
+- [Implementation Guide](./IMPLEMENTATION.md)
+
+### Tools & Resources
+
+| Tool | Purpose | Link |
+|------|---------|------|
+| Mermaid Diagrams | Architecture visualization | https://mermaid.js.org |
+| Helm Charts | Kubernetes deployment | https://helm.sh |
+| Prometheus | Metrics collection | https://prometheus.io |
+| Grafana | Metrics visualization | https://grafana.com |
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+*Last Updated: {{DATE}} | Maintained by: {{AUTHOR}}*

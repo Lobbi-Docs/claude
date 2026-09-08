@@ -1,0 +1,81 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "msTeams": {
+    "width": "Full"
+  },
+  "body": [
+    {
+      "type": "TextBlock",
+      "size": "Large",
+      "weight": "Bolder",
+      "text": "PR Update: {{pr.title}}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "{{summary}}",
+      "isSubtle": true,
+      "wrap": true,
+      "spacing": "Small"
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "PR",
+          "value": "[{{pr.number}}]({{pr.url}})"
+        },
+        {
+          "title": "Repository",
+          "value": "{{repository.name}}"
+        },
+        {
+          "title": "Branch",
+          "value": "{{pr.source_branch}} → {{pr.target_branch}}"
+        },
+        {
+          "title": "Status",
+          "value": "{{pr.status}}"
+        },
+        {
+          "title": "Jira Issue",
+          "value": "[{{jira.key}}]({{jira.url}})"
+        },
+        {
+          "title": "Owner",
+          "value": "{{pr.author}}"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Documentation",
+      "weight": "Bolder",
+      "spacing": "Medium"
+    },
+    {
+      "type": "TextBlock",
+      "text": "{{#if documentation_links}}{{#each documentation_links}}• [{{this.title}}]({{this.url}})\\n{{/each}}{{else}}No documentation links provided.{{/if}}",
+      "wrap": true,
+      "spacing": "Small"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "View PR",
+      "url": "{{pr.url}}"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "View Jira Issue",
+      "url": "{{jira.url}}"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "View Docs",
+      "url": "{{documentation_primary_url}}"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+---
+template: pr-review-request
+version: 1.0.0
+description: Comment template for PR review request
+---
+
+# 👀 Review Requested
+
+**Requested By:** {{AUTHOR}}
+**Requested:** {{TIMESTAMP}}
+**Reviewer:** @{{REVIEWER}}
+
+## Review Focus Areas
+
+{{FOCUS_AREAS}}
+
+## Context
+
+{{CONTEXT_DESCRIPTION}}
+
+## Key Changes
+
+{{KEY_CHANGES}}
+
+## Areas Needing Attention
+
+{{ATTENTION_AREAS}}
+
+## Questions for Reviewer
+
+{{QUESTIONS}}
+
+## Testing Completed
+
+{{TESTING_COMPLETED}}
+
+## Documentation Updated
+
+{{DOCUMENTATION_STATUS}}
+
+## Checklist for Reviewer
+
+- [ ] Code follows project conventions
+- [ ] Logic is sound and efficient
+- [ ] Error handling is appropriate
+- [ ] Tests are comprehensive
+- [ ] Documentation is clear
+- [ ] No security vulnerabilities
+- [ ] Performance considerations addressed
+- [ ] Breaking changes documented
+
+## Related Issues
+
+{{RELATED_ISSUES}}
+
+## Timeline
+
+{{TIMELINE_INFO}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

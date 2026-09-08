@@ -1,0 +1,196 @@
+# Refactor: {{REFACTOR_TITLE}}
+
+## Summary
+
+{{REFACTOR_SUMMARY}}
+
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}})
+
+## Motivation
+
+### Why This Refactor Is Needed
+{{MOTIVATION}}
+
+### Problems Being Solved
+- {{PROBLEM_1}}
+- {{PROBLEM_2}}
+- {{PROBLEM_3}}
+
+### Benefits
+- {{BENEFIT_1}}
+- {{BENEFIT_2}}
+- {{BENEFIT_3}}
+
+## What Changed
+
+### High-Level Overview
+{{HIGH_LEVEL_OVERVIEW}}
+
+### Before Architecture
+```
+{{ARCHITECTURE_BEFORE}}
+```
+
+### After Architecture
+```
+{{ARCHITECTURE_AFTER}}
+```
+
+### Files Affected
+- {{FILE_1}} - {{CHANGE_DESCRIPTION_1}}
+- {{FILE_2}} - {{CHANGE_DESCRIPTION_2}}
+- {{FILE_3}} - {{CHANGE_DESCRIPTION_3}}
+
+### Code Changes
+
+#### Before
+```{{LANGUAGE}}
+{{CODE_BEFORE}}
+```
+
+#### After
+```{{LANGUAGE}}
+{{CODE_AFTER}}
+```
+
+### Patterns Introduced
+- {{PATTERN_1}}
+- {{PATTERN_2}}
+
+### Patterns Removed
+- {{REMOVED_PATTERN_1}}
+- {{REMOVED_PATTERN_2}}
+
+## Technical Details
+
+### Design Decisions
+{{DESIGN_DECISIONS}}
+
+### Trade-offs Considered
+| Approach | Pros | Cons | Decision |
+|----------|------|------|----------|
+| {{APPROACH_1}} | {{PROS_1}} | {{CONS_1}} | {{DECISION_1}} |
+| {{APPROACH_2}} | {{PROS_2}} | {{CONS_2}} | {{DECISION_2}} |
+
+### Dependencies Changed
+- {{DEPENDENCY_1}}
+- {{DEPENDENCY_2}}
+
+## Performance Impact
+
+### Metrics Comparison
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| {{METRIC_1}} | {{BEFORE_1}} | {{AFTER_1}} | {{CHANGE_1}} |
+| {{METRIC_2}} | {{BEFORE_2}} | {{AFTER_2}} | {{CHANGE_2}} |
+| {{METRIC_3}} | {{BEFORE_3}} | {{AFTER_3}} | {{CHANGE_3}} |
+
+### Performance Testing
+{{PERFORMANCE_TEST_RESULTS}}
+
+### Memory Impact
+{{MEMORY_IMPACT}}
+
+### Load Testing Results
+{{LOAD_TEST_RESULTS}}
+
+## Behavior Verification
+
+### ✅ No Behavior Changes
+This refactor does NOT change any functionality or behavior.
+
+### Verification Methods
+- {{VERIFICATION_METHOD_1}}
+- {{VERIFICATION_METHOD_2}}
+
+### Test Coverage
+- **Before:** {{COVERAGE_BEFORE}}%
+- **After:** {{COVERAGE_AFTER}}%
+
+### Tests Updated
+- {{TEST_1}}
+- {{TEST_2}}
+
+### Integration Tests Passed
+- [ ] {{INTEGRATION_TEST_1}}
+- [ ] {{INTEGRATION_TEST_2}}
+
+## Code Quality Improvements
+
+### Complexity Reduction
+| File | Before (Cyclomatic) | After (Cyclomatic) | Improvement |
+|------|---------------------|---------------------|-------------|
+| {{FILE_1}} | {{COMPLEXITY_BEFORE_1}} | {{COMPLEXITY_AFTER_1}} | {{IMPROVEMENT_1}} |
+| {{FILE_2}} | {{COMPLEXITY_BEFORE_2}} | {{COMPLEXITY_AFTER_2}} | {{IMPROVEMENT_2}} |
+
+### Code Duplication
+- **Before:** {{DUPLICATION_BEFORE}}%
+- **After:** {{DUPLICATION_AFTER}}%
+
+### Maintainability Index
+- **Before:** {{MAINTAINABILITY_BEFORE}}
+- **After:** {{MAINTAINABILITY_AFTER}}
+
+## Migration Guide
+
+### Breaking Changes
+{{BREAKING_CHANGES}}
+
+### Deprecations
+{{DEPRECATIONS}}
+
+### Migration Steps for Other Developers
+1. {{MIGRATION_STEP_1}}
+2. {{MIGRATION_STEP_2}}
+3. {{MIGRATION_STEP_3}}
+
+### Compatibility Notes
+{{COMPATIBILITY_NOTES}}
+
+## Documentation Updated
+
+- [ ] Code comments updated
+- [ ] Architecture diagrams updated
+- [ ] API documentation updated
+- [ ] README updated
+- [ ] Wiki/Confluence pages updated
+
+### Documentation Links
+- {{DOC_LINK_1}}
+- {{DOC_LINK_2}}
+
+## Future Improvements
+
+### Follow-up Refactoring Opportunities
+- {{FUTURE_1}}
+- {{FUTURE_2}}
+
+### Technical Debt Addressed
+- {{DEBT_1}}
+- {{DEBT_2}}
+
+### Technical Debt Remaining
+- {{REMAINING_DEBT_1}}
+- {{REMAINING_DEBT_2}}
+
+## Checklist
+
+- [ ] Code follows project style guidelines
+- [ ] All tests pass
+- [ ] No behavior changes confirmed
+- [ ] Performance impact measured
+- [ ] Code complexity reduced
+- [ ] Documentation updated
+- [ ] Migration guide provided (if needed)
+- [ ] Peer review completed
+- [ ] No new warnings or errors
+- [ ] Backward compatibility maintained
+- [ ] Jira ticket updated
+
+## Additional Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

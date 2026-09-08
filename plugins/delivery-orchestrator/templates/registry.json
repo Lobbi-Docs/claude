@@ -1,0 +1,133 @@
+{
+  "version": "2.0.0",
+  "last_updated": "2026-01-02",
+  "categories": {
+    "jira": {
+      "path": "jira/",
+      "description": "Jira issue creation templates",
+      "templates": [
+        {"name": "initiative", "file": "initiative.md.template", "trigger": "issuetype=Initiative"},
+        {"name": "epic", "file": "epic.md.template", "trigger": "issuetype=Epic"},
+        {"name": "story", "file": "story.md.template", "trigger": "issuetype=Story"},
+        {"name": "task", "file": "task.md.template", "trigger": "issuetype=Task"},
+        {"name": "bug", "file": "bug.md.template", "trigger": "issuetype=Bug"},
+        {"name": "subtask", "file": "subtask.md.template", "trigger": "issuetype=Sub-task"},
+        {"name": "spike", "file": "spike.md.template", "trigger": "label=spike"}
+      ]
+    },
+    "comments": {
+      "path": "comments/",
+      "description": "Workflow comment templates",
+      "templates": [
+        {"name": "work-started", "file": "jira-work-started.md.template", "trigger": "/jira:work"},
+        {"name": "pr-created", "file": "jira-pr-created.md.template", "trigger": "/jira:pr"},
+        {"name": "pr-merged", "file": "jira-pr-merged.md.template", "trigger": "merge-webhook"},
+        {"name": "blocked", "file": "jira-blocked.md.template", "trigger": "manual"},
+        {"name": "qa-ready", "file": "jira-qa-ready.md.template", "trigger": "status-transition"},
+        {"name": "qa-passed", "file": "jira-qa-passed.md.template", "trigger": "qa-approval"},
+        {"name": "qa-failed", "file": "jira-qa-failed.md.template", "trigger": "qa-rejection"},
+        {"name": "deployed", "file": "jira-deployed.md.template", "trigger": "deploy-pipeline"},
+        {"name": "rollback", "file": "jira-rollback.md.template", "trigger": "rollback"},
+        {"name": "review-request", "file": "pr-review-request.md.template", "trigger": "pr-created"},
+        {"name": "changes-requested", "file": "pr-changes-requested.md.template", "trigger": "pr-review"},
+        {"name": "approved", "file": "pr-approved.md.template", "trigger": "pr-approved"},
+        {"name": "confluence-linked", "file": "confluence-linked.md.template", "trigger": "doc-created"},
+        {"name": "status-update", "file": "status-update.md.template", "trigger": "manual"}
+      ]
+    },
+    "pr": {
+      "path": "pr/",
+      "description": "Pull request description templates",
+      "templates": [
+        {"name": "feature", "file": "feature.md.template", "trigger": "--type=feature"},
+        {"name": "bugfix", "file": "bugfix.md.template", "trigger": "--type=bugfix"},
+        {"name": "hotfix", "file": "hotfix.md.template", "trigger": "--type=hotfix"},
+        {"name": "refactor", "file": "refactor.md.template", "trigger": "--type=refactor"},
+        {"name": "docs", "file": "docs.md.template", "trigger": "--type=docs"},
+        {"name": "dependency", "file": "dependency.md.template", "trigger": "--type=dependency"},
+        {"name": "infrastructure", "file": "infrastructure.md.template", "trigger": "--type=infrastructure"}
+      ]
+    },
+    "docs": {
+      "path": "docs/",
+      "description": "Documentation page templates",
+      "templates": [
+        {"name": "tdd", "file": "tdd.md.template", "required": true},
+        {"name": "adr", "file": "adr.md.template", "required": false},
+        {"name": "runbook", "file": "runbook.md.template", "required": true},
+        {"name": "api", "file": "api.md.template", "required": false},
+        {"name": "implementation-notes", "file": "implementation-notes.md.template", "required": false},
+        {"name": "release-notes", "file": "release-notes.md.template", "required": true},
+        {"name": "changelog", "file": "changelog.md.template", "required": true}
+      ]
+    },
+    "tags": {
+      "path": "tags/",
+      "description": "Tag system documentation",
+      "config_file": "../config/tags.yaml",
+      "templates": [
+        {"name": "readme", "file": "README.md"}
+      ]
+    },
+    "repository": {
+      "path": "repository/",
+      "description": "Project scaffolding templates",
+      "templates": [
+        {"name": "microservice", "file": "microservice/README.md.template"},
+        {"name": "helm-chart", "file": "helm-chart/README.md.template"},
+        {"name": "terraform-module", "file": "terraform-module/README.md.template"},
+        {"name": "shared-lib", "file": "shared-lib/README.md.template"}
+      ]
+    },
+    "confluence": {
+      "path": "confluence/",
+      "description": "Confluence page templates",
+      "templates": [
+        {"name": "tdd", "file": "tdd.md.template", "required": true},
+        {"name": "runbook", "file": "runbook.md.template", "required": true},
+        {"name": "release-status", "file": "release-status.md.template", "required": true},
+        {"name": "incident-timeline", "file": "incident-timeline.md.template", "required": true},
+        {"name": "rollback-log", "file": "rollback-log.md.template", "required": true},
+        {"name": "sla-breach-report", "file": "sla-breach-report.md.template", "required": true}
+      ]
+    },
+    "helm": {
+      "path": "helm/",
+      "description": "Kubernetes deployment templates",
+      "templates": [
+        {"name": "chart", "file": "Chart.yaml.template"},
+        {"name": "values", "file": "values.yaml.template"},
+        {"name": "deployment", "file": "templates/deployment.yaml.template"},
+        {"name": "service", "file": "templates/service.yaml.template"},
+        {"name": "ingress", "file": "templates/ingress.yaml.template"}
+      ]
+    },
+    "github": {
+      "path": "github/",
+      "description": "CI/CD and workflow templates",
+      "templates": [
+        {"name": "pr-template", "file": "PULL_REQUEST_TEMPLATE.md"},
+        {"name": "ci-workflow", "file": "workflows/ci.yml.template"}
+      ]
+    },
+    "adr": {
+      "path": "adr/",
+      "description": "Architecture decision record templates",
+      "templates": [
+        {"name": "adr-template", "file": "adr-template.md"}
+      ]
+    }
+  },
+  "variables": {
+    "core": ["SERVICE_NAME", "SERVICE_NAME_UPPER", "SERVICE_NAME_PASCAL", "JIRA_KEY", "JIRA_PROJECT", "ISSUE_TYPE", "ISSUE_SUMMARY"],
+    "urls": ["JIRA_URL", "CONFLUENCE_BASE", "REPO_URL", "HARNESS_URL", "PR_URL"],
+    "metadata": ["TEAM_NAME", "AUTHOR", "ASSIGNEE", "DATE", "TIMESTAMP", "VERSION", "DESCRIPTION"],
+    "pr": ["PR_NUMBER", "PR_TITLE", "SOURCE_BRANCH", "TARGET_BRANCH", "FILES_CHANGED", "INSERTIONS", "DELETIONS"],
+    "environment": ["NAMESPACE_DEV", "NAMESPACE_STAGING", "NAMESPACE_PROD", "REPLICAS_DEV", "REPLICAS_STAGING", "REPLICAS_PROD"]
+  },
+  "validation": {
+    "required_signature": "**⚓ Golden Armada** | *You ask - The Fleet Ships*",
+    "file_extension": ".template",
+    "variable_pattern": "{{[A-Z_]+}}"
+  }
+}

@@ -1,0 +1,348 @@
+# Agent Teams Integration for Jira Orchestrator
+# Optimized with YAML anchors to reduce redundancy
+version: "1.0.0"
+description: "Team activation rules for Jira orchestration workflows"
+teams_registry: ".claude/registry/teams.index.json"
+
+# ============================================================================
+# REUSABLE TEAM REFERENCES (YAML Anchors)
+# ============================================================================
+teams:
+  doc-guild: &doc-guild "documentation-guild"
+  debug-squad: &debug-squad "debug-squadron"
+  code-strike: &code-strike "code-strike"
+  atlassian: &atlassian "atlassian-ops"
+  quality: &quality "quality-council"
+  frontend: &frontend "frontend-forge"
+  mobile: &mobile "mobile-force"
+  data: &data "data-pipeline"
+  auth: &auth "identity-vault"
+  messaging: &messaging "messaging-hub"
+  security: &security "security-tribunal"
+  migration: &migration "migration-convoy"
+  pr-review: &pr-review "pr-review-panel"
+  ship: &ship "ship-crew"
+  growth: &growth "growth-squad"
+  multi-tenant: &multi-tenant "multi-tenant-architects"
+
+# Common phase configurations
+phase_teams_template: &std-phases
+  EXPLORE: &explore-teams [*doc-guild]
+  PLAN: &plan-teams [*code-strike]
+  CODE: &code-teams [*code-strike]
+  TEST: &test-teams [*quality]
+  FIX: &fix-teams [*debug-squad]
+  DOCUMENT: &doc-teams [*doc-guild]
+
+# ============================================================================
+# PHASE-TO-TEAM MAPPING
+# ============================================================================
+phase_teams:
+  EXPLORE:
+    primary: *doc-guild
+    secondary: *debug-squad
+    triggers: ["analyze", "investigate", "understand", "research"]
+  PLAN:
+    primary: *code-strike
+    secondary: *atlassian
+    triggers: ["design", "architect", "plan", "strategy"]
+  CODE:
+    primary: *code-strike
+    fallback_teams:
+      frontend: *frontend
+      mobile: *mobile
+      backend: *data
+      auth: *auth
+      messaging: *messaging
+    triggers: ["implement", "build", "create", "develop"]
+  TEST:
+    primary: *quality
+    secondary: *debug-squad
+    triggers: ["test", "validate", "verify", "coverage"]
+  FIX:
+    primary: *debug-squad
+    secondary: *code-strike
+    triggers: ["fix", "debug", "resolve", "patch"]
+  DOCUMENT:
+    primary: *doc-guild
+    secondary: *atlassian
+    triggers: ["document", "write", "update docs", "confluence"]
+
+# ============================================================================
+# ISSUE TYPE MAPPINGS
+# ============================================================================
+issue_type_teams:
+  Initiative:
+    primary: *atlassian
+    pattern: "swarm"
+    description: "Strategic initiatives spanning multiple epics"
+    phases:
+      EXPLORE: [*doc-guild, *atlassian]
+      PLAN: [*atlassian, *code-strike]
+      CODE: [*code-strike]
+      TEST: [*quality]
+      FIX: [*debug-squad]
+      DOCUMENT: [*doc-guild]
+
+  Epic:
+    primary: *atlassian
+    pattern: "swarm"
+    description: "Large features broken into stories"
+    phases:
+      EXPLORE: [*doc-guild, *atlassian]
+      PLAN: [*atlassian, *code-strike]
+      CODE: [*code-strike]
+      TEST: [*quality]
+      FIX: [*debug-squad]
+      DOCUMENT: [*doc-guild]
+
+  Story:
+    primary: *code-strike
+    pattern: "hierarchical"
+    description: "User-facing features"
+    phases:
+      EXPLORE: [*doc-guild, *code-strike]
+      PLAN: [*code-strike]
+      CODE: [*code-strike]
+      TEST: [*quality]
+      FIX: [*debug-squad]
+      DOCUMENT: [*doc-guild]
+
+  Task:
+    primary: *code-strike
+    pattern: "hierarchical"
+    description: "Technical work items"
+    phases: *std-phases
+
+  Sub-task:
+    primary: *code-strike
+    pattern: "pipeline"
+    description: "Granular tasks"
+    inherit_parent_teams: true
+    phases:
+      EXPLORE: [*code-strike]
+      PLAN: [*code-strike]
+      CODE: [*code-strike]
+      TEST: [*quality]
+      FIX: [*debug-squad]
+      DOCUMENT: [*doc-guild]
+
+  Bug:
+    primary: *debug-squad
+    pattern: "pipeline"
+    description: "Defects requiring fixes"
+    phases:
+      EXPLORE: [*debug-squad]
+      PLAN: [*debug-squad]
+      CODE: [*debug-squad, *code-strike]
+      TEST: [*quality]
+      FIX: [*debug-squad]
+      DOCUMENT: [*doc-guild]
+
+  Spike:
+    primary: *doc-guild
+    pattern: "broadcast"
+    description: "Research and investigation"
+    phases:
+      EXPLORE: [*doc-guild, *code-strike]
+      PLAN: [*code-strike]
+      CODE: [*code-strike]
+      TEST: [*quality]
+      FIX: [*debug-squad]
+      DOCUMENT: [*doc-guild]
+
+  Technical-Debt:
+    primary: *migration
+    pattern: "pipeline"
+    description: "Refactoring and improvement"
+    phases:
+      EXPLORE: [*doc-guild, *migration]
+      PLAN: [*migration, *code-strike]
+      CODE: [*migration, *code-strike]
+      TEST: [*quality]
+      FIX: [*debug-squad]
+      DOCUMENT: [*doc-guild]
+
+  Security:
+    primary: *security
+    pattern: "debate"
+    description: "Security vulnerabilities"
+    phases:
+      EXPLORE: [*security]
+      PLAN: [*security, *code-strike]
+      CODE: [*security, *code-strike]
+      TEST: [*security, *quality]
+      FIX: [*security, *debug-squad]
+      DOCUMENT: [*security, *doc-guild]
+
+# ============================================================================
+# LABEL-BASED TEAM ACTIVATION
+# ============================================================================
+label_teams:
+  "domain:frontend": {teams: [*frontend], priority: high}
+  "domain:backend": {teams: [*code-strike, *data], priority: high}
+  "domain:database": {teams: [*data], priority: high}
+  "domain:testing": {teams: [*quality], priority: high}
+  "domain:devops": {teams: [*ship], priority: high}
+  "domain:security": {teams: [*security], priority: critical}
+  "domain:api": {teams: [*code-strike], priority: high}
+  "domain:docs": {teams: [*doc-guild], priority: medium}
+  "tech:react": {teams: [*frontend], priority: high}
+  "tech:mobile": {teams: [*mobile], priority: high}
+  "tech:keycloak": {teams: [*auth], priority: high}
+  "tech:kafka": {teams: [*messaging], priority: high}
+  "tech:kubernetes": {teams: [*ship], priority: high}
+  "tech:mongodb": {teams: [*data], priority: high}
+  "needs:review": {teams: [*pr-review, *quality], priority: high}
+  "needs:security-review": {teams: [*security], priority: critical}
+  "needs:docs": {teams: [*doc-guild], priority: medium}
+
+# ============================================================================
+# COMPONENT & WORKFLOW TEAMS
+# ============================================================================
+component_teams:
+  Frontend: [*frontend]
+  Backend: [*code-strike, *data]
+  API: [*code-strike]
+  Database: [*data]
+  Authentication: [*auth]
+  Infrastructure: [*ship]
+  Mobile: [*mobile]
+  Security: [*security]
+  Documentation: [*doc-guild]
+
+workflow_teams:
+  "To Do -> In Progress": {activate: [*code-strike], notification: "STRIKE-1 activated"}
+  "In Progress -> Code Review": {activate: [*pr-review, *quality], notification: "REVIEW-1 & COUNCIL-Q activated"}
+  "Code Review -> QA": {activate: [*quality], notification: "COUNCIL-Q activated"}
+  "QA -> Done": {activate: [*doc-guild, *ship], notification: "DOCS-1 & SHIP-1 activated"}
+  "* -> Blocked": {activate: [*debug-squad], notification: "DEBUG-1 activated"}
+
+# ============================================================================
+# PR & CONFLUENCE TEAMS
+# ============================================================================
+pr_teams:
+  create: {teams: [*pr-review], lead: "Inquisitor"}
+  review_requested: {teams: [*pr-review, *quality], lead: "Inquisitor"}
+  changes_requested: {teams: [*debug-squad, *code-strike], lead: "Sleuth"}
+  approved: {teams: [*ship], lead: "Launcher"}
+  merged: {teams: [*doc-guild], lead: "Archivist"}
+
+confluence_teams:
+  "Technical Design": {team: *code-strike, lead: "Blueprint"}
+  "Implementation Notes": {team: *code-strike, lead: "Genesis"}
+  "Test Plan & Results": {team: *quality, lead: "Paramount"}
+  "Runbook": {team: *ship, lead: "Launcher"}
+  "Security Review": {team: *security, lead: "Bastion"}
+
+# ============================================================================
+# ACTIVATION RULES
+# ============================================================================
+activation_rules:
+  min_agents: 3
+  max_concurrent_teams: 3
+  priority_order:
+    - *security
+    - *debug-squad
+    - *quality
+    - *code-strike
+    - *pr-review
+    - *ship
+    - *doc-guild
+    - *frontend
+    - *mobile
+    - *data
+    - *auth
+    - *messaging
+    - *atlassian
+    - *growth
+    - *migration
+    - *multi-tenant
+  auto_deactivate: true
+  handoff_protocol: "checkpoint"
+
+team_communication:
+  reporting: {channel: "jira-comment", frequency: "phase-complete", include_confluence_links: true}
+  coordination: {method: "lead-to-lead", checkpoint_sync: true}
+
+metrics:
+  track_team_usage: true
+  track_phase_duration: true
+  track_team_effectiveness: true
+  report_to: "confluence"
+  dashboard_page: "Team Performance Dashboard"
+
+# ============================================================================
+# PARENT-CHILD ORCHESTRATION
+# ============================================================================
+parent_child_orchestration:
+  enabled: true
+  hierarchy:
+    Initiative: {children: ["Epic"], orchestration_pattern: "cascade"}
+    Epic: {children: ["Story", "Task", "Bug"], orchestration_pattern: "cascade"}
+    Story: {children: ["Sub-task", "Task"], orchestration_pattern: "parallel"}
+    Task: {children: ["Sub-task"], orchestration_pattern: "parallel"}
+
+  inheritance:
+    strategy: "merge"
+    inherit_from_parent: [primary_team, domain_teams, technology_teams, component_teams]
+    child_can_override: [phase_teams, secondary_teams]
+    force_parent_teams: [security_context, review_teams]
+
+  parallel_subtasks:
+    enabled: true
+    max_concurrent: 5
+    distribution:
+      strategy: "domain_affinity"
+      affinity_rules:
+        - {pattern: ".*frontend.*|.*UI.*|.*component.*", team: *frontend}
+        - {pattern: ".*backend.*|.*API.*|.*service.*", team: *code-strike}
+        - {pattern: ".*test.*|.*spec.*|.*coverage.*", team: *quality}
+        - {pattern: ".*database.*|.*migration.*|.*schema.*", team: *data}
+        - {pattern: ".*auth.*|.*login.*|.*permission.*", team: *auth}
+        - {pattern: ".*deploy.*|.*infra.*|.*k8s.*", team: *ship}
+        - {pattern: ".*doc.*|.*readme.*|.*confluence.*", team: *doc-guild}
+    sync_points:
+      after_explore: true
+      after_code: true
+      before_test: true
+      after_fix: true
+    dependencies:
+      respect_jira_links: true
+      auto_sequence: false
+      block_on_failure: true
+
+  parent_coordination:
+    parent_role: "coordinator"
+    coordinator_teams: {primary: *atlassian, support: *code-strike}
+    responsibilities: [monitor_subtask_progress, resolve_blockers, merge_subtask_results, quality_gate_enforcement, status_aggregation]
+    status_propagation:
+      all_complete: "mark_parent_ready_for_review"
+      any_failed: "mark_parent_blocked"
+      any_blocked: "escalate_to_parent_team"
+    aggregation:
+      code_changes: "merge_to_parent_branch"
+      test_results: "aggregate_coverage"
+      documentation: "compile_to_parent_page"
+
+  phase_coordination:
+    EXPLORE: {parent_action: "decompose_and_assign", subtask_action: "analyze_assigned_scope", teams: {parent: [*atlassian, *doc-guild], subtask: "inherit"}, sync_required: true}
+    PLAN: {parent_action: "review_subtask_plans", subtask_action: "plan_implementation", teams: {parent: [*atlassian], subtask: [*code-strike]}, sync_required: true}
+    CODE: {parent_action: "monitor_and_unblock", subtask_action: "implement", teams: {parent: [*atlassian], subtask: "domain_affinity"}, sync_required: false, parallel_allowed: true}
+    TEST: {parent_action: "aggregate_results", subtask_action: "test_scope", teams: {parent: [*quality], subtask: [*quality]}, sync_required: true}
+    FIX: {parent_action: "coordinate_fixes", subtask_action: "fix_assigned", teams: {parent: [*debug-squad], subtask: [*debug-squad, *code-strike]}, sync_required: false, parallel_allowed: true}
+    DOCUMENT: {parent_action: "compile_documentation", subtask_action: "document_scope", teams: {parent: [*doc-guild, *atlassian], subtask: [*doc-guild]}, sync_required: true}
+
+  subtask_creation:
+    auto_create: false
+    template: {inherit_labels: true, inherit_components: true, inherit_sprint: true, add_labels: ["auto-created", "parent:${PARENT_KEY}"]}
+    team_assignment: {strategy: "domain_detection", fallback: "parent_primary"}
+
+  completion:
+    require_all_subtasks_done: true
+    require_all_tests_pass: true
+    require_documentation: true
+    auto_transitions:
+      all_subtasks_in_review: "parent_to_review"
+      all_subtasks_done: "parent_to_qa"
+      qa_passed: "parent_to_done"

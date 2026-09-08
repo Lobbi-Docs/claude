@@ -1,0 +1,116 @@
+# {{FEATURE_NAME}}
+
+## Summary
+
+{{FEATURE_DESCRIPTION}}
+
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}})
+
+## Changes
+
+### Frontend Changes
+- {{FRONTEND_CHANGE_1}}
+- {{FRONTEND_CHANGE_2}}
+
+### Backend Changes
+- {{BACKEND_CHANGE_1}}
+- {{BACKEND_CHANGE_2}}
+
+### Database Changes
+- {{DATABASE_CHANGE_1}}
+- {{DATABASE_CHANGE_2}}
+
+### API Changes
+- {{API_CHANGE_1}}
+- {{API_CHANGE_2}}
+
+### Tests Added
+- {{TEST_1}}
+- {{TEST_2}}
+
+### Documentation
+- {{DOCUMENTATION_1}}
+- {{DOCUMENTATION_2}}
+
+## Screenshots/Demos
+
+### Before
+{{SCREENSHOT_BEFORE}}
+
+### After
+{{SCREENSHOT_AFTER}}
+
+### Demo
+{{DEMO_LINK_OR_GIF}}
+
+## Testing Instructions
+
+### Prerequisites
+{{TESTING_PREREQUISITES}}
+
+### Steps to Test
+1. {{TEST_STEP_1}}
+2. {{TEST_STEP_2}}
+3. {{TEST_STEP_3}}
+
+### Expected Behavior
+{{EXPECTED_BEHAVIOR}}
+
+### Edge Cases Tested
+- {{EDGE_CASE_1}}
+- {{EDGE_CASE_2}}
+
+## Deployment Notes
+
+### Configuration Changes
+{{CONFIGURATION_CHANGES}}
+
+### Environment Variables
+```bash
+{{ENVIRONMENT_VARIABLES}}
+```
+
+### Database Migrations
+{{MIGRATION_NOTES}}
+
+### Feature Flags
+{{FEATURE_FLAGS}}
+
+### Dependencies
+{{NEW_DEPENDENCIES}}
+
+## Performance Impact
+
+{{PERFORMANCE_ANALYSIS}}
+
+## Security Considerations
+
+{{SECURITY_NOTES}}
+
+## Rollback Plan
+
+{{ROLLBACK_INSTRUCTIONS}}
+
+## Checklist
+
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex logic
+- [ ] Documentation updated
+- [ ] Tests added/updated and passing
+- [ ] No new warnings generated
+- [ ] UI changes tested on multiple browsers/devices
+- [ ] Accessibility guidelines followed
+- [ ] Performance impact assessed
+- [ ] Security implications reviewed
+- [ ] Breaking changes documented
+- [ ] Jira ticket updated with PR link
+- [ ] Deployment runbook updated (if needed)
+
+## Additional Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

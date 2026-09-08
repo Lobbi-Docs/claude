@@ -1,0 +1,356 @@
+# Infrastructure: {{INFRASTRUCTURE_TITLE}}
+
+## Summary
+
+{{INFRASTRUCTURE_SUMMARY}}
+
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}})
+
+## Infrastructure Changes
+
+### Resources Modified
+| Resource Type | Action | Resource Name | Purpose |
+|---------------|--------|---------------|---------|
+| {{RESOURCE_TYPE_1}} | {{ACTION_1}} | {{RESOURCE_NAME_1}} | {{PURPOSE_1}} |
+| {{RESOURCE_TYPE_2}} | {{ACTION_2}} | {{RESOURCE_NAME_2}} | {{PURPOSE_2}} |
+| {{RESOURCE_TYPE_3}} | {{ACTION_3}} | {{RESOURCE_NAME_3}} | {{PURPOSE_3}} |
+
+### Services Affected
+- {{SERVICE_1}} - {{IMPACT_1}}
+- {{SERVICE_2}} - {{IMPACT_2}}
+
+### Cloud Provider
+{{CLOUD_PROVIDER}}
+
+### Region/Zone Changes
+{{REGION_ZONE_CHANGES}}
+
+## Terraform Plan Output
+
+### Plan Summary
+```
+{{TERRAFORM_PLAN_SUMMARY}}
+```
+
+### Detailed Plan
+<details>
+<summary>Click to expand full Terraform plan</summary>
+
+```hcl
+{{TERRAFORM_PLAN_FULL}}
+```
+</details>
+
+### Resource Changes
+- **To Add:** {{RESOURCES_TO_ADD}}
+- **To Change:** {{RESOURCES_TO_CHANGE}}
+- **To Destroy:** {{RESOURCES_TO_DESTROY}}
+
+### State Changes
+{{STATE_CHANGES}}
+
+## Architecture Changes
+
+### Before Architecture
+```
+{{ARCHITECTURE_BEFORE}}
+```
+
+### After Architecture
+```
+{{ARCHITECTURE_AFTER}}
+```
+
+### Architecture Diagram
+{{ARCHITECTURE_DIAGRAM_URL}}
+
+### Network Topology Changes
+{{NETWORK_TOPOLOGY_CHANGES}}
+
+## Environment Impact
+
+### Development
+{{DEV_ENVIRONMENT_IMPACT}}
+
+### Staging
+{{STAGING_ENVIRONMENT_IMPACT}}
+
+### Production
+{{PRODUCTION_ENVIRONMENT_IMPACT}}
+
+### DR/Backup
+{{DR_ENVIRONMENT_IMPACT}}
+
+## Configuration Changes
+
+### Terraform Variables
+```hcl
+# New/Updated Variables
+{{TERRAFORM_VARIABLES}}
+```
+
+### Environment Variables
+```bash
+{{ENVIRONMENT_VARIABLES}}
+```
+
+### Secrets/Credentials
+{{SECRETS_CHANGES}}
+
+### Feature Flags
+{{FEATURE_FLAGS}}
+
+## Security Considerations
+
+### IAM/Permissions Changes
+{{IAM_CHANGES}}
+
+### Security Group Rules
+```hcl
+{{SECURITY_GROUP_RULES}}
+```
+
+### Network ACLs
+{{NETWORK_ACL_CHANGES}}
+
+### Encryption Changes
+{{ENCRYPTION_CHANGES}}
+
+### Compliance Impact
+{{COMPLIANCE_IMPACT}}
+
+## Cost Impact
+
+### Cost Estimate
+| Resource | Current Monthly Cost | New Monthly Cost | Change |
+|----------|---------------------|------------------|--------|
+| {{RESOURCE_1}} | {{CURRENT_COST_1}} | {{NEW_COST_1}} | {{COST_CHANGE_1}} |
+| {{RESOURCE_2}} | {{CURRENT_COST_2}} | {{NEW_COST_2}} | {{COST_CHANGE_2}} |
+| **Total** | **{{TOTAL_CURRENT}}** | **{{TOTAL_NEW}}** | **{{TOTAL_CHANGE}}** |
+
+### Cost Optimization
+{{COST_OPTIMIZATION_NOTES}}
+
+### Budget Impact
+{{BUDGET_IMPACT}}
+
+## Performance Impact
+
+### Expected Performance Changes
+{{PERFORMANCE_CHANGES}}
+
+### Scalability Improvements
+{{SCALABILITY_IMPROVEMENTS}}
+
+### Capacity Planning
+{{CAPACITY_PLANNING}}
+
+### Load Testing Results
+{{LOAD_TEST_RESULTS}}
+
+## Deployment Plan
+
+### Pre-Deployment Steps
+1. {{PRE_DEPLOY_1}}
+2. {{PRE_DEPLOY_2}}
+3. {{PRE_DEPLOY_3}}
+
+### Deployment Order
+1. {{DEPLOY_STEP_1}}
+2. {{DEPLOY_STEP_2}}
+3. {{DEPLOY_STEP_3}}
+
+### Deployment Window
+- **Scheduled:** {{DEPLOYMENT_WINDOW}}
+- **Duration:** {{ESTIMATED_DURATION}}
+- **Maintenance Required:** {{MAINTENANCE_REQUIRED}}
+
+### Deployment Commands
+```bash
+{{DEPLOYMENT_COMMANDS}}
+```
+
+### Post-Deployment Steps
+1. {{POST_DEPLOY_1}}
+2. {{POST_DEPLOY_2}}
+3. {{POST_DEPLOY_3}}
+
+## Rollback Procedure
+
+### Rollback Trigger Conditions
+- {{ROLLBACK_CONDITION_1}}
+- {{ROLLBACK_CONDITION_2}}
+
+### Rollback Steps
+1. {{ROLLBACK_STEP_1}}
+2. {{ROLLBACK_STEP_2}}
+3. {{ROLLBACK_STEP_3}}
+
+### Rollback Commands
+```bash
+{{ROLLBACK_COMMANDS}}
+```
+
+### Rollback Time Estimate
+{{ROLLBACK_TIME}}
+
+### Data Restoration
+{{DATA_RESTORATION_NOTES}}
+
+## Testing Performed
+
+### Infrastructure Tests
+- [ ] {{INFRA_TEST_1}}
+- [ ] {{INFRA_TEST_2}}
+
+### Integration Tests
+- [ ] {{INTEGRATION_TEST_1}}
+- [ ] {{INTEGRATION_TEST_2}}
+
+### Smoke Tests
+- [ ] {{SMOKE_TEST_1}}
+- [ ] {{SMOKE_TEST_2}}
+
+### Disaster Recovery Test
+{{DR_TEST_RESULTS}}
+
+## Monitoring and Alerts
+
+### New Metrics
+- {{METRIC_1}}
+- {{METRIC_2}}
+
+### Updated Dashboards
+- [{{DASHBOARD_1}}]({{DASHBOARD_URL_1}})
+- [{{DASHBOARD_2}}]({{DASHBOARD_URL_2}})
+
+### New Alerts
+```yaml
+{{ALERT_CONFIGURATIONS}}
+```
+
+### Health Checks
+- {{HEALTH_CHECK_1}}
+- {{HEALTH_CHECK_2}}
+
+### Log Aggregation
+{{LOG_AGGREGATION_CHANGES}}
+
+## Disaster Recovery
+
+### Backup Strategy
+{{BACKUP_STRATEGY}}
+
+### Recovery Time Objective (RTO)
+{{RTO}}
+
+### Recovery Point Objective (RPO)
+{{RPO}}
+
+### DR Testing Schedule
+{{DR_TESTING_SCHEDULE}}
+
+## Compliance and Governance
+
+### Compliance Requirements
+{{COMPLIANCE_REQUIREMENTS}}
+
+### Audit Trail
+{{AUDIT_TRAIL_NOTES}}
+
+### Policy Adherence
+- [ ] {{POLICY_1}}
+- [ ] {{POLICY_2}}
+
+### Approval Required
+- [ ] {{APPROVER_1}} - {{APPROVAL_STATUS_1}}
+- [ ] {{APPROVER_2}} - {{APPROVAL_STATUS_2}}
+
+## Documentation Updates
+
+- [ ] Architecture diagrams updated
+- [ ] Runbook updated
+- [ ] Disaster recovery plan updated
+- [ ] Infrastructure documentation updated
+- [ ] Confluence/Wiki updated
+
+### Documentation Links
+- [Infrastructure Docs]({{INFRA_DOCS_URL}})
+- [Runbook]({{RUNBOOK_URL}})
+- [DR Plan]({{DR_PLAN_URL}})
+
+## Dependencies
+
+### External Dependencies
+- {{EXTERNAL_DEP_1}}
+- {{EXTERNAL_DEP_2}}
+
+### Internal Dependencies
+- {{INTERNAL_DEP_1}}
+- {{INTERNAL_DEP_2}}
+
+### Team Dependencies
+{{TEAM_DEPENDENCIES}}
+
+## Communication Plan
+
+### Stakeholders to Notify
+- {{STAKEHOLDER_1}}
+- {{STAKEHOLDER_2}}
+
+### Communication Timeline
+{{COMMUNICATION_TIMELINE}}
+
+### Status Page Update
+{{STATUS_PAGE_MESSAGE}}
+
+## Post-Deployment Verification
+
+### Verification Checklist
+- [ ] {{VERIFICATION_1}}
+- [ ] {{VERIFICATION_2}}
+- [ ] {{VERIFICATION_3}}
+
+### Success Criteria
+- {{SUCCESS_CRITERION_1}}
+- {{SUCCESS_CRITERION_2}}
+
+### Monitoring Duration
+{{MONITORING_DURATION}}
+
+## Known Issues and Limitations
+
+### Known Issues
+- {{KNOWN_ISSUE_1}}
+- {{KNOWN_ISSUE_2}}
+
+### Limitations
+- {{LIMITATION_1}}
+- {{LIMITATION_2}}
+
+### Workarounds
+{{WORKAROUNDS}}
+
+## Checklist
+
+- [ ] Terraform plan reviewed
+- [ ] Cost impact assessed
+- [ ] Security review completed
+- [ ] Performance impact evaluated
+- [ ] Rollback plan documented
+- [ ] Testing completed
+- [ ] Monitoring configured
+- [ ] Documentation updated
+- [ ] Stakeholders notified
+- [ ] Approvals obtained
+- [ ] DR plan updated
+- [ ] Compliance verified
+- [ ] Jira ticket updated
+
+## Additional Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

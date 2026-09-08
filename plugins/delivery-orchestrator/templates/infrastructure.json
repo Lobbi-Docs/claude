@@ -1,0 +1,300 @@
+{
+  "id": "infrastructure",
+  "name": "Infrastructure & DevOps",
+  "type": "software",
+  "description": "A complete infrastructure-as-code project covering cloud resource provisioning with Terraform, Kubernetes workload deployment, security hardening, observability stack setup, and runbook documentation. Use this for greenfield cloud infrastructure, migration projects, and platform engineering initiatives.",
+  "phases": [
+    {
+      "id": "p1",
+      "name": "Planning",
+      "description": "Design the target architecture, select technologies, define cost and compliance constraints, and produce the infrastructure design document before writing a single line of Terraform.",
+      "epics": [
+        {
+          "id": "p1-e1",
+          "name": "Architecture Design",
+          "description": "Produce an architecture decision record and network topology diagram.",
+          "stories": [
+            {
+              "id": "p1-e1-s1",
+              "title": "Write the infrastructure architecture decision record",
+              "description": "Document the chosen cloud provider, region strategy, networking approach (VPC/subnet layout, private/public tier separation), compute strategy (managed Kubernetes vs. VMs vs. serverless), and storage choices. Record the alternatives considered and the rationale for each decision.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "docs/adr/001-infrastructure-architecture.md exists and covers: cloud provider selection, region strategy, network topology, compute strategy, and database strategy with rationale for each",
+                "The ADR has been reviewed and the STATUS field is set to 'Accepted'"
+              ]
+            },
+            {
+              "id": "p1-e1-s2",
+              "title": "Draw network topology diagram and define CIDR blocks",
+              "description": "Create a network topology diagram showing VPCs, subnets, availability zones, and connectivity paths. Define and document all CIDR blocks so there are no overlaps with existing networks.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "docs/diagrams/network-topology.drawio (or PNG export) shows all VPCs, subnets, AZs, NAT gateways, and internet gateways",
+                "docs/network-cidrs.md lists every CIDR block, its purpose, and confirms no overlap with existing corporate or VPN CIDR ranges"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e2",
+          "name": "Cost and Compliance Assessment",
+          "description": "Estimate monthly infrastructure cost and identify compliance requirements.",
+          "stories": [
+            {
+              "id": "p1-e2-s1",
+              "title": "Estimate monthly infrastructure cost using cloud pricing calculator",
+              "description": "Use the cloud provider's pricing calculator to estimate the monthly cost of all planned resources at steady-state load and at 3x peak load. Document assumptions and identify the top-3 cost drivers.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "docs/cost-estimate.md provides monthly cost estimates for steady-state and 3x peak, with line items for compute, storage, networking, and managed services",
+                "The top-3 cost drivers are identified and at least one cost optimization recommendation is noted for each"
+              ]
+            },
+            {
+              "id": "p1-e2-s2",
+              "title": "Document compliance requirements and security baseline",
+              "description": "Identify applicable compliance frameworks (SOC 2, HIPAA, GDPR, PCI-DSS), map infrastructure components to their compliance requirements, and define the security baseline that all resources must meet.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "docs/compliance-requirements.md lists applicable frameworks with a mapping of each framework's infrastructure controls to the specific resources they govern",
+                "docs/security-baseline.md defines the minimum-security configuration for each resource type (encryption at rest, in transit, access control, audit logging)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Provisioning",
+      "description": "Implement and apply the Terraform modules to provision the complete cloud infrastructure.",
+      "epics": [
+        {
+          "id": "p2-e1",
+          "name": "Terraform Project Structure",
+          "description": "Set up the Terraform project with remote state, workspace separation, and module structure.",
+          "stories": [
+            {
+              "id": "p2-e1-s1",
+              "title": "Configure Terraform remote state with S3 backend and DynamoDB locking",
+              "description": "Create the S3 bucket and DynamoDB table for Terraform state storage (bootstrapped with local state first), then migrate to the remote backend. Configure separate state files for each environment (dev/staging/prod).",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "`terraform init` completes without errors and `terraform state list` shows the bootstrap resources stored remotely",
+                "Running `terraform plan` simultaneously in two terminals results in one being blocked by the DynamoDB lock"
+              ]
+            },
+            {
+              "id": "p2-e1-s2",
+              "title": "Implement reusable networking Terraform module",
+              "description": "Create a `modules/networking` Terraform module that provisions the VPC, public/private subnets across multiple AZs, NAT gateways, internet gateway, and route tables.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "`terraform apply` on the networking module creates the VPC, subnets, and gateways as specified in the design document",
+                "An EC2 instance launched in a private subnet can reach the internet through the NAT gateway (verified by `curl -s https://checkip.amazonaws.com/` from the instance)"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2-e2",
+          "name": "Kubernetes Cluster Provisioning",
+          "description": "Provision and configure a managed Kubernetes cluster.",
+          "stories": [
+            {
+              "id": "p2-e2-s1",
+              "title": "Provision EKS/GKE/AKS cluster with managed node groups",
+              "description": "Create a Terraform module for the managed Kubernetes cluster with: a system node group (on-demand, 2–4 nodes), an application node group (spot/preemptible, auto-scaling 1–10 nodes), and OIDC provider for workload identity.",
+              "estimate_hours": 7,
+              "completion_criteria": [
+                "`kubectl get nodes` shows at least 2 ready nodes after cluster creation",
+                "The OIDC provider is configured and a test pod using workload identity can read from the designated S3 bucket or GCS bucket without static credentials"
+              ]
+            },
+            {
+              "id": "p2-e2-s2",
+              "title": "Install core cluster add-ons: cert-manager, ingress controller, external-dns",
+              "description": "Deploy cert-manager, the nginx ingress controller, and external-dns using Helm. Configure cert-manager with a Let's Encrypt ClusterIssuer.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "A test Ingress resource with a cert-manager annotation results in a valid TLS certificate being issued by Let's Encrypt within 5 minutes",
+                "Creating a Service of type LoadBalancer automatically creates the corresponding DNS A record in the configured DNS zone via external-dns"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2-e3",
+          "name": "Database and Storage Provisioning",
+          "description": "Provision managed database and object storage resources.",
+          "stories": [
+            {
+              "id": "p2-e3-s1",
+              "title": "Provision managed PostgreSQL with automated backups and read replica",
+              "description": "Create a Terraform module for the managed PostgreSQL instance (RDS, Cloud SQL, or Azure Database) in a private subnet, with automated daily backups (7-day retention), encryption at rest, and one read replica.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "The database instance is accessible from the application subnet and not from the public internet (verified by attempting `psql` from an EC2 instance in a public subnet — connection refused)",
+                "A manual restore from the most recent automated backup completes without errors"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Security",
+      "description": "Harden the infrastructure against common attack vectors and enforce the security baseline defined in the planning phase.",
+      "epics": [
+        {
+          "id": "p3-e1",
+          "name": "Network Security",
+          "description": "Implement security groups, network policies, and WAF rules.",
+          "stories": [
+            {
+              "id": "p3-e1-s1",
+              "title": "Apply least-privilege security groups to all resources",
+              "description": "Audit every security group and remove any rule that allows access beyond the minimum required. Database SGs must allow only the application SG. Application SGs must allow only the load balancer SG. No resource should have 0.0.0.0/0 inbound rules except the load balancer on ports 80 and 443.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "No security group (other than the load balancer) has an inbound rule allowing 0.0.0.0/0 on any port — verified by `aws ec2 describe-security-groups` or equivalent CLI",
+                "The security group audit result is documented in security/sg-audit.md with the before and after state for each modified group"
+              ]
+            },
+            {
+              "id": "p3-e1-s2",
+              "title": "Configure Kubernetes Network Policies for namespace isolation",
+              "description": "Apply NetworkPolicy resources to restrict inter-namespace traffic: by default, deny all ingress and egress within the cluster. Explicitly allow only required pod-to-pod communication paths.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "A test pod in the `default` namespace cannot reach a pod in the `app` namespace unless a NetworkPolicy explicitly permits it",
+                "The application pods can reach the database host on port 5432 and cannot reach any other port on the database host"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p3-e2",
+          "name": "Secrets Management",
+          "description": "Migrate all secrets from environment variables and config files to a secrets manager.",
+          "stories": [
+            {
+              "id": "p3-e2-s1",
+              "title": "Configure AWS Secrets Manager or HashiCorp Vault and migrate all secrets",
+              "description": "Set up the secrets manager, create a rotation policy for database credentials (90-day auto-rotation), and update the Kubernetes deployments to read secrets via the External Secrets Operator rather than static environment variables.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "No Kubernetes Secret contains a database password or API key in plaintext — all sensitive values are injected at runtime from the secrets manager",
+                "Rotating the database password in Secrets Manager automatically updates the Kubernetes Secret within 1 hour without requiring a pod restart"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "Monitoring",
+      "description": "Deploy the observability stack (metrics, logs, traces, alerts) and validate it captures the key signals needed to operate the platform.",
+      "epics": [
+        {
+          "id": "p4-e1",
+          "name": "Metrics and Alerting",
+          "description": "Deploy Prometheus and Grafana and configure alerts for the golden signals.",
+          "stories": [
+            {
+              "id": "p4-e1-s1",
+              "title": "Deploy Prometheus with kube-state-metrics and node-exporter",
+              "description": "Install the kube-prometheus-stack Helm chart. Configure persistent storage for Prometheus (30-day retention). Verify cluster-level metrics (CPU, memory, disk, network) are being scraped.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "`kubectl top nodes` returns CPU and memory usage for all nodes",
+                "The Prometheus UI shows active targets for kube-state-metrics and node-exporter for every node in the cluster"
+              ]
+            },
+            {
+              "id": "p4-e1-s2",
+              "title": "Configure Grafana dashboards and golden signals alerts",
+              "description": "Import the Kubernetes cluster overview dashboard. Create PrometheusRule resources for the four golden signals: latency (p99 > 500ms), error rate (> 1%), traffic (sudden drop > 50%), and saturation (CPU > 80% for 5 minutes).",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "All four golden signal alerts appear in the Prometheus alert rules list with the correct thresholds",
+                "Deliberately causing a pod to return 500 errors triggers the error rate alert within 5 minutes"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p4-e2",
+          "name": "Centralized Logging",
+          "description": "Aggregate logs from all cluster workloads and set up log-based alerting.",
+          "stories": [
+            {
+              "id": "p4-e2-s1",
+              "title": "Deploy Loki and configure Promtail for cluster-wide log collection",
+              "description": "Install Grafana Loki and Promtail via Helm. Configure Promtail as a DaemonSet to collect container logs from all namespaces, parse JSON-structured logs, and forward them to Loki.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "Querying Loki in Grafana for `{namespace=\"app\"}` returns logs from the application pods within 30 seconds of the logs being written",
+                "Log entries from JSON-formatted application logs have their fields (level, requestId, etc.) extracted as Loki labels"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "name": "Documentation",
+      "description": "Write operational runbooks, architecture documentation, and disaster recovery procedures.",
+      "epics": [
+        {
+          "id": "p5-e1",
+          "name": "Runbooks",
+          "description": "Document the procedures for common operational tasks.",
+          "stories": [
+            {
+              "id": "p5-e1-s1",
+              "title": "Write runbooks for database backup, restore, and failover",
+              "description": "Create step-by-step runbooks for: taking a manual database snapshot, restoring from a specific backup, promoting the read replica in a primary failure scenario, and verifying data integrity after restore.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "docs/runbooks/database-restore.md exists with numbered steps that a new team member can follow to restore the database from backup",
+                "The runbook was executed against the staging environment and the actual commands and outputs were verified to match the documentation"
+              ]
+            },
+            {
+              "id": "p5-e1-s2",
+              "title": "Write runbooks for Kubernetes incident response",
+              "description": "Document procedures for: investigating a CrashLoopBackOff pod, draining a node for maintenance, rolling back a failed deployment, and responding to an OOMKilled event.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "docs/runbooks/k8s-incident-response.md covers all four scenarios with the exact kubectl commands to diagnose and resolve each",
+                "Each runbook section includes an 'Escalation' subsection stating who to contact if the runbook steps do not resolve the issue"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p5-e2",
+          "name": "Disaster Recovery Plan",
+          "description": "Document and test the disaster recovery procedures.",
+          "stories": [
+            {
+              "id": "p5-e2-s1",
+              "title": "Write and test the disaster recovery plan",
+              "description": "Document the RTO and RPO targets, the step-by-step recovery procedure for a full region failure, and the contact escalation path. Conduct a tabletop exercise of the plan with the team.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "docs/disaster-recovery.md states the target RTO and RPO, lists every step to recover from a full region failure in order, and names the responsible role for each step",
+                "A tabletop exercise was conducted and its results (timeline estimate, identified gaps) are recorded in docs/dr-exercise-results.md"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

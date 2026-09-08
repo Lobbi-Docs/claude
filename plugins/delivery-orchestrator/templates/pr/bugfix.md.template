@@ -1,0 +1,118 @@
+# Bug Fix: {{BUG_TITLE}}
+
+## Summary
+
+{{BUG_SUMMARY}}
+
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}})
+
+## Bug Description
+
+### What Was Broken
+{{BUG_DESCRIPTION}}
+
+### How to Reproduce (Before Fix)
+1. {{REPRODUCE_STEP_1}}
+2. {{REPRODUCE_STEP_2}}
+3. {{REPRODUCE_STEP_3}}
+
+### Expected vs Actual Behavior
+- **Expected:** {{EXPECTED_BEHAVIOR}}
+- **Actual:** {{ACTUAL_BEHAVIOR}}
+
+### Impact
+- **Severity:** {{SEVERITY}}
+- **Users Affected:** {{USERS_AFFECTED}}
+- **Environments:** {{AFFECTED_ENVIRONMENTS}}
+
+## Root Cause Analysis
+
+{{ROOT_CAUSE_EXPLANATION}}
+
+### Technical Details
+{{TECHNICAL_ROOT_CAUSE}}
+
+### Why It Happened
+{{WHY_IT_HAPPENED}}
+
+## Fix Explanation
+
+### What Changed
+{{WHAT_CHANGED}}
+
+### Files Modified
+- {{FILE_1}} - {{CHANGE_DESCRIPTION_1}}
+- {{FILE_2}} - {{CHANGE_DESCRIPTION_2}}
+
+### Code Changes
+```{{LANGUAGE}}
+// Before
+{{CODE_BEFORE}}
+
+// After
+{{CODE_AFTER}}
+```
+
+### Why This Fixes It
+{{FIX_EXPLANATION}}
+
+## Verification Steps
+
+### Manual Testing
+1. {{MANUAL_TEST_1}}
+2. {{MANUAL_TEST_2}}
+3. {{MANUAL_TEST_3}}
+
+### Expected Result
+{{EXPECTED_RESULT_AFTER_FIX}}
+
+### Automated Tests
+- {{TEST_1}}
+- {{TEST_2}}
+
+## Regression Testing
+
+### Related Areas Tested
+- {{RELATED_AREA_1}}
+- {{RELATED_AREA_2}}
+
+### Edge Cases Verified
+- {{EDGE_CASE_1}}
+- {{EDGE_CASE_2}}
+
+## Deployment Notes
+
+### Hotfix Required
+{{YES_NO_HOTFIX}}
+
+### Deployment Steps
+{{DEPLOYMENT_INSTRUCTIONS}}
+
+### Monitoring
+{{MONITORING_PLAN}}
+
+## Related Issues
+
+- Fixes: [{{JIRA_KEY}}]({{JIRA_URL}})
+- Related to: {{RELATED_ISSUES}}
+
+## Checklist
+
+- [ ] Bug reproduced and verified
+- [ ] Root cause identified
+- [ ] Fix tested manually
+- [ ] Automated tests added
+- [ ] Regression tests passed
+- [ ] Code reviewed
+- [ ] Documentation updated
+- [ ] Jira ticket updated
+- [ ] Related issues checked
+- [ ] Monitoring plan in place
+
+## Additional Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

@@ -1,0 +1,43 @@
+---
+template: jira-blocked
+version: 1.0.0
+description: Comment template for when an issue is blocked
+---
+
+# 🚫 Issue Blocked
+
+**Reported By:** {{AUTHOR}}
+**Blocked Since:** {{TIMESTAMP}}
+**Severity:** {{SEVERITY}}
+
+## Blocker Details
+
+{{BLOCKER_DESCRIPTION}}
+
+## Blocking Issue(s)
+
+{{BLOCKING_ISSUES}}
+
+## Impact
+
+{{IMPACT_DESCRIPTION}}
+
+## Workarounds Attempted
+
+{{WORKAROUNDS}}
+
+## Required Actions
+
+{{REQUIRED_ACTIONS}}
+
+## ETA for Unblock
+
+{{UNBLOCK_ETA}}
+
+## Escalation
+
+{{ESCALATION_INFO}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

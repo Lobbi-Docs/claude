@@ -1,0 +1,618 @@
+# API Documentation: {{API_NAME}}
+
+## Overview
+
+| Field | Value |
+|-------|-------|
+| **Version** | {{VERSION}} |
+| **Base URL** | {{BASE_URL}} |
+| **Protocol** | {{PROTOCOL}} |
+| **Last Updated** | {{LAST_UPDATED}} |
+| **Status** | {{STATUS}} |
+
+## Description
+
+{{API_DESCRIPTION}}
+
+## Architecture Overview
+
+### API Architecture Layers
+
+```mermaid
+graph TB
+    Client["Client Applications"]
+    Gateway["API Gateway<br/>{{API_GATEWAY}}"]
+    Auth["Authentication Layer<br/>OAuth 2.0 / JWT"]
+    RateLimit["Rate Limiting<br/>{{RATE_LIMIT_STRATEGY}}"]
+    Service["Service Layer<br/>{{SERVICE_NAME}}"]
+    Cache["Caching Layer<br/>{{CACHE_LAYER}}"]
+    Database["Database<br/>{{DATABASE_TYPE}}"]
+    Webhook["Webhook Engine<br/>Async Events"]
+
+    Client -->|REST/GraphQL| Gateway
+    Gateway --> Auth
+    Auth --> RateLimit
+    RateLimit --> Service
+    Service --> Cache
+    Service --> Database
+    Service --> Webhook
+    Cache -.->|Cache Hit| Gateway
+
+    style Gateway fill:#003366
+    style Auth fill:#006699
+    style RateLimit fill:#0099cc
+    style Service fill:#003366
+    style Cache fill:#339999
+    style Database fill:#660000
+    style Webhook fill:#330033
+```
+
+## Authentication
+
+### Authentication Flow Sequence
+
+```mermaid
+sequenceDiagram
+    participant Client as Client Application
+    participant Gateway as {{API_GATEWAY}}
+    participant AuthSvc as Auth Service
+    participant TokenCache as Token Cache
+    participant Service as {{SERVICE_NAME}}
+
+    Client->>Gateway: 1. POST /auth/login with credentials
+    Gateway->>AuthSvc: 2. Validate credentials
+    AuthSvc->>AuthSvc: 3. Generate JWT Token
+    AuthSvc->>TokenCache: 4. Cache token metadata
+    AuthSvc-->>Gateway: 5. Return access_token + refresh_token
+    Gateway-->>Client: 6. Return credentials (expires_in: {{TOKEN_EXPIRY}})
+
+    Note over Client: Token valid for {{TOKEN_EXPIRY}}s
+
+    Client->>Gateway: 7. API Request with Bearer Token
+    Gateway->>TokenCache: 8. Verify token in cache
+    TokenCache-->>Gateway: 9. Token valid
+    Gateway->>Service: 10. Forward authenticated request
+    Service-->>Gateway: 11. Process and respond
+    Gateway-->>Client: 12. Return response with data
+
+    Client->>Gateway: 13. POST /auth/refresh (token expired)
+    Gateway->>AuthSvc: 14. Validate refresh_token
+    AuthSvc->>AuthSvc: 15. Generate new access_token
+    AuthSvc-->>Gateway: 16. Return new credentials
+    Gateway-->>Client: 17. Return new access_token
+```
+
+### Method
+
+{{AUTH_METHOD}}
+
+### Headers
+
+```http
+Authorization: {{AUTH_HEADER_EXAMPLE}}
+Content-Type: application/json
+X-API-Key: {{API_KEY_EXAMPLE}}
+```
+
+### Obtaining Credentials
+
+{{CREDENTIALS_INSTRUCTIONS}}
+
+### Token Refresh
+
+```http
+POST /auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "{{REFRESH_TOKEN}}"
+}
+```
+
+**Response:**
+```json
+{
+  "access_token": "{{NEW_ACCESS_TOKEN}}",
+  "expires_in": 3600
+}
+```
+
+## Endpoints
+
+### {{CATEGORY_1}}
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| {{METHOD_1}} | {{PATH_1}} | {{DESC_1}} | {{AUTH_1}} |
+| {{METHOD_2}} | {{PATH_2}} | {{DESC_2}} | {{AUTH_2}} |
+| {{METHOD_3}} | {{PATH_3}} | {{DESC_3}} | {{AUTH_3}} |
+
+### {{CATEGORY_2}}
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| {{METHOD_1}} | {{PATH_1}} | {{DESC_1}} | {{AUTH_1}} |
+| {{METHOD_2}} | {{PATH_2}} | {{DESC_2}} | {{AUTH_2}} |
+
+## Detailed Endpoint Documentation
+
+---
+
+### {{ENDPOINT_1_NAME}}
+
+**Description:** {{ENDPOINT_1_DESCRIPTION}}
+
+**Method:** `{{HTTP_METHOD}}`
+
+**Path:** `{{ENDPOINT_PATH}}`
+
+**Authentication:** {{AUTH_REQUIRED}}
+
+#### Request
+
+**Headers:**
+```http
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| {{PARAM_1}} | {{TYPE_1}} | Yes/No | {{DESC_1}} |
+| {{PARAM_2}} | {{TYPE_2}} | Yes/No | {{DESC_2}} |
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| {{QUERY_1}} | {{TYPE_1}} | Yes/No | {{DEFAULT_1}} | {{DESC_1}} |
+| {{QUERY_2}} | {{TYPE_2}} | Yes/No | {{DEFAULT_2}} | {{DESC_2}} |
+
+**Request Body:**
+```json
+{
+  "{{FIELD_1}}": "{{VALUE_1}}",
+  "{{FIELD_2}}": {{VALUE_2}},
+  "{{FIELD_3}}": {
+    "{{NESTED_FIELD}}": "{{NESTED_VALUE}}"
+  }
+}
+```
+
+**Request Schema:**
+```yaml
+type: object
+required:
+  - {{REQUIRED_FIELD_1}}
+  - {{REQUIRED_FIELD_2}}
+properties:
+  {{FIELD_1}}:
+    type: string
+    description: {{FIELD_1_DESCRIPTION}}
+    example: {{FIELD_1_EXAMPLE}}
+  {{FIELD_2}}:
+    type: integer
+    description: {{FIELD_2_DESCRIPTION}}
+    minimum: {{MIN_VALUE}}
+    maximum: {{MAX_VALUE}}
+```
+
+#### Response
+
+**Success Response (200):**
+```json
+{
+  "{{RESPONSE_FIELD_1}}": "{{RESPONSE_VALUE_1}}",
+  "{{RESPONSE_FIELD_2}}": {{RESPONSE_VALUE_2}},
+  "{{RESPONSE_FIELD_3}}": [
+    {
+      "{{ARRAY_FIELD}}": "{{ARRAY_VALUE}}"
+    }
+  ]
+}
+```
+
+**Response Schema:**
+```yaml
+type: object
+properties:
+  {{RESPONSE_FIELD_1}}:
+    type: string
+    description: {{RESPONSE_FIELD_1_DESCRIPTION}}
+  {{RESPONSE_FIELD_2}}:
+    type: integer
+    description: {{RESPONSE_FIELD_2_DESCRIPTION}}
+```
+
+#### Examples
+
+**cURL:**
+```bash
+curl -X {{HTTP_METHOD}} \
+  {{BASE_URL}}{{ENDPOINT_PATH}} \
+  -H 'Authorization: Bearer {{TOKEN}}' \
+  -H 'Content-Type: application/json' \
+  -d '{{REQUEST_BODY}}'
+```
+
+**JavaScript:**
+```javascript
+const response = await fetch('{{BASE_URL}}{{ENDPOINT_PATH}}', {
+  method: '{{HTTP_METHOD}}',
+  headers: {
+    'Authorization': 'Bearer {{TOKEN}}',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({{REQUEST_BODY_JS}})
+});
+
+const data = await response.json();
+```
+
+**Python:**
+```python
+import requests
+
+response = requests.{{HTTP_METHOD_LOWER}}(
+    '{{BASE_URL}}{{ENDPOINT_PATH}}',
+    headers={
+        'Authorization': 'Bearer {{TOKEN}}',
+        'Content-Type': 'application/json'
+    },
+    json={{REQUEST_BODY_PYTHON}}
+)
+
+data = response.json()
+```
+
+#### Error Responses
+
+**400 Bad Request:**
+```json
+{
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "{{ERROR_MESSAGE}}",
+    "details": [
+      {
+        "field": "{{FIELD_NAME}}",
+        "issue": "{{ISSUE_DESCRIPTION}}"
+      }
+    ]
+  }
+}
+```
+
+**401 Unauthorized:**
+```json
+{
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid or expired authentication token"
+  }
+}
+```
+
+**404 Not Found:**
+```json
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "{{RESOURCE_TYPE}} not found"
+  }
+}
+```
+
+**500 Internal Server Error:**
+```json
+{
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "An unexpected error occurred",
+    "request_id": "{{REQUEST_ID}}"
+  }
+}
+```
+
+---
+
+## Request/Response Flow Sequence
+
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant Gateway as {{API_GATEWAY}}
+    participant Validator as Request Validator
+    participant Service as {{SERVICE_NAME}}
+    participant Database as Database
+    participant Cache as Cache
+
+    Client->>Gateway: 1. HTTP {{HTTP_METHOD}} Request<br/>Headers + Body
+    activate Gateway
+
+    Gateway->>Validator: 2. Validate schema
+    Validator->>Validator: 3. Check auth headers
+    Validator->>Validator: 4. Validate request body
+    alt Validation fails
+        Validator-->>Gateway: Error: Invalid request
+        Gateway-->>Client: 400 Bad Request
+        deactivate Gateway
+    else Validation succeeds
+        Validator-->>Gateway: Validation passed
+        Gateway->>Service: 5. Forward validated request
+        activate Service
+
+        Service->>Cache: 6. Check cache for {{CACHE_KEY}}
+        alt Cache hit
+            Cache-->>Service: Return cached data
+            Service-->>Gateway: 7. Return response (cached)
+        else Cache miss
+            Service->>Database: 8. Query {{RESOURCE_TYPE}}
+            activate Database
+            Database-->>Service: 9. Return data
+            deactivate Database
+            Service->>Cache: 10. Store in cache (TTL: {{CACHE_TTL}}s)
+            Service-->>Gateway: 11. Return response (fresh)
+        end
+
+        deactivate Service
+        Gateway->>Gateway: 12. Add response headers<br/>X-RateLimit-* headers
+        Gateway-->>Client: 13. HTTP 200 OK<br/>JSON Body + Headers
+        deactivate Gateway
+    end
+```
+
+## Error Codes
+
+| Code | HTTP Status | Description | Resolution |
+|------|-------------|-------------|------------|
+| {{ERROR_CODE_1}} | {{HTTP_STATUS_1}} | {{ERROR_DESC_1}} | {{RESOLUTION_1}} |
+| {{ERROR_CODE_2}} | {{HTTP_STATUS_2}} | {{ERROR_DESC_2}} | {{RESOLUTION_2}} |
+| {{ERROR_CODE_3}} | {{HTTP_STATUS_3}} | {{ERROR_DESC_3}} | {{RESOLUTION_3}} |
+
+## Rate Limiting
+
+### Rate Limit State Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> AVAILABLE: Initialize bucket<br/>Limit: {{LIMIT}}<br/>Window: {{RATE_WINDOW}}
+
+    AVAILABLE --> AVAILABLE: Request received<br/>Decrement counter<br/>Return: {{REMAINING}}
+
+    AVAILABLE --> THROTTLED: Counter reaches 0
+
+    THROTTLED --> THROTTLED: Request rejected<br/>Return 429<br/>Retry-After: {{RETRY_AFTER_SECONDS}}s
+
+    THROTTLED --> AVAILABLE: Window resets<br/>{{RATE_WINDOW}} elapsed<br/>Bucket refilled
+
+    note right of AVAILABLE
+        X-RateLimit-Limit: {{LIMIT}}
+        X-RateLimit-Remaining: {{REMAINING}}
+        X-RateLimit-Reset: {{RESET_TIMESTAMP}}
+    end note
+
+    note right of THROTTLED
+        HTTP 429 Too Many Requests
+        Retry-After: {{RETRY_AFTER_SECONDS}}
+        error.code: RATE_LIMIT_EXCEEDED
+    end note
+```
+
+### Limits
+
+| Tier | Requests per Minute | Requests per Hour | Burst Limit |
+|------|---------------------|-------------------|-------------|
+| {{TIER_1}} | {{RPM_1}} | {{RPH_1}} | {{BURST_1}} |
+| {{TIER_2}} | {{RPM_2}} | {{RPH_2}} | {{BURST_2}} |
+| {{TIER_3}} | {{RPM_3}} | {{RPH_3}} | {{BURST_3}} |
+
+### Rate Limit Headers
+
+```http
+X-RateLimit-Limit: {{LIMIT}}
+X-RateLimit-Remaining: {{REMAINING}}
+X-RateLimit-Reset: {{RESET_TIMESTAMP}}
+```
+
+### Rate Limit Exceeded Response
+
+```json
+{
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Rate limit exceeded",
+    "retry_after": {{RETRY_AFTER_SECONDS}}
+  }
+}
+```
+
+## Pagination
+
+### Request Parameters
+
+| Parameter | Type | Default | Max | Description |
+|-----------|------|---------|-----|-------------|
+| page | integer | 1 | {{MAX_PAGE}} | Page number |
+| page_size | integer | {{DEFAULT_SIZE}} | {{MAX_SIZE}} | Items per page |
+
+### Response Format
+
+```json
+{
+  "data": [{{ITEMS}}],
+  "pagination": {
+    "page": {{CURRENT_PAGE}},
+    "page_size": {{PAGE_SIZE}},
+    "total_items": {{TOTAL_ITEMS}},
+    "total_pages": {{TOTAL_PAGES}},
+    "has_next": {{HAS_NEXT}},
+    "has_previous": {{HAS_PREVIOUS}}
+  }
+}
+```
+
+## Webhooks
+
+### Webhook Event Flow Diagram
+
+```mermaid
+sequenceDiagram
+    participant System as {{SERVICE_NAME}}<br/>Event Source
+    participant Queue as Event Queue<br/>{{QUEUE_SERVICE}}
+    participant Processor as Event Processor<br/>Retry Logic
+    participant Webhook as Client Webhook<br/>{{WEBHOOK_ENDPOINT}}
+    participant Cache as Delivery Cache
+
+    System->>System: 1. Event triggered<br/>{{EVENT_TYPE}}
+    System->>Queue: 2. Enqueue event<br/>Priority: {{PRIORITY}}
+
+    Queue->>Processor: 3. Dequeue event
+    Processor->>Processor: 4. Sign payload<br/>HMAC-SHA256
+
+    Note over Processor: Initial Delivery Attempt
+
+    Processor->>Webhook: 5. POST webhook<br/>Headers + signed payload<br/>Timeout: {{WEBHOOK_TIMEOUT}}s
+
+    alt Delivery Success
+        Webhook-->>Processor: 6. HTTP 2xx response
+        Processor->>Cache: 7. Log success<br/>Delivery ID: {{DELIVERY_ID}}
+        Processor-->>System: Success
+    else Delivery Failure - Retry
+        Webhook-->>Processor: 8. HTTP 5xx or timeout
+        Processor->>Processor: 9. Calculate backoff<br/>Attempt {{ATTEMPT}} of {{MAX_ATTEMPTS}}
+        Note over Processor: Exponential backoff:<br/>2s, 4s, 8s, 16s, 32s...
+        Processor->>Queue: 10. Re-enqueue with delay<br/>Next retry: {{NEXT_RETRY}}
+        Queue-->>Processor: Scheduled
+    else Permanent Failure
+        Processor->>Processor: 11. Max retries exceeded
+        Processor->>Cache: 12. Log failure<br/>Last attempt: {{LAST_ATTEMPT}}
+        Processor-->>System: Failed (manual review needed)
+    end
+```
+
+### Event Types
+
+| Event | Description | Payload |
+|-------|-------------|---------|
+| {{EVENT_1}} | {{EVENT_1_DESC}} | {{PAYLOAD_1_LINK}} |
+| {{EVENT_2}} | {{EVENT_2_DESC}} | {{PAYLOAD_2_LINK}} |
+| {{EVENT_3}} | {{EVENT_3_DESC}} | {{PAYLOAD_3_LINK}} |
+
+### Webhook Configuration
+
+**Endpoint:** `POST /webhooks`
+
+```json
+{
+  "url": "{{WEBHOOK_URL}}",
+  "events": ["{{EVENT_1}}", "{{EVENT_2}}"],
+  "secret": "{{WEBHOOK_SECRET}}"
+}
+```
+
+### Webhook Payload
+
+```json
+{
+  "event": "{{EVENT_TYPE}}",
+  "timestamp": "{{TIMESTAMP}}",
+  "data": {{EVENT_DATA}},
+  "signature": "{{HMAC_SIGNATURE}}"
+}
+```
+
+### Signature Verification
+
+```python
+import hmac
+import hashlib
+
+def verify_signature(payload, signature, secret):
+    expected = hmac.new(
+        secret.encode(),
+        payload.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+```
+
+## SDKs & Libraries
+
+### Official SDKs
+
+| Language | Repository | Documentation | Install |
+|----------|------------|---------------|---------|
+| JavaScript/TypeScript | {{JS_REPO}} | {{JS_DOCS}} | `npm install {{JS_PACKAGE}}` |
+| Python | {{PY_REPO}} | {{PY_DOCS}} | `pip install {{PY_PACKAGE}}` |
+| Go | {{GO_REPO}} | {{GO_DOCS}} | `go get {{GO_PACKAGE}}` |
+
+### Community SDKs
+
+| Language | Repository | Maintainer |
+|----------|------------|------------|
+| {{LANG_1}} | {{REPO_1}} | {{MAINTAINER_1}} |
+| {{LANG_2}} | {{REPO_2}} | {{MAINTAINER_2}} |
+
+## Testing
+
+### Sandbox Environment
+
+**Base URL:** {{SANDBOX_URL}}
+
+**Test Credentials:**
+```
+API Key: {{TEST_API_KEY}}
+```
+
+### Postman Collection
+
+**Download:** {{POSTMAN_COLLECTION_URL}}
+
+### OpenAPI Specification
+
+**Download:** {{OPENAPI_SPEC_URL}}
+
+## Versioning
+
+### Version Strategy
+
+{{VERSIONING_STRATEGY}}
+
+### Deprecation Policy
+
+{{DEPRECATION_POLICY}}
+
+### Changelog
+
+| Version | Release Date | Changes |
+|---------|--------------|---------|
+| {{VERSION_1}} | {{DATE_1}} | {{CHANGES_1}} |
+| {{VERSION_2}} | {{DATE_2}} | {{CHANGES_2}} |
+
+## Support
+
+### Resources
+
+- **Documentation**: {{DOCS_URL}}
+- **API Status**: {{STATUS_URL}}
+- **Changelog**: {{CHANGELOG_URL}}
+
+### Contact
+
+- **Support Email**: {{SUPPORT_EMAIL}}
+- **Slack Community**: {{SLACK_URL}}
+- **GitHub Issues**: {{GITHUB_ISSUES_URL}}
+
+### SLA
+
+| Tier | Response Time | Uptime SLA |
+|------|---------------|------------|
+| {{TIER_1}} | {{RESPONSE_1}} | {{UPTIME_1}} |
+| {{TIER_2}} | {{RESPONSE_2}} | {{UPTIME_2}} |
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

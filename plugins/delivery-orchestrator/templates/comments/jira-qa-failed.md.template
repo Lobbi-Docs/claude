@@ -1,0 +1,65 @@
+---
+template: jira-qa-failed
+version: 1.0.0
+description: Comment template for when QA fails
+---
+
+# ❌ QA Failed
+
+**Tester:** {{AUTHOR}}
+**Tested:** {{TIMESTAMP}}
+**Environment:** {{ENVIRONMENT}}
+
+## Test Results Summary
+
+- **Test Cases Executed:** {{TESTS_EXECUTED}}
+- **Passed:** {{TESTS_PASSED}}
+- **Failed:** {{TESTS_FAILED}}
+- **Blocked:** {{TESTS_BLOCKED}}
+
+## Issues Found
+
+{{ISSUES_FOUND}}
+
+## Critical Issues
+
+{{CRITICAL_ISSUES}}
+
+## Steps to Reproduce
+
+{{REPRODUCTION_STEPS}}
+
+## Expected vs Actual
+
+**Expected:**
+{{EXPECTED_BEHAVIOR}}
+
+**Actual:**
+{{ACTUAL_BEHAVIOR}}
+
+## Screenshots/Videos
+
+{{MEDIA_LINKS}}
+
+## Environment Details
+
+- **Browser:** {{BROWSER}}
+- **OS:** {{OPERATING_SYSTEM}}
+- **Resolution:** {{RESOLUTION}}
+- **Version:** {{VERSION}}
+
+## Logs/Error Messages
+
+{{LOGS_ERRORS}}
+
+## Additional Notes
+
+{{ADDITIONAL_NOTES}}
+
+## Recommended Actions
+
+{{RECOMMENDED_ACTIONS}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

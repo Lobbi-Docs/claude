@@ -1,0 +1,178 @@
+# {{STORY_TITLE}}
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+## User Story
+
+**As a** {{USER_ROLE}}
+**I want** {{USER_GOAL}}
+**So that** {{USER_BENEFIT}}
+
+## Context
+
+{{CONTEXT_DESCRIPTION}}
+
+### User Journey
+
+{{USER_JOURNEY}}
+
+## Acceptance Criteria
+
+### Scenario 1: {{SCENARIO_1_NAME}}
+
+**Given** {{GIVEN_1}}
+**When** {{WHEN_1}}
+**Then** {{THEN_1}}
+
+### Scenario 2: {{SCENARIO_2_NAME}}
+
+**Given** {{GIVEN_2}}
+**When** {{WHEN_2}}
+**Then** {{THEN_2}}
+
+### Scenario 3: {{SCENARIO_3_NAME}}
+
+**Given** {{GIVEN_3}}
+**When** {{WHEN_3}}
+**Then** {{THEN_3}}
+
+## Technical Notes
+
+### Architecture Impact
+
+{{ARCHITECTURE_IMPACT}}
+
+### Components Affected
+
+- {{COMPONENT_1}}
+- {{COMPONENT_2}}
+- {{COMPONENT_3}}
+
+### API Changes
+
+```
+{{API_CHANGES}}
+```
+
+### Database Changes
+
+```sql
+{{DATABASE_CHANGES}}
+```
+
+### Security Considerations
+
+- {{SECURITY_1}}
+- {{SECURITY_2}}
+
+### Performance Considerations
+
+- {{PERFORMANCE_1}}
+- {{PERFORMANCE_2}}
+
+## Implementation Approach
+
+### Option 1 (Recommended): {{APPROACH_1_NAME}}
+
+**Pros:**
+- {{APPROACH_1_PRO_1}}
+- {{APPROACH_1_PRO_2}}
+
+**Cons:**
+- {{APPROACH_1_CON_1}}
+- {{APPROACH_1_CON_2}}
+
+**Effort:** {{APPROACH_1_EFFORT}}
+
+### Option 2: {{APPROACH_2_NAME}}
+
+**Pros:**
+- {{APPROACH_2_PRO_1}}
+- {{APPROACH_2_PRO_2}}
+
+**Cons:**
+- {{APPROACH_2_CON_1}}
+- {{APPROACH_2_CON_2}}
+
+**Effort:** {{APPROACH_2_EFFORT}}
+
+## Dependencies
+
+### Upstream
+- {{UPSTREAM_STORY_1}} - {{UPSTREAM_STATUS_1}}
+- {{UPSTREAM_STORY_2}} - {{UPSTREAM_STATUS_2}}
+
+### Downstream
+- {{DOWNSTREAM_STORY_1}}
+- {{DOWNSTREAM_STORY_2}}
+
+### External Systems
+- {{EXTERNAL_SYSTEM_1}} - {{EXTERNAL_STATUS_1}}
+
+## Sub-Tasks
+
+- [ ] {{SUBTASK_1_KEY}} - {{SUBTASK_1_TITLE}}
+- [ ] {{SUBTASK_2_KEY}} - {{SUBTASK_2_TITLE}}
+- [ ] {{SUBTASK_3_KEY}} - {{SUBTASK_3_TITLE}}
+- [ ] {{SUBTASK_4_KEY}} - {{SUBTASK_4_TITLE}}
+
+## Testing Strategy
+
+### Unit Tests
+- {{UNIT_TEST_1}}
+- {{UNIT_TEST_2}}
+
+### Integration Tests
+- {{INTEGRATION_TEST_1}}
+- {{INTEGRATION_TEST_2}}
+
+### E2E Tests
+- {{E2E_TEST_1}}
+- {{E2E_TEST_2}}
+
+### Manual Testing Checklist
+- [ ] {{MANUAL_TEST_1}}
+- [ ] {{MANUAL_TEST_2}}
+- [ ] {{MANUAL_TEST_3}}
+
+## Design Resources
+
+- Mockups: {{MOCKUP_URL}}
+- Wireframes: {{WIREFRAME_URL}}
+- Design System: {{DESIGN_SYSTEM_URL}}
+
+## Documentation
+
+- [ ] Code comments
+- [ ] API documentation
+- [ ] User documentation
+- [ ] Release notes
+
+## Definition of Done
+
+- [ ] All acceptance criteria met
+- [ ] Code reviewed and approved
+- [ ] Unit tests written (min 80% coverage)
+- [ ] Integration tests passed
+- [ ] E2E tests passed
+- [ ] Security review completed
+- [ ] Performance benchmarks met
+- [ ] Documentation updated
+- [ ] Deployed to staging
+- [ ] QA sign-off
+- [ ] Product Owner acceptance
+
+## Estimation
+
+**Story Points:** {{STORY_POINTS}}
+**Estimated Hours:** {{ESTIMATED_HOURS}}
+**Actual Hours:** {{ACTUAL_HOURS}}
+
+---
+
+**Epic:** {{EPIC_KEY}} - {{EPIC_TITLE}}
+**Sprint:** {{SPRINT_NAME}}
+**Assignee:** {{ASSIGNEE}}
+**Reporter:** {{REPORTER}}
+**Created:** {{CREATED_DATE}}
+**Last Updated:** {{UPDATED_DATE}}

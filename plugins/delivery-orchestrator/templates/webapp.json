@@ -1,0 +1,441 @@
+{
+  "id": "webapp",
+  "name": "Full-Stack Web Application",
+  "type": "software",
+  "description": "A complete full-stack web application with React frontend, REST API backend, database, authentication, and cloud deployment. Use this template for customer-facing products, internal tools, dashboards, and SaaS applications.",
+  "phases": [
+    {
+      "id": "p1",
+      "name": "Foundation",
+      "description": "Establish the project skeleton, tooling, and development environment so every subsequent phase builds on a consistent, reproducible base.",
+      "epics": [
+        {
+          "id": "p1-e1",
+          "name": "Repository & Tooling Setup",
+          "description": "Initialize the repository, configure build tools, linting, formatting, and CI pipeline.",
+          "stories": [
+            {
+              "id": "p1-e1-s1",
+              "title": "Initialize React project with Vite and TypeScript",
+              "description": "Scaffold the frontend using Vite with the React-TypeScript template, configure path aliases, and verify the dev server starts cleanly.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "`pnpm dev` starts without errors and the browser shows the default Vite+React page at localhost:5173",
+                "TypeScript strict mode is enabled in tsconfig.json and `npx tsc --noEmit` exits 0"
+              ]
+            },
+            {
+              "id": "p1-e1-s2",
+              "title": "Configure ESLint, Prettier, and pre-commit hooks",
+              "description": "Add ESLint with the recommended TypeScript ruleset, Prettier for formatting, and a Husky pre-commit hook that runs lint-staged.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "`npx eslint src/` exits 0 on the freshly scaffolded code",
+                "Committing a file with a trailing space is rejected by the pre-commit hook"
+              ]
+            },
+            {
+              "id": "p1-e1-s3",
+              "title": "Set up GitHub Actions CI pipeline",
+              "description": "Create a workflow that runs on every pull request: install dependencies, type-check, lint, and run tests.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "The workflow file exists at .github/workflows/ci.yml and triggers on pull_request to main",
+                "Opening a test PR with a deliberate type error causes the CI job to fail at the tsc step"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e2",
+          "name": "Database & ORM Setup",
+          "description": "Configure the database, ORM, and migration tooling so backend stories can create schemas from day one.",
+          "stories": [
+            {
+              "id": "p1-e2-s1",
+              "title": "Provision local PostgreSQL with Docker Compose",
+              "description": "Create a docker-compose.yml that runs PostgreSQL 15 with a named volume, exposes port 5432, and sets database name, user, and password via environment variables.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "`docker compose up -d db` starts a healthy PostgreSQL container accessible at localhost:5432",
+                "A .env.example file documents all required environment variables with placeholder values"
+              ]
+            },
+            {
+              "id": "p1-e2-s2",
+              "title": "Configure Prisma ORM and run initial migration",
+              "description": "Install Prisma, initialize the schema with the PostgreSQL data source, create an initial empty migration, and verify the Prisma client generates without errors.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "`npx prisma migrate dev` applies the initial migration without errors against the local database",
+                "`npx prisma generate` produces the TypeScript client and `npx tsc --noEmit` still passes"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e3",
+          "name": "Backend API Scaffold",
+          "description": "Stand up the Node.js/Express (or Fastify) server with health check, error handling middleware, and environment configuration.",
+          "stories": [
+            {
+              "id": "p1-e3-s1",
+              "title": "Initialize Express server with TypeScript and health endpoint",
+              "description": "Create the backend package, configure ts-node-dev for development, and implement a GET /health endpoint that returns 200 with a JSON body.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "`GET /health` returns HTTP 200 with body `{\"status\": \"ok\", \"timestamp\": \"<iso-string>\"}`",
+                "The server respects the PORT environment variable and defaults to 3001"
+              ]
+            },
+            {
+              "id": "p1-e3-s2",
+              "title": "Add global error handling and request logging middleware",
+              "description": "Implement an Express error handler that returns structured JSON errors and a request logger using pino or morgan.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "Throwing an error inside a route handler returns HTTP 500 with body `{\"error\": \"Internal Server Error\", \"requestId\": \"<uuid>\"}`",
+                "Every request is logged with method, path, status code, and response time in milliseconds"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e4",
+          "name": "Frontend Architecture",
+          "description": "Establish the React component architecture, routing, state management library, and design system baseline.",
+          "stories": [
+            {
+              "id": "p1-e4-s1",
+              "title": "Configure React Router and base route layout",
+              "description": "Install React Router v6, define a root layout component with navigation shell, and create stub routes for the main application sections.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Navigating to `/`, `/dashboard`, and `/settings` renders different page components without a 404",
+                "The browser back button correctly navigates between visited routes"
+              ]
+            },
+            {
+              "id": "p1-e4-s2",
+              "title": "Set up Tailwind CSS with custom design tokens",
+              "description": "Install and configure Tailwind CSS, extend the theme with the project's color palette, typography scale, and spacing tokens.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "Tailwind utility classes render correctly in the browser with the configured theme values",
+                "`npx tailwindcss --content './src/**/*.tsx' --minify` produces a non-empty CSS output"
+              ]
+            },
+            {
+              "id": "p1-e4-s3",
+              "title": "Configure Zustand store and TanStack Query client",
+              "description": "Install Zustand and TanStack Query, create the root QueryClientProvider, and set up a minimal Zustand store for UI state.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "A test component that reads from the Zustand store and triggers a TanStack Query fetch renders without runtime errors",
+                "`npx tsc --noEmit` passes with Zustand and TanStack Query types resolved"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Authentication",
+      "description": "Implement a complete authentication system covering registration, login, session management, and route protection.",
+      "epics": [
+        {
+          "id": "p2-e1",
+          "name": "User Account Model",
+          "description": "Define the user schema, password hashing, and the database layer for account management.",
+          "stories": [
+            {
+              "id": "p2-e1-s1",
+              "title": "Create User schema with Prisma and run migration",
+              "description": "Add a User model to the Prisma schema with id, email, passwordHash, createdAt, and updatedAt fields. Run and commit the migration.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "The users table exists in the database with the correct columns after `prisma migrate dev`",
+                "The `email` column has a unique index enforced at the database level"
+              ]
+            },
+            {
+              "id": "p2-e1-s2",
+              "title": "Implement user repository with bcrypt password hashing",
+              "description": "Create a UserRepository class with createUser and findByEmail methods. Passwords must be hashed with bcrypt (cost factor 12) before storage.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Calling `createUser` with a plaintext password stores a bcrypt hash (not the plaintext) in the database",
+                "Unit tests for createUser and findByEmail pass with 100% branch coverage on the happy path and duplicate-email error path"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2-e2",
+          "name": "JWT Authentication Endpoints",
+          "description": "Implement login, registration, token refresh, and logout API endpoints.",
+          "stories": [
+            {
+              "id": "p2-e2-s1",
+              "title": "Implement POST /auth/register endpoint",
+              "description": "Accept email and password, validate format (email regex, password minimum 8 chars), hash the password, create the user, and return a signed JWT.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "POST /auth/register with valid credentials returns HTTP 201 and a JWT in the response body",
+                "POST /auth/register with an already-registered email returns HTTP 409 with error message 'Email already registered'",
+                "POST /auth/register with a password shorter than 8 characters returns HTTP 400"
+              ]
+            },
+            {
+              "id": "p2-e2-s2",
+              "title": "Implement POST /auth/login and POST /auth/refresh endpoints",
+              "description": "Login verifies credentials and returns an access token (15 min TTL) plus a refresh token (7 day TTL) in an httpOnly cookie. Refresh exchanges the cookie for a new access token.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "POST /auth/login with correct credentials returns HTTP 200 with an access token and sets a Refresh-Token httpOnly cookie",
+                "POST /auth/login with incorrect password returns HTTP 401",
+                "POST /auth/refresh with a valid refresh token cookie returns a new access token without requiring password re-entry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2-e3",
+          "name": "Frontend Authentication Flow",
+          "description": "Build the login and registration pages and protect authenticated routes.",
+          "stories": [
+            {
+              "id": "p2-e3-s1",
+              "title": "Build Login and Registration pages with react-hook-form",
+              "description": "Create Login and Register page components with form validation using react-hook-form and Zod schemas. Show field-level validation errors inline.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "Submitting the login form with an empty email field shows the validation error 'Email is required' below the email input without making an API call",
+                "Successful login stores the access token in memory (not localStorage) and redirects to /dashboard"
+              ]
+            },
+            {
+              "id": "p2-e3-s2",
+              "title": "Implement protected route wrapper and auth state store",
+              "description": "Create a ProtectedRoute component that redirects unauthenticated users to /login, and a Zustand auth store that manages the current user state.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Navigating to /dashboard without being authenticated redirects to /login and preserves the intended destination as a `redirect` query parameter",
+                "After login, the app redirects to the originally intended destination if a redirect parameter was present"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Core Features",
+      "description": "Implement the primary business functionality that defines the application's value proposition.",
+      "epics": [
+        {
+          "id": "p3-e1",
+          "name": "Core Data Model",
+          "description": "Define and migrate the primary domain entities that the application manages.",
+          "stories": [
+            {
+              "id": "p3-e1-s1",
+              "title": "Design and migrate the primary domain schema",
+              "description": "Add the main domain entities to the Prisma schema, establish relationships (foreign keys, indexes), and run the migration.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "All new tables exist in the database with the correct column types, nullable constraints, and indexes after migration",
+                "Prisma client generates without errors and `npx tsc --noEmit` passes"
+              ]
+            },
+            {
+              "id": "p3-e1-s2",
+              "title": "Implement CRUD API endpoints for the primary resource",
+              "description": "Create REST endpoints for the primary domain resource: GET (list + single), POST (create), PATCH (update), DELETE. All endpoints require authentication.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "GET /api/{resource} returns HTTP 200 with a paginated list of the authenticated user's resources",
+                "POST /api/{resource} without a valid JWT returns HTTP 401",
+                "DELETE /api/{resource}/{id} for a resource owned by a different user returns HTTP 403"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p3-e2",
+          "name": "Core UI Views",
+          "description": "Build the main list view, detail view, and create/edit forms for the primary domain resource.",
+          "stories": [
+            {
+              "id": "p3-e2-s1",
+              "title": "Build the resource list view with TanStack Query",
+              "description": "Create a list page that fetches and displays the user's resources using TanStack Query. Include loading skeleton and empty state.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "The list page shows a loading skeleton while data is fetching and displays the resource list on success",
+                "The list page shows a 'No items yet. Create your first one.' empty state when the API returns an empty array"
+              ]
+            },
+            {
+              "id": "p3-e2-s2",
+              "title": "Build the create/edit form with optimistic updates",
+              "description": "Implement a form that creates or edits a resource. On submit, apply an optimistic update to the TanStack Query cache and roll back on error.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "Submitting the create form immediately adds a placeholder item to the list before the API responds",
+                "If the API returns an error, the optimistic item is removed and an error toast is displayed"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p3-e3",
+          "name": "Search and Filtering",
+          "description": "Add server-side search and client-side filtering for the primary resource list.",
+          "stories": [
+            {
+              "id": "p3-e3-s1",
+              "title": "Implement server-side full-text search endpoint",
+              "description": "Add a `?q=` query parameter to the list endpoint that filters results using PostgreSQL full-text search on the resource's title and description fields.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "GET /api/{resource}?q=test returns only resources whose title or description contains the word 'test' (case-insensitive)",
+                "The search query is debounced to 300ms on the frontend to avoid a request on every keystroke"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "Testing",
+      "description": "Achieve the target test coverage with unit, integration, and end-to-end tests that validate critical user journeys.",
+      "epics": [
+        {
+          "id": "p4-e1",
+          "name": "Backend Unit and Integration Tests",
+          "description": "Cover the API endpoints and business logic with Vitest unit tests and supertest integration tests.",
+          "stories": [
+            {
+              "id": "p4-e1-s1",
+              "title": "Write integration tests for all auth endpoints",
+              "description": "Use supertest against a test database to verify the register, login, and refresh endpoints with both happy-path and error-path scenarios.",
+              "estimate_hours": 5,
+              "completion_criteria": [
+                "All auth endpoint test cases pass with `pnpm test` against a clean test database",
+                "The test suite covers at least: successful registration, duplicate email rejection, successful login, wrong password, expired token refresh"
+              ]
+            },
+            {
+              "id": "p4-e1-s2",
+              "title": "Write integration tests for core CRUD endpoints",
+              "description": "Test the primary resource CRUD endpoints including authorization checks (own resource vs. other user's resource).",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "All CRUD endpoint tests pass including the 403 check for cross-user access",
+                "Tests use a shared test database setup/teardown that runs in under 10 seconds total"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p4-e2",
+          "name": "Frontend Component Tests",
+          "description": "Test React components with Testing Library for behavior-driven assertions.",
+          "stories": [
+            {
+              "id": "p4-e2-s1",
+              "title": "Write component tests for the login and registration forms",
+              "description": "Use Testing Library to test form validation messages, submission behavior, and error display for the auth forms.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Tests verify that submitting an empty login form shows validation errors without calling the API",
+                "Tests verify that a failed login API response displays the error message returned by the server"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p4-e3",
+          "name": "End-to-End Tests",
+          "description": "Playwright tests covering the critical paths: registration, login, create resource, and delete resource.",
+          "stories": [
+            {
+              "id": "p4-e3-s1",
+              "title": "Write Playwright E2E tests for the authentication flow",
+              "description": "Automate the full registration → login → dashboard navigation flow in a real browser against the running application.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "The E2E test registers a new user, logs in with those credentials, and asserts the dashboard page title is visible",
+                "The test runs in under 30 seconds in CI (headless Chrome)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "name": "Deployment",
+      "description": "Package the application for production, configure environment-specific settings, and deploy to the target hosting platform.",
+      "epics": [
+        {
+          "id": "p5-e1",
+          "name": "Production Build",
+          "description": "Optimize the frontend build and containerize the backend for production deployment.",
+          "stories": [
+            {
+              "id": "p5-e1-s1",
+              "title": "Optimize Vite production build and measure bundle size",
+              "description": "Configure Vite's build settings for production (code splitting, tree shaking, asset hashing) and measure the gzipped bundle size.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "`pnpm build` exits 0 and produces a dist/ directory with hashed asset filenames",
+                "The gzipped main bundle is under 200KB (before lazy-loaded chunks)"
+              ]
+            },
+            {
+              "id": "p5-e1-s2",
+              "title": "Create production Dockerfile for the backend",
+              "description": "Write a multi-stage Dockerfile that builds the TypeScript, installs only production dependencies, and runs as a non-root user.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "`docker build -t app-backend .` completes without errors and the image size is under 300MB",
+                "The container runs as a non-root user (verified with `docker inspect` showing a non-zero UID)"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p5-e2",
+          "name": "CI/CD and Environment Configuration",
+          "description": "Extend the CI pipeline with deployment stages and manage environment-specific configuration.",
+          "stories": [
+            {
+              "id": "p5-e2-s1",
+              "title": "Add deployment workflow for staging environment",
+              "description": "Create a GitHub Actions workflow that deploys to staging on every push to main, after CI passes.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "Pushing a commit to main triggers the deploy workflow and the staging URL returns HTTP 200 within 5 minutes",
+                "A failed deployment sends a notification to the configured Slack channel or email"
+              ]
+            },
+            {
+              "id": "p5-e2-s2",
+              "title": "Document environment variables and secrets management",
+              "description": "Create a comprehensive .env.example and deployment runbook covering all required environment variables and how secrets are managed in each environment.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                ".env.example contains every environment variable the application reads, with a comment explaining each variable's purpose and format",
+                "The deployment runbook documents how to rotate the JWT secret without downtime"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

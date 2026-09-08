@@ -1,0 +1,245 @@
+# Dependency Update: {{UPDATE_TITLE}}
+
+## Summary
+
+{{UPDATE_SUMMARY}}
+
+**Jira Issue:** [{{JIRA_KEY}}]({{JIRA_URL}})
+
+## Packages Updated
+
+### Direct Dependencies
+| Package | Previous Version | New Version | Type | Severity |
+|---------|-----------------|-------------|------|----------|
+| {{PACKAGE_1}} | {{OLD_VERSION_1}} | {{NEW_VERSION_1}} | {{TYPE_1}} | {{SEVERITY_1}} |
+| {{PACKAGE_2}} | {{OLD_VERSION_2}} | {{NEW_VERSION_2}} | {{TYPE_2}} | {{SEVERITY_2}} |
+
+### Transitive Dependencies
+| Package | Previous Version | New Version | Reason |
+|---------|-----------------|-------------|--------|
+| {{TRANSITIVE_1}} | {{OLD_VERSION_T1}} | {{NEW_VERSION_T1}} | {{REASON_1}} |
+| {{TRANSITIVE_2}} | {{OLD_VERSION_T2}} | {{NEW_VERSION_T2}} | {{REASON_2}} |
+
+## Update Motivation
+
+### Security Fixes
+{{SECURITY_MOTIVATION}}
+
+#### CVEs Addressed
+- [{{CVE_1}}]({{CVE_URL_1}}) - {{CVE_SEVERITY_1}} - {{CVE_DESCRIPTION_1}}
+- [{{CVE_2}}]({{CVE_URL_2}}) - {{CVE_SEVERITY_2}} - {{CVE_DESCRIPTION_2}}
+
+### Bug Fixes
+- {{BUG_FIX_1}}
+- {{BUG_FIX_2}}
+
+### New Features
+- {{NEW_FEATURE_1}}
+- {{NEW_FEATURE_2}}
+
+### Performance Improvements
+- {{PERFORMANCE_1}}
+- {{PERFORMANCE_2}}
+
+### Compatibility
+{{COMPATIBILITY_REASON}}
+
+## Breaking Changes
+
+### API Changes
+{{API_BREAKING_CHANGES}}
+
+### Configuration Changes
+{{CONFIG_BREAKING_CHANGES}}
+
+### Behavioral Changes
+{{BEHAVIOR_BREAKING_CHANGES}}
+
+### Migration Required
+{{MIGRATION_REQUIREMENTS}}
+
+## Code Changes Required
+
+### Files Modified
+- {{FILE_1}} - {{MODIFICATION_1}}
+- {{FILE_2}} - {{MODIFICATION_2}}
+
+### Code Adaptations
+```{{LANGUAGE}}
+// Before (old API)
+{{CODE_BEFORE}}
+
+// After (new API)
+{{CODE_AFTER}}
+```
+
+### Configuration Updates
+```{{CONFIG_FORMAT}}
+# Before
+{{CONFIG_BEFORE}}
+
+# After
+{{CONFIG_AFTER}}
+```
+
+## Changelog Links
+
+### Main Packages
+- [{{PACKAGE_1}} Changelog]({{CHANGELOG_URL_1}})
+- [{{PACKAGE_2}} Changelog]({{CHANGELOG_URL_2}})
+
+### Release Notes
+- [{{PACKAGE_1}} v{{NEW_VERSION_1}} Release]({{RELEASE_NOTES_1}})
+- [{{PACKAGE_2}} v{{NEW_VERSION_2}} Release]({{RELEASE_NOTES_2}})
+
+### Migration Guides
+- [{{PACKAGE_1}} Migration Guide]({{MIGRATION_GUIDE_1}})
+- [{{PACKAGE_2}} Migration Guide]({{MIGRATION_GUIDE_2}})
+
+## Testing Performed
+
+### Unit Tests
+- [ ] All unit tests passing
+- [ ] New tests added for breaking changes
+- [ ] Coverage maintained/improved
+
+### Integration Tests
+- [ ] {{INTEGRATION_TEST_1}}
+- [ ] {{INTEGRATION_TEST_2}}
+- [ ] {{INTEGRATION_TEST_3}}
+
+### Regression Testing
+- [ ] {{REGRESSION_TEST_1}}
+- [ ] {{REGRESSION_TEST_2}}
+
+### Manual Testing
+1. {{MANUAL_TEST_1}}
+2. {{MANUAL_TEST_2}}
+3. {{MANUAL_TEST_3}}
+
+## Compatibility Verification
+
+### Node/Runtime Version
+- **Required:** {{REQUIRED_RUNTIME}}
+- **Tested:** {{TESTED_RUNTIME}}
+- **Compatible:** {{COMPATIBLE_RUNTIME_RANGE}}
+
+### Browser Support
+- [ ] Chrome {{CHROME_VERSION}}
+- [ ] Firefox {{FIREFOX_VERSION}}
+- [ ] Safari {{SAFARI_VERSION}}
+- [ ] Edge {{EDGE_VERSION}}
+
+### Platform Support
+- [ ] Windows
+- [ ] macOS
+- [ ] Linux
+
+### Other Dependencies
+{{OTHER_DEPENDENCY_COMPATIBILITY}}
+
+## Performance Impact
+
+### Bundle Size
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| Total Size | {{SIZE_BEFORE}} | {{SIZE_AFTER}} | {{SIZE_CHANGE}} |
+| Gzipped | {{GZIP_BEFORE}} | {{GZIP_AFTER}} | {{GZIP_CHANGE}} |
+
+### Build Time
+- **Before:** {{BUILD_TIME_BEFORE}}
+- **After:** {{BUILD_TIME_AFTER}}
+- **Change:** {{BUILD_TIME_CHANGE}}
+
+### Runtime Performance
+{{RUNTIME_PERFORMANCE_NOTES}}
+
+## Security Assessment
+
+### Vulnerability Scan Results
+```
+{{VULNERABILITY_SCAN_OUTPUT}}
+```
+
+### Security Improvements
+- {{SECURITY_IMPROVEMENT_1}}
+- {{SECURITY_IMPROVEMENT_2}}
+
+### New Vulnerabilities Introduced
+{{NEW_VULNERABILITIES}}
+
+### Known Issues
+{{KNOWN_SECURITY_ISSUES}}
+
+## License Changes
+
+### License Compatibility
+- [ ] All licenses reviewed
+- [ ] No new restrictive licenses
+- [ ] Legal team notified (if needed)
+
+### License Summary
+| Package | Previous License | New License | Compatible |
+|---------|-----------------|-------------|------------|
+| {{PACKAGE_1}} | {{LICENSE_OLD_1}} | {{LICENSE_NEW_1}} | {{COMPATIBLE_1}} |
+| {{PACKAGE_2}} | {{LICENSE_OLD_2}} | {{LICENSE_NEW_2}} | {{COMPATIBLE_2}} |
+
+## Deployment Notes
+
+### Environment Variables
+{{ENV_VAR_CHANGES}}
+
+### Configuration Files
+{{CONFIG_FILE_CHANGES}}
+
+### Database Migrations
+{{DATABASE_MIGRATION_NOTES}}
+
+### Cache Invalidation
+{{CACHE_INVALIDATION_NOTES}}
+
+### Rollback Plan
+{{ROLLBACK_INSTRUCTIONS}}
+
+## Documentation Updates
+
+- [ ] Dependencies.md updated
+- [ ] Package.json documented
+- [ ] CHANGELOG.md updated
+- [ ] Security advisories reviewed
+- [ ] Developer guide updated
+
+## Follow-Up Actions
+
+### Monitoring
+- [ ] {{MONITORING_1}}
+- [ ] {{MONITORING_2}}
+
+### Future Updates
+- [ ] {{FUTURE_UPDATE_1}}
+- [ ] {{FUTURE_UPDATE_2}}
+
+### Technical Debt
+{{TECHNICAL_DEBT_NOTES}}
+
+## Checklist
+
+- [ ] All dependencies updated successfully
+- [ ] Breaking changes identified and addressed
+- [ ] Code changes tested
+- [ ] Integration tests passing
+- [ ] Security scan completed
+- [ ] License compatibility verified
+- [ ] Documentation updated
+- [ ] Changelog links reviewed
+- [ ] Performance impact assessed
+- [ ] Rollback plan documented
+- [ ] Jira ticket updated
+
+## Additional Notes
+
+{{ADDITIONAL_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

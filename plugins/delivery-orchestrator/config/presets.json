@@ -1,0 +1,220 @@
+{
+  "$schema": "../schemas/presets.schema.json",
+  "version": "1.0.0",
+  "description": "Pre-configured flag presets for common Jira orchestration workflows",
+
+  "presets": {
+    "speed-run": {
+      "name": "Speed Run",
+      "description": "Quick execution - simple tasks",
+      "tags": ["fast", "minimal"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--depth": "quick",
+        "--parallel": true,
+        "--skip-phases": ["document"],
+        "--checkpoint": false,
+        "--timeout": 120
+      },
+      "bestFor": ["small fixes", "typo corrections", "config changes"]
+    },
+
+    "thorough": {
+      "name": "Thorough Review",
+      "description": "Comprehensive analysis - important changes",
+      "tags": ["complete", "quality"],
+      "flags": {
+        "--agents": 7,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--council": true,
+        "--focus": ["security", "performance", "architecture", "testing"],
+        "--min-coverage": 80,
+        "--report": true
+      },
+      "bestFor": ["new features", "refactoring", "security-sensitive code"]
+    },
+
+    "enterprise": {
+      "name": "Enterprise Mode",
+      "description": "Full enterprise workflow with compliance",
+      "tags": ["compliance", "audit"],
+      "flags": {
+        "--agents": 9,
+        "--model": "opus",
+        "--depth": "exhaustive",
+        "--council": true,
+        "--council-protocol": "jury",
+        "--require-consensus": true,
+        "--report": true,
+        "--report-to-confluence": true,
+        "--notify": ["slack", "email"],
+        "--sign-commits": true
+      },
+      "bestFor": ["production deployments", "compliance-required changes"]
+    },
+
+    "security-audit": {
+      "name": "Security Audit",
+      "description": "Security-focused review",
+      "tags": ["security", "audit"],
+      "flags": {
+        "--agents": 5,
+        "--model": "opus",
+        "--depth": "exhaustive",
+        "--focus": ["security"],
+        "--council-protocol": "red-blue-team",
+        "--security-only": true,
+        "--report": true
+      },
+      "bestFor": ["security reviews", "compliance audits"]
+    },
+
+    "hotfix": {
+      "name": "Emergency Hotfix",
+      "description": "Rapid hotfix deployment",
+      "tags": ["emergency", "fast"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--depth": "quick",
+        "--branch-prefix": "hotfix",
+        "--skip-phases": ["document"],
+        "--auto-merge": true,
+        "--notify": ["slack"],
+        "--timeout": 60
+      },
+      "bestFor": ["production hotfixes", "critical bugs"]
+    },
+
+    "documentation": {
+      "name": "Documentation Focus",
+      "description": "Documentation generation",
+      "tags": ["docs"],
+      "flags": {
+        "--agents": 5,
+        "--model": "sonnet",
+        "--phases": ["explore", "document"],
+        "--report-to-confluence": true,
+        "--report-to-obsidian": true
+      },
+      "bestFor": ["doc sprints", "README updates", "API docs"]
+    },
+
+    "refactor": {
+      "name": "Safe Refactor",
+      "description": "Safe refactoring with testing",
+      "tags": ["refactor", "safe"],
+      "flags": {
+        "--agents": 7,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--branch-prefix": "refactor",
+        "--min-coverage": 90,
+        "--type-strict": true,
+        "--council": true
+      },
+      "bestFor": ["large refactors", "architecture changes"]
+    },
+
+    "prototype": {
+      "name": "Prototype Mode",
+      "description": "Experimental prototyping",
+      "tags": ["experimental", "fast"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--experimental": true,
+        "--draft": true,
+        "--skip-phases": ["test", "document"],
+        "--lint-strict": false,
+        "--min-coverage": 0
+      },
+      "bestFor": ["proof of concept", "experiments"]
+    },
+
+    "ci-integration": {
+      "name": "CI Integration",
+      "description": "Optimized for CI/CD pipelines",
+      "tags": ["ci", "automation"],
+      "flags": {
+        "--json": true,
+        "--no-color": true,
+        "--quiet": true,
+        "--yes": true,
+        "--fail-fast": true,
+        "--timeout": 600,
+        "--agents": 5
+      },
+      "bestFor": ["CI pipelines", "automated workflows"]
+    },
+
+    "release": {
+      "name": "Release Preparation",
+      "description": "Full release workflow",
+      "tags": ["release", "deployment"],
+      "flags": {
+        "--agents": 7,
+        "--model": "sonnet",
+        "--depth": "deep",
+        "--branch-prefix": "release",
+        "--council": true,
+        "--min-coverage": 85,
+        "--report-to-confluence": true,
+        "--notify": ["slack", "email"],
+        "--deploy-strategy": "blue-green",
+        "--rollback-on-fail": true
+      },
+      "bestFor": ["release branches", "production deployments"]
+    },
+
+    "cost-optimized": {
+      "name": "Cost Optimized",
+      "description": "Minimize API costs",
+      "tags": ["cost", "efficient"],
+      "flags": {
+        "--agents": 3,
+        "--model": "haiku",
+        "--model-strategy": "cost-optimized",
+        "--sequential": true,
+        "--max-concurrent": 1,
+        "--timeout": 600
+      },
+      "bestFor": ["budget constraints", "non-critical tasks"]
+    }
+  },
+
+  "presetGroups": {
+    "speed": ["speed-run", "hotfix", "prototype"],
+    "quality": ["thorough", "enterprise"],
+    "security": ["security-audit"],
+    "automation": ["ci-integration", "cost-optimized"],
+    "release": ["release", "documentation"]
+  },
+
+  "recommendations": {
+    "byIssueType": {
+      "Bug": "speed-run",
+      "Story": "thorough",
+      "Epic": "enterprise",
+      "Task": "speed-run",
+      "Security": "security-audit",
+      "Documentation": "documentation"
+    },
+    "byPriority": {
+      "Blocker": "hotfix",
+      "Critical": "hotfix",
+      "High": "thorough",
+      "Medium": "speed-run",
+      "Low": "cost-optimized"
+    },
+    "byLabels": {
+      "security": "security-audit",
+      "refactor": "refactor",
+      "prototype": "prototype",
+      "documentation": "documentation",
+      "release": "release"
+    }
+  }
+}

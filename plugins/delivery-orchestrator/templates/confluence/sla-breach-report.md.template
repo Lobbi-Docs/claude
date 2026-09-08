@@ -1,0 +1,47 @@
+# SLA Breach Report: {{SLA_BREACH_ID}}
+
+**Issue:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+**Service:** {{SERVICE_NAME}}
+**Environment:** {{ENV}}
+**SLA Policy:** {{SLA_POLICY_NAME}}
+
+## Page Properties
+
+| Key | Value |
+|-----|-------|
+| issue-key | {{JIRA_KEY}} |
+| release | {{RELEASE_VERSION}} |
+| incident | {{INCIDENT_ID}} |
+| env | {{ENV}} |
+| service | {{SERVICE_NAME}} |
+| project-key | {{JIRA_PROJECT}} |
+| quarter | {{QUARTER}} |
+| doc-type | sla-breach-report |
+
+## Labels
+
+`issue-key` `incident` `env` `service`
+
+## Breach Summary
+
+- **Breach Window:** {{BREACH_START}} → {{BREACH_END}}
+- **Target SLA:** {{TARGET_SLA}}
+- **Observed SLA:** {{OBSERVED_SLA}}
+- **User Impact:** {{USER_IMPACT}}
+
+## Root Cause
+
+{{ROOT_CAUSE}}
+
+## Corrective Actions
+
+{{CORRECTIVE_ACTIONS}}
+
+## Linked Operations Index
+
+- Parent Index: {{OPERATIONS_INDEX_URL}}
+- Canonical Page URL: {{CANONICAL_PAGE_URL}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

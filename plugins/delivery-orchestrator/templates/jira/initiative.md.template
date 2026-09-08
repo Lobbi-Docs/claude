@@ -1,0 +1,243 @@
+# {{INITIATIVE_TITLE}}
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
+
+## Strategic Overview
+
+**Initiative Key:** {{JIRA_KEY}}
+**Status:** {{STATUS}}
+**Priority:** {{PRIORITY}}
+**Start Date:** {{START_DATE}}
+**Target Date:** {{TARGET_DATE}}
+
+### Vision Statement
+
+{{VISION_STATEMENT}}
+
+### Strategic Alignment
+
+| Objective | Alignment |
+|-----------|-----------|
+| Company Goal | {{COMPANY_GOAL}} |
+| Product Strategy | {{PRODUCT_STRATEGY}} |
+| Technical Vision | {{TECHNICAL_VISION}} |
+
+---
+
+## Business Case
+
+### Problem Statement
+
+{{PROBLEM_STATEMENT}}
+
+### Opportunity
+
+{{OPPORTUNITY_DESCRIPTION}}
+
+### Expected Value
+
+| Value Driver | Metric | Target |
+|--------------|--------|--------|
+| {{VALUE_DRIVER_1}} | {{METRIC_1}} | {{TARGET_1}} |
+| {{VALUE_DRIVER_2}} | {{METRIC_2}} | {{TARGET_2}} |
+| {{VALUE_DRIVER_3}} | {{METRIC_3}} | {{TARGET_3}} |
+
+### ROI Analysis
+
+- **Estimated Investment:** {{INVESTMENT}}
+- **Expected Return:** {{RETURN}}
+- **Payback Period:** {{PAYBACK_PERIOD}}
+- **Confidence Level:** {{CONFIDENCE_LEVEL}}
+
+---
+
+## Scope & Boundaries
+
+### In Scope
+
+- {{IN_SCOPE_1}}
+- {{IN_SCOPE_2}}
+- {{IN_SCOPE_3}}
+- {{IN_SCOPE_4}}
+
+### Out of Scope
+
+- {{OUT_SCOPE_1}}
+- {{OUT_SCOPE_2}}
+- {{OUT_SCOPE_3}}
+
+### Assumptions
+
+- {{ASSUMPTION_1}}
+- {{ASSUMPTION_2}}
+- {{ASSUMPTION_3}}
+
+### Constraints
+
+- {{CONSTRAINT_1}}
+- {{CONSTRAINT_2}}
+- {{CONSTRAINT_3}}
+
+---
+
+## Epic Portfolio
+
+### Core Epics
+
+| Epic | Status | Progress | Owner |
+|------|--------|----------|-------|
+| [{{EPIC_1_KEY}}]({{JIRA_URL}}/browse/{{EPIC_1_KEY}}) - {{EPIC_1_TITLE}} | {{EPIC_1_STATUS}} | {{EPIC_1_PROGRESS}}% | {{EPIC_1_OWNER}} |
+| [{{EPIC_2_KEY}}]({{JIRA_URL}}/browse/{{EPIC_2_KEY}}) - {{EPIC_2_TITLE}} | {{EPIC_2_STATUS}} | {{EPIC_2_PROGRESS}}% | {{EPIC_2_OWNER}} |
+| [{{EPIC_3_KEY}}]({{JIRA_URL}}/browse/{{EPIC_3_KEY}}) - {{EPIC_3_TITLE}} | {{EPIC_3_STATUS}} | {{EPIC_3_PROGRESS}}% | {{EPIC_3_OWNER}} |
+| [{{EPIC_4_KEY}}]({{JIRA_URL}}/browse/{{EPIC_4_KEY}}) - {{EPIC_4_TITLE}} | {{EPIC_4_STATUS}} | {{EPIC_4_PROGRESS}}% | {{EPIC_4_OWNER}} |
+
+### Epic Dependencies
+
+```
+{{EPIC_1_KEY}} ──────> {{EPIC_2_KEY}}
+       │                    │
+       v                    v
+{{EPIC_3_KEY}} ──────> {{EPIC_4_KEY}}
+```
+
+---
+
+## Roadmap & Timeline
+
+### Quarterly Plan
+
+| Quarter | Focus Areas | Key Milestones |
+|---------|-------------|----------------|
+| {{Q1}} | {{Q1_FOCUS}} | {{Q1_MILESTONES}} |
+| {{Q2}} | {{Q2_FOCUS}} | {{Q2_MILESTONES}} |
+| {{Q3}} | {{Q3_FOCUS}} | {{Q3_MILESTONES}} |
+| {{Q4}} | {{Q4_FOCUS}} | {{Q4_MILESTONES}} |
+
+### Key Milestones
+
+- [ ] **{{MILESTONE_1_DATE}}:** {{MILESTONE_1_TITLE}}
+- [ ] **{{MILESTONE_2_DATE}}:** {{MILESTONE_2_TITLE}}
+- [ ] **{{MILESTONE_3_DATE}}:** {{MILESTONE_3_TITLE}}
+- [ ] **{{MILESTONE_4_DATE}}:** {{MILESTONE_4_TITLE}}
+
+---
+
+## Stakeholders & Governance
+
+### Core Team
+
+| Role | Name | Responsibilities |
+|------|------|-----------------|
+| Executive Sponsor | {{EXEC_SPONSOR}} | Strategic direction, funding approval |
+| Initiative Lead | {{INITIATIVE_LEAD}} | Day-to-day execution, coordination |
+| Product Lead | {{PRODUCT_LEAD}} | Product vision, prioritization |
+| Technical Lead | {{TECH_LEAD}} | Architecture, technical decisions |
+| Program Manager | {{PROGRAM_MANAGER}} | Coordination, reporting, risk management |
+
+### Advisory Board
+
+- {{ADVISOR_1}} - {{ADVISOR_1_ROLE}}
+- {{ADVISOR_2}} - {{ADVISOR_2_ROLE}}
+
+### Governance Model
+
+- **Steering Committee Reviews:** {{STEERING_CADENCE}}
+- **Status Reporting:** {{STATUS_CADENCE}}
+- **Risk Reviews:** {{RISK_CADENCE}}
+
+---
+
+## Resource Planning
+
+### Team Allocation
+
+| Team | FTE Allocation | Duration |
+|------|----------------|----------|
+| {{TEAM_1}} | {{FTE_1}} | {{DURATION_1}} |
+| {{TEAM_2}} | {{FTE_2}} | {{DURATION_2}} |
+| {{TEAM_3}} | {{FTE_3}} | {{DURATION_3}} |
+
+### Budget
+
+| Category | Allocation |
+|----------|------------|
+| Engineering | {{BUDGET_ENG}} |
+| Infrastructure | {{BUDGET_INFRA}} |
+| External Services | {{BUDGET_EXTERNAL}} |
+| Contingency | {{BUDGET_CONTINGENCY}} |
+| **Total** | **{{BUDGET_TOTAL}}** |
+
+---
+
+## Risk Management
+
+### Risk Register
+
+| Risk | Probability | Impact | Mitigation | Owner |
+|------|-------------|--------|------------|-------|
+| {{RISK_1}} | {{RISK_1_PROB}} | {{RISK_1_IMPACT}} | {{RISK_1_MITIGATION}} | {{RISK_1_OWNER}} |
+| {{RISK_2}} | {{RISK_2_PROB}} | {{RISK_2_IMPACT}} | {{RISK_2_MITIGATION}} | {{RISK_2_OWNER}} |
+| {{RISK_3}} | {{RISK_3_PROB}} | {{RISK_3_IMPACT}} | {{RISK_3_MITIGATION}} | {{RISK_3_OWNER}} |
+
+### Escalation Path
+
+1. Initiative Lead → Program Manager
+2. Program Manager → Executive Sponsor
+3. Executive Sponsor → Steering Committee
+
+---
+
+## Success Criteria
+
+### Key Performance Indicators
+
+| KPI | Baseline | Target | Current |
+|-----|----------|--------|---------|
+| {{KPI_1}} | {{KPI_1_BASELINE}} | {{KPI_1_TARGET}} | {{KPI_1_CURRENT}} |
+| {{KPI_2}} | {{KPI_2_BASELINE}} | {{KPI_2_TARGET}} | {{KPI_2_CURRENT}} |
+| {{KPI_3}} | {{KPI_3_BASELINE}} | {{KPI_3_TARGET}} | {{KPI_3_CURRENT}} |
+
+### Completion Criteria
+
+- [ ] All epics completed and deployed
+- [ ] KPI targets achieved
+- [ ] Stakeholder acceptance obtained
+- [ ] Documentation and training complete
+- [ ] Operational readiness confirmed
+- [ ] Post-implementation review conducted
+
+---
+
+## Documentation Links
+
+| Document | Link | Status |
+|----------|------|--------|
+| Technical Design Document | [View]({{TDD_URL}}) | {{TDD_STATUS}} |
+| Architecture Diagram | [View]({{ARCH_URL}}) | {{ARCH_STATUS}} |
+| Risk Assessment | [View]({{RISK_URL}}) | {{RISK_STATUS}} |
+| Project Charter | [View]({{CHARTER_URL}}) | {{CHARTER_STATUS}} |
+
+---
+
+## Communication Plan
+
+### Status Updates
+
+| Audience | Frequency | Format | Owner |
+|----------|-----------|--------|-------|
+| Executive Team | Weekly | Dashboard | {{EXEC_UPDATE_OWNER}} |
+| Stakeholders | Bi-weekly | Email Summary | {{STAKE_UPDATE_OWNER}} |
+| Teams | Daily | Standup | {{TEAM_UPDATE_OWNER}} |
+
+### Key Meetings
+
+- **Steering Committee:** {{STEERING_SCHEDULE}}
+- **Initiative Sync:** {{SYNC_SCHEDULE}}
+- **Demo/Review:** {{DEMO_SCHEDULE}}
+
+---
+
+**Initiative Owner:** {{INITIATIVE_OWNER}}
+**Created:** {{CREATED_DATE}}
+**Last Updated:** {{UPDATED_DATE}}
+**Version:** {{VERSION}}

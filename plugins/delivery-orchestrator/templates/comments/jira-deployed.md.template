@@ -1,0 +1,64 @@
+---
+template: jira-deployed
+version: 1.0.0
+description: Comment template for deployment completion
+---
+
+# 🚢 Deployed to Production
+
+**Deployed By:** {{AUTHOR}}
+**Deployed:** {{TIMESTAMP}}
+**Version:** {{VERSION}}
+
+## Deployment Details
+
+- **Environment:** {{ENVIRONMENT}}
+- **Release:** {{RELEASE_NAME}}
+- **Build:** {{BUILD_NUMBER}}
+- **Commit:** `{{COMMIT_SHA}}`
+
+## Deployment Method
+
+{{DEPLOYMENT_METHOD}}
+
+## Components Deployed
+
+{{COMPONENTS_DEPLOYED}}
+
+## Database Changes
+
+{{DATABASE_CHANGES}}
+
+## Configuration Changes
+
+{{CONFIG_CHANGES}}
+
+## Verification Steps
+
+{{VERIFICATION_STEPS}}
+
+## Verification Results
+
+{{VERIFICATION_RESULTS}}
+
+## Monitoring
+
+- **Metrics:** {{METRICS_URL}}
+- **Logs:** {{LOGS_URL}}
+- **Health Check:** {{HEALTH_CHECK_URL}}
+
+## Rollback Plan
+
+{{ROLLBACK_PLAN}}
+
+## Post-Deployment Notes
+
+{{POST_DEPLOYMENT_NOTES}}
+
+## Known Issues
+
+{{KNOWN_ISSUES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

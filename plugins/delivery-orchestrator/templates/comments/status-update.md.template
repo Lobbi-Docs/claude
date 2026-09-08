@@ -1,0 +1,73 @@
+---
+template: status-update
+version: 1.0.0
+description: General status update template
+---
+
+# 📊 Status Update
+
+**Updated By:** {{AUTHOR}}
+**Updated:** {{TIMESTAMP}}
+
+## Current Status
+
+{{CURRENT_STATUS}}
+
+## Progress
+
+{{PROGRESS_DESCRIPTION}}
+
+## Completion Percentage
+
+{{COMPLETION_PERCENTAGE}}%
+
+## Completed Items
+
+{{COMPLETED_ITEMS}}
+
+## In Progress
+
+{{IN_PROGRESS_ITEMS}}
+
+## Upcoming Tasks
+
+{{UPCOMING_TASKS}}
+
+## Blockers
+
+{{BLOCKERS}}
+
+## Risks
+
+{{RISKS}}
+
+## Timeline
+
+- **Original Estimate:** {{ORIGINAL_ESTIMATE}}
+- **Time Spent:** {{TIME_SPENT}}
+- **Remaining:** {{TIME_REMAINING}}
+- **New ETA:** {{NEW_ETA}}
+
+## Dependencies
+
+{{DEPENDENCIES}}
+
+## Team Updates
+
+{{TEAM_UPDATES}}
+
+## Decisions Made
+
+{{DECISIONS}}
+
+## Questions/Concerns
+
+{{QUESTIONS_CONCERNS}}
+
+## Next Update
+
+{{NEXT_UPDATE}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

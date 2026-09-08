@@ -1,0 +1,49 @@
+# Release Status: {{RELEASE_NAME}}
+
+**Issue:** [{{JIRA_KEY}}]({{JIRA_URL}}/browse/{{JIRA_KEY}})
+**Service:** {{SERVICE_NAME}}
+**Environment:** {{ENV}}
+**Release Version:** {{RELEASE_VERSION}}
+**Report Date:** {{DATE}}
+
+## Page Properties
+
+| Key | Value |
+|-----|-------|
+| issue-key | {{JIRA_KEY}} |
+| release | {{RELEASE_VERSION}} |
+| incident | {{INCIDENT_ID}} |
+| env | {{ENV}} |
+| service | {{SERVICE_NAME}} |
+| project-key | {{JIRA_PROJECT}} |
+| quarter | {{QUARTER}} |
+| doc-type | release-status |
+
+## Labels
+
+`issue-key` `release` `env` `service`
+
+## Summary
+
+{{RELEASE_SUMMARY}}
+
+## Milestones
+
+| Milestone | Owner | Status | ETA |
+|-----------|-------|--------|-----|
+| Build complete | {{BUILD_OWNER}} | {{BUILD_STATUS}} | {{BUILD_ETA}} |
+| QA sign-off | {{QA_OWNER}} | {{QA_STATUS}} | {{QA_ETA}} |
+| Deployment | {{DEPLOY_OWNER}} | {{DEPLOY_STATUS}} | {{DEPLOY_ETA}} |
+
+## Risks & Mitigations
+
+{{RISKS_AND_MITIGATIONS}}
+
+## Linked Operations Index
+
+- Parent Index: {{OPERATIONS_INDEX_URL}}
+- Canonical Page URL: {{CANONICAL_PAGE_URL}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

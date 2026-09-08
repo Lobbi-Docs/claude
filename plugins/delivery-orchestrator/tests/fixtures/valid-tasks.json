@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "project_id": "fixture-alpha",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Set up repo scaffolding",
+      "description": "Create the initial project structure.",
+      "level": "task",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "estimate_minutes": 15,
+      "dependencies": [],
+      "completion_criteria": [
+        "repository has package.json and README"
+      ],
+      "on_critical_path": true,
+      "requires_hitl": false,
+      "created_at": "2026-04-23T00:00:00Z",
+      "completed_at": "2026-04-23T00:15:00Z"
+    },
+    {
+      "id": "T-002",
+      "title": "Wire up first route",
+      "description": "Serve a hello-world endpoint.",
+      "level": "task",
+      "status": "PENDING",
+      "priority": "CRITICAL",
+      "estimate_minutes": 20,
+      "dependencies": [
+        "T-001"
+      ],
+      "completion_criteria": [
+        "GET /hello returns 200 with body 'ok'"
+      ],
+      "on_critical_path": true,
+      "requires_hitl": false,
+      "created_at": "2026-04-23T00:10:00Z"
+    },
+    {
+      "id": "T-003",
+      "title": "Docs stub",
+      "description": "Scaffold docs.",
+      "level": "task",
+      "status": "PENDING",
+      "priority": "LOW",
+      "estimate_minutes": 10,
+      "dependencies": [],
+      "completion_criteria": [
+        "docs/index.md exists"
+      ],
+      "on_critical_path": false,
+      "requires_hitl": false,
+      "created_at": "2026-04-23T00:11:00Z"
+    }
+  ]
+}

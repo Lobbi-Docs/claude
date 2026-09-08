@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/markus41/claude/plugins/project-management-plugin/schemas/task.schema.json",
+  "title": "Task",
+  "description": "Schema for an individual task within a project-management-plugin project",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "level",
+    "status",
+    "priority",
+    "dependencies",
+    "completion_criteria",
+    "created_at"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique task identifier in T-{number} format (numbers may be zero-padded)",
+      "pattern": "^T-[0-9]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "description": {
+      "type": "string"
+    },
+    "phase": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "ID of the parent phase (kept for backwards compatibility)",
+      "pattern": "^[a-z0-9-]*$"
+    },
+    "phase_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z0-9-]*$"
+    },
+    "epic_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^T-[0-9]+$"
+    },
+    "story_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^T-[0-9]+$"
+    },
+    "parent_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^T-[0-9]+$"
+    },
+    "level": {
+      "type": "string",
+      "description": "Granularity level in the decomposition hierarchy",
+      "enum": [
+        "phase",
+        "epic",
+        "story",
+        "task",
+        "subtask",
+        "micro",
+        "micro-task"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Current execution state of the task",
+      "enum": [
+        "PENDING",
+        "IN_RESEARCH",
+        "RESEARCHED",
+        "IN_PROGRESS",
+        "VALIDATING",
+        "PARENT",
+        "COMPLETE",
+        "BLOCKED",
+        "SKIPPED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "CRITICAL",
+        "HIGH",
+        "MEDIUM",
+        "LOW"
+      ]
+    },
+    "estimate_minutes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 480
+    },
+    "actual_minutes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^T-[0-9]+$"
+      },
+      "uniqueItems": true
+    },
+    "subtasks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^T-[0-9]+$"
+      },
+      "uniqueItems": true
+    },
+    "completion_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 5
+      },
+      "minItems": 0,
+      "maxItems": 12
+    },
+    "research_file": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "research_cache_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "external_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "agent_assignment": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "risk_score": {
+      "type": [
+        "integer",
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 10
+    },
+    "risk_breakdown": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "on_critical_path": {
+      "type": "boolean"
+    },
+    "requires_hitl": {
+      "type": "boolean"
+    },
+    "validation_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "validation_failure_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "blocked_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "execution_notes": {
+      "type": [
+        "string",
+        "array",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

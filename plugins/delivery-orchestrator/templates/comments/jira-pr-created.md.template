@@ -1,0 +1,48 @@
+---
+template: jira-pr-created
+version: 1.0.0
+description: Comment template for when a PR is created
+---
+
+# 🔀 Pull Request Created
+
+**Author:** {{AUTHOR}}
+**Created:** {{TIMESTAMP}}
+**PR:** [#{{PR_NUMBER}} - {{PR_TITLE}}]({{PR_URL}})
+
+## Branch Information
+
+- **Source:** `{{SOURCE_BRANCH}}`
+- **Target:** `{{TARGET_BRANCH}}`
+- **Commits:** {{COMMIT_COUNT}}
+
+## Changes Summary
+
+{{CHANGES_SUMMARY}}
+
+## Files Changed
+
+- **Added:** {{FILES_ADDED}}
+- **Modified:** {{FILES_MODIFIED}}
+- **Deleted:** {{FILES_DELETED}}
+- **Total:** {{FILES_TOTAL}} files, {{LINES_ADDED}}+ / {{LINES_DELETED}}- lines
+
+## Testing
+
+{{TESTING_NOTES}}
+
+## Review Checklist
+
+- [ ] Code quality meets standards
+- [ ] Tests included and passing
+- [ ] Documentation updated
+- [ ] Breaking changes documented
+- [ ] Security considerations addressed
+
+## Reviewers
+
+{{REVIEWERS_LIST}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

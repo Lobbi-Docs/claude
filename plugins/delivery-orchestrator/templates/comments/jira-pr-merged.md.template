@@ -1,0 +1,39 @@
+---
+template: jira-pr-merged
+version: 1.0.0
+description: Comment template for when a PR is merged
+---
+
+# ✅ Pull Request Merged
+
+**Merged By:** {{AUTHOR}}
+**Merged:** {{TIMESTAMP}}
+**PR:** [#{{PR_NUMBER}} - {{PR_TITLE}}]({{PR_URL}})
+
+## Commit Information
+
+- **Merge Commit:** `{{MERGE_COMMIT_SHA}}`
+- **Short SHA:** `{{SHORT_SHA}}`
+- **Branch:** `{{SOURCE_BRANCH}}` → `{{TARGET_BRANCH}}`
+
+## Deployment Information
+
+{{DEPLOYMENT_INFO}}
+
+## Next Steps
+
+{{NEXT_STEPS}}
+
+## Verification
+
+- **Build Status:** {{BUILD_STATUS}}
+- **Tests:** {{TEST_STATUS}}
+- **Deployment:** {{DEPLOYMENT_STATUS}}
+
+## Release Notes
+
+{{RELEASE_NOTES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

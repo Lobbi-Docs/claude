@@ -1,0 +1,249 @@
+{
+  "id": "api-service",
+  "name": "REST API Service",
+  "type": "software",
+  "description": "A standalone REST API service with typed endpoints, authentication middleware, database integration, OpenAPI documentation, and production deployment. Use this for backend services consumed by frontends or other services.",
+  "phases": [
+    {
+      "id": "p1",
+      "name": "Setup",
+      "description": "Bootstrap the API project with a production-grade server framework, TypeScript configuration, database connection, and development tooling.",
+      "epics": [
+        {
+          "id": "p1-e1",
+          "name": "Server Bootstrap",
+          "description": "Initialize the project with a Node.js/TypeScript server and verify it starts and responds to health checks.",
+          "stories": [
+            {
+              "id": "p1-e1-s1",
+              "title": "Initialize Node.js TypeScript project with Fastify",
+              "description": "Create the package.json, tsconfig.json (strict mode), and install Fastify with its TypeScript types. Configure ts-node-dev for hot-reload development.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "`pnpm dev` starts the server and `curl localhost:3000/health` returns HTTP 200 with `{\"status\": \"ok\"}`",
+                "TypeScript strict mode is enabled and `npx tsc --noEmit` exits 0 on the initial scaffold"
+              ]
+            },
+            {
+              "id": "p1-e1-s2",
+              "title": "Configure structured logging with Pino",
+              "description": "Configure Fastify's built-in Pino logger with JSON output in production and pretty-print in development, controlled by the NODE_ENV environment variable.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "In NODE_ENV=production mode, every request log line is valid JSON parseable by `jq`",
+                "The log includes requestId, method, url, statusCode, and responseTime fields on every request"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e2",
+          "name": "Database Integration",
+          "description": "Connect to PostgreSQL, configure the ORM, and run the initial schema migration.",
+          "stories": [
+            {
+              "id": "p1-e2-s1",
+              "title": "Connect Drizzle ORM to PostgreSQL",
+              "description": "Install Drizzle ORM and drizzle-kit, configure the database connection pool using the DATABASE_URL environment variable, and verify the connection on server startup.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "The server logs a 'Database connected' message on startup and fails with a clear error if DATABASE_URL is missing or the database is unreachable",
+                "The connection pool is capped at 10 connections (configurable via DB_POOL_MAX environment variable)"
+              ]
+            },
+            {
+              "id": "p1-e2-s2",
+              "title": "Define initial schema and run first migration",
+              "description": "Create the initial Drizzle schema file, generate the SQL migration, and verify it applies cleanly to a fresh database.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "`npx drizzle-kit push` applies the schema to the local database without errors",
+                "The migration is idempotent: running it twice against the same database does not produce errors"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p1-e3",
+          "name": "Developer Experience",
+          "description": "Set up linting, formatting, testing framework, and contribution documentation.",
+          "stories": [
+            {
+              "id": "p1-e3-s1",
+              "title": "Configure ESLint, Prettier, and Vitest",
+              "description": "Add ESLint with TypeScript rules, Prettier for consistent formatting, and Vitest as the test runner with a basic test that verifies the setup.",
+              "estimate_hours": 2,
+              "completion_criteria": [
+                "`pnpm test` runs the sanity test and exits 0",
+                "`pnpm lint` exits 0 on the initial codebase"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Core Endpoints",
+      "description": "Implement the primary business logic as typed, validated REST endpoints with proper error handling.",
+      "epics": [
+        {
+          "id": "p2-e1",
+          "name": "Request Validation Layer",
+          "description": "Establish input validation so all endpoints enforce schemas on request bodies, query strings, and path parameters.",
+          "stories": [
+            {
+              "id": "p2-e1-s1",
+              "title": "Integrate Zod validation with Fastify schema compiler",
+              "description": "Replace Fastify's default JSON schema validator with a Zod-based compiler so route schemas can be defined as Zod objects and TypeScript types are inferred automatically.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "A route with a Zod body schema rejects requests with invalid body fields with HTTP 400 and a structured error listing the invalid fields",
+                "The inferred TypeScript type for `request.body` matches the Zod schema without any `as` cast"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p2-e2",
+          "name": "Primary Resource CRUD",
+          "description": "Implement the full Create-Read-Update-Delete lifecycle for the service's primary domain resource.",
+          "stories": [
+            {
+              "id": "p2-e2-s1",
+              "title": "Implement POST /resources — create endpoint",
+              "description": "Validate the request body with Zod, insert the record into the database via Drizzle, and return the created resource with HTTP 201.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "POST /resources with a valid body returns HTTP 201 and the full created resource including its generated id and createdAt timestamp",
+                "POST /resources with a missing required field returns HTTP 400 with a body listing the specific missing fields"
+              ]
+            },
+            {
+              "id": "p2-e2-s2",
+              "title": "Implement GET /resources (paginated list) and GET /resources/:id",
+              "description": "List endpoint returns cursor-based paginated results. Single-item endpoint returns 404 when the resource does not exist.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "GET /resources returns at most 20 items and includes a `nextCursor` field when more items exist",
+                "GET /resources/:id with an id that does not exist returns HTTP 404 with body `{\"error\": \"Resource not found\"}`"
+              ]
+            },
+            {
+              "id": "p2-e2-s3",
+              "title": "Implement PATCH /resources/:id and DELETE /resources/:id",
+              "description": "Partial update endpoint merges provided fields onto the existing record. Delete endpoint hard-deletes the record and returns HTTP 204.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "PATCH /resources/:id with only a `name` field updates only the name and leaves all other fields unchanged",
+                "DELETE /resources/:id returns HTTP 204 and a subsequent GET for the same id returns HTTP 404"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Auth",
+      "description": "Secure the API endpoints with JWT Bearer token authentication and role-based access control.",
+      "epics": [
+        {
+          "id": "p3-e1",
+          "name": "JWT Middleware",
+          "description": "Implement authentication middleware that validates Bearer tokens on protected routes.",
+          "stories": [
+            {
+              "id": "p3-e1-s1",
+              "title": "Implement JWT verification middleware as Fastify plugin",
+              "description": "Create a Fastify plugin that verifies the Authorization Bearer token on every route decorated with `preHandler: [authenticate]`. Attach the decoded payload to `request.user`.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "A request to a protected route without an Authorization header returns HTTP 401 with body `{\"error\": \"Authentication required\"}`",
+                "A request with a valid JWT has `request.user.sub` set to the user id from the token payload"
+              ]
+            },
+            {
+              "id": "p3-e1-s2",
+              "title": "Add POST /auth/token endpoint for machine-to-machine tokens",
+              "description": "Implement a client credentials endpoint that accepts client_id and client_secret and returns a short-lived access token for service-to-service API calls.",
+              "estimate_hours": 4,
+              "completion_criteria": [
+                "POST /auth/token with valid client credentials returns a JWT with `exp` set to 1 hour from now",
+                "POST /auth/token with an invalid client_secret returns HTTP 401"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "Testing",
+      "description": "Write a comprehensive test suite covering the API contract, error paths, and edge cases.",
+      "epics": [
+        {
+          "id": "p4-e1",
+          "name": "API Contract Tests",
+          "description": "Use supertest or Fastify's `inject` method to test every endpoint against a real test database.",
+          "stories": [
+            {
+              "id": "p4-e1-s1",
+              "title": "Write contract tests for the primary CRUD endpoints",
+              "description": "Cover all HTTP methods on the primary resource: happy-path responses, validation error responses, 404 responses, and auth rejection.",
+              "estimate_hours": 6,
+              "completion_criteria": [
+                "All CRUD contract tests pass with `pnpm test`",
+                "Test coverage for src/routes/ is above 90% as reported by `pnpm test --coverage`"
+              ]
+            },
+            {
+              "id": "p4-e1-s2",
+              "title": "Write contract tests for the auth endpoints",
+              "description": "Test the token issuance endpoint with valid credentials, invalid credentials, and missing fields.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Tests cover: valid credentials return a token, invalid secret returns 401, missing client_id returns 400",
+                "Tests verify the returned token can be used to access a protected endpoint"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "name": "Documentation",
+      "description": "Generate OpenAPI documentation, write a developer guide, and document the deployment process.",
+      "epics": [
+        {
+          "id": "p5-e1",
+          "name": "OpenAPI Specification",
+          "description": "Auto-generate the OpenAPI spec from the route schemas and serve it via Swagger UI.",
+          "stories": [
+            {
+              "id": "p5-e1-s1",
+              "title": "Generate OpenAPI 3.1 spec and serve Swagger UI",
+              "description": "Install @fastify/swagger and @fastify/swagger-ui, configure them with the API title and version, and verify all routes appear in the generated spec.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "GET /documentation returns an HTML page with Swagger UI that lists all implemented endpoints",
+                "The generated spec includes request and response schemas for every route"
+              ]
+            },
+            {
+              "id": "p5-e1-s2",
+              "title": "Add example requests and responses to all endpoints",
+              "description": "Annotate each route definition with example request bodies and example responses so the Swagger UI shows realistic sample data.",
+              "estimate_hours": 3,
+              "completion_criteria": [
+                "Every POST and PATCH endpoint shows at least one example request body in Swagger UI",
+                "Every endpoint shows at least one example success response and one example error response"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

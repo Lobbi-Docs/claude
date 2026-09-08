@@ -1,0 +1,67 @@
+---
+template: jira-rollback
+version: 1.0.0
+description: Comment template for deployment rollback
+---
+
+# ⚠️ Deployment Rolled Back
+
+**Executed By:** {{AUTHOR}}
+**Rolled Back:** {{TIMESTAMP}}
+**Environment:** {{ENVIRONMENT}}
+
+## Rollback Details
+
+- **Previous Version:** {{PREVIOUS_VERSION}}
+- **Rolled Back Version:** {{ROLLBACK_VERSION}}
+- **Rollback Method:** {{ROLLBACK_METHOD}}
+
+## Reason for Rollback
+
+{{ROLLBACK_REASON}}
+
+## Issues Encountered
+
+{{ISSUES_ENCOUNTERED}}
+
+## Impact Assessment
+
+{{IMPACT_ASSESSMENT}}
+
+## Rollback Steps Taken
+
+{{ROLLBACK_STEPS}}
+
+## Verification
+
+{{VERIFICATION_RESULTS}}
+
+## Current State
+
+- **Service Status:** {{SERVICE_STATUS}}
+- **Data Integrity:** {{DATA_INTEGRITY_STATUS}}
+- **User Impact:** {{USER_IMPACT}}
+
+## Root Cause Analysis
+
+{{ROOT_CAUSE}}
+
+## Incident Timeline
+
+{{INCIDENT_TIMELINE}}
+
+## Prevention Measures
+
+{{PREVENTION_MEASURES}}
+
+## Next Steps
+
+{{NEXT_STEPS}}
+
+## Incident Report
+
+{{INCIDENT_REPORT_LINK}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

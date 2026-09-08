@@ -1,0 +1,62 @@
+---
+template: pr-approved
+version: 1.0.0
+description: Comment template for PR approval
+---
+
+# ✅ Pull Request Approved
+
+**Reviewer:** {{AUTHOR}}
+**Approved:** {{TIMESTAMP}}
+**Status:** Approved
+
+## Review Summary
+
+{{REVIEW_SUMMARY}}
+
+## Strengths
+
+{{STRENGTHS}}
+
+## Code Quality
+
+- **Architecture:** {{ARCHITECTURE_RATING}}
+- **Readability:** {{READABILITY_RATING}}
+- **Test Coverage:** {{TEST_COVERAGE_RATING}}
+- **Documentation:** {{DOCUMENTATION_RATING}}
+
+## Highlights
+
+{{HIGHLIGHTS}}
+
+## Minor Suggestions (Optional)
+
+{{MINOR_SUGGESTIONS}}
+
+## Tested
+
+{{TESTING_NOTES}}
+
+## Security Review
+
+{{SECURITY_REVIEW}}
+
+## Performance Review
+
+{{PERFORMANCE_REVIEW}}
+
+## Ready to Merge
+
+{{MERGE_READINESS}}
+
+## Post-Merge Actions
+
+{{POST_MERGE_ACTIONS}}
+
+## Kudos
+
+{{KUDOS}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*

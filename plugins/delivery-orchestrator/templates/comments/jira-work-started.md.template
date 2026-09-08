@@ -1,0 +1,27 @@
+---
+template: jira-work-started
+version: 1.0.0
+description: Comment template for when work begins on an issue
+---
+
+# 🚀 Work Started
+
+**Developer:** {{AUTHOR}}
+**Started:** {{TIMESTAMP}}
+**Branch:** `{{BRANCH_NAME}}`
+
+## Approach
+
+{{APPROACH_DESCRIPTION}}
+
+## Estimated Completion
+
+{{ESTIMATED_COMPLETION}}
+
+## Dependencies
+
+{{DEPENDENCIES}}
+
+---
+
+**⚓ Golden Armada** | *You ask - The Fleet Ships*
