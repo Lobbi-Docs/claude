@@ -18,7 +18,7 @@ description: Harness Git Experience advanced features integrated with Linear syn
 
 # /linear:harness-git
 
-Wrapper around Harness **Git Experience** — the GitOps layer that stores Harness entities (pipelines, services, environments, infra) in git and keeps them bidirectionally synced. This command extends `/linear:harness-sync` with the advanced git-side features.
+Wrapper around Harness **Git Experience** — the GitOps layer that stores Harness entities (pipelines, services, environments, infra) in git and keeps them bidirectionally synced. This command extends `/linear:sync` with the advanced git-side features.
 
 References:
 - Overview: https://developer.harness.io/docs/platform/git-experience/git-experience-overview/
@@ -37,7 +37,7 @@ References:
 ### `enable --account <id> --org <id> --project <id>`
 - Turns on Git Experience for the project
 - Asks for default repo and branch
-- Creates Linear ↔ Harness repo binding so issue-driven changes (via `/linear:harness-sync branch`) flow into the Git Experience pipeline
+- Creates Linear ↔ Harness repo binding so issue-driven changes (via `/linear:sync branch`) flow into the Git Experience pipeline
 
 ### `configure --settings-file <yaml>`
 Persists project-level git settings via Harness API:
@@ -85,7 +85,7 @@ Persists project-level git settings via Harness API:
 - Prints status: Git Experience enabled?, bidir sync active?, signed commits enabled?, cache hit rate, OAuth connectors
 
 ## Linear-side fan-out
-Every Git Experience event (entity created, signed commit, bidir reconcile) emits a Linear comment on any issue referenced in the commit message (via `ENG-123` smart links). The `harness-linear-bridge` agent owns this fan-out.
+Every Git Experience event (entity created, signed commit, bidir reconcile) emits a Linear comment on any issue referenced in the commit message (via `ENG-123` smart links). The `vcs-linear-bridge` agent owns this fan-out.
 
 ## Rate-limit awareness
 - Honors the upstream provider's rate limits (GitHub 5K/h, GitLab 600/min) in addition to Harness's own

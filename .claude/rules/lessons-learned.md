@@ -966,3 +966,359 @@ grep: site/assets/styles.css: No such file or directory
 - **Status:** RESOLVED
 - **Fix:** Added CATEGORY entries in `scripts/build-site.mjs`, re-ran `pnpm build:site`, and appended `installed` / `registry` / `plugins.<bucket>` entries plus recomputed `stats` in `plugins.index.json`.
 - **Prevention:** `.claude/registry/plugins.index.json` has **no generator** — `generate-plugin-indexes.mjs` only writes per-plugin `commands/index.json` and `agents/index.json`. It is hand-maintained and drifts silently; no `check:*` script verifies it against `plugins/`. When adding a plugin, update four places: (1) the plugin dir, (2) `marketplace.json`, (3) the `CATEGORY` map in `scripts/build-site.mjs` then re-run `pnpm build:site`, (4) `plugins.index.json` (`installed`, `registry`, a `plugins.<bucket>` entry, and `stats`). Note `site/data/plugins.json` is a **committed build artifact** — stale until `build:site` runs. Also: the site keys off the *manifest* `name`, not the directory name (`claude-code-templating-plugin` ships `"name": "claude-code-templating"`), so compare manifest names when auditing coverage or you will chase false positives. A plugin missing from `CATEGORY` still builds but silently lands in an "Other" bucket.
+
+### Error: Bash failure (2026-09-08T18:09:29Z)
+- **Tool:** Bash
+- **Input:** `cd plugins/linear-orchestrator && cat .claude-plugin/plugin.json`
+- **Error:** Exit code 1
+/bin/bash: line 2: cd: plugins/linear-orchestrator: No such file or directory
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:09:49Z)
+- **Tool:** Bash
+- **Input:** `ls plugins/fleet-orchestration/ plugins/github-orchestrator/ 2>/dev/null && echo "=== fleet manifest ===" && head -30 plugins/fleet-orchestration/.claude-plugin/plugin.json`
+- **Error:** Exit code 2
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:10:44Z)
+- **Tool:** Bash
+- **Input:** `echo "=== client.ts ===" && cat lib/client.ts && echo "=== rate-limit.ts ===" && cat lib/rate-limit.ts`
+- **Error:** Exit code 1
+=== client.ts ===
+cat: lib/client.ts: No such file or directory
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:11:25Z)
+- **Tool:** Bash
+- **Input:** `head -40 commands/index.json && echo "..." && head -30 agents/index.json`
+- **Error:** Exit code 1
+head: cannot open 'commands/index.json' for reading: No such file or directory
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:12:06Z)
+- **Tool:** Bash
+- **Input:** `cd /home/user/claude && echo "=== github-orchestrator ===" && node -e "const d=require('./plugins/github-orchestrator/.claude-plugin/plugin.json');console.log(d.name,d.version);console.log(d.description)" && ls plugins/github-orchestrator/commands plugins/github-orchestrator/lib 2>/dev/null`
+- **Error:** Exit code 2
+=== github-orchestrator ===
+github-orchestrator 1.1.0
+Autonomous GitHub delivery orchestration: 34 agents in 7 teams, 24 commands, 16 skills, and 7 schema-validated declarative workflows. Drives PRs from branch to merged — adversarial review boards, CI drive-to-green loops, stacked-PR merge trains, conflict prediction, supply-chain triage, release trains, and DORA/hotspot repo intelligence over the GitHub MCP.
+plugins/github-orchestrator/commands:
+actions.md
+advise.md
+audit.md
+backlog.md
+ci.md
+conflict.md
+delegate.md
+deps.md
+index.json
+insights.md
+issue.md
+merge-train.md
+ownership.md
+plan-prs.md
+pr.md
+project.md
+release.md
+review.md
+rollback.md
+security.md
+setup.md
+ship.md
+triage.md
+watch.md
+workflow.md
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:17:15Z)
+- **Tool:** Bash
+- **Input:** `for n in fleet-orchestration project-management-plugin work-automation exec-automator team-accelerator deployment-pipeline writing-plans-enhanced marketplace-pro upgrade-suggestion lobbi-workflow-engine lobbi-platform-manager; do d=/home/user/claude/plugins/$n; echo "########## $n"; ls -1 "$d" 2>/dev/null; echo "-- counts:"; for s in commands agents skills hooks lib src scripts workflows mcp; do c=$(find "$d/$s" -type f 2>/dev/null | wc -l); [ "$c" -gt 0 ] && echo "  $s: $c"; done; done`
+- **Error:** Exit code 1
+########## fleet-orchestration
+CHANGELOG.md
+CLAUDE.md
+CONTEXT_SUMMARY.md
+README.md
+agents
+commands
+config
+docs
+scripts
+skills
+-- counts:
+  commands: 7
+  agents: 11
+  skills: 10
+  scripts: 2
+########## project-management-plugin
+CLAUDE.md
+CONTEXT_SUMMARY.md
+README.md
+agents
+commands
+hooks
+lib
+mcp
+schemas
+skills
+templates
+tests
+-- counts:
+  commands: 27
+  agents: 17
+  skills: 7
+  hooks: 14
+  lib: 4
+  mcp: 1
+########## work-automation
+CLAUDE.md
+CONTEXT_SUMMARY.md
+README.md
+agents
+commands
+rules
+skills
+-- counts:
+  commands: 5
+  agents: 3
+  skills: 3
+########## exec-automator
+CHANGELOG.md
+CLAUDE.md
+CONTEXT.md
+CONTEXT_SUMMARY.md
+README.md
+agents
+commands
+docs
+hooks
+mcp-server
+scripts
+skills
+workflows
+-- counts:
+  commands: 14
+  agents: 12
+  skills: 9
+  hooks: 7
+  scripts: 7
+  workflows: 19
+########## team-accelerator
+CLAUDE.md
+CONTEXT.md
+CONTEXT_SUMMARY.md
+README.md
+agents
+commands
+hooks
+skills
+-- counts:
+  commands: 9
+  agents: 7
+  skills: 5
+  hooks: 7
+########## deployment-pipeline
+CLAUDE.md
+CONTEXT.md
+CONTEXT_SUMMARY.md
+README.md
+agents
+commands
+config
+skills
+src
+-- counts:
+  commands: 6
+  agents: 4
+  skills: 1
+  src: 5
+########## writing-plans-enhanced
+CHANGELOG.md
+CLAUDE.md
+CONTEXT_SUMMARY.md
+README.md
+skills
+-- counts:
+  skills: 5
+########## marketplace-pro
+CLAUDE.md
+CONTEXT.md
+CONTEXT_SUMMARY.md
+README.md
+agents
+commands
+config
+skills
+src
+-- counts:
+  commands: 13
+  agents: 2
+  skills: 6
+  src: 10
+########## upgrade-suggestion
+CLAUDE.md
+CONTEXT_SUMMARY.md
+agents
+commands
+skills
+-- counts:
+  commands: 4
+  agents: 8
+  skills: 4
+########## lobbi-workflow-engine
+CLAUDE.md
+CONTEXT_SUMMARY.md
+agents
+skills
+-- counts:
+  agents: 4
+  skills: 6
+########## lobbi-platform-manager
+CLAUDE.md
+CONTEXT.md
+CONTEXT_SUMMARY.md
+HOOKS_SETUP.md
+README.md
+agents
+commands
+hooks
+skills
+-- counts:
+  commands: 9
+  agents: 5
+  skills: 4
+  hooks: 6
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:17:18Z)
+- **Tool:** Bash
+- **Input:** `cd /home/user/claude/plugins/jira-orchestrator && echo "=== TSCONFIG? ===" && ls tsconfig* vitest* eslint* 2>&1 && echo "=== NODE_MODULES? ===" && ls -d node_modules 2>&1 && echo "=== ENV KEYS ===" && grep -oE '^[A-Z_0-9]+=' .env.example | tr -d '=' && echo "=== PRISMA MODELS ===" && grep -E '^(model|enum) ' prisma/schema.prisma && echo "=== LOC ===" && (find lib src scripts hooks workflows tests -name '*.ts' -o -name '*.js' -o -name '*.mjs' | xargs wc -l | tail -1) && (find . -name '*.py' -not -path './.git/*' | xargs wc -l | tail -1)`
+- **Error:** Exit code 2
+=== TSCONFIG? ===
+ls: cannot access 'tsconfig*': No such file or directory
+ls: cannot access 'vitest*': No such file or directory
+ls: cannot access 'eslint*': No such file or directory
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:17:34Z)
+- **Tool:** Bash
+- **Input:** `for n in writing-plans-enhanced marketplace-pro upgrade-suggestion lobbi-workflow-engine lobbi-platform-manager; do d=/home/user/claude/plugins/$n; echo "########## $n"; for s in commands agents skills; do echo "--- $s"; find "$d/$s" -name '*.md' 2>/dev/null | sort | while read f; do echo -n "$(basename $(dirname $f))/$(basename $f .md): "; awk '/^description:|^name:/{print substr($0,1,150)}' "$f" | head -2 | tr '\n' ' '; echo; done; done; echo "--- src/lib:"; ls -1 "$d/src" "$d/lib" 2>/dev/null; done`
+- **Error:** Exit code 2
+########## writing-plans-enhanced
+--- commands
+--- agents
+--- skills
+writing-plans-enhanced/SKILL: name: writing-plans-enhanced description: Enhanced plan-authoring skill with Pre-Writing context gathering, task metadata, non-TDD templates, Red Flags, telemetry, and an automate 
+writing-plans-enhanced/plan-document-reviewer-prompt: 
+writing-plans-enhanced/task-templates: 
+--- src/lib:
+########## marketplace-pro
+--- commands
+commands/compose: name: mp:compose description: Resolve an intent into an ordered plugin composition plan using greedy set cover and Kahn's topological sort 
+commands/dev: name: mp:dev description: Plugin Dev Studio — hot-reload dev server, interactive playground, dependency graph visualization, and validation suite for plugin deve 
+commands/help: name: mp:help description: Show all available marketplace-pro commands organized by module 
+commands/lock: name: mp:lock description: Manage deterministic lockfiles for reproducible plugin installations across environments 
+commands/policy: name: mp:policy description: Manage and evaluate security policies controlling plugin installation and registry access 
+commands/quick: name: mp:quick description: Rapid single-purpose marketplace actions — scan, trust, check, graph 
+commands/recommend: name: mp:recommend description: Scan the current project and recommend plugins based on detected stack, patterns, and capability gaps 
+commands/registry: name: mp:registry description: Manage federated plugin registries with priority-based resolution and policy enforcement 
+commands/setup: name: mp:setup description: Interactive setup wizard for marketplace-pro — configures federation, security policies, and project intelligence in one command 
+commands/status: name: mp:status description: Dashboard view of the entire marketplace-pro ecosystem — federation, security, intelligence, lockfile, and dev status 
+commands/trust: name: mp:trust description: Compute supply chain trust score and security audit for a plugin 
+commands/verify: name: mp:verify description: Verify signature integrity of a .cpkg plugin bundle 
+--- agents
+agents/marketplace-advisor: name: marketplace-advisor description: Specialized agent for marketplace-pro guidance, plugin selection, and troubleshooting 
+--- skills
+agentic-patterns/SKILL: name: agentic-patterns description: "Patterns from \"Agentic Design Patterns\" (Gulli & Sauco, 2025) applied to plugin marketplace architecture — federated registry, suppl 
+composition/SKILL: name: Intent-Based Composition description: Resolve high-level intents into ordered plugin composition plans using greedy set cover for capability matching and Kahn's topological so 
+devstudio/SKILL: name: devstudio description: Plugin Dev Studio workflow for hot-reload development, interactive testing, dependency visualization, and validation of Claude Code plugi 
+federation/SKILL: name: federation description: >- 
+intelligence/SKILL: name: contextual-intelligence description: Project fingerprinting, association rule mining (Apriori), and cosine-similarity plugin recommendations 
+security/SKILL: name: supply-chain-security description: Supply chain security model for the marketplace plugin ecosystem 
+--- src/lib:
+/home/user/claude/plugins/marketplace-pro/src:
+composition
+devstudio
+federation
+intelligence
+security
+########## upgrade-suggestion
+--- commands
+commands/suggest-upgrades: name: suggest-upgrades description: AI-powered upgrade intelligence. Spawns a council of specialist agents (performance, security, architecture, UX, DX) that analyze your co 
+commands/upgrade-deep-dive: name: upgrade-deep-dive description: Deep-dive analysis of a single upgrade. Produces a full impact report with risk assessment, implementation plan with numbered steps, affe 
+commands/upgrade-roadmap: name: upgrade-roadmap description: Generates a prioritized, sequenced upgrade roadmap showing what to implement first, dependency chains between upgrades, estimated effort, 
+--- agents
+agents/architecture-specialist: name: architecture-specialist description: Council specialist focused on code architecture, patterns, and structural improvements 
+agents/council-synthesizer: name: council-synthesizer description: Synthesizes findings from all council specialists into weighted, deduplicated recommendations 
+agents/dx-specialist: name: dx-specialist description: Council specialist focused on developer experience, tooling, and workflow improvements 
+agents/performance-specialist: name: performance-specialist description: Council specialist focused on performance optimization opportunities 
+agents/security-specialist: name: security-specialist description: Council specialist focused on security vulnerabilities and hardening opportunities 
+agents/upgrade-analyst: name: upgrade-analyst description: Fast single-agent analyzer for quick mode — covers all dimensions in one pass 
+agents/ux-specialist: name: ux-specialist description: Council specialist focused on user experience, accessibility, and UI innovation 
+--- skills
+agentic-patterns/SKILL: name: agentic-patterns description: "Patterns from \"Agentic Design Patterns\" (Gulli & Sauco, 2025) applied to AI-powered codebase upgrade intelligence" 
+innovation-radar/SKILL: name: innovation-radar description: Identifies cutting-edge, innovative upgrade opportunities based on tech stack and industry trends 
+project-fingerprinting/SKILL: name: project-fingerprinting description: Deep project fingerprinting for tech stack detection, architecture analysis, and quality assessment 
+upgrade-analysis/SKILL: name: upgrade-analysis description: Core analysis patterns, detection heuristics, and scoring algorithms for the upgrade intelligence system 
+--- src/lib:
+########## lobbi-workflow-engine
+--- commands
+--- agents
+agents/escalation-manager: name: escalation-manager description: Defines escalation paths, SLA thresholds, and notification sequences for stalled workflows. Invoke when configuring automatic escalation  
+agents/rule-designer: name: rule-designer description: Writes routing rules and conditional business logic for workflow automation. Invoke when translating business policy documents, underwrit 
+agents/workflow-architect: name: workflow-architect description: Designs end-to-end approval workflows from business requirements. Invoke when the user needs to architect a complete workflow from intake 
+--- skills
+approval-chain/SKILL: description: Design multi-step approval workflows with supervisor, manager, and executive levels. Use when the user needs to automate document approva 
+escalation-policy/SKILL: description: Define time-based escalation paths when approvals stall or SLAs breach. Use when configuring automatic escalation for insurance underwrit 
+notification-template/SKILL: description: Build email and Microsoft Teams notification templates for workflow events. Use when creating approval request notifications, escalation  
+routing-rules/SKILL: description: Create intelligent routing logic based on document attributes, request type, risk score, or customer profile. Use when building workflow  
+sla-tracker/SKILL: description: Generate SLA measurement configurations and breach-alert rules. Use when defining service level agreements for workflow steps, queue proc 
+workflow-audit/SKILL: description: Generate audit trail specifications for regulatory compliance in insurance and financial services. Use when designing audit logging for F 
+--- src/lib:
+########## lobbi-platform-manager
+--- commands
+commands/env-generate: name: lobbi-platform-manager:env-generate description: Generate .env files for dev/staging/prod environments 
+commands/env-validate: name: lobbi-platform-manager:env-validate description: Validate .env configuration against platform requirements 
+commands/health: name: lobbi-platform-manager:health description: Check health status of all 8 platform services 
+commands/keycloak-setup: name: lobbi-platform-manager:keycloak-setup description: Initialize Keycloak realm, client, and base configuration for multi-tenant setup 
+commands/keycloak-theme: name: lobbi-platform-manager:keycloak-theme description: Generate and deploy tenant-specific Keycloak themes 
+commands/keycloak-user: name: lobbi-platform-manager:keycloak-user description: Create Keycloak users (single or bulk dummy users with org_id) 
+commands/service: name: lobbi-platform-manager:service description: Start, stop, restart, or check individual platform services 
+commands/test-gen: name: lobbi-platform-manager:test-gen description: Generate Jest tests from API routes and service endpoints 
+--- agents
+agents/env-manager: name: env-manager description: Environment configuration manager for the-lobbi/keycloak-alpha repository. Validates environment variables, generates configuration files 
+agents/keycloak-admin: name: keycloak-admin description: Keycloak administration agent for the-lobbi/keycloak-alpha repository. Handles realm provisioning, user management, client configuration, 
+agents/service-orchestrator: name: service-orchestrator description: Service orchestration agent for the-lobbi/keycloak-alpha repository. Monitors health, validates dependencies, manages service lifecycle a 
+agents/test-generator: name: test-generator description: Automated test generation agent for the-lobbi/keycloak-alpha repository. Generates Jest test suites from Express routes with Keycloak aut 
+--- skills
+agentic-patterns/SKILL: name: agentic-patterns description: "Patterns from \"Agentic Design Patterns\" (Gulli & Sauco, 2025) applied to multi-tenant MERN platform management and Keycloak orchestrat 
+keycloak-admin/SKILL: name: keycloak-admin description: Keycloak administration including realm management, client configuration, OAuth 2.0 setup, user management with custom attributes, role a 
+mern-patterns/SKILL: name: mern-patterns description: MERN stack patterns including React with Vite, Express middleware, MongoDB schemas, API Gateway architecture, session management, error h 
+multi-tenant/SKILL: name: multi-tenant description: Multi-tenant architecture patterns including org_id claim management, JWT token structure with organization context, database isolation s 
+--- src/lib:
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:18:04Z)
+- **Tool:** Bash
+- **Input:** `rm -f plugins/linear-orchestrator/.claude/orchestration/telemetry/agents.jsonl && rmdir plugins/linear-orchestrator/.claude/orchestration/telemetry plugins/linear-orchestrator/.claude/orchestration plugins/linear-orchestrator/.claude && echo "cleaned" && git status --short`
+- **Error:** Exit code 1
+rmdir: failed to remove 'plugins/linear-orchestrator/.claude': Directory not empty
+- **Status:** RESOLVED
+- **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
+- **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.

@@ -31,7 +31,7 @@ For actor mode:
 ```ts
 const client = new LinearClient({
   accessToken: token,
-  headers: { "Linear-Actor-Token": actorToken }
+  // Attribution is set by `actor=app` at authorize time, not per call
 });
 ```
 

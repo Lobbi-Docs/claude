@@ -5,27 +5,12 @@
   "generatedBy": "scripts/generate-plugin-indexes.mjs",
   "entries": [
     {
-      "name": "harness-linear-bridge",
-      "intent": "Run the two-way Harness Code ↔ Linear sync — branches, PRs, deploys, Git Experience, custom approvals, triggers",
-      "tags": [
-        "linear-orchestrator",
-        "agent",
-        "harness",
-        "bridge",
-        "two-way-sync"
-      ],
-      "inputs": [],
-      "risk": "high",
-      "cost": "medium",
-      "path": "agents/harness-linear-bridge.md"
-    },
-    {
       "name": "linear-agent-orchestrator",
-      "intent": "Coordinate Linear agents (AIG) — register, route signals, manage actor tokens, escalate to humans",
+      "intent": "Coordinate Linear agent sessions — acknowledge delegations, route work, emit activities, escalate to humans",
       "tags": [
         "linear-orchestrator",
         "agent",
-        "aig",
+        "agent-session",
         "orchestration"
       ],
       "inputs": [],
@@ -154,20 +139,21 @@
       "path": "agents/linear-webhook-engineer.md"
     },
     {
-      "name": "planner-linear-bridge",
-      "intent": "Run the two-way Microsoft Planner ↔ Linear sync via Microsoft Graph delta queries",
+      "name": "vcs-linear-bridge",
+      "intent": "Run the two-way Linear ↔ VCS sync across GitHub and Harness Code — branches, PRs, reviews, deploys, drift reconciliation",
       "tags": [
         "linear-orchestrator",
         "agent",
-        "planner",
-        "microsoft-graph",
+        "github",
+        "harness",
+        "vcs",
         "bridge",
         "two-way-sync"
       ],
       "inputs": [],
       "risk": "high",
       "cost": "medium",
-      "path": "agents/planner-linear-bridge.md"
+      "path": "agents/vcs-linear-bridge.md"
     }
   ]
 }

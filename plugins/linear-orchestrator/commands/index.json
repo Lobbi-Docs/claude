@@ -6,12 +6,12 @@
   "entries": [
     {
       "name": "linear:agent",
-      "intent": "Configure and operate Linear agents (AIG) — agent interaction, agent signals, OAuth actor authorization",
+      "intent": "Operate this plugin as a Linear agent — inspect sessions, emit activities, manage delegation, and read workspace agent guidance and skills",
       "tags": [
         "linear-orchestrator",
         "command",
         "agent",
-        "aig"
+        "agent-session"
       ],
       "inputs": [
         "action"
@@ -99,22 +99,6 @@
       "path": "commands/cycle.md"
     },
     {
-      "name": "linear:diff",
-      "intent": "Compute and render diffs of Linear issues, projects, or cycles between two points in time",
-      "tags": [
-        "linear-orchestrator",
-        "command",
-        "diff",
-        "audit"
-      ],
-      "inputs": [
-        "scope"
-      ],
-      "risk": "low",
-      "cost": "medium",
-      "path": "commands/diff.md"
-    },
-    {
       "name": "linear:documents",
       "intent": "Manage Linear issue documents and project documents — create, update, link, and version",
       "tags": [
@@ -169,23 +153,6 @@
       "path": "commands/harness-platform.md"
     },
     {
-      "name": "linear:harness-sync",
-      "intent": "Two-way sync between Linear issues and Harness Code repositories — branches, PRs, deploys, and reviews",
-      "tags": [
-        "linear-orchestrator",
-        "command",
-        "harness",
-        "bridge",
-        "two-way-sync"
-      ],
-      "inputs": [
-        "action"
-      ],
-      "risk": "high",
-      "cost": "medium",
-      "path": "commands/harness-sync.md"
-    },
-    {
       "name": "linear:initiative",
       "intent": "Manage Linear initiatives and sub-initiatives — strategic groupings of projects with their own status updates",
       "tags": [
@@ -217,7 +184,7 @@
     },
     {
       "name": "linear:mcp",
-      "intent": "Install, configure, and operate the Linear MCP server for Claude Code",
+      "intent": "Connect and operate Linear's official remote MCP server, and decide when to route through it versus this plugin's own client",
       "tags": [
         "linear-orchestrator",
         "command",
@@ -229,24 +196,6 @@
       "risk": "low",
       "cost": "low",
       "path": "commands/mcp.md"
-    },
-    {
-      "name": "linear:planner-sync",
-      "intent": "Two-way sync between Linear issues and Microsoft Planner tasks via Microsoft Graph delta queries",
-      "tags": [
-        "linear-orchestrator",
-        "command",
-        "planner",
-        "microsoft-graph",
-        "bridge",
-        "two-way-sync"
-      ],
-      "inputs": [
-        "action"
-      ],
-      "risk": "high",
-      "cost": "medium",
-      "path": "commands/planner-sync.md"
     },
     {
       "name": "linear:project",
@@ -295,8 +244,25 @@
       "path": "commands/relations.md"
     },
     {
+      "name": "linear:review",
+      "intent": "Work Linear Diffs — the in-Linear code review surface for GitHub pull requests, covering diffs, inline threads, review submission and merge",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "review",
+        "diffs",
+        "code-review"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/review.md"
+    },
+    {
       "name": "linear:setup",
-      "intent": "Configure Linear authentication (API key + OAuth 2.0 + actor authorization), install Linear MCP server, register webhooks, and wire up Harness/Planner bridges",
+      "intent": "Configure the plugin end to end — Linear auth, the remote MCP server, webhooks, and the GitHub or Harness Code bridge",
       "tags": [
         "linear-orchestrator",
         "command",
@@ -325,6 +291,41 @@
       "risk": "medium",
       "cost": "low",
       "path": "commands/sla.md"
+    },
+    {
+      "name": "linear:swarm",
+      "intent": "Run many Claude Code workers in parallel against a Linear backlog, each in an isolated git worktree, reporting into Linear agent sessions",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "swarm",
+        "orchestration",
+        "conductor"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "commands/swarm.md"
+    },
+    {
+      "name": "linear:sync",
+      "intent": "Two-way sync between Linear issues and a git host — GitHub or Harness Code — covering branches, pull requests, reviews and deploys",
+      "tags": [
+        "linear-orchestrator",
+        "command",
+        "sync",
+        "github",
+        "harness",
+        "two-way-sync"
+      ],
+      "inputs": [
+        "action"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "commands/sync.md"
     },
     {
       "name": "linear:team",

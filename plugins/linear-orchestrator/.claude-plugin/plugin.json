@@ -1,8 +1,8 @@
 {
   "$schema": "https://claude.local/schemas/plugin.schema.json",
   "name": "linear-orchestrator",
-  "version": "1.0.0",
-  "description": "Advanced Linear integration with two-way sync to Harness Code and Microsoft Planner. Covers Linear GraphQL API, OAuth 2.0, webhooks, attachments, agents (AIG), MCP, cycles, projects, initiatives, customer requests, SLA, triage, templates, sub-issues, and diffs. 22 commands, 10 skills, 12 agents.",
+  "version": "2.0.0",
+  "description": "Linear orchestration for Claude Code. Agent sessions and delegation, a Symphony-style swarm conductor that runs parallel workers in isolated git worktrees, and provider-neutral two-way sync with GitHub and Harness Code. Covers the GraphQL API, OAuth, webhooks, attachments, cycles, projects, initiatives, customers, SLA, triage, and Linear Diffs. 24 commands, 10 skills, 11 agents.",
   "author": {
     "name": "Markus Ahling",
     "email": "markus@lobbi.io"
@@ -16,11 +16,14 @@
     "oauth",
     "webhooks",
     "agents",
-    "aig",
+    "agent-sessions",
+    "swarm",
+    "orchestration",
+    "conductor",
+    "symphony",
+    "github",
     "harness",
     "harness-code",
-    "microsoft-planner",
-    "ms-graph",
     "two-way-sync",
     "mcp",
     "cycles",
@@ -29,10 +32,10 @@
     "customer-requests",
     "sla",
     "triage",
+    "diffs",
+    "code-review",
     "issue-tracking",
-    "orchestration",
-    "automation",
-    "agent-signals"
+    "automation"
   ],
   "permissions": {
     "requires": [
@@ -43,12 +46,12 @@
       "secrets:LINEAR_WEBHOOK_SECRET"
     ],
     "optional": [
+      "network:mcp.linear.app",
+      "network:api.github.com",
+      "secrets:GITHUB_TOKEN",
       "network:app.harness.io",
       "secrets:HARNESS_API_TOKEN",
-      "secrets:HARNESS_ACCOUNT_ID",
-      "network:graph.microsoft.com",
-      "secrets:GRAPH_CLIENT_SECRET",
-      "secrets:GRAPH_TENANT_ID"
+      "secrets:HARNESS_ACCOUNT_ID"
     ]
   },
   "capabilities": {
@@ -62,25 +65,27 @@
       "linear.triage.workflow",
       "linear.webhook.handler",
       "linear.attachment.upload",
-      "linear.agent.signals",
+      "linear.agent.sessions",
+      "linear.diffs.review",
       "linear.mcp.bridge",
-      "harness.code.sync",
-      "msplanner.sync"
+      "swarm.conductor",
+      "vcs.github.sync",
+      "vcs.harness.sync"
     ],
     "requires": []
   },
   "context": {
     "entry": "CONTEXT_SUMMARY.md",
     "title": "Linear Orchestrator",
-    "summary": "Advanced Linear integration with bidirectional Harness Code + Microsoft Planner sync. 22 commands, 10 skills, 12 agents covering GraphQL, OAuth, webhooks, agents/AIG, cycles, projects, initiatives, customer requests, SLA, triage, templates, and migration.",
+    "summary": "Linear orchestration: agent sessions, a parallel swarm conductor with isolated worktrees, and two-way sync with GitHub and Harness Code. 24 commands, 10 skills, 11 agents.",
     "tags": [
       "linear",
       "graphql",
-      "oauth",
-      "webhooks",
       "agents",
+      "swarm",
+      "orchestration",
+      "github",
       "harness",
-      "microsoft-planner",
       "two-way-sync",
       "mcp"
     ],
@@ -102,7 +107,8 @@
       "skills/*/SKILL.md",
       "commands/*.md",
       "agents/*.md",
-      "lib/**/*.ts",
+      "lib/**/*.mjs",
+      "tests/**/*.mjs",
       "docs/*.md"
     ]
   },

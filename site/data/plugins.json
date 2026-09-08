@@ -7,7 +7,7 @@
       "name": "Markus Ahling",
       "email": "markus@thelobbi.io"
     },
-    "generatedAt": "2026-09-05T01:33:50.652Z",
+    "generatedAt": "2026-09-08T18:39:14.543Z",
     "repo": "https://github.com/markus41/claude",
     "url": "https://markus41.github.io/claude/"
   },
@@ -15,7 +15,7 @@
     "plugins": 39,
     "subplugins": 6,
     "commands": 343,
-    "agents": 323,
+    "agents": 322,
     "skills": 292,
     "hooks": 17,
     "mcp": 8,
@@ -94,7 +94,7 @@
       ],
       "counts": {
         "commands": 80,
-        "agents": 100,
+        "agents": 99,
         "skills": 29
       }
     },
@@ -630,8 +630,8 @@
     },
     {
       "name": "linear-orchestrator",
-      "version": "1.0.0",
-      "description": "Advanced Linear integration with two-way sync to Harness Code and Microsoft Planner. Covers Linear GraphQL API, OAuth 2.0, webhooks, attachments, agents (AIG), MCP, cycles, projects, initiatives, customer requests, SLA, triage, templates, sub-issues, and diffs. 22 commands, 10 skills, 12 agents.",
+      "version": "2.0.0",
+      "description": "Linear orchestration for Claude Code. Agent sessions and delegation, a Symphony-style swarm conductor that runs parallel workers in isolated git worktrees, and provider-neutral two-way sync with GitHub and Harness Code. Covers the GraphQL API, OAuth, webhooks, attachments, cycles, projects, initiatives, customers, SLA, triage, and Linear Diffs. 24 commands, 10 skills, 11 agents.",
       "author": "Markus Ahling",
       "authorUrl": "",
       "source": "./plugins/linear-orchestrator",
@@ -643,18 +643,18 @@
         "oauth",
         "webhooks",
         "agents",
-        "aig",
-        "harness",
-        "harness-code",
-        "microsoft-planner",
-        "ms-graph",
-        "two-way-sync"
+        "agent-sessions",
+        "swarm",
+        "orchestration",
+        "conductor",
+        "symphony",
+        "github"
       ],
       "license": "MIT",
       "homepage": "",
       "counts": {
         "commands": 24,
-        "agents": 12,
+        "agents": 11,
         "skills": 10,
         "hooks": 0
       },

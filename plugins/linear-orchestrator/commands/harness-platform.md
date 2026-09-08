@@ -100,4 +100,4 @@ Treating Linear as the source of truth for "what work is being deployed":
 ## Security
 - API keys + JWT secrets handled by Harness Secrets, never written to plugin state
 - Custom-approval bridge verifies the Linear actor token corresponds to a workspace member with the required role
-- All auth changes are gated on `harness-linear-bridge` agent's Opus-level reasoning
+- All auth changes are gated on `vcs-linear-bridge` agent's Opus-level reasoning

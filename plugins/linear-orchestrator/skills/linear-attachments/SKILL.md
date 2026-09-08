@@ -93,7 +93,7 @@ Or, mint a short-lived signed URL through your own service if you need to share 
 ## Bridge fan-out
 
 - **Harness Code**: file attachments are linked (not copied) to the linked PR via a comment with the asset URL — the URL is auth-required, so reviewers must be Linear members.
-- **MS Planner**: attachments uploaded to Linear are mirrored to OneDrive/SharePoint via Microsoft Graph `driveItem` upload. The Planner task `references` field gets the OneDrive URL.
+- **GitHub**: where Linear Diffs are enabled, PR context renders natively; attachments still link by asset URL.
 
 ## Security notes
 

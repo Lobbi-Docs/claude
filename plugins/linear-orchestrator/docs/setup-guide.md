@@ -67,7 +67,7 @@ Inputs:
 
 Then enable specific repos:
 ```bash
-/linear:harness-sync enable --org <org> --project <project> --repo my-service
+/linear:sync enable --org <org> --project <project> --repo my-service
 ```
 
 If you want full Git Experience integration:
@@ -112,7 +112,7 @@ Then bind a plan:
 /linear:cycle current --team ENG
 
 # Should show bridge health
-/linear:harness-sync status
+/linear:sync status
 /linear:planner-sync status
 ```
 
@@ -123,7 +123,7 @@ Then bind a plan:
 | Plan next cycle | `/linear:cycle plan --team ENG` |
 | Triage queue review | `/linear:triage list` |
 | File a customer request | `/linear:customer create-request --customer Acme --body "..."` |
-| Reconcile bridges | `/linear:harness-sync reconcile` + `/linear:planner-sync reconcile` |
+| Reconcile bridges | `/linear:sync reconcile` + `/linear:planner-sync reconcile` |
 | Replay failed webhooks | `/linear:webhook replay --since 24h` |
 | Check SLA breaches | `/linear:sla breaches` |
 

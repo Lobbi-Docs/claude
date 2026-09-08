@@ -81,16 +81,33 @@ Subscribe selectively — fewer types means smaller event volume.
 
 **Don't trust webhook payload state for reads.** Linear may send out-of-order events. After receiving an Issue update, re-fetch via GraphQL using the `id` to get the canonical state.
 
-## Dead-Letter Queue
+## Recovering missed deliveries
 
-Implementation in `lib/webhook-dlq.ts`:
-- After 3 failed processings, write to DLQ table with: delivery ID, payload, error, attempts
-- `/linear:webhook dlq` lists; `/linear:webhook replay --since 24h` retries from DLQ
-- Alert (Slack / PagerDuty) when DLQ depth > 10
+The plugin deliberately ships **no dead-letter queue**. Reconciliation is the
+recovery path instead:
+
+```
+/linear:sync reconcile --dry-run
+/linear:sync reconcile --apply
+```
+
+The reasoning: a DLQ only repairs deliveries that arrived and failed. It cannot
+repair a delivery that was never sent, an outage that spanned the retry window,
+or drift caused by someone editing state by hand. Reconcile — compare Linear
+state to VCS state, fix the difference — covers all of those, and unlike replay
+it is testable without a webhook.
+
+Deduplication of *retried* deliveries is handled in-process by `DeliveryDeduper`
+(`lib/webhooks.mjs`), keyed on `Linear-Delivery` and bounded by size and TTL.
+
+> Earlier versions of this skill referenced `lib/webhook-dlq.ts` and
+> `/linear:webhook replay`. Neither existed.
 
 ## Local testing
 
-Use `ngrok http 3000` and set the public URL as the webhook URL. Linear has no built-in test-replay UI; use `webhookTest` mutation if available, or the DLQ replay path.
+Expose a local receiver with `ngrok http 3000` and register that URL. To debug a
+single delivery without waiting for another, capture the payload and replay it
+through verification and normalisation with `/linear:sync event --file <path>`.
 
 ## Webhook security checklist
 - [x] HTTPS only

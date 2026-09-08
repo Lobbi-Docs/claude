@@ -37,7 +37,7 @@ Documents in Linear are first-class — separate from comments and issue descrip
 
 ## Editor compatibility
 - Linear's editor is markdown-superset (https://linear.app/docs/editor); supports tables, callouts, mentions, smart-links
-- When importing from Confluence/Notion, run `/linear:diff --normalize` first to coerce syntax
+- When importing from Confluence/Notion, run `/linear:query --normalize` first to coerce syntax
 
 ## Versioning
 - Linear keeps document history server-side

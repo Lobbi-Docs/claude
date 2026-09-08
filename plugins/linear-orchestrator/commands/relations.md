@@ -38,4 +38,3 @@ Wraps `issueRelationCreate`, `issueRelationDelete` mutations.
 
 ## Bridge behaviour
 - `blocks` relations are mirrored to Harness Code as PR-blocking checks (PR cannot merge until blocking issue is Done) when harness-sync is enabled
-- Planner has no native relations; the bridge appends a "Blocks: ENG-X" line to the task description as a fallback

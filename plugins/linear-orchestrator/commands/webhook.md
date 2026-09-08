@@ -50,7 +50,7 @@ Linear → POST /linear/webhook
               ↓
        Dispatch by resource type:
          Issue       → issue-curator + bridges
-         Comment     → bridges (mirror to Harness/Planner)
+         Comment     → bridges (mirror to the VCS provider)
          Cycle       → cycle-planner aggregator
          Customer    → customer-liaison
          Attachment  → attachment processor

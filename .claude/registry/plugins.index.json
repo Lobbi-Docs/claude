@@ -1,7 +1,7 @@
 {
   "$schema": "./schema/plugins.schema.json",
   "version": "3.0.0",
-  "lastUpdated": "2026-08-17T00:00:00Z",
+  "lastUpdated": "2026-09-08T18:38:41.206Z",
   "description": "Plugin registry for Claude Code orchestration plugins - upgraded with Agentic Design Patterns (Gulli & Sauco, 2025)",
   "installed": {
     "aws-eks-helm-keycloak": {
@@ -173,7 +173,7 @@
       "dependencies": {}
     },
     "linear-orchestrator": {
-      "version": "1.0.0",
+      "version": "2.0.0",
       "path": "../plugins/linear-orchestrator",
       "source": "local",
       "installedAt": "2026-07-11T00:00:00.000Z",
@@ -1118,7 +1118,7 @@
     },
     "linear-orchestrator": {
       "name": "linear-orchestrator",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "description": "Advanced Linear integration with two-way sync to Harness Code and Microsoft Planner. Covers Linear GraphQL API, OAuth 2.0, webhooks, attachments, agents (AIG), MCP, cycles, projects, initiatives, customer requests, SLA, triage, templates, sub-issues, and diffs. 22 commands, 10 skills, 12 agents.",
       "author": {
         "name": "Markus Ahling",

@@ -15,7 +15,8 @@
     "check:plugin-indexes": "node scripts/generate-plugin-indexes.mjs --check",
     "profile:plugin-context": "node scripts/profile-plugin-context.mjs",
     "validate-archetype": "tsx scripts/validate-archetype.ts",
-    "test:pm-plugin": "node --test plugins/project-management-plugin/tests/pm-state.test.mjs plugins/project-management-plugin/tests/pm-mcp.test.mjs plugins/project-management-plugin/tests/pm-guardrails.test.mjs plugins/project-management-plugin/tests/pm-guardrails-mcp.test.mjs plugins/project-management-plugin/tests/pm-round3.test.mjs"
+    "test:pm-plugin": "node --test plugins/project-management-plugin/tests/pm-state.test.mjs plugins/project-management-plugin/tests/pm-mcp.test.mjs plugins/project-management-plugin/tests/pm-guardrails.test.mjs plugins/project-management-plugin/tests/pm-guardrails-mcp.test.mjs plugins/project-management-plugin/tests/pm-round3.test.mjs",
+    "test:linear-plugin": "node --test plugins/linear-orchestrator/tests/agent-session.test.mjs plugins/linear-orchestrator/tests/linear-client.test.mjs plugins/linear-orchestrator/tests/swarm.test.mjs plugins/linear-orchestrator/tests/vcs.test.mjs plugins/linear-orchestrator/tests/webhooks.test.mjs"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",

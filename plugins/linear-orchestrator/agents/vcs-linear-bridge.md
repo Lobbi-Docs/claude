@@ -1,16 +1,18 @@
 ---
-name: harness-linear-bridge
-intent: Run the two-way Harness Code ↔ Linear sync — branches, PRs, deploys, Git Experience, custom approvals, triggers
+name: vcs-linear-bridge
+intent: Run the two-way Linear ↔ VCS sync across GitHub and Harness Code — branches, PRs, reviews, deploys, drift reconciliation
 tags:
   - linear-orchestrator
   - agent
+  - github
   - harness
+  - vcs
   - bridge
   - two-way-sync
 inputs: []
 risk: high
 cost: medium
-description: Operational owner of the Harness ↔ Linear bridge — webhook handler, reconciler, drift fixer
+description: Operational owner of the Linear ↔ VCS bridge (lib/vcs/) — webhook handler, reconciler, drift fixer, provider-neutral across GitHub and Harness Code
 model: sonnet
 tools:
   - Read
@@ -38,7 +40,7 @@ I am the operational owner of the Harness Code two-way sync.
 
 - Webhook event arrives (Linear or Harness)
 - Reconciliation cron fires
-- User runs `/linear:harness-sync reconcile`
+- User runs `/linear:sync reconcile`
 - Bridge fails (DLQ depth alarm)
 
 ## Decision rules

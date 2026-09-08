@@ -51,5 +51,5 @@ The `linear-customer-liaison` agent watches webhooks for new requests and:
 3. Routes to team owner; falls back to triage if no match
 
 ## Bridge behaviour
-- New customer requests **do not** sync to Harness or Planner by default (they're product-PM concerns, not engineering tasks)
+- New customer requests **do not** sync to the VCS provider by default (they're product-PM concerns, not engineering tasks)
 - Once a request is linked to an issue, that issue's lifecycle syncs normally

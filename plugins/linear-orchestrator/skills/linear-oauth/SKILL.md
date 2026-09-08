@@ -53,21 +53,38 @@ Returns:
 ```
 Linear OAuth tokens are long-lived (10 years!). Refresh tokens are not issued — re-auth on revoke.
 
-## Actor Authorization
+## Actor authorization
 
-For agents acting on behalf of users:
-- Include `actor=user` in the authorize URL
-- After exchange, the OAuth token is **owned by the user**, not the app
-- All API calls made with this token appear in Linear UI as performed by the user
-- For mixed flows (some calls "as the app", some "as a user"), use the `Linear-Actor-Token` header per-call
+The `actor` parameter on the authorize URL decides who the app's writes are
+attributed to.
 
-```http
-POST /graphql
-Authorization: Bearer <app_oauth_token>
-Linear-Actor-Token: <user_actor_token>
+| `actor` | Token owned by | Actions appear as |
+|---|---|---|
+| omitted / `user` | the authorising user | that user |
+| `app` | the application | the app user (the agent) |
+
+**Agent integrations want `actor=app`.** Combined with `app:assignable` and
+`app:mentionable`, that is what makes the app appear in the workspace as an
+agent teammate that can be delegated issues and @mentioned.
+
+```
+https://linear.app/oauth/authorize
+  ?client_id=<id>
+  &redirect_uri=<uri>
+  &response_type=code
+  &scope=read,write,app:assignable,app:mentionable
+  &state=<csrf-token>
+  &actor=app
 ```
 
-The actor token is a short-lived (5 min) JWT minted by your backend after verifying the user. The `lib/auth.ts` `mintActorToken(userId)` helper handles signing.
+Always send and verify `state` — without it the callback is open to CSRF.
+`buildAuthorizeUrl()` in `lib/oauth.mjs` refuses to build a URL without one.
+
+> **Corrected in 2.0.0.** Earlier versions described a `Linear-Actor-Token`
+> header carrying a 5-minute JWT "minted by your backend", handled by a
+> `lib/auth.ts` `mintActorToken()` helper. No such header, token type, or file
+> exists. Attribution is chosen by the `actor` parameter at authorization time,
+> not per call.
 
 ## File-Storage Authentication
 
@@ -89,7 +106,7 @@ If you proxy assets to end users, **mint a short-lived signed URL on your side**
 
 - API keys: rotate quarterly
 - OAuth client secret: rotate yearly or on suspected leak
-- Actor tokens: never persist beyond 5 min
+- Revoke tokens on uninstall and offboarding (`revokeToken` in `lib/oauth.mjs`)
 - On rotation, support old + new key for 24h overlap to avoid race conditions
 
 ## Scope selection guide
@@ -100,5 +117,5 @@ If you proxy assets to end users, **mint a short-lived signed URL on your side**
 | `issues:create` | Narrow scope: only creating issues |
 | `comments:create` | Narrow scope: comments only |
 | `admin` | Workflow / team / webhook config |
-| `agents:create` | Register Linear agent apps |
-| `agents:signal` | Emit agent signals |
+| `app:assignable` | The app can be delegated issues, like a teammate |
+| `app:mentionable` | The app can be @mentioned in comments and descriptions |

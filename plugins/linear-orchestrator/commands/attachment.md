@@ -44,4 +44,3 @@ Implementation in `lib/attachment-upload.ts`. Supports multipart for files >50MB
 
 ## Bridge behaviour
 - Files attached to a Linear issue with active Harness sync are also pushed to the linked PR as a comment with the asset URL (links, not file copies, to avoid double storage)
-- Files on issues with active Planner sync are uploaded to the linked OneDrive/SharePoint location associated with the Planner plan (via Microsoft Graph `driveItem` upload)

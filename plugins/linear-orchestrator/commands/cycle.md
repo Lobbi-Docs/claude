@@ -45,4 +45,3 @@ Returns the upcoming cycle.
 
 ## Bridge interactions
 - Harness deploy events tagged with `cycleId` (extracted from issue) get aggregated into the cycle report under "deploys per cycle"
-- Planner buckets are not cycle-aware; the bridge maps Linear cycle → Planner bucket prefix `[Cycle: <name>]`

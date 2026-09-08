@@ -42,4 +42,4 @@ Returns ordered states with type, color, position.
 **Workflow changes are risky** — they affect every issue in the team. Always run `--dry-run` first. Prefer `add-state` over renaming existing states.
 
 ## Bridge behaviour
-- Workflow state changes are mirrored to Harness PR labels (`linear:in-progress`, `linear:done`) and to Planner task `percentComplete` (0/50/100 mapping)
+- Workflow state changes are mirrored to Harness PR labels (`linear:in-progress`, `linear:done`)

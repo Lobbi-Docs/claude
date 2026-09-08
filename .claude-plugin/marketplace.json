@@ -155,8 +155,8 @@
     },
     {
       "name": "linear-orchestrator",
-      "description": "Advanced Linear integration with two-way sync to Harness Code and Microsoft Planner. Covers Linear GraphQL API, OAuth 2.0, webhooks, attachments, agents (AIG), MCP, cycles, projects, initiatives, customer requests, SLA, triage, templates, sub-issues, and diffs. 22 commands, 10 skills, 12 agents.",
-      "version": "1.0.0",
+      "description": "Linear orchestration for Claude Code. Agent sessions and delegation, a Symphony-style swarm conductor that runs parallel workers in isolated git worktrees, and provider-neutral two-way sync with GitHub and Harness Code. Covers the GraphQL API, OAuth, webhooks, attachments, cycles, projects, initiatives, customers, SLA, triage, and Linear Diffs. 24 commands, 10 skills, 11 agents.",
+      "version": "2.0.0",
       "author": {
         "name": "Markus Ahling",
         "email": "markus@lobbi.io"

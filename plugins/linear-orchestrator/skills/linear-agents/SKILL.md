@@ -1,7 +1,7 @@
 ---
-name: Linear Agents (AIG, Signals, Interaction)
-description: This skill should be used when building or registering an agent that operates inside Linear — agent signals, agent interaction, OAuth actor mode, AIG (Agent Intelligence Gateway). Activates on "linear agent", "agent signal", "agent interaction", "linear aig", "agents in linear".
-version: 1.0.0
+name: Linear Agents, Sessions and Coding Sessions
+description: This skill should be used when building, registering, or operating an agent inside Linear — agent sessions, agent activities, delegation, Agent Skills, Loops, and Linear's built-in coding sessions. Activates on "linear agent", "agent session", "agent activity", "delegate issue", "linear aig", "agents in linear", "coding session", "linear loops".
+version: 2.0.0
 allowed-tools:
   - Read
   - Grep
@@ -12,90 +12,136 @@ allowed-tools:
 # Linear Agents
 
 References:
-- Agents in Linear (user docs): https://linear.app/docs/agents-in-linear
-- Agents (developer): https://linear.app/developers/agents
-- Agent interaction: https://linear.app/developers/agent-interaction
-- Agent signals: https://linear.app/developers/agent-signals
-- AIG: https://linear.app/developers/aig
+- Agents (user docs): https://linear.app/docs/agents-in-linear
+- Linear Agent: https://linear.app/docs/linear-agent
+- Coding sessions: https://linear.app/docs/coding-sessions
+- Developer docs: https://linear.app/developers/agents
 
-## Agent model
+## Corrections to earlier versions of this plugin
 
-A Linear agent is an OAuth app with the `agents:create` and `agents:signal` scopes that:
-- Can be **assigned** to issues (treated as a first-class assignee)
-- **Posts** comments / status changes on behalf of users (via OAuth actor authorization)
-- **Emits signals** — short status messages rendered inline on the issue ("running tests", "75% complete", "needs input")
-- **Receives interaction events** — when a user @-mentions the agent or assigns it
+Version 1.0.0 of this skill described an API that does not exist. If you find
+these anywhere, they are wrong:
 
-## Registration
+| Wrong | Right |
+|---|---|
+| "AIG = Agent Intelligence Gateway", a message bus | **AIG = Agent Interaction Guidelines**, a set of UX rules. There is no gateway. |
+| `agentSignalCreate({ kind: "progress" })` | `agentActivityCreate` with a typed `content` payload |
+| Signal kinds `progress` / `completion` / `request_input` | Activity types `thought` / `action` / `elicitation` / `response` / `error` |
+| Scopes `agents:create`, `agents:signal` | `app:assignable`, `app:mentionable` (plus `read` / `write`) |
+| `lib/aig.ts`, `aigPublish()` / `aigSubscribe()` | Never existed. Use `lib/agent-session.mjs`. |
+| Actor tokens minted by your backend as 5-minute JWTs | OAuth with `actor=app`; see `skills/linear-oauth/SKILL.md` |
 
-Settings → API → Agents → New agent. Or via API once granted `agents:create`. Capture:
-- `agentId`
-- `agent_oauth_token` (long-lived)
-- Webhook URL for interaction events
+## What an agent is
 
-## Agent interaction
+An agent is an OAuth application installed into a workspace as an **app user**.
+Once installed it behaves like a teammate: it can be @mentioned, delegated
+issues, and can comment on issues, projects and documents.
 
-When a user assigns the agent to an issue:
-- Linear sends a webhook event of type `Agent` with action `interaction`
-- Body includes `issue.id`, `actor` (user who triggered), `kind` (assigned, mentioned, replied)
-- Agent should respond by:
-  1. Acknowledging via `agentSignalCreate({ kind: "progress", message: "Working on it…" })`
-  2. Doing the work
-  3. Reporting completion via `agentSignalCreate({ kind: "completion", message: "Done — see comment" })`
-  4. Posting a comment with the result
+The key semantic: **assigning an issue to an agent is delegation, not
+reassignment.** The human assignee stays the owner and remains accountable.
+Do not write copy that implies the agent has taken the issue over.
 
-## Agent signals
+Agents are not billable seats. They cannot sign in, access admin functions, or
+manage users.
 
-Signals are lightweight status pings that render in the Linear UI as a small badge:
-- `progress` — "Running tests..." (yellow)
-- `completion` — "Tests passed" (green)
-- `request_input` — "Need approval" (blue, with button)
-- `error` — "Failed: ..." (red)
+## Agent sessions and activities
 
-```ts
-await client.agentSignalCreate({
-  agentId,
-  issueId,
-  kind: "progress",
-  message: "Compiling…",
-  metadata: { jobId: "..." }
-});
+Work is reported through a **session**, which holds an ordered list of
+**activities**.
+
+Session states: `pending`, `active`, `error`, `awaitingInput`, `complete`, `stale`.
+
+| Activity | Meaning | Terminal |
+|---|---|---|
+| `thought` | Internal reasoning, rendered collapsed | no |
+| `action` | A tool or command that was run | no |
+| `elicitation` | A question for the user; moves session to `awaitingInput` | no |
+| `response` | Finished successfully | **yes** |
+| `error` | Failed | **yes** |
+
+Two timing rules that cause silent breakage when missed:
+
+- Emit **within 10 seconds** of session creation, or Linear marks it `stale`.
+  Send a `thought` before doing any slow setup work.
+- A webhook receiver must return 2xx **within 5 seconds**. Acknowledge first,
+  then work asynchronously.
+
+Use `lib/agent-session.mjs`, which enforces both:
+
+```js
+import { AgentSession } from "../lib/agent-session.mjs";
+
+const session = new AgentSession(client, sessionId);
+await session.thought("Reading the issue and planning the change.");
+await session.action("Run tests", "pnpm test", "42 passed");
+await session.respond("Opened PR #128.");
 ```
 
-Signals are NOT comments — they're ephemeral. Use them for in-progress updates; use comments for permanent results.
+`session.guard(work)` wraps a unit of work so the session always terminates —
+a crashed worker still emits `error` rather than leaving the issue stuck in
+`active` forever. This is the single most important guardrail in the module.
 
-## AIG (Agent Intelligence Gateway)
+## Agent guidance
 
-The AIG (https://linear.app/developers/aig) is Linear's gateway for agent-to-agent communication. Use cases:
-- Pass context between agents (e.g. linear-issue-curator hands off to harness-linear-bridge)
-- Negotiate which agent should handle a multi-agent task
-- Aggregate signals from multiple sub-agents
+Workspaces and teams publish markdown **guidance** that is passed to every
+agent working there: which repository to use, how to reference issues in
+commits, what review process to follow.
 
-The plugin's `lib/aig.ts` provides:
-```ts
-export async function aigPublish(channel: string, msg: AIGMessage): Promise<void>;
-export function aigSubscribe(channel: string, handler: (msg: AIGMessage) => void): () => void;
-```
+- Workspace: Settings → Agents → Additional guidance
+- Team: team settings → Agents → Additional guidance (takes priority)
 
-## Actor authorization in agents
+Read guidance before acting and follow it. It is the workspace's convention
+layer, and users will judge the agent by whether it respects it.
 
-When an agent posts on behalf of a user:
-1. Mint an actor token via your backend (signs a JWT with `userId`, 5-min expiry)
-2. Include in `Linear-Actor-Token` header
-3. The action shows up in Linear's UI as performed by the user, with a small "via Agent: <name>" badge
+## Agent Skills
 
-```ts
-const headers = { "Linear-Actor-Token": actorToken };
-await fetch("https://api.linear.app/graphql", {
-  method: "POST",
-  headers: { ...headers, Authorization: `Bearer ${agentToken}` },
-  body: JSON.stringify({ query, variables })
-});
-```
+Users can save a good agent interaction as a reusable **skill**, invoked by
+slash command in the agent input or selected automatically when the context
+matches.
 
-## Best practices
+- Personal: Settings → Account → Agent personalization → Skills
+- Team-shared: team settings → AI & Agents → Agent skills
 
-- **Idempotency**: agents may receive the same interaction event twice (e.g. on retry). Dedupe by event ID.
-- **Timeouts**: emit a `progress` signal at least every 30s if the work is long-running, otherwise Linear shows "Agent unresponsive".
-- **Failure surfaces**: on error, emit `agentSignalCreate({ kind: "error" })` AND post a comment with the failure details. Don't silently fail.
-- **Scope minimisation**: don't request `admin` scope unless you genuinely manage workflows.
+Enumerate them with the Linear MCP tools `list_agent_skills` / `get_agent_skill`
+before proposing a workflow — the team may already have a sanctioned one.
+
+## Loops
+
+**Loops** are shared skills that run on a schedule or an event, letting Linear
+do background work: triage delegation, follow-ups, routine sweeps. Prefer a Loop
+over an external cron when the work is entirely inside Linear; use this plugin's
+conductor when the work needs a repository checkout.
+
+## Coding sessions
+
+Linear can run agentic coding itself. Delegating an issue starts a secure
+session on Claude Code or Codex in a managed sandbox, which drafts a PR and
+attaches the diff to the issue.
+
+- Models include Claude Fable 5, Claude Opus 5, Claude Sonnet 5, GPT-5.6 Sol.
+- **Coding environments** (Workspace settings → AI & Agents → Coding sessions →
+  Environments) configure runtimes, env vars, a prepare script, files, and
+  repository-specific guidance. One repository per environment.
+- Triage automations can start a coding session on arrival, filtered by label
+  or other properties.
+- Usage draws on the workspace's AI credits.
+- Requires the GitHub integration with code access.
+
+### Choosing between a coding session and this plugin's swarm
+
+| Use Linear coding sessions | Use `/linear:swarm` |
+|---|---|
+| One issue at a time, GitHub repo | Many issues in parallel, bounded concurrency |
+| No local infrastructure wanted | You need your own runners, caches, or network |
+| Managed sandbox is sufficient | Harness Code, or any non-GitHub host |
+| Billed via Linear AI credits | Billed via your own Claude Code usage |
+
+They compose: let Linear take first pass on triage, and run the swarm for
+planned cycle work.
+
+## Writing issues an agent can act on
+
+Delegation quality tracks issue quality. A well-scoped issue names the file or
+subsystem, states the expected behaviour change, points at the existing pattern
+to reuse, and says explicitly what must not change. A vague issue burns credits
+on exploration.

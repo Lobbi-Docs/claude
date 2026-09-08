@@ -47,5 +47,5 @@ Initiatives are above projects in the hierarchy: company-wide goals composed of 
 - Initiative target date is auto-warned if any child is past its target
 
 ## Bridge behaviour
-- Initiatives don't sync to Harness or Planner directly (too coarse-grained)
+- Initiatives don't sync to the VCS provider directly (too coarse-grained)
 - However, the `linear-initiative-planner` agent uses initiative roll-ups when generating quarterly Planner plans

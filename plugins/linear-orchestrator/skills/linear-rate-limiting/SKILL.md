@@ -33,7 +33,7 @@ Every response includes:
 - `X-Complexity` — this query's cost
 - `X-Complexity-Limit`, `X-Complexity-Remaining`, `X-Complexity-Reset`
 
-The `lib/client.ts` GraphQL wrapper exposes these as a callback:
+The `lib/linear-client.mjs` GraphQL client exposes these as a callback:
 ```ts
 client.onRateLimit((info) => {
   if (info.complexityRemaining < 1000) backoff(info.resetIn);

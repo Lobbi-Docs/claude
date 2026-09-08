@@ -36,4 +36,4 @@ Reassign one or many issues. Maps to `issueUpdate(id, { assigneeId })`.
 
 ## Side effects
 - If issue is in a "Triage" state, also calls `issueTriageAccept` to remove from triage queue
-- Emits a `linear.assign` event consumed by Harness/Planner bridges if either is enabled
+- Emits a `linear.assign` event consumed by the VCS bridge if either is enabled

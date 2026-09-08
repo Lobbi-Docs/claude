@@ -42,4 +42,4 @@ The `linear-sla-monitor` agent (haiku, polled every 15min):
 4. Aggregates daily and posts to project status updates
 
 ## Bridge behaviour
-- Critical breaches (P1, >2× SLA) trigger a Harness pipeline pause (if `harness-sync` configured) on any deploys touching the breached issue's repo
+- Critical breaches (P1, >2× SLA) trigger a Harness pipeline pause (if `/linear:sync` configured) on any deploys touching the breached issue's repo

@@ -37,7 +37,7 @@ description: Architecture overview of the linear-orchestrator plugin — bridges
             │  │ Bridge  │  │ Bridge   │  │
             │  └────┬────┘  └────┬─────┘  │
             │       │            │         │
-            │  SQLite state (lib/state.ts) │
+            │  Delegation ledger (lib/swarm) │
             └───────┼────────────┼─────────┘
                     │            │
                     ▼            ▼
@@ -81,7 +81,7 @@ description: Architecture overview of the linear-orchestrator plugin — bridges
 ### "Issue moved to In Progress"
 
 ```
-Linear → webhook → bridge dispatcher → harness-linear-bridge
+Linear → webhook → bridge dispatcher → vcs-linear-bridge
   → check if PR exists for issue
     if yes: PATCH /v1/repos/{repo}/pullreq/{n} { state: "open" }
     if no: log warning, no auto-create (would surprise the user)
@@ -93,7 +93,7 @@ Linear → webhook → bridge dispatcher → harness-linear-bridge
 ### "Harness deploy succeeded"
 
 ```
-Harness → webhook → bridge dispatcher → harness-linear-bridge
+Harness → webhook → bridge dispatcher → vcs-linear-bridge
   → extract Linear keys from deploy artifact metadata + PR title
   → for each Linear issue: comment + label `deployed:<env>`
   → if any issue is in state "Done", mark deploy as "shipped"
@@ -112,7 +112,7 @@ Graph delta poll → planner-linear-bridge
 ## Reconciliation
 
 Every 6h:
-1. Page recently-updated Linear issues, walk to mapped Harness/Planner state
+1. Page recently-updated Linear issues, walk to mapped the VCS provider state
 2. Page Harness PRs / Planner tasks, walk back to Linear
 3. Diff; auto-heal links (safe), report state drift (manual review)
 

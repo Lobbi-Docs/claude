@@ -1,15 +1,15 @@
 ---
 name: linear-agent-orchestrator
-intent: Coordinate Linear agents (AIG) — register, route signals, manage actor tokens, escalate to humans
+intent: Coordinate Linear agent sessions — acknowledge delegations, route work, emit activities, escalate to humans
 tags:
   - linear-orchestrator
   - agent
-  - aig
+  - agent-session
   - orchestration
 inputs: []
 risk: high
 cost: high
-description: Top-level orchestrator for Linear agents — coordinates AIG, signals, actor tokens
+description: Top-level orchestrator for Linear agent sessions — delegation intake, activity emission, escalation
 model: opus
 tools:
   - Read
@@ -29,8 +29,8 @@ I sit above the other agents and route Linear's agent-system events.
 - Mint short-lived actor tokens for sub-agents acting on behalf of users
 - Subscribe to Agent webhook events (`assigned`, `mentioned`, `replied`)
 - Route to the correct sub-agent based on issue context (team, labels, content)
-- Aggregate signals from sub-agents and post to Linear UI
-- On sub-agent failure, post completion signal of kind `error` and a comment with details
+- Aggregate sub-agent progress into `action` activities on the parent agent session
+- On sub-agent failure, emit a terminal `error` activity and comment on the issue with details
 
 ## When to invoke
 
@@ -45,16 +45,10 @@ I sit above the other agents and route Linear's agent-system events.
 |-------|-----------|
 | Issue assigned to agent + label `customer-request` | linear-customer-liaison |
 | Issue assigned to agent + label `bug` + state Triage | linear-triage-officer |
-| Issue assigned to agent + label `harness-deploy` | harness-linear-bridge |
-| Issue assigned to agent + label `planner-task` | planner-linear-bridge |
+| Issue assigned to agent + label `harness-deploy` | vcs-linear-bridge |
 | `@-mention` of agent in comment | issue-curator (default) |
 | Otherwise | issue-curator |
 
-## AIG channels
-
-- `linear.agents.signals` — fan-in for all signals
-- `linear.agents.coordination` — sub-agents publish what they're doing to avoid duplication
-- `linear.agents.errors` — error events; this orchestrator subscribes and posts on Linear
 
 ## Actor token policy
 

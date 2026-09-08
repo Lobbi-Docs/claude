@@ -40,7 +40,7 @@ Projects span issues across teams, have milestones, and produce status updates.
 - Without `--post`, returns recent updates
 
 ### `overview <projectId>`
-- Renders project overview (https://linear.app/docs/project-overview): scope, milestones, recent updates, deploy events from Harness, Planner mirror status
+- Renders project overview (https://linear.app/docs/project-overview): scope, milestones, recent updates, deploy events from Harness
 
 ### `template`
 - `template list`
@@ -52,4 +52,3 @@ Projects span issues across teams, have milestones, and produce status updates.
 
 ## Bridge behaviour
 - Project status updates are posted to a Slack channel via Harness Notifications (if configured)
-- Project completion triggers Planner plan archival (one-shot; user-confirmed)

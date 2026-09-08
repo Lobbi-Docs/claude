@@ -31,5 +31,4 @@ Maps to `commentCreate`, `commentUpdate`, `commentDelete`, `reactionCreate`.
 - Cross-issue links rendered as Linear smart references (e.g. `ENG-456`)
 
 ## Bridge fan-out
-- If a comment is created on a Linear issue mirrored to MS Planner, the `planner-linear-bridge` agent posts a copy as a Planner task comment (only if the parent task hasn't been deleted).
-- Comments from Harness PR threads are mirrored back as Linear comments by the `harness-linear-bridge` agent.
+- Comments from Harness PR threads are mirrored back as Linear comments by the `vcs-linear-bridge` agent.
