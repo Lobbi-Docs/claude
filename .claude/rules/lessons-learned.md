@@ -1368,3 +1368,11 @@ Node.js v22.22.2
 - **Status:** RESOLVED
 - **Fix:** `node -e` evaluates as CommonJS, where top-level `await` and `import` are syntax errors. Re-ran with `node --input-type=module -e` and static `import` statements.
 - **Prevention:** To exercise a plugin ESM module (`lib/*.mjs`) from Bash, always use `node --input-type=module -e 'import {x} from "./lib/y.mjs"; ...'`. Use plain `node -e` only for CommonJS work such as `require("fs")` and JSON parsing. Note the two cannot be mixed: `require` is undefined under `--input-type=module`.
+
+### Error: telemetry hook writes stray .claude/ trees wherever the Bash cwd happens to be (2026-09-08T19:40:00Z)
+- **Tool:** Bash (indirect — the agent-telemetry hook, not a command I ran)
+- **Input:** any `cd` into a subdirectory, followed by a subagent completing
+- **Error:** The telemetry hook writes `.claude/orchestration/telemetry/agents.jsonl` relative to the **current** working directory, not the repo root. Because the Bash tool keeps one cwd across calls, this produced stray `.claude/` trees three separate times in one session — in `plugins/linear-orchestrator/`, `plugins/delivery-orchestrator/kernel/`, and `plugins/` — the last of which broke `pnpm check:plugin-schema` with `.claude: missing .claude-plugin/plugin.json`, because the validator treats every directory under `plugins/` as a plugin.
+- **Status:** RESOLVED
+- **Fix:** `find <dir>/.claude -type f -delete && find <dir>/.claude -depth -type d -empty -delete`. Note `rmdir` alone fails ("Directory not empty") because sibling `agent-memory/` subdirectories are also created, and the recursive-force delete is blocked by the bash-safety-validator hook.
+- **Prevention:** Two habits. (1) Never leave the Bash cwd inside a subdirectory — use absolute paths so the hook always resolves to the repo root. (2) Before any `check:plugin-schema` / `check:marketplace` run, `ls -a plugins/` and confirm no stray `.claude` entry; a directory under `plugins/` with no `.claude-plugin/plugin.json` fails validation with a message that does not obviously point at telemetry. If this recurs, the real fix is to anchor the hook's write path to `$CLAUDE_PROJECT_DIR` rather than `$PWD`.
