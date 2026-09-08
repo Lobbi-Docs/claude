@@ -41,6 +41,7 @@ const TRANSITIONS = Object.freeze({
  * @property {string|null} workerId
  * @property {string|null} sessionId  Linear agent session id, when one exists.
  * @property {number} attempts
+ * @property {number} releases  Voluntary give-backs; never refunded.
  * @property {number} claimedAt
  * @property {number} heartbeatAt
  * @property {number} leaseMs
@@ -52,11 +53,13 @@ export class DelegationLedger {
    * @param {object} [opts]
    * @param {number} [opts.leaseMs]     How long a claim survives without a heartbeat.
    * @param {number} [opts.maxAttempts] Attempts before an issue is parked as failed.
+   * @param {number} [opts.maxReleases]  Voluntary releases before an issue is parked.
    * @param {() => number} [opts.now]
    */
   constructor(opts = {}) {
     this.leaseMs = opts.leaseMs ?? 15 * 60_000;
     this.maxAttempts = opts.maxAttempts ?? 3;
+    this.maxReleases = opts.maxReleases ?? 3;
     this._now = opts.now ?? (() => Date.now());
     /** @type {Map<string, Claim>} */
     this.claims = new Map();
@@ -75,6 +78,7 @@ export class DelegationLedger {
         workerId: null,
         sessionId: null,
         attempts: 0,
+        releases: 0,
         claimedAt: 0,
         heartbeatAt: 0,
         leaseMs: this.leaseMs,
@@ -120,6 +124,7 @@ export class DelegationLedger {
       return claim.workerId === workerId ? claim : null;
     }
     if (claim.state === "failed" && claim.attempts >= this.maxAttempts) return null;
+    if (claim.state === "released" && claim.releases >= this.maxReleases) return null;
 
     this._transition(claim, "claimed");
     claim.workerId = workerId;
@@ -179,6 +184,13 @@ export class DelegationLedger {
   /**
    * Give the issue back without consuming a retry — used when a worker decides
    * the issue is not actually actionable (missing spec, blocked dependency).
+   *
+   * Refunding the attempt is deliberate, but it cannot be unconditional: a
+   * worker that releases every time would otherwise be re-dispatched forever,
+   * a livelock that burns a slot on each pass and never surfaces to a human.
+   * `releases` is therefore counted separately and never refunded, and once it
+   * reaches `maxReleases` the issue is parked like any other exhausted claim.
+   *
    * @param {string} issueKey
    * @param {string} workerId
    */
@@ -186,7 +198,12 @@ export class DelegationLedger {
     const claim = this._requireOwned(issueKey, workerId);
     this._transition(claim, "released");
     claim.workerId = null;
-    claim.attempts = Math.max(0, claim.attempts - 1);
+    claim.releases += 1;
+    if (claim.releases < this.maxReleases) {
+      claim.attempts = Math.max(0, claim.attempts - 1);
+    } else {
+      claim.lastError = `Released ${claim.releases} times without progress; parked for review.`;
+    }
     return claim;
   }
 
@@ -234,7 +251,8 @@ export class DelegationLedger {
     return candidates.filter((key) => {
       const claim = this.claims.get(key);
       if (!claim) return true;
-      if (claim.state === "unclaimed" || claim.state === "released") return true;
+      if (claim.state === "unclaimed") return true;
+      if (claim.state === "released") return claim.releases < this.maxReleases;
       if (claim.state === "failed") return claim.attempts < this.maxAttempts;
       return false;
     });
@@ -261,7 +279,16 @@ export class DelegationLedger {
    */
   static restore(snap, opts = {}) {
     const ledger = new DelegationLedger(opts);
-    for (const claim of snap?.claims ?? []) ledger.claims.set(claim.issueKey, { ...claim });
+    for (const claim of snap?.claims ?? []) {
+      // Default the counters: a snapshot taken before `releases` existed would
+      // otherwise restore it as undefined, and `undefined < maxReleases` is
+      // false — which would park every restored claim on sight.
+      ledger.claims.set(claim.issueKey, {
+        ...claim,
+        attempts: claim.attempts ?? 0,
+        releases: claim.releases ?? 0,
+      });
+    }
     return ledger;
   }
 }

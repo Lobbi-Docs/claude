@@ -217,6 +217,10 @@ export class LinearClient {
             rateLimit: this.rateLimit,
           });
         }
+        // Drain the body before retrying. Under undici an unconsumed body
+        // holds its connection out of the pool until GC, and this is the hot
+        // path during sustained rate-limiting.
+        await res.text?.().catch(() => {});
         await this._sleep(this._retryDelay(res, attempt));
         attempt += 1;
         continue;

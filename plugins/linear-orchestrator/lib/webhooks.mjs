@@ -95,11 +95,19 @@ export function verifyWebhook(rawBody, signatureHex, secret, opts = {}) {
     return { ok: false, reason: "malformed_body" };
   }
 
-  // Replay protection. Linear embeds the send time in the payload itself.
+  // Replay protection. Linear embeds the send time in the payload itself, and
+  // it is covered by the signature.
+  //
+  // A missing or non-numeric timestamp is REJECTED rather than skipped. Failing
+  // open here would silently disable replay protection for any delivery that
+  // omits the field, which is the wrong default for a security control.
   const ts = parsed?.webhookTimestamp;
+  if (typeof ts !== "number" || !Number.isFinite(ts)) {
+    return { ok: false, reason: "stale_timestamp" };
+  }
   const maxAge = opts.maxAgeMs ?? 60_000;
   const now = opts.now ?? Date.now();
-  if (typeof ts === "number" && Math.abs(now - ts) > maxAge) {
+  if (Math.abs(now - ts) > maxAge) {
     return { ok: false, reason: "stale_timestamp" };
   }
 

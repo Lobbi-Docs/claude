@@ -219,6 +219,14 @@ export function intentForEvent(event) {
       return { transition: null, comment: true };
     case "pr.review":
       return { transition: null, comment: true };
+    case "pr.comment":
+      // Relaying the discussion back onto the issue is the point of
+      // normalising a comment event; silently dropping it was a gap.
+      return { transition: null, comment: true };
+    case "pr.updated":
+      // Deliberately quiet: `synchronize` fires on every push and would
+      // otherwise spam the issue on each commit.
+      return { transition: null, comment: false };
     case "deploy.succeeded":
       return { transition: null, comment: true };
     case "deploy.failed":

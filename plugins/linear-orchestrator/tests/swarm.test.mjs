@@ -44,11 +44,19 @@ test("only the holding worker may advance a claim", () => {
   assert.throws(() => ledger.complete("ENG-3", "w2"), /does not hold the claim/);
 });
 
-test("illegal transitions are refused", () => {
+test("illegal transitions are refused by the transition table", () => {
+  // This must exercise _transition's guard, not _requireOwned's. Every
+  // terminal method nulls workerId, so calling one twice trips the OWNERSHIP
+  // check and never reaches the transition table — which is what this test
+  // used to do, leaving the transition guard entirely uncovered.
   const ledger = new DelegationLedger();
   ledger.claim("ENG-4", "w1");
   ledger.start("ENG-4", "w1");
+  // Still owned by w1 and already "running", so running -> running is illegal.
+  assert.throws(() => ledger.start("ENG-4", "w1"), /Illegal claim transition/);
+
   ledger.complete("ENG-4", "w1");
+  // Ownership is a separate guard, checked first once workerId is cleared.
   assert.throws(() => ledger.complete("ENG-4", "w1"), /does not hold the claim/);
   assert.deepEqual([...CLAIM_STATES].includes("released"), true);
 });
@@ -100,6 +108,43 @@ test("release hands work back without consuming a retry", () => {
   ledger.release("ENG-8", "w1");
   assert.equal(ledger.claims.get("ENG-8").attempts, 0);
   assert.deepEqual(ledger.dispatchable(["ENG-8"]), ["ENG-8"]);
+});
+
+test("repeated releases are bounded, so a release loop cannot livelock", () => {
+  // Regression: `release()` refunded the attempt unconditionally, so a worker
+  // that released every time was re-dispatched forever — burning a slot on each
+  // pass and never surfacing to a human.
+  const ledger = new DelegationLedger({ maxAttempts: 2, maxReleases: 3 });
+  for (let i = 0; i < 3; i++) {
+    const claim = ledger.claim("ENG-20", `w${i}`);
+    assert.ok(claim, `release ${i} should still be dispatchable`);
+    ledger.release("ENG-20", `w${i}`);
+  }
+  assert.equal(ledger.claims.get("ENG-20").releases, 3);
+  assert.equal(ledger.claim("ENG-20", "w4"), null, "parked after maxReleases");
+  assert.deepEqual(ledger.dispatchable(["ENG-20"]), [], "and no longer dispatchable");
+});
+
+test("an expired lease is not counted as a voluntary release", () => {
+  // Lease expiry also lands in `released`, but it is not the worker giving up —
+  // it must not consume the release budget.
+  let now = 0;
+  const ledger = new DelegationLedger({ leaseMs: 100, maxReleases: 2, now: () => now });
+  ledger.claim("ENG-21", "w1");
+  ledger.start("ENG-21", "w1");
+  now = 5000;
+  assert.deepEqual(ledger.sweepExpired(), ["ENG-21"]);
+  assert.equal(ledger.claims.get("ENG-21").releases, 0);
+  assert.deepEqual(ledger.dispatchable(["ENG-21"]), ["ENG-21"]);
+});
+
+test("restoring a snapshot without the releases counter does not park the claim", () => {
+  // Backward compatibility: `undefined < maxReleases` is false, which would
+  // have parked every claim restored from a pre-`releases` snapshot.
+  const legacy = { claims: [{ issueKey: "ENG-22", state: "released", workerId: null }] };
+  const ledger = DelegationLedger.restore(legacy);
+  assert.equal(ledger.claims.get("ENG-22").releases, 0);
+  assert.deepEqual(ledger.dispatchable(["ENG-22"]), ["ENG-22"]);
 });
 
 test("activeCount and snapshot round-trip through restore", () => {
@@ -297,6 +342,55 @@ test("a successful run acknowledges, narrates, then responds", async () => {
 
   assert.deepEqual(posted.map((p) => p.type), ["thought", "action", "response"]);
   assert.equal(posted.at(-1).body, "Opened PR #7");
+});
+
+test("a failed success-notification does not relabel a successful run as crashed", async () => {
+  // Regression, and the worst bug found in review: `ledger.complete()` ran,
+  // then an unguarded `session.respond()` threw, which fell through to the
+  // crash handler — emitting run.crashed and posting an `error` activity for
+  // work that actually succeeded. Worse than silence, because it lies.
+  const events = [];
+  const client = {
+    async request(_q, variables) {
+      if (variables.input.content.type === "response") throw new Error("network blip");
+      return { agentActivityCreate: { success: true } };
+    },
+  };
+  const conductor = new Conductor({
+    client,
+    createSession: async () => "sess-1",
+    source: async () => issues(["ENG-1"]),
+    worker: async () => ({ ok: true, summary: "Opened PR #9" }),
+    onEvent: (e) => events.push(e),
+  });
+
+  await conductor.tick();
+  await conductor.drain();
+
+  const kinds = events.map((e) => e.type);
+  assert.ok(kinds.includes("run.complete"), "the run succeeded and must be reported as such");
+  assert.ok(!kinds.includes("run.crashed"), "a notification failure is not a crash");
+  assert.ok(kinds.includes("session.notify_failed"), "but the notification failure is surfaced");
+  assert.equal(conductor.ledger.claims.get("ENG-1").state, "complete");
+});
+
+test("duplicate identifiers from the source do not waste dispatch slots", async () => {
+  // dispatchable() returned the dupe twice, both copies consumed capacity, and
+  // the second claim was refused — starving a real candidate for the tick.
+  const started = [];
+  const conductor = new Conductor({
+    concurrency: 2,
+    source: async () => issues(["ENG-1", "ENG-1", "ENG-3"]),
+    worker: async (ctx) => {
+      started.push(ctx.issue.identifier);
+      return { ok: true };
+    },
+  });
+
+  await conductor.tick();
+  await conductor.drain();
+
+  assert.deepEqual(started.sort(), ["ENG-1", "ENG-3"], "both distinct issues get a slot");
 });
 
 test("a stalled worker is timed out rather than hanging the swarm", async () => {

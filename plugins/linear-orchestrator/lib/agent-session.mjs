@@ -249,17 +249,13 @@ export class AgentSession {
    *
    * @template T
    * @param {() => Promise<T>} work
-   * @param {{ onSuccess?: (value: T) => string, onError?: (err: Error) => string }} [opts]
+   * @param {{ onSuccess?: (value: T) => string, onError?: (err: Error) => string, onNotifyError?: (err: Error) => void }} [opts]
    * @returns {Promise<T>}
    */
   async guard(work, opts = {}) {
+    let value;
     try {
-      const value = await work();
-      if (!this.terminated) {
-        const body = opts.onSuccess ? opts.onSuccess(value) : "Done.";
-        await this.respond(body);
-      }
-      return value;
+      value = await work();
     } catch (err) {
       const error = /** @type {Error} */ (err);
       if (!this.terminated) {
@@ -269,6 +265,18 @@ export class AgentSession {
       }
       throw error;
     }
+
+    // Reporting success is best-effort and deliberately outside the try above.
+    // If the work succeeded but announcing it fails, the caller must still get
+    // its value: swallowing the result and throwing would report completed work
+    // as failed, which is worse than a missing activity.
+    if (!this.terminated) {
+      const body = opts.onSuccess ? opts.onSuccess(value) : "Done.";
+      await this.respond(body).catch((err) => {
+        if (opts.onNotifyError) opts.onNotifyError(/** @type {Error} */ (err));
+      });
+    }
+    return value;
   }
 }
 

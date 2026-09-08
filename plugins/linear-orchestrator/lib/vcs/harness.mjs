@@ -117,7 +117,13 @@ export class HarnessProvider extends VcsProvider {
       },
     });
     if (!res.ok) {
-      throw new Error(`Harness ${res.status} ${path}: ${await res.text()}`);
+      // Body attached as a property rather than folded into `message` — see the
+      // matching note in vcs/github.mjs; `error.message` can reach a public
+      // Linear activity.
+      const err = new Error(`Harness ${res.status} on ${path}`);
+      err.status = res.status;
+      err.responseBody = await res.text().catch(() => "");
+      throw err;
     }
     return res.status === 204 ? null : res.json();
   }
@@ -143,7 +149,8 @@ export class HarnessProvider extends VcsProvider {
         login: pr.author?.display_name,
         email: pr.author?.email,
       },
-      labels: (pr.labels ?? []).map((l) => (typeof l === "string" ? l : (l.key ?? l.value ?? ""))),
+      // Null-safe: see the matching note in vcs/github.mjs.
+      labels: (pr.labels ?? []).map((l) => (typeof l === "string" ? l : (l?.key ?? l?.value ?? ""))),
       mergedAt: pr.merged ? new Date(pr.merged).toISOString() : null,
       checksState: "unknown",
     };

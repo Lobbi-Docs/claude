@@ -127,6 +127,27 @@ test("guard does not mask the original error if reporting the failure also fails
   );
 });
 
+test("guard still returns the value when only the success notification fails", async () => {
+  // Regression: a transient failure posting the closing activity used to fall
+  // into the catch block, discard the successful result, and rethrow — turning
+  // completed work into a reported failure.
+  const notifyErrors = [];
+  const client = {
+    async request(_q, variables) {
+      if (variables.input.content.type === "response") throw new Error("network blip");
+      return { agentActivityCreate: { success: true } };
+    },
+  };
+  const session = new AgentSession(client, "sess-8");
+
+  const value = await session.guard(async () => 42, {
+    onNotifyError: (err) => notifyErrors.push(err.message),
+  });
+
+  assert.equal(value, 42, "the work succeeded, so its value must survive");
+  assert.deepEqual(notifyErrors, ["network blip"], "the notification failure is surfaced");
+});
+
 test("guard leaves an already-terminated session alone", async () => {
   const client = stubClient();
   const session = new AgentSession(client, "sess-6");

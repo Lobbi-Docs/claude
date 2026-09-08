@@ -100,9 +100,12 @@ export class Conductor {
     if (capacity <= 0) return [];
 
     const issues = await this.source();
+    // De-duplicate by identifier: a source that returns the same issue twice
+    // would otherwise consume two capacity slots for one issue (the second
+    // claim is refused and the slot is simply lost), starving a real candidate.
     const byKey = new Map(issues.map((i) => [i.identifier, i]));
     const eligible = this.ledger
-      .dispatchable(issues.map((i) => i.identifier))
+      .dispatchable([...byKey.keys()])
       .filter((key) => !this.inFlight.has(key))
       .slice(0, capacity);
 
@@ -131,14 +134,29 @@ export class Conductor {
    */
   async _dispatch(issue, workerId, backoffMs) {
     const key = issue.identifier;
+
+    /** @type {AgentSession|null} */
+    let session = null;
+
+    // Start the heartbeat BEFORE any awaiting. The claim is already held at
+    // this point, but its lease is only as fresh as `claimedAt`; the backoff
+    // sleep and the session-creation round trips below can together outlast
+    // `leaseMs`, at which point the sweep would hand this issue to a second
+    // worker while this one is still starting up. That is precisely the
+    // double-dispatch the ledger exists to prevent.
+    let heartbeat = setInterval(() => {
+      try {
+        this.ledger.heartbeat(key, workerId);
+      } catch {
+        /* claim already resolved or reassigned */
+      }
+    }, Math.max(1000, Math.floor(this.ledger.leaseMs / 3)));
+    if (typeof heartbeat.unref === "function") heartbeat.unref();
+
     if (backoffMs > 0) {
       this._emit("run.backoff", { issueKey: key, backoffMs });
       await this._sleep(backoffMs);
     }
-
-    /** @type {AgentSession|null} */
-    let session = null;
-    let heartbeat = null;
 
     try {
       if (this.createSession && this.client) {
@@ -153,17 +171,6 @@ export class Conductor {
 
       this.ledger.start(key, workerId, session?.sessionId ?? null);
       this._emit("run.state", { issueKey: key, state: "preparingWorkspace" });
-
-      // Keep the claim alive while the worker runs, so the lease sweep does
-      // not hand this issue to a second worker mid-flight.
-      heartbeat = setInterval(() => {
-        try {
-          this.ledger.heartbeat(key, workerId);
-        } catch {
-          /* claim already resolved */
-        }
-      }, Math.max(1000, Math.floor(this.ledger.leaseMs / 3)));
-      if (typeof heartbeat.unref === "function") heartbeat.unref();
 
       const workspace = this.workspaces ? await this.workspaces.create(key) : null;
 
@@ -183,17 +190,39 @@ export class Conductor {
 
       this._emit("run.state", { issueKey: key, state: "finishing" });
 
+      // The outcome is decided here and recorded in the ledger. Posting it to
+      // Linear is a separate, best-effort step: a transient failure while
+      // announcing the result must never change what the result *was*. Letting
+      // a failed `session.respond()` fall through to the catch below would
+      // emit `run.crashed` and post an `error` activity for work that actually
+      // succeeded — worse than staying quiet, because it actively lies.
       if (result?.ok) {
         this.ledger.complete(key, workerId);
-        if (session && !session.terminated) {
-          await session.respond(result.summary ?? `Finished ${key}.`);
-        }
         this._emit("run.complete", { issueKey: key, result });
+        if (session && !session.terminated) {
+          await session
+            .respond(result.summary ?? `Finished ${key}.`)
+            .catch((err) =>
+              this._emit("session.notify_failed", {
+                issueKey: key,
+                outcome: "complete",
+                error: err.message,
+              }),
+            );
+        }
       } else {
         const reason = result?.summary ?? "Worker reported failure without a summary.";
         this.ledger.fail(key, workerId, reason);
-        if (session && !session.terminated) await session.fail(reason);
         this._emit("run.failed", { issueKey: key, reason });
+        if (session && !session.terminated) {
+          await session.fail(reason).catch((err) =>
+            this._emit("session.notify_failed", {
+              issueKey: key,
+              outcome: "failed",
+              error: err.message,
+            }),
+          );
+        }
       }
       return;
     } catch (err) {

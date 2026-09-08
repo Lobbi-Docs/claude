@@ -68,8 +68,16 @@ A crashed worker that does not close its agent session leaves the issue showing
 activity is emitted on both paths, and never let the failure-reporting error
 mask the original one.
 
-`AgentSession.guard()` in `lib/agent-session.mjs` does this; `Conductor._dispatch`
-does it again at the outer layer for crashes that escape the worker entirely.
+`AgentSession.guard()` in `lib/agent-session.mjs` does this for a single unit of
+work. `Conductor._dispatch` does not call `guard()` — it implements the same
+contract inline, because it must also settle the *ledger claim*, which `guard()`
+knows nothing about.
+
+The subtlety both must get right: **announcing an outcome is not the same as
+deciding it.** Record the outcome first, then report it best-effort. If a
+transient failure while posting the closing activity is allowed to fall into the
+crash path, successful work gets reported as crashed — which is worse than a
+missing activity, because it actively misinforms.
 
 ## Backoff and giving up
 

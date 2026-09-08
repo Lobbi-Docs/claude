@@ -148,6 +148,51 @@ test("GitHub normalizes a merged pull_request into pr.merged with its issue keys
   assert.deepEqual(event.issueKeys, ["ENG-7", "ENG-8"]);
 });
 
+test("a null label entry from a malformed payload does not crash normalization", () => {
+  // Regression: `l.name` / `l.key` threw on a null element. normalizeEvent runs
+  // on untrusted inbound webhook JSON, so this was a one-request DoS.
+  const gh = new GitHubProvider({ token: "t", owner: "o" });
+  const ghEvent = gh.normalizeEvent(
+    { "x-github-event": "pull_request" },
+    {
+      action: "opened",
+      repository: { name: "app" },
+      pull_request: { number: 1, state: "open", labels: [null, { name: "bug" }, "raw"], head: {}, base: {}, user: {} },
+    },
+  );
+  assert.deepEqual(ghEvent.pullRequest.labels, ["", "bug", "raw"]);
+
+  const hn = new HarnessProvider({ apiToken: "t", accountId: "a" });
+  const hnEvent = hn.normalizeEvent(
+    {},
+    { trigger: "pullreq_created", repo: { identifier: "app" }, pull_req: { number: 1, labels: [null] } },
+  );
+  assert.deepEqual(hnEvent.pullRequest.labels, [""]);
+});
+
+test("GitHub URL path segments are encoded so repo cannot escape the owner", () => {
+  // Regression: fetch/URL apply dot-segment normalization, so an unencoded
+  // repo of "../other/repo" rewrote the path and sent the token out of scope.
+  const seen = [];
+  const gh = new GitHubProvider({
+    token: "t",
+    owner: "myowner",
+    fetch: async (url) => {
+      seen.push(new URL(url).pathname);
+      return { ok: true, status: 200, json: async () => ({ number: 1, head: {}, base: {}, user: {} }) };
+    },
+  });
+
+  return gh.getPullRequest("../otherowner/otherrepo", 5).then(() => {
+    assert.equal(seen.length, 1);
+    assert.ok(
+      seen[0].startsWith("/repos/myowner/"),
+      `path escaped the configured owner: ${seen[0]}`,
+    );
+    assert.ok(!seen[0].includes("/otherowner/"), "must not resolve to another owner");
+  });
+});
+
 test("GitHub distinguishes a closed-unmerged PR from a merged one", () => {
   const gh = new GitHubProvider({ token: "t", owner: "o" });
   const event = gh.normalizeEvent(

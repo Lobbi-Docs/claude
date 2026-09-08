@@ -16,6 +16,22 @@ import { VcsProvider, extractIssueKeys } from "./provider.mjs";
 const GITHUB_API = "https://api.github.com";
 
 /**
+ * Encode one URL path segment.
+ *
+ * Load-bearing, not cosmetic: `fetch`/`URL` apply RFC 3986 dot-segment
+ * normalisation before sending, so interpolating a raw `repo` of
+ * `../otherowner/otherrepo` rewrites the path to `/repos/otherowner/otherrepo`
+ * and sends the bridge's own token outside the configured owner. A literal `?`
+ * likewise injects query parameters. Encode every caller-supplied segment.
+ *
+ * @param {string|number} value
+ * @returns {string}
+ */
+function seg(value) {
+  return encodeURIComponent(String(value));
+}
+
+/**
  * @param {"open"|"closed"} state
  * @param {boolean} draft
  * @param {string|null} mergedAt
@@ -70,7 +86,13 @@ export class GitHubProvider extends VcsProvider {
       },
     });
     if (!res.ok) {
-      throw new Error(`GitHub ${res.status} ${path}: ${await res.text()}`);
+      // The response body is attached as a property, not folded into `message`.
+      // Conductor crash handling posts `error.message` to a *public* Linear
+      // activity, so an upstream body must not ride along into it.
+      const err = new Error(`GitHub ${res.status} on ${path}`);
+      err.status = res.status;
+      err.responseBody = await res.text().catch(() => "");
+      throw err;
     }
     return res.status === 204 ? null : res.json();
   }
@@ -92,25 +114,27 @@ export class GitHubProvider extends VcsProvider {
       targetBranch: pr.base?.ref ?? "",
       repo,
       author: { id: String(pr.user?.id ?? ""), login: pr.user?.login },
-      labels: (pr.labels ?? []).map((l) => (typeof l === "string" ? l : l.name)),
+      // Null-safe: a malformed webhook payload can carry a null label entry,
+      // and this runs on untrusted inbound JSON.
+      labels: (pr.labels ?? []).map((l) => (typeof l === "string" ? l : (l?.name ?? ""))),
       mergedAt: pr.merged_at ?? null,
       checksState: "unknown",
     };
   }
 
   async getPullRequest(repo, number) {
-    const pr = await this._req(`/repos/${this.owner}/${repo}/pulls/${number}`);
+    const pr = await this._req(`/repos/${this.owner}/${seg(repo)}/pulls/${seg(number)}`);
     return this._normalizePr(pr, repo);
   }
 
   async listOpenPullRequests(repo) {
-    const prs = await this._req(`/repos/${this.owner}/${repo}/pulls?state=open&per_page=100`);
+    const prs = await this._req(`/repos/${this.owner}/${seg(repo)}/pulls?state=open&per_page=100`);
     return (prs ?? []).map((pr) => this._normalizePr(pr, repo));
   }
 
   async createBranch(repo, name, fromRef = "main") {
-    const base = await this._req(`/repos/${this.owner}/${repo}/git/ref/heads/${fromRef}`);
-    await this._req(`/repos/${this.owner}/${repo}/git/refs`, {
+    const base = await this._req(`/repos/${this.owner}/${seg(repo)}/git/ref/heads/${seg(fromRef)}`);
+    await this._req(`/repos/${this.owner}/${seg(repo)}/git/refs`, {
       method: "POST",
       body: JSON.stringify({ ref: `refs/heads/${name}`, sha: base.object.sha }),
     });
@@ -118,14 +142,14 @@ export class GitHubProvider extends VcsProvider {
 
   async commentOnPullRequest(repo, number, body) {
     // PR conversation comments go through the Issues API on GitHub.
-    await this._req(`/repos/${this.owner}/${repo}/issues/${number}/comments`, {
+    await this._req(`/repos/${this.owner}/${seg(repo)}/issues/${seg(number)}/comments`, {
       method: "POST",
       body: JSON.stringify({ body }),
     });
   }
 
   async addLabel(repo, number, label) {
-    await this._req(`/repos/${this.owner}/${repo}/issues/${number}/labels`, {
+    await this._req(`/repos/${this.owner}/${seg(repo)}/issues/${seg(number)}/labels`, {
       method: "POST",
       body: JSON.stringify({ labels: [label] }),
     });

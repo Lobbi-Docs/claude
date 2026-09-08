@@ -108,6 +108,16 @@ test("a signature of the wrong length is rejected without throwing", () => {
   assert.equal(verifyWebhook(raw, "abcd", SECRET).reason, "bad_signature");
 });
 
+test("a delivery with no webhookTimestamp is rejected, not waved through", () => {
+  // The freshness check used to skip silently when the field was absent, which
+  // disables replay protection for exactly the deliveries that lack it.
+  const { raw, sig } = signedBody({ action: "create", type: "Issue" });
+  assert.deepEqual(verifyWebhook(raw, sig, SECRET), { ok: false, reason: "stale_timestamp" });
+
+  const bad = signedBody({ webhookTimestamp: "not-a-number" });
+  assert.equal(verifyWebhook(bad.raw, bad.sig, SECRET).reason, "stale_timestamp");
+});
+
 test("normalizeEvent extracts the delivery id, action and changed fields", () => {
   const event = normalizeEvent(
     { "Linear-Delivery": "d-1", "Linear-Event": "Issue" },
