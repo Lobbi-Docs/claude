@@ -1,0 +1,2196 @@
+{
+  "version": 1,
+  "plugin": "delivery-orchestrator",
+  "type": "agents",
+  "generatedBy": "scripts/generate-plugin-indexes.mjs",
+  "entries": [
+    {
+      "name": "github-orchestrator:actions-optimizer",
+      "intent": "Reduce GitHub Actions wall-clock time and cost through cache, job graph, matrix, concurrency, and path-filter changes",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "ci"
+      ],
+      "inputs": [
+        "workflow"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/actions-optimizer.md"
+    },
+    {
+      "name": "advanced-orchestration-patterns",
+      "intent": "Implements sophisticated orchestration patterns including Blackboard, Circuit Breaker, Dynamic Replanning, Hierarchical Decomposition, and Saga patterns for resilient multi-agent coordination",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "advanced-orchestration-patterns"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/advanced-orchestration-patterns.md"
+    },
+    {
+      "name": "github-orchestrator:adversarial-verifier",
+      "intent": "Attempt to refute a review finding and default to refuted when the evidence is not conclusive",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "finding"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/adversarial-verifier.md"
+    },
+    {
+      "name": "github-orchestrator:agent-delegator",
+      "intent": "Decide what work to hand to in-GitHub agents, prepare the issue as a prompt, and track the resulting pull requests",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "agents"
+      ],
+      "inputs": [
+        "target",
+        "action"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/agent-delegator.md"
+    },
+    {
+      "name": "agent-router",
+      "intent": "Dynamic agent discovery and routing - queries main registry to select specialized code agents based on Jira context, file patterns, and task keywords",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "agent-router"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/agent-router.md"
+    },
+    {
+      "name": "github-orchestrator:api-contract-reviewer",
+      "intent": "Detect breaking changes to public interfaces, schemas, and wire formats, and require a migration path for each",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "diff",
+        "prNumber"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/api-contract-reviewer.md"
+    },
+    {
+      "name": "approval-orchestrator",
+      "intent": "Multi-level approval workflow orchestrator with gates, escalation rules, delegation, and comprehensive audit trails for PR, deployment, and release approvals",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "approval-orchestrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/approval-orchestrator.md"
+    },
+    {
+      "name": "batch-commit-processor",
+      "intent": "Process multiple commits in batch with time aggregation and comment deduplication",
+      "tags": [
+        "jira",
+        "git",
+        "batch-processing",
+        "smart-commits",
+        "aggregation"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/batch-commit-processor.md"
+    },
+    {
+      "name": "batch-processor",
+      "intent": "Processes bulk Jira operations with intelligent batching, rate limiting, rollback support, and comprehensive progress tracking",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "batch-processor"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/batch-processor.md"
+    },
+    {
+      "name": "github-orchestrator:branch-strategist",
+      "intent": "Choose the correct base branch and name for a change, and keep branches current against a moving base",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "delivery"
+      ],
+      "inputs": [
+        "goal",
+        "baseHint"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "agents/branch-strategist.md"
+    },
+    {
+      "name": "github-orchestrator:build-doctor",
+      "intent": "Diagnose and repair build, compile, lint, and typecheck failures by root cause rather than by silencing the error",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "ci"
+      ],
+      "inputs": [
+        "errorOutput",
+        "job"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/build-doctor.md"
+    },
+    {
+      "name": "bulk-importer",
+      "intent": "Imports issues from CSV, Excel, and JSON files with field mapping, validation, duplicate detection, and comprehensive error handling",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "bulk-importer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/bulk-importer.md"
+    },
+    {
+      "name": "chain-of-thought-reasoner",
+      "intent": "Linear step-by-step reasoning agent for sequential problem solving. ALWAYS queries Context7 for documentation before reasoning about any library, framework, or API.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "chain-of-thought-reasoner"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/chain-of-thought-reasoner.md"
+    },
+    {
+      "name": "github-orchestrator:changelog-scribe",
+      "intent": "Write changelog entries and release notes describing user-visible effects rather than restating commit subjects",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "release"
+      ],
+      "inputs": [
+        "range",
+        "version"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "agents/changelog-scribe.md"
+    },
+    {
+      "name": "checkpoint-manager",
+      "intent": "Serializes and restores project state. Writes phase checkpoints, enables resume from any checkpoint. Keeps rolling window of last 10 checkpoints.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "checkpoint-manager"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/checkpoint-manager.md"
+    },
+    {
+      "name": "checkpoint-pr-manager",
+      "intent": "Manage incremental draft PRs during CODE phase when splitting strategy requires multiple PRs",
+      "tags": [
+        "jira",
+        "pr",
+        "checkpoint",
+        "incremental",
+        "splitting"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/checkpoint-pr-manager.md"
+    },
+    {
+      "name": "github-orchestrator:ci-triage-analyst",
+      "intent": "Classify each failing CI check as real regression, flaky, infrastructure, base-branch breakage, or config drift before anything is changed",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "ci"
+      ],
+      "inputs": [
+        "prNumber",
+        "runId"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/ci-triage-analyst.md"
+    },
+    {
+      "name": "code-quality-enforcer",
+      "intent": "Expert agent for enforcing SOLID principles, clean code standards, and architectural patterns across the codebase with automated analysis and refactoring suggestions",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "code-quality-enforcer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/code-quality-enforcer.md"
+    },
+    {
+      "name": "code-reviewer",
+      "intent": "Comprehensive code reviewer for orchestration workflow - deep analysis of logic, security, performance, accessibility, test coverage, and documentation quality before PR creation",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "code-reviewer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/code-reviewer.md"
+    },
+    {
+      "name": "commit-message-generator",
+      "intent": "Generates high-quality conventional commit messages from Jira issue context and git diff analysis",
+      "tags": [
+        "jira",
+        "git",
+        "commit",
+        "automation",
+        "conventional-commits"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/commit-message-generator.md"
+    },
+    {
+      "name": "commit-orchestrator",
+      "intent": "Unified commit operations agent - generate, validate, and track commits with Jira smart commit integration",
+      "tags": [
+        "jira",
+        "git",
+        "commit",
+        "smart-commits",
+        "conventional-commits",
+        "validation",
+        "tracking"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/commit-orchestrator.md"
+    },
+    {
+      "name": "Commit Tracker",
+      "intent": "Track commits, map them to Jira issues, and post detailed commit summaries with Confluence references",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "commit-tracker"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/commit-tracker.md"
+    },
+    {
+      "name": "completion-flow-orchestrator",
+      "intent": "Orchestrates the complete task completion flow including sub-issue monitoring, gap analysis, Confluence documentation, commit creation, and issue commenting with full traceability",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "completion-flow-orchestrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/completion-flow-orchestrator.md"
+    },
+    {
+      "name": "completion-orchestrator",
+      "intent": "Orchestrate the full completion workflow - PR creation, sub-item documentation, and QA transitions",
+      "tags": [
+        "jira",
+        "orchestration",
+        "completion",
+        "pr",
+        "qa"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/completion-orchestrator.md"
+    },
+    {
+      "name": "compliance-reporter",
+      "intent": "Compliance Reporter Agent",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "compliance-reporter"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/compliance-reporter.md"
+    },
+    {
+      "name": "github-orchestrator:conflict-resolver",
+      "intent": "Predict collisions between in-flight pull requests and resolve merge conflicts by reconciling both sides' intent",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "delivery"
+      ],
+      "inputs": [
+        "pr",
+        "branch"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/conflict-resolver.md"
+    },
+    {
+      "name": "confluence-documentation-creator",
+      "intent": "Create Confluence documentation at orchestration phases with Jira/PR linking",
+      "tags": [
+        "confluence",
+        "documentation",
+        "jira",
+        "pr",
+        "orchestration"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/confluence-documentation-creator.md"
+    },
+    {
+      "name": "confluence-manager",
+      "intent": "Manages Confluence documentation based on Jira issues - reads requirements, writes technical docs, creates runbooks, syncs with Jira, maintains documentation lifecycle",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "confluence-manager"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/confluence-manager.md"
+    },
+    {
+      "name": "context-guardian",
+      "intent": "Manages all state file reads and writes. Ensures session continuity across conversations. Handles atomic writes and corruption detection.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "context-guardian"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/context-guardian.md"
+    },
+    {
+      "name": "github-orchestrator:correctness-reviewer",
+      "intent": "Find logic defects in a diff with a concrete failing input for each finding",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "diff",
+        "prNumber"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/correctness-reviewer.md"
+    },
+    {
+      "name": "council-coordinator",
+      "intent": "Coordinates agent council reviews using the blackboard pattern for collaborative multi-agent analysis",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "council-coordinator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/council-coordinator.md"
+    },
+    {
+      "name": "council-reviewer",
+      "intent": "Multi-perspective review board for /pm:review. Evaluates completed work from quality, security, architecture, and UX angles simultaneously.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "council-reviewer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/council-reviewer.md"
+    },
+    {
+      "name": "github-orchestrator:dedup-detective",
+      "intent": "Find duplicate issues by symptom rather than wording, across both open and closed issues",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "issues"
+      ],
+      "inputs": [
+        "issueNumber"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "agents/dedup-detective.md"
+    },
+    {
+      "name": "project-management-plugin:deep-researcher",
+      "intent": "Produces a research brief before task execution via fixed 4-source protocol (codebase-first, then web, Context7, Firecrawl) to prevent re-implementation and surface existing patterns.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "deep-researcher"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/deep-researcher.md"
+    },
+    {
+      "name": "dependency-mapper",
+      "intent": "Cross-project dependency detection, visualization, impact analysis, circular dependency detection, critical path calculation, and blocking issue identification",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "dependency-mapper"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/dependency-mapper.md"
+    },
+    {
+      "name": "dependency-resolver",
+      "intent": "Builds and validates the task DAG. Detects cycles, computes critical path, returns the unblocked task set for the current execution cycle.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "dependency-resolver"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/dependency-resolver.md"
+    },
+    {
+      "name": "github-orchestrator:dependency-steward",
+      "intent": "Assess dependency freshness and maintenance risk and orchestrate upgrades in risk-ordered batches",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "supply-chain"
+      ],
+      "inputs": [
+        "scope",
+        "package"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/dependency-steward.md"
+    },
+    {
+      "name": "discord-notifier",
+      "intent": "Sends notifications to Discord channels using Discord API with rich embeds, mentions, and threading support",
+      "tags": [
+        "notifications",
+        "discord",
+        "messaging"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/discord-notifier.md"
+    },
+    {
+      "name": "github-orchestrator:docs-reviewer",
+      "intent": "Find documentation that this diff made wrong, and undocumented changes users need to know about",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "diff",
+        "prNumber"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "agents/docs-reviewer.md"
+    },
+    {
+      "name": "documentation-hub",
+      "intent": "Unified documentation agent for TDD, ADR, API docs, runbooks, Confluence pages, and Jira-Confluence linking with optimized CQL queries",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "documentation-hub"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/documentation-hub.md"
+    },
+    {
+      "name": "documentation-sync-agent",
+      "intent": "Ensures Confluence documentation is created, updated, and linked for all Jira issues and sub-issues. Automatically syncs READMEs with Confluence pages and maintains bidirectional links between Jira, Confluence, and code repositories.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "documentation-sync-agent"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/documentation-sync-agent.md"
+    },
+    {
+      "name": "documentation-writer",
+      "intent": "Comprehensive documentation writer for DOCUMENT phase - creates README, API docs, ADRs, code comments, changelogs, Confluence pages, user guides, and runbooks",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "documentation-writer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/documentation-writer.md"
+    },
+    {
+      "name": "github-orchestrator:dora-analyst",
+      "intent": "Compute DORA four keys from repository history and attribute every movement to a specific cause",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "intel"
+      ],
+      "inputs": [
+        "window"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/dora-analyst.md"
+    },
+    {
+      "name": "draft-pr-manager",
+      "intent": "Create draft PR immediately after PLAN phase and update it throughout development for early visibility and feedback",
+      "tags": [
+        "jira",
+        "pr",
+        "draft",
+        "visibility",
+        "feedback"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/draft-pr-manager.md"
+    },
+    {
+      "name": "github-orchestrator:epic-decomposer",
+      "intent": "Break an epic into independently shippable sub-issues ordered by dependency with explicit acceptance criteria",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "issues"
+      ],
+      "inputs": [
+        "issueNumber",
+        "goal"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/epic-decomposer.md"
+    },
+    {
+      "name": "escalation-manager",
+      "intent": "Escalation Manager Agent",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "escalation-manager"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/escalation-manager.md"
+    },
+    {
+      "name": "event-sourcing-orchestrator",
+      "intent": "Event sourcing system for complete orchestration audit trail, state reconstruction, time-travel debugging, and event replay capabilities",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "event-sourcing-orchestrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/event-sourcing-orchestrator.md"
+    },
+    {
+      "name": "expert-agent-matcher",
+      "intent": "Advanced expertise matching system - Deep multi-dimensional analysis to select optimal experts with confidence scoring, team composition optimization, and load balancing",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "expert-agent-matcher"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/expert-agent-matcher.md"
+    },
+    {
+      "name": "export-generator",
+      "intent": "Generates PDF reports, Excel/CSV exports, and JSON exports with custom templates, scheduling, and distribution capabilities",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "export-generator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/export-generator.md"
+    },
+    {
+      "name": "external-documentation-publisher",
+      "intent": "Publishes documentation to external platforms beyond Confluence - GitHub Wiki, API docs sites, GitBook, Notion, automated README updates, and blog posts",
+      "tags": [
+        "documentation",
+        "external",
+        "publishing",
+        "github-wiki",
+        "api-docs",
+        "gitbook",
+        "notion"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/external-documentation-publisher.md"
+    },
+    {
+      "name": "github-orchestrator:flake-detective",
+      "intent": "Confirm test flakiness across runs, diagnose the source of nondeterminism, and quarantine with a tracked issue and owner",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "ci"
+      ],
+      "inputs": [
+        "testName",
+        "runId"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/flake-detective.md"
+    },
+    {
+      "name": "fleet-brainstorm",
+      "intent": "Produces evidence-backed improvement proposals across a fleet's repositories and hands them to the planner, who accepts or rejects each one. Use when there is slack in the queue, when looking for what nobody has written down yet, or when converting a review-learnings document into concrete ranked work. Changes no code and files an issue only for accepted proposals. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "management"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "high",
+      "path": "agents/fleet-brainstorm.md"
+    },
+    {
+      "name": "fleet-conflicts",
+      "intent": "Resolves merge conflicts and re-absorbs the base branch on fleet-authored pull requests, and forecasts conflicts across open lane PRs before they reach the merge gate. Use when a merge gate reports a stale base, when a PR conflicts, or when a generated artifact must be regenerated on a combined tree rather than resolved by keeping a side. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "management"
+      ],
+      "inputs": [],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/fleet-conflicts.md"
+    },
+    {
+      "name": "fleet-dispatch",
+      "intent": "The single communications hub between the orchestrator and every other session in a fleet - fan-out, acknowledgement collection, registry upkeep, and digests upward. Use when broadcasting to all lanes, reconciling session names against the registry, taking a status roll-call, pinging a quiet lane, or routing an escalation. Relays verbatim and carries provenance across every hop. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "management"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/fleet-dispatch.md"
+    },
+    {
+      "name": "fleet-gitops",
+      "intent": "The merge gate for fleet-authored pull requests, plus branch-to-PR coverage and worktree hygiene. Use when an approval arrives and a PR must be merged, when checking that every pushed branch has an open PR, or when runner load needs throttling. Re-reads the checks unfiltered as the literal last action before merging. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "management"
+      ],
+      "inputs": [],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/fleet-gitops.md"
+    },
+    {
+      "name": "fleet-lane",
+      "intent": "A repository lane - implements assigned work in exactly one repository, in its own worktree, and ships it as a pull request opened in the same action as the push. Use as the template for every repo lane in a fleet; fill in the repository, base branch and queue from the run's configuration. Delegates bounded edits to workers and verification to verifiers, and never edits a repository it does not own. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "lane"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "high",
+      "path": "agents/fleet-lane.md"
+    },
+    {
+      "name": "fleet-planner",
+      "intent": "Owns the ranked backlog and the next-task assignment for every repository in a fleet, and the numbered amendment log that makes the run reconstructable. Use when ranking work across repositories, answering a lane's request for its next item, ruling on a proposal, confirming a second lane's file split, or deciding whether an item is admissible at all. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "management"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "high",
+      "path": "agents/fleet-planner.md"
+    },
+    {
+      "name": "fleet-release",
+      "intent": "Owns the release-readiness board - for each product, what blocks its next release and the exact next action, with every claim proven. Use when asking what is shippable, what a promotion actually contains, what a human still has to decide, or when a blocker clears or appears. Turns a founder decision into one line with the proofs attached. Never merges, releases or deploys. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "management"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "high",
+      "path": "agents/fleet-release.md"
+    },
+    {
+      "name": "fleet-reviewer",
+      "intent": "Adversarial reviewer for pull requests opened by fleet lanes. Use when a lane announces a PR is ready, when a verdict must be issued or re-issued, or when deciding whether a change is a root-cause fix or a workaround. Issues APPROVE or BLOCK scoped to a head SHA, posted as a PR comment, naming the falsifier and the set. Normally runs as its own session; this file doubles as its brief.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "management"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "high",
+      "path": "agents/fleet-reviewer.md"
+    },
+    {
+      "name": "fleet-verifier",
+      "intent": "Re-runs one stated command, or checks one stated fact, and reports the literal result with its exit code and the size of the set it looked at. Use to promote a claim from ASSERTED to DELIVERED - after a worker reports done, before a verdict is issued, before a number is quoted to anyone. Cheap and mechanical by design; it judges nothing and fixes nothing.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "verifier"
+      ],
+      "inputs": [
+        "command"
+      ],
+      "risk": "low",
+      "cost": "low",
+      "path": "agents/fleet-verifier.md"
+    },
+    {
+      "name": "fleet-worker",
+      "intent": "Executes one bounded implementation task inside a lane's worktree and reports exactly what it did, with commands and results. Use when a lane needs a scoped edit done without spending its own turn on it - dispatch in the background so the lane can keep heartbeating. Makes no scope decisions, opens no pull requests, and never claims success it did not verify.",
+      "tags": [
+        "fleet-orchestration",
+        "agent",
+        "worker"
+      ],
+      "inputs": [
+        "task",
+        "worktree",
+        "acceptance-test"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/fleet-worker.md"
+    },
+    {
+      "name": "github-orchestrator:gh-advisor",
+      "intent": "Analyze all in-flight GitHub state and recommend prioritized next best actions with evidence, without mutating anything",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "intel"
+      ],
+      "inputs": [
+        "scope"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/gh-advisor.md"
+    },
+    {
+      "name": "github-orchestrator:gh-orchestrator",
+      "intent": "Coordinate the GitHub delivery teams, decompose a delivery goal into team assignments, and own the end-to-end outcome",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "delivery"
+      ],
+      "inputs": [
+        "goal",
+        "scope"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "agents/gh-orchestrator.md"
+    },
+    {
+      "name": "governance-auditor",
+      "intent": "Complete audit trail management for all decisions, compliance reporting, change log generation, access pattern analysis, risk assessment, and SOC2/ISO27001 evidence collection.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "governance-auditor"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/governance-auditor.md"
+    },
+    {
+      "name": "harness-api-expert",
+      "intent": "Expert agent for Harness REST API operations including authentication, organizations, projects, pipelines, triggers, services, environments, connectors, secrets, executions, and module-specific APIs (GitOps, Feature Flags, IaCM, Chaos, STO, CCM)",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "harness-api-expert"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/harness-api-expert.md"
+    },
+    {
+      "name": "harness-jira-sync",
+      "intent": "Automate bidirectional synchronization between Harness CD and Jira for pipelines, deployments, Git repositories, pull requests, and code review comments using Harness MCP",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "harness-jira-sync"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/harness-jira-sync.md"
+    },
+    {
+      "name": "github-orchestrator:hotspot-scout",
+      "intent": "Find files where change frequency and defect density combine into elevated risk, and explain why each is fragile",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "intel"
+      ],
+      "inputs": [
+        "window"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/hotspot-scout.md"
+    },
+    {
+      "name": "hypothesis-debugger",
+      "intent": "Hypothesis-driven debugging agent that systematically tests theories to find root causes. ALWAYS checks documentation for expected behavior before forming hypotheses.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "hypothesis-debugger"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/hypothesis-debugger.md"
+    },
+    {
+      "name": "infrastructure-orchestrator",
+      "intent": "Expert infrastructure agent for creating modular Harness repositories, managing Kubernetes deployments, Helm charts, and Terraform infrastructure with deep GitOps knowledge",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "infrastructure-orchestrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/infrastructure-orchestrator.md"
+    },
+    {
+      "name": "intelligence-analyzer",
+      "intent": "Intelligence and analytics module for the jira-orchestrator - provides predictive analytics, learning from history, smart prioritization, velocity tracking, and pattern recognition to optimize agent selection and task execution",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "intelligence-analyzer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/intelligence-analyzer.md"
+    },
+    {
+      "name": "github-orchestrator:issue-triager",
+      "intent": "Classify issues by type and severity, assess reproducibility, size them, and route them to an owner",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "issues"
+      ],
+      "inputs": [
+        "issueNumber",
+        "scope"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "agents/issue-triager.md"
+    },
+    {
+      "name": "issue-validator",
+      "intent": "CRITICAL SAFETY AGENT - Validates issue key before ANY Jira operation. MUST be called first to prevent working on wrong issues.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "issue-validator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/issue-validator.md"
+    },
+    {
+      "name": "jira-orchestrator:jira-advisor",
+      "intent": "Advisory agent that analyzes current Jira, sprint, PR, and CI state and recommends the next best actions, workflows, and agents to deploy",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "advisor"
+      ],
+      "inputs": [
+        "scope"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/jira-advisor.md"
+    },
+    {
+      "name": "epic-decomposer",
+      "intent": "Breaks down epics into manageable user stories and tasks using INVEST principles, user journey analysis, dependency mapping, and adaptive learning from past decompositions",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "epic-decomposer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/jira-epic-decomposer.md"
+    },
+    {
+      "name": "learning-coordinator",
+      "intent": "Coordinates real-time learning across all agents, manages knowledge consolidation, and optimizes agent selection based on historical performance",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "learning-coordinator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/learning-coordinator.md"
+    },
+    {
+      "name": "linear-agent-orchestrator",
+      "intent": "Coordinate Linear agent sessions — acknowledge delegations, route work, emit activities, escalate to humans",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "agent-session",
+        "orchestration"
+      ],
+      "inputs": [],
+      "risk": "high",
+      "cost": "high",
+      "path": "agents/linear-agent-orchestrator.md"
+    },
+    {
+      "name": "linear-architect",
+      "intent": "Architecture decisions for Linear integrations — data model trade-offs, sync patterns, multi-tenant considerations, performance budgets",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "architect"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "high",
+      "path": "agents/linear-architect.md"
+    },
+    {
+      "name": "linear-customer-liaison",
+      "intent": "Route customer requests, deduplicate, attribute revenue weight, and surface aggregate demand",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "customer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/linear-customer-liaison.md"
+    },
+    {
+      "name": "linear-cycle-planner",
+      "intent": "Plan and reconcile Linear cycles (sprints) using velocity history, scope budget, and carry-over rules",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "cycle",
+        "planning"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/linear-cycle-planner.md"
+    },
+    {
+      "name": "linear-graphql-expert",
+      "intent": "Optimize GraphQL queries, navigate the Linear schema, flag deprecations, and generate typed query strings",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "graphql"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/linear-graphql-expert.md"
+    },
+    {
+      "name": "linear-initiative-planner",
+      "intent": "Plan multi-quarter initiatives, decompose into projects, generate sub-initiatives, and roll up status",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "initiative",
+        "planning"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "high",
+      "path": "agents/linear-initiative-planner.md"
+    },
+    {
+      "name": "linear-issue-curator",
+      "intent": "Manage issue lifecycle — creation, sub-issues, templates, labels, parent linkage, and metadata hygiene",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "issue",
+        "curator"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/linear-issue-curator.md"
+    },
+    {
+      "name": "linear-sla-monitor",
+      "intent": "Watch SLA breaches across teams, escalate, and aggregate into reports",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "sla"
+      ],
+      "inputs": [],
+      "risk": "low",
+      "cost": "low",
+      "path": "agents/linear-sla-monitor.md"
+    },
+    {
+      "name": "linear-triage-officer",
+      "intent": "Process the Linear triage queue using configurable rules; route, accept, decline, escalate",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "triage"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "low",
+      "path": "agents/linear-triage-officer.md"
+    },
+    {
+      "name": "linear-webhook-engineer",
+      "intent": "Design, debug, and harden webhook handlers — signature verification, idempotency, DLQ, replay",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "webhooks"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/linear-webhook-engineer.md"
+    },
+    {
+      "name": "github-orchestrator:merge-marshal",
+      "intent": "Re-verify every merge policy gate against live state immediately before merging, and refuse the merge when any gate fails",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "delivery"
+      ],
+      "inputs": [
+        "pr"
+      ],
+      "risk": "high",
+      "cost": "low",
+      "path": "agents/merge-marshal.md"
+    },
+    {
+      "name": "metrics-dashboard",
+      "intent": "Real-time orchestration metrics dashboard with SLA tracking, quality metrics, throughput analysis, and agent performance monitoring",
+      "tags": [
+        "metrics",
+        "dashboard",
+        "monitoring",
+        "sla",
+        "performance",
+        "analytics",
+        "reporting"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/metrics-dashboard.md"
+    },
+    {
+      "name": "notification-analytics",
+      "intent": "Analyzes notification delivery metrics, user engagement, channel performance, and provides insights for optimization",
+      "tags": [
+        "notifications",
+        "analytics",
+        "metrics",
+        "optimization"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/notification-analytics.md"
+    },
+    {
+      "name": "notification-router",
+      "intent": "Routes Jira orchestration events to appropriate notification channels (Slack, Teams, Email, Webhooks) with intelligent filtering, batching, and priority management",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "notification-router"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/notification-router.md"
+    },
+    {
+      "name": "deployment-orchestrator",
+      "intent": "Orchestrates deployment workflows through state transitions with Harness CD integration",
+      "tags": [
+        "deployment-pipeline",
+        "agent",
+        "orchestrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/orchestrator.md"
+    },
+    {
+      "name": "github-orchestrator:ownership-mapper",
+      "intent": "Reconcile declared CODEOWNERS against real authorship to find drift, gaps, and bus-factor risk, and route reviewers",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "intel"
+      ],
+      "inputs": [
+        "scope",
+        "prNumber"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "agents/ownership-mapper.md"
+    },
+    {
+      "name": "pagerduty-notifier",
+      "intent": "Creates and manages PagerDuty incidents for critical Jira Orchestrator events with proper severity, deduplication, and auto-resolution",
+      "tags": [
+        "notifications",
+        "pagerduty",
+        "incidents",
+        "on-call"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/pagerduty-notifier.md"
+    },
+    {
+      "name": "parallel-sub-issue-worker",
+      "intent": "Discovers, analyzes dependencies, and coordinates parallel execution of Jira sub-issues using DAG-based scheduling with intelligent agent routing per sub-issue",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "parallel-sub-issue-worker"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/parallel-sub-issue-worker.md"
+    },
+    {
+      "name": "pattern-analyzer",
+      "intent": "Extracts learnable patterns from task outcomes using extended thinking (8000 token budget) to identify success factors, failure modes, and transferable knowledge",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "pattern-analyzer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/pattern-analyzer.md"
+    },
+    {
+      "name": "pattern-recognizer",
+      "intent": "Extracts reusable patterns from completed tasks. Builds a pattern library for faster future decomposition and research. Runs after project completion.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "pattern-recognizer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/pattern-recognizer.md"
+    },
+    {
+      "name": "github-orchestrator:performance-reviewer",
+      "intent": "Find performance defects that scale badly with input size, load, or data growth",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "diff",
+        "prNumber"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/performance-reviewer.md"
+    },
+    {
+      "name": "performance-tracker",
+      "intent": "Tracks and analyzes agent performance metrics in real-time, generates performance reports, identifies trends, and provides data-driven recommendations",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "performance-tracker"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/performance-tracker.md"
+    },
+    {
+      "name": "pm-integrator",
+      "intent": "Connects and syncs with 9 PM platforms (GitHub Projects, Linear, Notion, Asana, Trello, ClickUp, Monday.com, Todoist, Local). Credentials from CLAUDE_PLUGIN_OPTION_* env vars.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "pm-integrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/pm-integrator.md"
+    },
+    {
+      "name": "policy-enforcer",
+      "intent": "Policy definition and evaluation engine for code quality gates, security requirements, review policies, branch protection, and compliance checks",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "policy-enforcer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/policy-enforcer.md"
+    },
+    {
+      "name": "portfolio-manager",
+      "intent": "Multi-project portfolio management with aggregated metrics, cross-project dependencies, resource allocation, strategic alignment, and executive-level reporting",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "portfolio-manager"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/portfolio-manager.md"
+    },
+    {
+      "name": "github-orchestrator:pr-author",
+      "intent": "Write pull request titles and bodies from the actual diff, following repository templates and omitting sensitive content",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "delivery"
+      ],
+      "inputs": [
+        "branch",
+        "diff"
+      ],
+      "risk": "medium",
+      "cost": "low",
+      "path": "agents/pr-author.md"
+    },
+    {
+      "name": "pr-creator",
+      "intent": "Create high-quality pull requests via Harness Code with Confluence documentation and Jira integration",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "pr-creator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/pr-creator.md"
+    },
+    {
+      "name": "pr-documentation-logger",
+      "intent": "Log all documentation and interactions to PR comments for complete audit trail",
+      "tags": [
+        "github",
+        "pr",
+        "documentation",
+        "logging",
+        "audit"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/pr-documentation-logger.md"
+    },
+    {
+      "name": "pr-size-estimator",
+      "intent": "Analyze planned work and estimate final PR size to recommend splitting strategy before CODE phase begins",
+      "tags": [
+        "jira",
+        "pr",
+        "estimation",
+        "planning",
+        "proactive"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/pr-size-estimator.md"
+    },
+    {
+      "name": "progress-monitor",
+      "intent": "Tracks task completion counts and velocity. Picks the next task for execution. Updates progress/log.md. Lightweight — uses Haiku intentionally.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "progress-monitor"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/progress-monitor.md"
+    },
+    {
+      "name": "project-interviewer",
+      "intent": "Conducts the 8-phase discovery interview for /pm:init. Asks one question at a time, never rushes, adapts to surprising answers. Requires minimum 15 questions before generating output.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "project-interviewer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/project-interviewer.md"
+    },
+    {
+      "name": "project-orchestrator",
+      "intent": "Master coordinator for the autonomous project execution loop. Owns Phase 0-8 of /pm:auto, makes escalation decisions, manages HITL triggers, and coordinates all other agents.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "project-orchestrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/project-orchestrator.md"
+    },
+    {
+      "name": "github-orchestrator:project-steward",
+      "intent": "Read and maintain GitHub Projects boards, resolving field and option IDs and preferring built-in workflows over custom automation",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "projects"
+      ],
+      "inputs": [
+        "projectNumber",
+        "action"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/project-steward.md"
+    },
+    {
+      "name": "qa-comment-responder",
+      "intent": "Monitors and responds to comments on QA tickets, providing clarifications and updates",
+      "tags": [
+        "jira",
+        "qa",
+        "comments",
+        "communication",
+        "response"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/qa-comment-responder.md"
+    },
+    {
+      "name": "qa-confluence-documenter",
+      "intent": "Creates visually impressive Confluence documentation with main hub pages and linked sub-pages for each task",
+      "tags": [
+        "jira",
+        "confluence",
+        "qa",
+        "documentation",
+        "knowledge-management",
+        "visual-design"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/qa-confluence-documenter.md"
+    },
+    {
+      "name": "qa-ticket-reviewer",
+      "intent": "Reviews JIRA tickets in QA status, improves content quality, condenses descriptions, and ensures completeness",
+      "tags": [
+        "jira",
+        "qa",
+        "review",
+        "content-improvement",
+        "quality-assurance"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/qa-ticket-reviewer.md"
+    },
+    {
+      "name": "qa-transition",
+      "intent": "Transition Jira issues and all sub-items to QA status after work completion",
+      "tags": [
+        "jira",
+        "qa",
+        "transition",
+        "status"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/qa-transition.md"
+    },
+    {
+      "name": "quality-enhancer",
+      "intent": "Enhanced code quality reviewer for orchestration workflow - validates best practices, security, performance, accessibility, and documentation",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "quality-enhancer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/quality-enhancer.md"
+    },
+    {
+      "name": "quality-intelligence",
+      "intent": "Advanced quality analytics and intelligence system - tracks technical debt, quality trends, health scores, hotspots, security intelligence, and predictive quality metrics",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "quality-intelligence"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/quality-intelligence.md"
+    },
+    {
+      "name": "quality-reviewer",
+      "intent": "Validates task completion against acceptance criteria. Each criterion is binary PASS or FAIL. Sets task COMPLETE or BLOCKED with specific evidence.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "quality-reviewer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/quality-reviewer.md"
+    },
+    {
+      "name": "github-orchestrator:release-conductor",
+      "intent": "Compute the semver bump from conventional commits, verify release readiness gates, and tag and publish",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "release"
+      ],
+      "inputs": [
+        "bump",
+        "prerelease"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/release-conductor.md"
+    },
+    {
+      "name": "release-coordinator",
+      "intent": "Multi-project release planning, release train management, automated release notes, rollback coordination, feature flag management, and go/no-go decision support",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "release-coordinator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/release-coordinator.md"
+    },
+    {
+      "name": "github-orchestrator:repo-cartographer",
+      "intent": "Map repository structure, module boundaries, entry points, and dependency direction to orient other agents quickly",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "intel"
+      ],
+      "inputs": [
+        "scope"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/repo-cartographer.md"
+    },
+    {
+      "name": "requirements-analyzer",
+      "intent": "Deep analysis of Jira issue requirements to ensure clarity, completeness, and testability before implementation begins",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "requirements-analyzer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/requirements-analyzer.md"
+    },
+    {
+      "name": "research-dispatcher",
+      "intent": "Decides whether deep research is needed for a task, checks the research cache, and dispatches to deep-researcher. Returns cached brief if fresh (< 24h).",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "research-dispatcher"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/research-dispatcher.md"
+    },
+    {
+      "name": "review-facilitator",
+      "intent": "Break down PR reviews into small, manageable tasks that can be reviewed independently in 5-15 minute chunks",
+      "tags": [
+        "jira",
+        "review",
+        "pr",
+        "incremental"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/review-facilitator.md"
+    },
+    {
+      "name": "review-orchestrator",
+      "intent": "Orchestrate code review workflows from creation to completion with progress tracking",
+      "tags": [
+        "jira",
+        "review",
+        "pr",
+        "orchestration",
+        "progress"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/review-orchestrator.md"
+    },
+    {
+      "name": "review-progress-tracker",
+      "intent": "Track review status across all sub-item chunks with progress dashboards in Jira",
+      "tags": [
+        "jira",
+        "review",
+        "progress",
+        "dashboard",
+        "tracking"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/review-progress-tracker.md"
+    },
+    {
+      "name": "github-orchestrator:review-synthesizer",
+      "intent": "Merge surviving review findings on a blackboard, deduplicate across lenses, rank by severity, and emit one verdict",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "findings",
+        "verdicts"
+      ],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/review-synthesizer.md"
+    },
+    {
+      "name": "risk-assessor",
+      "intent": "Identifies unknowns and high-risk tasks. Creates spike tasks for unknowns. Flags tasks requiring HITL. Scores risk 1-10.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "risk-assessor"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/risk-assessor.md"
+    },
+    {
+      "name": "roadmap-planner",
+      "intent": "Visual roadmap generation with timeline planning, dependency-aware scheduling, release train coordination, milestone tracking, and capacity-based forecasting",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "roadmap-planner"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/roadmap-planner.md"
+    },
+    {
+      "name": "github-orchestrator:rollback-planner",
+      "intent": "Analyze rollback blast radius and recommend rollback, forward-fix, or a feature-flag flip",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "release"
+      ],
+      "inputs": [
+        "target"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/rollback-planner.md"
+    },
+    {
+      "name": "rollback-specialist",
+      "intent": "Handles deployment rollback procedures safely and completely",
+      "tags": [
+        "deployment-pipeline",
+        "agent",
+        "rollback"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/rollback.md"
+    },
+    {
+      "name": "root-cause-analyzer",
+      "intent": "Deep root cause analysis agent using 5 Whys, Fishbone diagrams, and causal chain analysis. ALWAYS grounds analysis in documentation and system facts.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "root-cause-analyzer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/root-cause-analyzer.md"
+    },
+    {
+      "name": "scope-architect",
+      "intent": "Converts interview output into a structured project definition with phases, milestones, success criteria, and risk register. Runs after project-interviewer completes.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "scope-architect"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/scope-architect.md"
+    },
+    {
+      "name": "github-orchestrator:secret-sentinel",
+      "intent": "Detect committed secrets and drive revoke-first remediation without ever exposing the secret value",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "supply-chain"
+      ],
+      "inputs": [
+        "scope",
+        "diff"
+      ],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/secret-sentinel.md"
+    },
+    {
+      "name": "github-orchestrator:security-reviewer",
+      "intent": "Find exploitable security defects in a diff with a concrete attack path for each finding",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "diff",
+        "prNumber"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/security-reviewer.md"
+    },
+    {
+      "name": "skill-mapper",
+      "intent": "Team skills inventory management with expertise tracking, skill gap analysis, training recommendations, optimal task assignment, knowledge transfer tracking, and skill coverage reporting",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "skill-mapper"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/skill-mapper.md"
+    },
+    {
+      "name": "sla-monitor",
+      "intent": "SLA Monitor Agent",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "sla-monitor"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/sla-monitor.md"
+    },
+    {
+      "name": "slack-notifier",
+      "intent": "Delivers Jira orchestration notifications to Slack using Block Kit, managing threads, interactive buttons, and rich formatting for optimal user experience",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "slack-notifier"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/slack-notifier.md"
+    },
+    {
+      "name": "smart-commit-validator",
+      "intent": "Pre-flight validation of smart commit parameters to prevent failed commits and ensure data integrity",
+      "tags": [
+        "jira",
+        "git",
+        "validation",
+        "smart-commits",
+        "pre-flight",
+        "time-tracking"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/smart-commit-validator.md"
+    },
+    {
+      "name": "sprint-planner",
+      "intent": "Automated sprint planning with capacity calculation, velocity tracking, backlog prioritization, commitment suggestions, sprint health monitoring, and adaptive learning from past sprint outcomes",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "sprint-planner"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/sprint-planner.md"
+    },
+    {
+      "name": "github-orchestrator:stack-manager",
+      "intent": "Build and maintain stacked pull request topologies, splitting oversized branches and rebasing descendants after landings",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "delivery"
+      ],
+      "inputs": [
+        "rootPr",
+        "branch"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "agents/stack-manager.md"
+    },
+    {
+      "name": "sub-item-documenter",
+      "intent": "Document implementation details on all Jira sub-items after work completion",
+      "tags": [
+        "jira",
+        "documentation",
+        "sub-items",
+        "comments"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/sub-item-documenter.md"
+    },
+    {
+      "name": "github-orchestrator:supply-chain-auditor",
+      "intent": "Rank vulnerability alerts by whether the vulnerable code is reachable from an entry point, and verify code-scanning findings",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "supply-chain"
+      ],
+      "inputs": [
+        "alertId",
+        "scope"
+      ],
+      "risk": "high",
+      "cost": "high",
+      "path": "agents/supply-chain-auditor.md"
+    },
+    {
+      "name": "jira-orchestrator:tag-manager",
+      "intent": "Tag Manager Agent",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "tag-manager"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/tag-manager.md"
+    },
+    {
+      "name": "task-decomposer",
+      "intent": "Recursively decomposes phases into epics → stories → tasks → micro-tasks (5-15 min). Enforces INVEST principles and rejects tasks estimated over 30 minutes.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "task-decomposer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/task-decomposer.md"
+    },
+    {
+      "name": "task-enricher",
+      "intent": "Enriches Jira tasks with technical context, requirements analysis, codebase references, and adaptive learning from past enrichment effectiveness.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "task-enricher"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/task-enricher.md"
+    },
+    {
+      "name": "task-executor",
+      "intent": "Implements one granular micro-task (5-15 min). Reads research brief first, implements atomically, saves artifacts. Refuses to execute without a research brief.",
+      "tags": [
+        "project-management-plugin",
+        "agent",
+        "task-executor"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/task-executor.md"
+    },
+    {
+      "name": "team-capacity-planner",
+      "intent": "Advanced team capacity planning with workload tracking, availability management, sprint forecasting, over-allocation detection, resource leveling, and velocity analysis",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "team-capacity-planner"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/team-capacity-planner.md"
+    },
+    {
+      "name": "github-orchestrator:test-coverage-critic",
+      "intent": "Find untested behavior and tests that cannot fail, judging test quality rather than coverage percentage",
+      "tags": [
+        "github-orchestrator",
+        "agent",
+        "review-board"
+      ],
+      "inputs": [
+        "diff",
+        "prNumber"
+      ],
+      "risk": "low",
+      "cost": "medium",
+      "path": "agents/test-coverage-critic.md"
+    },
+    {
+      "name": "Test Strategist",
+      "intent": "Test Strategist",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "test-strategist"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/test-strategist.md"
+    },
+    {
+      "name": "transition-manager",
+      "intent": "Intelligent Jira workflow state management with fuzzy matching and validation",
+      "tags": [
+        "jira",
+        "workflow",
+        "transitions",
+        "state-management",
+        "validation"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/transition-manager.md"
+    },
+    {
+      "name": "tree-of-thought-reasoner",
+      "intent": "Branching exploration agent for problems with multiple solution paths. ALWAYS queries Context7 for documentation and explores trade-offs systematically.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "tree-of-thought-reasoner"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/tree-of-thought-reasoner.md"
+    },
+    {
+      "name": "triage-agent",
+      "intent": "Jira Issue Triage Agent",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "triage-agent"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/triage-agent.md"
+    },
+    {
+      "name": "deployment-validator",
+      "intent": "Validates deployment configurations and prerequisites before pipeline execution",
+      "tags": [
+        "deployment-pipeline",
+        "agent",
+        "validator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/validator.md"
+    },
+    {
+      "name": "vcs-linear-bridge",
+      "intent": "Run the two-way Linear ↔ VCS sync across GitHub and Harness Code — branches, PRs, reviews, deploys, drift reconciliation",
+      "tags": [
+        "linear-orchestrator",
+        "agent",
+        "github",
+        "harness",
+        "vcs",
+        "bridge",
+        "two-way-sync"
+      ],
+      "inputs": [],
+      "risk": "high",
+      "cost": "medium",
+      "path": "agents/vcs-linear-bridge.md"
+    },
+    {
+      "name": "webhook-publisher",
+      "intent": "Publishes Jira orchestration events to external webhook endpoints with retry logic, signature verification, and event filtering",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "webhook-publisher"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/webhook-publisher.md"
+    },
+    {
+      "name": "workload-balancer",
+      "intent": "Workload distribution analysis and balancing with rebalancing recommendations, bottleneck identification, context switching analysis, meeting load impact assessment, and burnout risk detection.",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "workload-balancer"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/workload-balancer.md"
+    },
+    {
+      "name": "worklog-manager",
+      "intent": "Manages Jira time tracking and worklog entries with smart time parsing, validation, and remaining estimate tracking",
+      "tags": [
+        "jira",
+        "time-tracking",
+        "worklog",
+        "time-management",
+        "productivity"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/worklog-manager.md"
+    },
+    {
+      "name": "jira-orchestrator:worktree-orchestrator",
+      "intent": "Worktree Orchestrator Agent",
+      "tags": [
+        "jira-orchestrator",
+        "agent",
+        "worktree-orchestrator"
+      ],
+      "inputs": [],
+      "risk": "medium",
+      "cost": "medium",
+      "path": "agents/worktree-orchestrator.md"
+    }
+  ]
+}

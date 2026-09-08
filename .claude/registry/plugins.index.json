@@ -1,7 +1,7 @@
 {
   "$schema": "./schema/plugins.schema.json",
   "version": "3.0.0",
-  "lastUpdated": "2026-08-17T00:00:00Z",
+  "lastUpdated": "2026-09-08T19:35:05.482Z",
   "description": "Plugin registry for Claude Code orchestration plugins - upgraded with Agentic Design Patterns (Gulli & Sauco, 2025)",
   "installed": {
     "aws-eks-helm-keycloak": {
@@ -16,13 +16,6 @@
       "path": "../plugins/claude-code-templating-plugin",
       "source": "local",
       "installedAt": "2026-01-08T00:00:00.000Z",
-      "dependencies": {}
-    },
-    "deployment-pipeline": {
-      "version": "2.0.0",
-      "path": "../plugins/deployment-pipeline",
-      "source": "local",
-      "installedAt": "2026-01-01T00:00:00.000Z",
       "dependencies": {}
     },
     "exec-automator": {
@@ -56,13 +49,6 @@
     "home-assistant-architect": {
       "version": "3.0.0",
       "path": "../plugins/home-assistant-architect",
-      "source": "local",
-      "installedAt": "2026-01-01T00:00:00.000Z",
-      "dependencies": {}
-    },
-    "jira-orchestrator": {
-      "version": "8.3.0",
-      "path": "../plugins/jira-orchestrator",
       "source": "local",
       "installedAt": "2026-01-01T00:00:00.000Z",
       "dependencies": {}
@@ -165,20 +151,6 @@
       "installedAt": "2026-04-07T00:00:00.000Z",
       "dependencies": {}
     },
-    "project-management-plugin": {
-      "version": "1.4.0",
-      "path": "../plugins/project-management-plugin",
-      "source": "local",
-      "installedAt": "2026-04-21T00:00:00.000Z",
-      "dependencies": {}
-    },
-    "linear-orchestrator": {
-      "version": "1.0.0",
-      "path": "../plugins/linear-orchestrator",
-      "source": "local",
-      "installedAt": "2026-07-11T00:00:00.000Z",
-      "dependencies": {}
-    },
     "lobbi-bi-reports": {
       "version": "1.0.0",
       "path": "../plugins/lobbi-bi-reports",
@@ -277,61 +249,15 @@
       "installedAt": "2026-08-17T00:00:00.000Z",
       "dependencies": {}
     },
-    "github-orchestrator": {
-      "version": "1.1.0",
-      "path": "../plugins/github-orchestrator",
+    "delivery-orchestrator": {
+      "version": "1.0.0",
+      "path": "../plugins/delivery-orchestrator",
       "source": "local",
-      "installedAt": "2026-08-17T00:00:00.000Z",
+      "installedAt": "2026-09-08T00:00:00.000Z",
       "dependencies": {}
     }
   },
   "registry": {
-    "jira-orchestrator": {
-      "name": "jira-orchestrator",
-      "version": "8.3.0",
-      "description": "Enterprise Jira orchestration with 82 agents, 16 teams, 48 commands, 14 skills, 5 schema-validated workflows, and a read-only advisor. Features Atlassian MCP OAuth, Harness integration, Neon PostgreSQL, Redis caching, Temporal workflows, declarative workflow definitions, lifecycle telemetry hooks, and structured reasoning frameworks.",
-      "author": {
-        "name": "Markus Ahling",
-        "email": "markus@lobbi.io"
-      },
-      "keywords": [
-        "jira",
-        "orchestration",
-        "atlassian",
-        "harness",
-        "ci-cd",
-        "workflow",
-        "advisor",
-        "automation",
-        "agents",
-        "clean-architecture",
-        "solid",
-        "mcp",
-        "knowledge-graph",
-        "sequential-thinking",
-        "neon",
-        "postgresql",
-        "redis",
-        "temporal",
-        "agentic-design-patterns",
-        "routing",
-        "planning",
-        "multi-agent",
-        "memory-management",
-        "reflection",
-        "parallelization",
-        "exception-handling",
-        "human-in-the-loop",
-        "evaluation-monitoring",
-        "prioritization",
-        "goal-setting"
-      ],
-      "categories": [
-        "integration",
-        "orchestration",
-        "devops"
-      ]
-    },
     "frontend-design-system": {
       "name": "frontend-design-system",
       "version": "2.0.0",
@@ -900,29 +826,6 @@
         "code-intelligence"
       ]
     },
-    "project-management-plugin": {
-      "name": "project-management-plugin",
-      "version": "1.4.0",
-      "description": "Universal project manager with keep-Claude-on-task guardrails: focus anchor, scope lock, done-when contract, over-engineering detector, drift auditor, turn budget, user-prompt archive, and compaction-safe handoff. Plus interview-first init, micro-task decomposition, deep research, transactional state MCP, and 9 PM platform integrations.",
-      "author": {
-        "name": "Markus Ahling",
-        "email": "Markus@thelobbi.io"
-      },
-      "keywords": [
-        "project-management",
-        "task-decomposition",
-        "research-first",
-        "micro-tasks",
-        "autonomous",
-        "pm-integration",
-        "mcp"
-      ],
-      "categories": [
-        "project-management",
-        "orchestration",
-        "developer-tools"
-      ]
-    },
     "cowork-marketplace": {
       "name": "cowork-marketplace",
       "version": "2.1.1",
@@ -951,33 +854,6 @@
       ],
       "categories": [
         "marketplace-ecosystem"
-      ]
-    },
-    "deployment-pipeline": {
-      "name": "deployment-pipeline",
-      "version": "2.0.0",
-      "description": "Harness CD integration pipeline with state-machine workflow orchestration",
-      "author": {
-        "name": "Markus Ahling"
-      },
-      "keywords": [
-        "workflow",
-        "automation",
-        "state-machine",
-        "orchestration",
-        "harness",
-        "ci-cd",
-        "deployment",
-        "pipeline",
-        "agentic-patterns",
-        "prompt-chaining",
-        "hitl",
-        "guardrails",
-        "multi-agent",
-        "exception-handling"
-      ],
-      "categories": [
-        "infrastructure"
       ]
     },
     "exec-automator": {
@@ -1114,43 +990,6 @@
       ],
       "categories": [
         "domain"
-      ]
-    },
-    "linear-orchestrator": {
-      "name": "linear-orchestrator",
-      "version": "1.0.0",
-      "description": "Advanced Linear integration with two-way sync to Harness Code and Microsoft Planner. Covers Linear GraphQL API, OAuth 2.0, webhooks, attachments, agents (AIG), MCP, cycles, projects, initiatives, customer requests, SLA, triage, templates, sub-issues, and diffs. 22 commands, 10 skills, 12 agents.",
-      "author": {
-        "name": "Markus Ahling",
-        "email": "markus@lobbi.io"
-      },
-      "keywords": [
-        "linear",
-        "linear-app",
-        "graphql",
-        "oauth",
-        "webhooks",
-        "agents",
-        "aig",
-        "harness",
-        "harness-code",
-        "microsoft-planner",
-        "ms-graph",
-        "two-way-sync",
-        "mcp",
-        "cycles",
-        "projects",
-        "initiatives",
-        "customer-requests",
-        "sla",
-        "triage",
-        "issue-tracking",
-        "orchestration",
-        "automation",
-        "agent-signals"
-      ],
-      "categories": [
-        "core"
       ]
     },
     "lobbi-bi-reports": {
@@ -1694,54 +1533,6 @@
         "typescript",
         "python"
       ]
-    },
-    "github-orchestrator": {
-      "name": "github-orchestrator",
-      "version": "1.1.0",
-      "description": "Autonomous GitHub delivery orchestration: 34 agents in 7 teams, 24 commands, 16 skills, and 7 schema-validated declarative workflows. Drives PRs from branch to merged — adversarial review boards, CI drive-to-green loops, stacked-PR merge trains, conflict prediction, supply-chain triage, release trains, and DORA/hotspot repo intelligence over the GitHub MCP.",
-      "author": {
-        "name": "Markus Ahling",
-        "email": "markus@lobbi.io"
-      },
-      "keywords": [
-        "github",
-        "orchestration",
-        "pull-request",
-        "code-review",
-        "ci-cd",
-        "github-actions",
-        "merge-queue",
-        "stacked-prs",
-        "merge-train",
-        "drive-to-green",
-        "flaky-tests",
-        "dora",
-        "supply-chain",
-        "codeql",
-        "dependabot",
-        "release-engineering",
-        "semver",
-        "changelog",
-        "codeowners",
-        "advisor",
-        "multi-agent",
-        "adversarial-review",
-        "blackboard",
-        "workflow",
-        "telemetry",
-        "mcp",
-        "automation",
-        "agents",
-        "projects",
-        "issue-types",
-        "sub-issues",
-        "issue-forms",
-        "copilot",
-        "agentic-workflows",
-        "github-app",
-        "oidc",
-        "authentication"
-      ]
     }
   },
   "plugins": {
@@ -2101,6 +1892,8 @@
     "byLocation": {
       "plugins/": 38,
       ".claude/plugins/": 6
-    }
+    },
+    "total": 34,
+    "installed": 34
   }
 }
