@@ -10,6 +10,7 @@ import {
   normalizeEvent,
   DeliveryDeduper,
   WEBHOOK_RESOURCE_TYPES,
+  isWellFormedHexDigest,
 } from "../lib/webhooks.mjs";
 
 const SECRET = "whsec_test";
@@ -70,6 +71,36 @@ test("missing signature, body, or secret are each reported distinctly", () => {
 test("a non-hex signature is rejected without throwing", () => {
   const { raw } = signedBody({ webhookTimestamp: Date.now() });
   assert.equal(verifyWebhook(raw, "zzzz-not-hex", SECRET).ok, false);
+});
+
+test("a valid signature with trailing garbage is rejected", () => {
+  // Regression: Node's hex decoder stops at the first invalid pair instead of
+  // throwing, so Buffer.from(validSig + "zzzz", "hex") yields the same 32 bytes
+  // as validSig. Without a well-formedness guard this passed verification.
+  const now = Date.now();
+  const { raw, sig } = signedBody({ webhookTimestamp: now });
+  assert.equal(Buffer.from(sig + "zzzz", "hex").length, 32, "precondition: decoder truncates");
+  assert.deepEqual(verifyWebhook(raw, sig + "zzzz", SECRET, { now }), {
+    ok: false,
+    reason: "bad_signature",
+  });
+});
+
+test("only a well-formed 64-char hex digest is accepted", () => {
+  const now = Date.now();
+  const { raw, sig } = signedBody({ webhookTimestamp: now });
+
+  assert.equal(isWellFormedHexDigest(sig), true);
+  assert.equal(isWellFormedHexDigest(sig.toUpperCase()), true, "hex is case-insensitive");
+  assert.equal(isWellFormedHexDigest(sig + "zz"), false);
+  assert.equal(isWellFormedHexDigest(sig.slice(0, 63)), false);
+  assert.equal(isWellFormedHexDigest(sig + "ab"), false, "66 chars is not a sha256 digest");
+  assert.equal(isWellFormedHexDigest(""), false);
+  assert.equal(isWellFormedHexDigest(null), false);
+  assert.equal(isWellFormedHexDigest(Buffer.from(sig, "hex")), false, "must be a string");
+
+  // An uppercase digest still verifies end to end.
+  assert.equal(verifyWebhook(raw, sig.toUpperCase(), SECRET, { now }).ok, true);
 });
 
 test("a signature of the wrong length is rejected without throwing", () => {

@@ -45,6 +45,26 @@ export const WEBHOOK_ACK_DEADLINE_MS = 5_000;
  * @property {"bad_signature"|"stale_timestamp"|"malformed_body"|"missing_secret"} [reason]
  */
 
+/** A hex-encoded SHA-256 digest: exactly 64 hex characters, nothing else. */
+const SHA256_HEX = /^[0-9a-fA-F]{64}$/;
+
+/**
+ * Reject anything that is not a well-formed hex SHA-256 digest.
+ *
+ * This guard is load-bearing. Node's hex decoder stops at the first invalid
+ * pair instead of throwing, so `Buffer.from(validSig + "zz", "hex")` yields the
+ * same 32 bytes as `validSig` — a signature with trailing garbage would pass a
+ * naive length-then-compare check. Validating the string before decoding closes
+ * that, and also rejects short-but-valid-prefix inputs before they reach
+ * `timingSafeEqual`.
+ *
+ * @param {unknown} signature
+ * @returns {boolean}
+ */
+export function isWellFormedHexDigest(signature) {
+  return typeof signature === "string" && SHA256_HEX.test(signature);
+}
+
 /**
  * Verify a Linear webhook delivery.
  *
@@ -57,16 +77,13 @@ export const WEBHOOK_ACK_DEADLINE_MS = 5_000;
 export function verifyWebhook(rawBody, signatureHex, secret, opts = {}) {
   if (!secret) return { ok: false, reason: "missing_secret" };
   if (!signatureHex || !rawBody?.length) return { ok: false, reason: "malformed_body" };
+  if (!isWellFormedHexDigest(signatureHex)) return { ok: false, reason: "bad_signature" };
 
   const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
-  let a, b;
-  try {
-    a = Buffer.from(String(signatureHex), "hex");
-    b = Buffer.from(expected, "hex");
-  } catch {
-    return { ok: false, reason: "bad_signature" };
-  }
-  // Length check first: timingSafeEqual throws on a length mismatch.
+  const a = Buffer.from(signatureHex, "hex");
+  const b = Buffer.from(expected, "hex");
+  // Both are guaranteed 32 bytes by the guard above, but keep the length check:
+  // timingSafeEqual throws on a mismatch rather than returning false.
   if (a.length !== b.length || !timingSafeEqual(a, b)) {
     return { ok: false, reason: "bad_signature" };
   }

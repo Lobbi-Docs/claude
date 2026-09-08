@@ -15,6 +15,7 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { VcsProvider, extractIssueKeys } from "./provider.mjs";
+import { isWellFormedHexDigest } from "../webhooks.mjs";
 
 const HARNESS_BASE = "https://app.harness.io";
 
@@ -207,14 +208,16 @@ export class HarnessProvider extends VcsProvider {
   verifyWebhook(rawBody, headers, secret) {
     const sent = headers["x-harness-signature"] ?? headers["X-Harness-Signature"];
     if (!sent || !rawBody?.length || !secret) return false;
+
+    const candidate = String(sent).replace(/^sha256=/i, "");
+    // Must be a well-formed digest before decoding: Node's hex decoder stops at
+    // the first invalid pair rather than throwing, so `validSig + "zz"` would
+    // otherwise decode to the same 32 bytes and pass.
+    if (!isWellFormedHexDigest(candidate)) return false;
+
     const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
-    let a, b;
-    try {
-      a = Buffer.from(String(sent).replace(/^sha256=/i, ""), "hex");
-      b = Buffer.from(expected, "hex");
-    } catch {
-      return false;
-    }
+    const a = Buffer.from(candidate, "hex");
+    const b = Buffer.from(expected, "hex");
     return a.length === b.length && timingSafeEqual(a, b);
   }
 

@@ -108,6 +108,10 @@ test("Harness verifies a bare-hex X-Harness-Signature", () => {
   assert.equal(hn.verifyWebhook(body, { "x-harness-signature": sig }, "s"), true);
   assert.equal(hn.verifyWebhook(body, { "x-harness-signature": sig }, "nope"), false);
   assert.equal(hn.verifyWebhook(body, { "x-harness-signature": "zz" }, "s"), false);
+  // Regression: Node's hex decoder truncates at the first invalid pair, so a
+  // valid digest with trailing garbage decoded to the same 32 bytes and passed.
+  assert.equal(hn.verifyWebhook(body, { "x-harness-signature": sig + "zzzz" }, "s"), false);
+  assert.equal(hn.verifyWebhook(body, { "x-harness-signature": sig.slice(0, 62) }, "s"), false);
 });
 
 test("GitHub normalizes a merged pull_request into pr.merged with its issue keys", () => {
