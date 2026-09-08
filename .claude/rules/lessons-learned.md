@@ -1322,3 +1322,49 @@ rmdir: failed to remove 'plugins/linear-orchestrator/.claude': Directory not emp
 - **Status:** RESOLVED
 - **Fix:** Re-ran with an absolute path from the repo root. All of these were the same root cause: the Bash tool keeps ONE cwd across calls, and a `cd` in an earlier command silently relocated later relative paths. A second contributor was `ls` on a non-existent directory returning exit 2 even with `2>/dev/null`.
 - **Prevention:** Never rely on the cwd persisting as you expect. Use absolute paths (or `git -C <repo>`) for every Bash call, wrap one-off `cd` in a subshell `(cd dir && ...)`, and append `|| true` to `ls`/`grep` whose target may legitimately be absent.
+
+### Error: Bash failure (2026-09-08T18:50:20Z)
+- **Tool:** Bash
+- **Input:** `cd /home/user/claude/plugins/linear-orchestrator && node -e '
+const {verifyWebhook}=await import("./lib/webhooks.mjs");
+const {createHmac}=await import("node:crypto");
+const S="secret";
+const payload={webhookTimestamp:Date.now()};
+const raw=Buffer.from(JSON.stringify(payload));
+const good=createHmac("sha256",S).update(raw).digest("hex");
+
+console.log("--- Node hex decoder behaviour ---");
+console.log("Buffer.from(\"zz\",hex).length =", Buffer.from("zz","hex").length);
+console.log("Buffer.from(good+\"zz\",hex).length =", Buffer.from(good+"zz","hex").length, "(good is", Buffer.from(good,"hex").length, "bytes)");
+console.log("Buffer.from(\"\",hex).length =", Buffer.from("","hex").length);
+
+console.log("\n--- bypass attempts ---");
+const attempts = {
+  "empty string": "",
+  "all invalid hex": "zz".repeat(32),
+  "valid sig + trailing garbage": good+"zzzz",
+  "truncated sig": good.slice(0,62),
+  "uppercase sig": good.toUpperCase(),
+  "correct sig": good,
+};
+for (const [name,sig] of Object.entries(attempts)) {
+  const r = verifyWebhook(raw, sig, S, {now: Date.now()});
+  console.log(String(r.ok).padEnd(6), name, r.reason?"("+r.reason+")":"");
+}
+'`
+- **Error:** Exit code 1
+[eval]:2
+const {verifyWebhook}=await import("./lib/webhooks.mjs");
+                      ^^^^^
+await isn't allowed in non-async function
+
+SyntaxError: await is only valid in async functions and the top level bodies of modules
+    at makeContextifyScript (node:internal/vm:185:14)
+    at compileScript (node:internal/process/execution:383:10)
+    at evalTypeScript (node:internal/process/execution:256:22)
+    at node:internal/main/eval_string:74:3
+
+Node.js v22.22.2
+- **Status:** RESOLVED
+- **Fix:** `node -e` evaluates as CommonJS, where top-level `await` and `import` are syntax errors. Re-ran with `node --input-type=module -e` and static `import` statements.
+- **Prevention:** To exercise a plugin ESM module (`lib/*.mjs`) from Bash, always use `node --input-type=module -e 'import {x} from "./lib/y.mjs"; ...'`. Use plain `node -e` only for CommonJS work such as `require("fs")` and JSON parsing. Note the two cannot be mixed: `require` is undefined under `--input-type=module`.
