@@ -54,12 +54,6 @@ export const TERMINAL_ACTIVITY_TYPES = Object.freeze(["response", "error"]);
  */
 export const ACK_DEADLINE_MS = 10_000;
 
-/**
- * A webhook receiver must return 2xx within this window. Do the work
- * asynchronously; acknowledge first.
- */
-export const WEBHOOK_ACK_DEADLINE_MS = 5_000;
-
 const AGENT_ACTIVITY_CREATE = /* GraphQL */ `
   mutation AgentActivityCreate($input: AgentActivityCreateInput!) {
     agentActivityCreate(input: $input) {
@@ -168,8 +162,6 @@ export class AgentSession {
     this.createdAtMs = this._now();
     this.acknowledged = false;
     this.terminated = false;
-    /** @type {Array<{ type: string, at: number }>} */
-    this.emitted = [];
   }
 
   /** Fetch the current server-side session record. */
@@ -197,7 +189,6 @@ export class AgentSession {
       input: { agentSessionId: this.sessionId, content },
     });
     this.acknowledged = true;
-    this.emitted.push({ type, at: this._now() });
     if (TERMINAL_ACTIVITY_TYPES.includes(type)) this.terminated = true;
     return data?.agentActivityCreate ?? null;
   }

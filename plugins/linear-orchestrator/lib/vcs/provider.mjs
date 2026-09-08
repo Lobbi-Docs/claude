@@ -69,6 +69,19 @@ export const CLOSING_KEYWORDS = Object.freeze([
 ]);
 
 /**
+ * A closing keyword immediately followed by an issue key.
+ *
+ * Built once at module load rather than per call — the keyword list is frozen,
+ * so recompiling it on every PR body and comment was pure waste. Safe to share
+ * despite the `g` flag because `matchAll` operates on its own copy and does not
+ * advance `lastIndex` on this instance.
+ */
+const CLOSING_KEY_PATTERN = new RegExp(
+  `\\b(?:${CLOSING_KEYWORDS.join("|")})\\b\\s*:?\\s+([A-Z][A-Z0-9]{0,9}-\\d{1,6})(?![\\w-])`,
+  "gi",
+);
+
+/**
  * Extract every Linear issue key referenced in a blob of text.
  *
  * @param {string|null|undefined} text
@@ -103,14 +116,9 @@ export function extractIssueKeys(text) {
  */
 export function extractClosingKeys(text) {
   if (!text) return [];
-  const keywords = CLOSING_KEYWORDS.join("|");
-  const pattern = new RegExp(
-    `\\b(?:${keywords})\\b\\s*:?\\s+([A-Z][A-Z0-9]{0,9}-\\d{1,6})(?![\\w-])`,
-    "gi",
-  );
   const out = [];
   const seen = new Set();
-  for (const match of String(text).matchAll(pattern)) {
+  for (const match of String(text).matchAll(CLOSING_KEY_PATTERN)) {
     const key = match[1].toUpperCase();
     if (!seen.has(key)) {
       seen.add(key);

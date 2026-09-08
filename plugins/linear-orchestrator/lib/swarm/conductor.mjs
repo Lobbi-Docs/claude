@@ -180,7 +180,7 @@ export class Conductor {
       }
 
       /** @type {WorkerContext} */
-      const ctx = { issue, workspace, session, workerId, signalStall: () => this._now() };
+      const ctx = { issue, workspace, session, workerId };
 
       this._emit("run.state", { issueKey: key, state: "running" });
       const result = await this._withStallTimeout(
@@ -318,7 +318,6 @@ export class Conductor {
  * @property {import("./workspace.mjs").WorkspaceContext|null} workspace
  * @property {AgentSession|null} session
  * @property {string} workerId
- * @property {() => number} signalStall
  */
 
 /**

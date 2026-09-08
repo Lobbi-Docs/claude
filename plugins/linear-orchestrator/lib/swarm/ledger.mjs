@@ -44,7 +44,6 @@ const TRANSITIONS = Object.freeze({
  * @property {number} releases  Voluntary give-backs; never refunded.
  * @property {number} claimedAt
  * @property {number} heartbeatAt
- * @property {number} leaseMs
  * @property {string|null} lastError
  */
 
@@ -61,6 +60,8 @@ export class DelegationLedger {
     this.maxAttempts = opts.maxAttempts ?? 3;
     this.maxReleases = opts.maxReleases ?? 3;
     this._now = opts.now ?? (() => Date.now());
+    /** Clock value of the last sweep; guards redundant scans within one tick. */
+    this._lastSweepAt = -1;
     /** @type {Map<string, Claim>} */
     this.claims = new Map();
   }
@@ -81,7 +82,6 @@ export class DelegationLedger {
         releases: 0,
         claimedAt: 0,
         heartbeatAt: 0,
-        leaseMs: this.leaseMs,
         lastError: null,
       };
       this.claims.set(issueKey, claim);
@@ -115,7 +115,7 @@ export class DelegationLedger {
    * @returns {Claim|null}
    */
   claim(issueKey, workerId) {
-    this.sweepExpired();
+    this._sweepIfStale();
     const claim = this._ensure(issueKey);
 
     if (claim.state === "complete") return null;
@@ -224,18 +224,33 @@ export class DelegationLedger {
   }
 
   /**
+   * Sweep only if the clock has moved since the last one.
+   *
+   * `claim()` and `dispatchable()` each sweep so they are safe to call on their
+   * own, but a conductor tick calls them N+2 times in one synchronous pass —
+   * and no lease can lapse between two reads of the same millisecond. Without
+   * this guard, dispatching N issues meant N+2 full scans of `claims`, which
+   * grows for the life of the process.
+   */
+  _sweepIfStale() {
+    if (this._lastSweepAt === this._now()) return;
+    this.sweepExpired();
+  }
+
+  /**
    * Return claims whose lease has lapsed to the pool.
    * @returns {string[]} Issue keys that were reclaimed.
    */
   sweepExpired() {
     const now = this._now();
+    this._lastSweepAt = now;
     const reclaimed = [];
     for (const claim of this.claims.values()) {
       if (claim.state !== "claimed" && claim.state !== "running") continue;
-      if (now - claim.heartbeatAt <= claim.leaseMs) continue;
+      if (now - claim.heartbeatAt <= this.leaseMs) continue;
       claim.state = "released";
       claim.workerId = null;
-      claim.lastError = `Lease expired after ${claim.leaseMs}ms without a heartbeat.`;
+      claim.lastError = `Lease expired after ${this.leaseMs}ms without a heartbeat.`;
       reclaimed.push(claim.issueKey);
     }
     return reclaimed;
@@ -247,7 +262,7 @@ export class DelegationLedger {
    * @returns {string[]}
    */
   dispatchable(candidates) {
-    this.sweepExpired();
+    this._sweepIfStale();
     return candidates.filter((key) => {
       const claim = this.claims.get(key);
       if (!claim) return true;

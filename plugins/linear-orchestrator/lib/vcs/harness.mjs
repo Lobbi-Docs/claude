@@ -13,9 +13,8 @@
  *   - webhook sig     `X-Harness-Signature`, HMAC-SHA256 hex over the raw body
  */
 
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { VcsProvider, extractIssueKeys } from "./provider.mjs";
-import { isWellFormedHexDigest } from "../webhooks.mjs";
+import { verifyHexSignature } from "../crypto.mjs";
 
 const HARNESS_BASE = "https://app.harness.io";
 
@@ -77,11 +76,6 @@ export class HarnessProvider extends VcsProvider {
 
   get name() {
     return "harness";
-  }
-
-  /** Linear Diffs are GitHub-only; mirror reviews as comments instead. */
-  get supportsLinearDiffs() {
-    return false;
   }
 
   /**
@@ -216,16 +210,8 @@ export class HarnessProvider extends VcsProvider {
     const sent = headers["x-harness-signature"] ?? headers["X-Harness-Signature"];
     if (!sent || !rawBody?.length || !secret) return false;
 
-    const candidate = String(sent).replace(/^sha256=/i, "");
-    // Must be a well-formed digest before decoding: Node's hex decoder stops at
-    // the first invalid pair rather than throwing, so `validSig + "zz"` would
-    // otherwise decode to the same 32 bytes and pass.
-    if (!isWellFormedHexDigest(candidate)) return false;
-
-    const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
-    const a = Buffer.from(candidate, "hex");
-    const b = Buffer.from(expected, "hex");
-    return a.length === b.length && timingSafeEqual(a, b);
+    // Harness sends bare hex; tolerate a `sha256=` prefix defensively.
+    return verifyHexSignature(rawBody, String(sent).replace(/^sha256=/i, ""), secret);
   }
 
   /**
