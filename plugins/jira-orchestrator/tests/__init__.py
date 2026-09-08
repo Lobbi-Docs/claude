@@ -1,3 +1,0 @@
-"""
-Jira Orchestrator Test Suite
-"""
